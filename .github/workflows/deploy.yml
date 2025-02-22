@@ -1,0 +1,48 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Resources:
+  StaticWebsiteBucket:
+    Type: AWS::S3::Bucket
+    Properties: 
+      BucketName: "100-letters-project"
+      WebsiteConfiguration:
+        IndexDocument: "index.html"
+        ErrorDocument: "error.html"
+      AccessControl: PublicRead
+      VersioningConfiguration:
+        Status: Suspended
+      BucketPolicy:
+        Statement:
+          - Sid: PublicReadGetObject
+            Effect: Allow
+            Principal: "*"
+            Action: s3:GetObject
+            Resource: !Sub "arn:aws:s3:::100-letters-project/*"
+  StaticWebsiteCloudFront:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Comment: "CloudFront Distribution for 100 Letters Project"
+        Enabled: "true"
+        Origins:
+          - Id: "S3Origin"
+            DomainName: !GetAtt StaticWebsiteBucket.WebsiteURL
+            S3OriginConfig:
+              OriginAccessIdentity: ""
+        DefaultCacheBehavior:
+          TargetOriginId: "S3Origin"
+          ViewerProtocolPolicy: "redirect-to-https"
+          ForwardedValues:
+            QueryString: "false"
+            Cookies:
+              Forward: "none"
+        DefaultRootObject: "index.html"
+        ViewerCertificate:
+          CloudFrontDefaultCertificate: "true"
+  HostedZone:
+    Type: AWS::Route53::HostedZone
+    Properties:
+      Name: "onehundredletters.com"
+  ARecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: 
