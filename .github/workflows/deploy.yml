@@ -91,12 +91,12 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: next-build
-          path: next-build  # This will contain the 'out' directory
+          path: next-build
 
       - name: Sync Files to S3
         uses: jakejarvis/s3-sync-action@v0.5.0
         with:
-          source_dir: 'next-build/out'  # Sync only the contents of the 'out' directory
+          source_dir: 'next-build'
           destination_dir: '/'
           delete: true
         env:
