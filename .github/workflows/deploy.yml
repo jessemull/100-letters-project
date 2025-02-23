@@ -9,30 +9,8 @@ on:
       - main
 
 jobs:
-  test:
-    name: Run Tests
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci  # Ensures a clean install based on package-lock.json
-
-      - name: Run Jest tests
-        run: npm run test
-
-  deploy:
-    name: Deploy to S3
-    needs: test  # Ensures tests pass before deploying
-    if: github.event_name == 'push'  # Only deploy on pushes to main
+  build:
+    name: Build Next.js Project
     runs-on: ubuntu-latest
 
     steps:
@@ -51,26 +29,73 @@ jobs:
       - name: Build Next.js project
         run: npm run build
 
-      - name: Export static site
-        run: npm run export
+      - name: Archive build output
+        uses: actions/upload-artifact@v4
+        with:
+          name: next-build
+          path: |
+            .next/standalone  # If using standalone mode
+            out  # If using next export (static)
+
+  test:
+    name: Run Tests
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Jest tests
+        run: npm run test
+
+  deploy:
+    name: Deploy to S3
+    needs: test
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Download build output
+        uses: actions/download-artifact@v4
+        with:
+          name: next-build
+          path: next-build
 
       - name: Sync files to S3
         uses: jakejarvis/s3-sync-action@v0.5.0
         with:
-          source_dir: './out'
+          source_dir: 'next-build'  # Use the correct directory based on your build mode
           destination_dir: '/'
-          bucket: ${{ secrets.AWS_S3_BUCKET }}
-          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          region: ${{ secrets.AWS_REGION }}
-          cache_control: 'public, max-age=31536000, immutable'
+        env:
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
 
       - name: Invalidate CloudFront cache
         uses: chetan/invalidate-cloudfront-action@v2
-        with:
-          distribution: ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID }}
-          paths: "/*"
-          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
-
+        env:
+          DISTRIBUTION: ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID }}
+          PATHS: "/*"
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
