@@ -62,7 +62,7 @@ jobs:
         with:
           name: coverage-report
           path: coverage
-          retention-days: 7  # Store for 7 days
+          retention-days: 7
 
       - name: Coverage Threshold Check
         run: |
@@ -91,12 +91,12 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: next-build
-          path: out
+          path: next-build  # This will contain the 'out' directory
 
       - name: Sync Files to S3
         uses: jakejarvis/s3-sync-action@v0.5.0
         with:
-          source_dir: 'out'
+          source_dir: 'next-build/out'  # Sync only the contents of the 'out' directory
           destination_dir: '/'
           delete: true
         env:
