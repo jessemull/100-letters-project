@@ -1,0 +1,95 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Parameters:
+  BucketName:
+    Type: String
+    Description: The name of the S3 bucket for static website hosting.
+
+  ACMCertificateArn:
+    Type: String
+    Description: The ARN of the ACM certificate for the CloudFront distribution.
+
+  HostedZoneId:
+    Type: String
+    Description: The ID of the Route 53 hosted zone for onehundredletters.com.
+
+  CloudFrontHostedZoneId:
+    Type: String
+    Description: The Hosted Zone ID for CloudFront alias record (use 'Z2FDTNDATAQYW2' for CloudFront).
+
+Resources:
+  StaticWebsiteBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref BucketName
+      AccessControl: Private
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        IgnorePublicAcls: true
+        BlockPublicPolicy: false
+        RestrictPublicBuckets: true
+
+  CloudFrontOriginAccessIdentity:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: "CloudFront Origin Access Identity for 100 Letters Project"
+
+  StaticWebsiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref StaticWebsiteBucket
+      PolicyDocument:
+        Statement:
+          - Sid: AllowCloudFrontAccess
+            Effect: Allow
+            Principal:
+              AWS: !Sub "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${CloudFrontOriginAccessIdentity}"
+            Action: "s3:GetObject"
+            Resource: !Sub "arn:aws:s3:::${BucketName}/*"
+
+  StaticWebsiteCloudFront:
+    Type: AWS::CloudFront::Distribution
+    DependsOn: StaticWebsiteBucket
+    Properties:
+      DistributionConfig:
+        Comment: "CloudFront Distribution for 100 Letters Project"
+        Enabled: true
+        Origins:
+          - Id: "S3Origin"
+            DomainName: !GetAtt StaticWebsiteBucket.RegionalDomainName
+            S3OriginConfig:
+              OriginAccessIdentity: !Sub "origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}"
+        DefaultCacheBehavior:
+          TargetOriginId: "S3Origin"
+          ViewerProtocolPolicy: "redirect-to-https"
+          ForwardedValues:
+            QueryString: false
+            Cookies:
+              Forward: "none"
+        DefaultRootObject: "index.html"
+        ViewerCertificate:
+          AcmCertificateArn: !Ref ACMCertificateArn
+          SslSupportMethod: "sni-only"
+        Aliases:
+          - "onehundredletters.com"
+          - "www.onehundredletters.com"
+
+  Route53RootRecordSet:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZoneId
+      Name: "onehundredletters.com."
+      Type: A
+      AliasTarget:
+        DNSName: !GetAtt StaticWebsiteCloudFront.DomainName
+        HostedZoneId: !Ref CloudFrontHostedZoneId
+
+  Route53WWWRecordSet:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZoneId
+      Name: "www.onehundredletters.com."
+      Type: A
+      AliasTarget:
+        DNSName: !GetAtt StaticWebsiteCloudFront.DomainName
+        HostedZoneId: !Ref CloudFrontHostedZoneId
