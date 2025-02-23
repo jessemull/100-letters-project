@@ -1,48 +1,46 @@
-AWSTemplateFormatVersion: "2010-09-09"
-Resources:
-  StaticWebsiteBucket:
-    Type: AWS::S3::Bucket
-    Properties: 
-      BucketName: "100-letters-project"
-      WebsiteConfiguration:
-        IndexDocument: "index.html"
-        ErrorDocument: "error.html"
-      AccessControl: PublicRead
-      VersioningConfiguration:
-        Status: Suspended
-      BucketPolicy:
-        Statement:
-          - Sid: PublicReadGetObject
-            Effect: Allow
-            Principal: "*"
-            Action: s3:GetObject
-            Resource: !Sub "arn:aws:s3:::100-letters-project/*"
-  StaticWebsiteCloudFront:
-    Type: AWS::CloudFront::Distribution
-    Properties:
-      DistributionConfig:
-        Comment: "CloudFront Distribution for 100 Letters Project"
-        Enabled: "true"
-        Origins:
-          - Id: "S3Origin"
-            DomainName: !GetAtt StaticWebsiteBucket.WebsiteURL
-            S3OriginConfig:
-              OriginAccessIdentity: ""
-        DefaultCacheBehavior:
-          TargetOriginId: "S3Origin"
-          ViewerProtocolPolicy: "redirect-to-https"
-          ForwardedValues:
-            QueryString: "false"
-            Cookies:
-              Forward: "none"
-        DefaultRootObject: "index.html"
-        ViewerCertificate:
-          CloudFrontDefaultCertificate: "true"
-  HostedZone:
-    Type: AWS::Route53::HostedZone
-    Properties:
-      Name: "onehundredletters.com"
-  ARecord:
-    Type: AWS::Route53::RecordSet
-    Properties:
-      HostedZoneId: 
+name: Build and Deploy to S3
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'  
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build Next.js project
+      run: npm run build
+
+    - name: Export static site
+      run: npm run export
+
+    - name: Sync files to S3
+      uses: jakejarvis/s3-sync-action@v0.5.0
+      with:
+        source_dir: './out'
+        destination_dir: '/'
+        bucket: ${{ secrets.AWS_S3_BUCKET }}
+        aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        region: ${{ secrets.AWS_REGION }}
+        cache_control: 'public, max-age=31536000, immutable'
+
+    - name: Invalidate CloudFront cache
+      uses: chetan/invalidate-cloudfront-action@v1.4.0
+      with:
+        distribution_id: YOUR_CLOUDFRONT_DISTRIBUTION_ID
+        aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
