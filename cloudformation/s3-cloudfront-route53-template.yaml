@@ -1,0 +1,42 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Resources:
+  StaticWebsiteBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: "100-letters-project"
+      WebsiteConfiguration:
+        IndexDocument: "index.html"
+        ErrorDocument: "error.html"
+
+  StaticWebsiteCloudFront:
+    Type: AWS::CloudFront::Distribution
+    DependsOn: StaticWebsiteBucket
+    Properties:
+      DistributionConfig:
+        Comment: "CloudFront Distribution for 100 Letters Project"
+        Enabled: true
+        Origins:
+          - Id: "S3Origin"
+            DomainName: !Sub "100-letters-project.s3-website-${AWS::Region}.amazonaws.com"
+            CustomOriginConfig:
+              HTTPPort: 80
+              HTTPSPort: 443
+              OriginProtocolPolicy: "http-only"
+        DefaultCacheBehavior:
+          TargetOriginId: "S3Origin"
+          ViewerProtocolPolicy: "redirect-to-https"
+          ForwardedValues:
+            QueryString: false
+            Cookies:
+              Forward: "none"
+        DefaultRootObject: "index.html"
+        ViewerCertificate:
+          CloudFrontDefaultCertificate: true
+
+Outputs:
+  WebsiteURL:
+    Description: "Static Website URL"
+    Value: !Sub "http://100-letters-project.s3-website-${AWS::Region}.amazonaws.com"
+  CloudFrontURL:
+    Description: "CloudFront Static Website URL"
+    Value: !Sub "https://${StaticWebsiteCloudFront.DomainName}"
