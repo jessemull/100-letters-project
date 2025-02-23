@@ -9,8 +9,29 @@ on:
       - main
 
 jobs:
+  build:
+    name: Build Next.js Project
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Next.js project
+        run: npm run build
+
   test:
     name: Run Tests
+    needs: build  # Ensure the build job runs before tests
     runs-on: ubuntu-latest
 
     steps:
@@ -48,9 +69,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build Next.js project
-        run: npm run build
-
       - name: Sync files to S3
         uses: jakejarvis/s3-sync-action@v0.5.0
         with:
@@ -62,7 +80,6 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
           SOURCE_DIR: './out'  # Set the correct source directory for your build output
-          # If you need to specify any other variables, you can add them here
 
       - name: Invalidate CloudFront cache
         uses: chetan/invalidate-cloudfront-action@v2
@@ -72,4 +89,3 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
-
