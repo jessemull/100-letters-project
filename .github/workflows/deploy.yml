@@ -26,14 +26,14 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Build Next.js 
-        run: npm run build && npm run export
+      - name: Build Next.js
+        run: npm run build
 
-      - name: Archive Build Output
+      - name: Archive Static Build Output
         uses: actions/upload-artifact@v4
         with:
           name: next-build
-          path: out  # Only upload 'out' directory
+          path: out
           retention-days: 1  
 
   test:
@@ -57,6 +57,20 @@ jobs:
       - name: Run Jest Tests
         run: npm run test
 
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage
+          retention-days: 7  # Store for 7 days
+
+      - name: Coverage Threshold Check
+        run: |
+          if [[ $(grep "Statements" coverage/lcov-report/index.html | awk '{print $4}' | tr -d '%') -lt 80 ]]; then
+            echo "Code coverage is below threshold. Please update test coverage and try again."
+            exit 1
+          fi
+
   deploy:
     name: Deploy to S3
     needs: test
@@ -73,18 +87,18 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
-      - name: Download Build Output
+      - name: Download Static Build Output
         uses: actions/download-artifact@v4
         with:
           name: next-build
-          path: next-build  # This will now contain only 'out'
+          path: out
 
       - name: Sync Files to S3
         uses: jakejarvis/s3-sync-action@v0.5.0
         with:
-          source_dir: 'next-build'  # Sync only the 'out' directory contents
+          source_dir: 'out'
           destination_dir: '/'
-          delete: true  # Optional: Remove old files not in the new build
+          delete: true
         env:
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}

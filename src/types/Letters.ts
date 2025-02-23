@@ -14,7 +14,7 @@ export enum LetterStatus {
 export interface Letter {
   attachments?: string[];
   date: string;
-  id: number;
+  id: string;
   medium: LetterMedium;
   recipient: string;
   sender: string;
@@ -24,7 +24,7 @@ export interface Letter {
 }
 
 export interface Correspondence {
-  id: number;
+  id: string;
   letters: {
     received: Letter[];
     sent: Letter[];

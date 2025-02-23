@@ -5,18 +5,27 @@ const createJestConfig = nextJest({
 });
 
 const customJestConfig = {
-  testEnvironment: "jest-environment-jsdom",
-  setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
+  collectCoverage: true,
+  collectCoverageFrom: [
+    "src/**/*.{ts,tsx}"
+  ],
+  coveragePathIgnorePatterns: ["/src/app/layout.tsx", "/src/components/index.ts"],
+  coverageReporters: ["json", "lcov", "text", "clover"],
+  coverageThreshold: {
+    global: {
+      branches: 80,
+      functions: 80,
+      lines: 80,
+      statements: 80
+    }
+  },
   moduleNameMapper: {
-    // Mock CSS modules and assets
     "\\.(css|less|sass|scss)$": "identity-obj-proxy",
     "\\.(png|jpg|jpeg|gif|webp|svg)$": "<rootDir>/__mocks__/fileMock.js"
   },
+  setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
+  testEnvironment: "jest-environment-jsdom",
   testPathIgnorePatterns: ["/node_modules/", "/.next/"],
-  collectCoverageFrom: [
-    "components/**/*.{ts,tsx}",
-    "pages/**/*.{ts,tsx}"
-  ],
 };
 
 module.exports = createJestConfig(customJestConfig);
