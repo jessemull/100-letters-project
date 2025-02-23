@@ -1,46 +1,73 @@
-name: Build and Deploy to S3
+name: Build, Test, and Deploy to S3
 
 on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  deploy:
+  test:
+    name: Run Tests
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '20'  
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
 
-    - name: Install dependencies
-      run: npm install
+      - name: Install dependencies
+        run: npm ci  # Ensures a clean install based on package-lock.json
 
-    - name: Build Next.js project
-      run: npm run build
+      - name: Run Jest tests
+        run: npm run test
 
-    - name: Export static site
-      run: npm run export
+  deploy:
+    name: Deploy to S3
+    needs: test  # Ensures tests pass before deploying
+    if: github.event_name == 'push'  # Only deploy on pushes to main
+    runs-on: ubuntu-latest
 
-    - name: Sync files to S3
-      uses: jakejarvis/s3-sync-action@v0.5.0
-      with:
-        source_dir: './out'
-        destination_dir: '/'
-        bucket: ${{ secrets.AWS_S3_BUCKET }}
-        aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        region: ${{ secrets.AWS_REGION }}
-        cache_control: 'public, max-age=31536000, immutable'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Invalidate CloudFront cache
-      uses: chetan/invalidate-cloudfront-action@v1.4.0
-      with:
-        distribution_id: YOUR_CLOUDFRONT_DISTRIBUTION_ID
-        aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Next.js project
+        run: npm run build
+
+      - name: Export static site
+        run: npm run export
+
+      - name: Sync files to S3
+        uses: jakejarvis/s3-sync-action@v0.5.0
+        with:
+          source_dir: './out'
+          destination_dir: '/'
+          bucket: ${{ secrets.AWS_S3_BUCKET }}
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          region: ${{ secrets.AWS_REGION }}
+          cache_control: 'public, max-age=31536000, immutable'
+
+      - name: Invalidate CloudFront cache
+        uses: chetan/invalidate-cloudfront-action@v1.4.0
+        with:
+          distribution_id: ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID }}
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
