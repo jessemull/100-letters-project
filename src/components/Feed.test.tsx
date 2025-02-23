@@ -5,9 +5,13 @@ import { render, screen } from '@testing-library/react';
 
 const correspondence = CorrespondenceFactory.buildList(3)
 
-jest.mock('./Card', () => ({ correspondence }: { correspondence: Correspondence }) => (
-  <div>{correspondence.title}</div>
-));
+jest.mock('./Card', () => {
+  const MockCard = ({ correspondence }: { correspondence: Correspondence }) => (
+    <div>{correspondence.title}</div>
+  );
+  MockCard.displayName = 'Card';
+  return MockCard;
+});
 
 describe('Feed Component', () => {
   test('Renders feed component.', () => {
