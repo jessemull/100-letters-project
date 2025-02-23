@@ -66,8 +66,11 @@ jobs:
           cache_control: 'public, max-age=31536000, immutable'
 
       - name: Invalidate CloudFront cache
-        uses: aws-actions/aws-cloudfront-invalidate@v2
+        uses: chetan/invalidate-cloudfront-action@v2
         with:
-          distribution-id: ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID }}
+          distribution: ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID }}
           paths: "/*"
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
 
