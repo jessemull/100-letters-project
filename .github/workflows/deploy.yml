@@ -10,32 +10,33 @@ on:
 
 jobs:
   build:
-    name: Build Next.js Project
+    name: Build Artifact
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
+      - name: Install Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: npm ci
 
-      - name: Build Next.js project
+      - name: Build Next.js Artifact
         run: npm run build
 
-      - name: Archive build output
+      - name: Archive Build Output
         uses: actions/upload-artifact@v4
         with:
           name: next-build
           path: |
-            .next/standalone  # If using standalone mode
-            out  # If using next export (static)
+            .next
+            out
+          retention-days: 1  # Store the artifact for 1 day (default is 90)
 
   test:
     name: Run Tests
@@ -43,19 +44,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
+      - name: Install Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: npm ci
 
-      - name: Run Jest tests
+      - name: Run Jest Tests
         run: npm run test
 
   deploy:
@@ -65,37 +66,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
+      - name: Install Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
 
-      - name: Download build output
+      - name: Download Build Output
         uses: actions/download-artifact@v4
         with:
           name: next-build
           path: next-build
 
-      - name: Sync files to S3
+      - name: Sync Files to S3
         uses: jakejarvis/s3-sync-action@v0.5.0
         with:
-          source_dir: 'next-build'  # Use the correct directory based on your build mode
+          source_dir: 'next-build/.next'  # Use correct directory
           destination_dir: '/'
         env:
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-
-      - name: Invalidate CloudFront cache
-        uses: chetan/invalidate-cloudfront-action@v2
-        env:
-          DISTRIBUTION: ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID }}
-          PATHS: "/*"
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_SECRET_ACCESS_KEY:
