@@ -27,16 +27,14 @@ jobs:
         run: npm ci
 
       - name: Build Next.js 
-        run: npm run build
+        run: npm run build && npm run export
 
       - name: Archive Build Output
         uses: actions/upload-artifact@v4
         with:
           name: next-build
-          path: |
-            .next
-            out
-          retention-days: 1  # Store the artifact for 1 day (default is 90)
+          path: out  # Only upload 'out' directory
+          retention-days: 1  
 
   test:
     name: Run Tests
@@ -79,13 +77,14 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: next-build
-          path: next-build
+          path: next-build  # This will now contain only 'out'
 
       - name: Sync Files to S3
         uses: jakejarvis/s3-sync-action@v0.5.0
         with:
-          source_dir: 'next-build/.next'  # Use correct directory
+          source_dir: 'next-build'  # Sync only the 'out' directory contents
           destination_dir: '/'
+          delete: true  # Optional: Remove old files not in the new build
         env:
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
