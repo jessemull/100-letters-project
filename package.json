@@ -29,12 +29,14 @@
   "name": "100-letters-project",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
     "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
     "commit": "git-cz",
-    "prepare": "husky install"
+    "deploy": "npm run build && npm run export",
+    "dev": "next dev --turbopack",
+    "export": "next export",
+    "lint": "next lint",
+    "prepare": "husky install",
+    "start": "next start"
   },
   "version": "0.1.0"
 }
