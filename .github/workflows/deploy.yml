@@ -56,11 +56,13 @@ jobs:
         with:
           source_dir: './.next/standalone'  # Or `./.next/output` if standalone isn't available
           destination_dir: '/'
-          bucket: ${{ secrets.AWS_S3_BUCKET }}
-          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          region: ${{ secrets.AWS_REGION }}
-          cache_control: 'public, max-age=31536000, immutable'
+        env:
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          SOURCE_DIR: './out'  # Set the correct source directory for your build output
+          # If you need to specify any other variables, you can add them here
 
       - name: Invalidate CloudFront cache
         uses: chetan/invalidate-cloudfront-action@v2
