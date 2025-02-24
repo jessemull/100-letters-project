@@ -185,7 +185,7 @@ jobs:
         run: npm ci
 
       - name: Run Cypress Tests
-        run: npm run e2e
+        run: NODE_ENV=production npm run e2e
 
   lighthouse_tests:
     name: Run Lighthouse Tests
