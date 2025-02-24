@@ -164,7 +164,7 @@ jobs:
     steps:
       - name: Restore Latest Backup
         run: |
-          echo "Lighthouse tests failed. Reverting S3 deployment from backup directory: $BACKUP_DIR"
+          echo "Lighthouse tests failed. Reverting S3 deployment from backup directory: $BACKUP_DIR."
           aws s3 sync s3://${{ secrets.AWS_S3_BUCKET_BACKUP }}/$BACKUP_DIR/ s3://${{ secrets.AWS_S3_BUCKET }} --delete
           aws cloudfront create-invalidation --distribution-id ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
         env:
