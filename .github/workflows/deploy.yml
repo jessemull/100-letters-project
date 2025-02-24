@@ -1,18 +1,7 @@
-name: Build, Test, and Deploy to S3
-
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-
 jobs:
   build:
     name: Build Artifact
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -41,7 +30,6 @@ jobs:
     name: Run Tests
     needs: build
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -77,7 +65,6 @@ jobs:
     needs: test
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -93,6 +80,17 @@ jobs:
         with:
           name: next-build
           path: next-build
+
+      - name: Backup Current S3 Contents
+        id: backup_s3
+        run: |
+          aws s3 sync s3://${{ secrets.AWS_S3_BUCKET }} s3://${
+            { secrets.AWS_S3_BUCKET }}/backup/ --delete
+        env:
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
 
       - name: Sync Files to S3
         uses: jakejarvis/s3-sync-action@v0.5.0
@@ -113,3 +111,19 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
+
+      - name: Run Lighthouse Tests
+        id: lighthouse
+        run: NODE_ENV=production npm run lighthouse
+        continue-on-error: true
+
+      - name: Check Lighthouse Results
+        run: |
+          if [[ ${{ steps.lighthouse.outcome }} == 'failure' ]]; then
+            echo "Lighthouse tests failed. Reverting deployment."
+            # Revert the deployment by restoring from the backup
+            aws s3 sync s3://${{ secrets.AWS_S3_BUCKET }}/backup/ s3://${{ secrets.AWS_S3_BUCKET }} --delete
+            # Invalidate the cache again to reflect the restored version
+            aws cloudfront create-invalidation --distribution-id ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
+            exit 1
+          fi
