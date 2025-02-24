@@ -16,7 +16,7 @@ module.exports = {
         const execa = await import('execa');
         await execa('npm', ['run', 'dev'], { stdio: 'inherit' });
       },
-      url: isProduction ? ['https://onehundredletters.com'] : ['http://localhost:3000'],
+      url: isProduction ? ['https://www.onehundredletters.com'] : ['http://localhost:3000'],
     },
     upload: {
       target: 'temporary-public-storage',
