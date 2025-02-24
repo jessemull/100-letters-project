@@ -123,7 +123,8 @@ jobs:
 
       - name: Run Lighthouse Tests
         id: lighthouse
-        run: NODE_ENV=production npm run lighthouse
+        run: |
+          NODE_ENV=production npx lhci autorun
         continue-on-error: true
 
       - name: Check Lighthouse Results
