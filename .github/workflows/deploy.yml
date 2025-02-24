@@ -27,8 +27,9 @@ jobs:
         run: npm ci
 
       - name: Build Next.js
-        run: npm run build
-
+        run: |
+          NODE_ENV=production npm run build
+          
       - name: Archive Static Build Output
         uses: actions/upload-artifact@v4
         with:
