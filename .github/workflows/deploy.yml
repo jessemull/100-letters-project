@@ -85,6 +85,9 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
+      - name: Install Dependencies
+        run: npm ci
+
       - name: Download Static Build Output
         uses: actions/download-artifact@v4
         with:
@@ -126,6 +129,7 @@ jobs:
       - name: Run Lighthouse Tests
         id: lighthouse
         run: |
+          npm ci
           NODE_ENV=production npx lhci autorun --url=https://onehundredletters.com
         continue-on-error: true
 
