@@ -28,18 +28,17 @@ export default function RootLayout({
   const isProduction = process.env.NODE_ENV === 'production';
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
         {children}
-        {isProduction && (
+        {!isProduction && (
           <>
             <Script
               strategy="afterInteractive"
               src={`https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`}
             />
-            <Script
-              id="google-analytics"
-              strategy="afterInteractive"
-            >
+            <Script id="google-analytics" strategy="afterInteractive">
               {`
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){window.dataLayer.push(arguments);}
