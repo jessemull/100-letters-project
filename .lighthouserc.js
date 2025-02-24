@@ -11,7 +11,7 @@ module.exports = {
       },
     },
     collect: {
-      numberOfRuns: 1,
+      numberOfRuns: 3,
       startServer: async () => {
         const execa = await import('execa');
         await execa('npm', ['run', 'dev'], { stdio: 'inherit' });
