@@ -1,9 +1,10 @@
 import Feed from './Feed';
+import { axe } from 'jest-axe';
 import { Correspondence } from '../types';
 import { CorrespondenceFactory } from '@/factories';
 import { render, screen } from '@testing-library/react';
 
-const correspondence = CorrespondenceFactory.buildList(3)
+const correspondence = CorrespondenceFactory.buildList(3);
 
 jest.mock('./Card', () => {
   const MockCard = ({ correspondence }: { correspondence: Correspondence }) => (
@@ -14,16 +15,23 @@ jest.mock('./Card', () => {
 });
 
 describe('Feed Component', () => {
-  test('Renders feed component.', () => {
+  it('Renders feed component.', () => {
     render(<Feed correspondence={correspondence} />);
     const title = screen.getByText('Letters');
     expect(title).toBeInTheDocument();
   });
-  test('Renders all correspondence.', () => {
+
+  it('Renders all correspondence.', () => {
     render(<Feed correspondence={correspondence} />);
     correspondence.forEach((item) => {
       const letterTitle = screen.getByText(item.title);
       expect(letterTitle).toBeInTheDocument();
     });
+  });
+
+  it('Has no accessibility errors.', async () => {
+    const { container } = render(<Feed correspondence={correspondence} />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

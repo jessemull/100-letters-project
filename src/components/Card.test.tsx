@@ -1,17 +1,24 @@
 import Card from './Card';
+import { axe } from 'jest-axe';
 import { CorrespondenceFactory } from '../factories';
 import { render, screen } from '@testing-library/react';
 
-const correspondence = CorrespondenceFactory.build()
+const correspondence = CorrespondenceFactory.build();
 
 describe('Card Component', () => {
+  let container: HTMLElement;
+
+  beforeEach(() => {
+    const rendered = render(<Card correspondence={correspondence} />);
+    container = rendered.container;
+  });
+
   it('Renders the card and correspondence.', () => {
-    render(<Card correspondence={correspondence} />);
     expect(screen.getByText(correspondence.title)).toBeInTheDocument();
     expect(screen.getByText(`Corresponding with: ${correspondence.recipient}`)).toBeInTheDocument();
   });
+
   it('Renders sent letters.', () => {
-    render(<Card correspondence={correspondence} />);
     correspondence.letters.sent.forEach((sentLetter) => {
       expect(screen.queryAllByText(`Date Received: ${sentLetter.date}`)).not.toBeNull();
       expect(screen.queryAllByText(sentLetter.text)).not.toBeNull();
@@ -19,8 +26,8 @@ describe('Card Component', () => {
       expect(screen.queryAllByText(`Status: ${sentLetter.status}`)).not.toBeNull();
     });
   });
+
   it('Renders received letters.', () => {
-    render(<Card correspondence={correspondence} />);
     correspondence.letters.received.forEach((receivedLetter) => {
       expect(screen.queryAllByText(`Date Received: ${receivedLetter.date}`)).not.toBeNull();
       expect(screen.queryAllByText(receivedLetter.text)).not.toBeNull();
@@ -28,6 +35,7 @@ describe('Card Component', () => {
       expect(screen.queryAllByText(`Status: ${receivedLetter.status}`)).not.toBeNull();
     });
   });
+
   it('Renders message when no sent letters are available.', () => {
     const withoutSent = CorrespondenceFactory.build({}, {
       transient: {
@@ -46,5 +54,10 @@ describe('Card Component', () => {
     })
     render(<Card correspondence={withoutReceived} />);
     expect(screen.getByText('No received letters available.')).toBeInTheDocument();
+  });
+
+  it('Has no accessibility errors.', async () => {
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });
