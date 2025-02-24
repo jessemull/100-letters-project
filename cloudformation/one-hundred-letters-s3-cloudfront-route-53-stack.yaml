@@ -38,6 +38,12 @@ Resources:
         IgnorePublicAcls: true
         BlockPublicPolicy: false
         RestrictPublicBuckets: true
+      LifecycleConfiguration:
+        Rules:
+          - Id: ExpireOldBackups
+            Status: Enabled
+            ExpirationInDays: 30
+            Prefix: "" # Applies to all objects in the bucket
 
   CloudFrontOriginAccessIdentity:
     Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
