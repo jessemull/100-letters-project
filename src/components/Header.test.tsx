@@ -3,7 +3,9 @@ import { axe } from 'jest-axe';
 import { render, screen } from '@testing-library/react';
 
 jest.mock('next/link', () => {
-  const MockLink = ({ children }: { children: React.ReactNode }) => <>{children}</>;
+  const MockLink = ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  );
   MockLink.displayName = 'Link';
   return MockLink;
 });

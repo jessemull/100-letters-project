@@ -1,1 +1,1 @@
-export * from './Letters'
+export * from './Letters';
