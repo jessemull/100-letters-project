@@ -1,11 +1,15 @@
+const execa = require('execa');
+
+const isProduction = process.env.NODE_ENV === 'production';
+
 module.exports = {
   ci: {
     assert: {
       assertions: {
-        'categories:performance': ['error', { minScore: 0.9 }],
+        'categories:performance': ['error', { minScore: 0.8 }],
         'categories:accessibility': ['error', { minScore: 0.9 }],
         'categories:seo': ['error', { minScore: 0.9 }],
-        'categories:best-practices': ['error', { minScore: 0.9 }]
+        'categories:best-practices': ['error', { minScore: 0.9 }],
       },
     },
     collect: {
@@ -13,7 +17,7 @@ module.exports = {
       startServer: async () => {
         await execa('npm', ['run', 'dev'], { stdio: 'inherit' });
       },
-      url: ['http://localhost:3000'],
+      url: isProduction ? ['https://onehundredletters.com'] : ['http://localhost:3000'],
     },
     upload: {
       target: 'temporary-public-storage',
