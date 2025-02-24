@@ -20,7 +20,7 @@ export interface Letter {
   sender: string;
   status: LetterStatus;
   text: string;
-  title: string; 
+  title: string;
 }
 
 export interface Correspondence {
@@ -29,6 +29,6 @@ export interface Correspondence {
     received: Letter[];
     sent: Letter[];
   };
-  recipient: string; 
+  recipient: string;
   title: string;
 }
