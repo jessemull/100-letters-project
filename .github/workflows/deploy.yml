@@ -26,9 +26,10 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Build Next.js
-        run: npm run build
-
+      - name: Build Next.js (production)
+        run: |
+          NODE_ENV=production npm run build
+          
       - name: Archive Static Build Output
         uses: actions/upload-artifact@v4
         with:
