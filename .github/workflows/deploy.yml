@@ -37,7 +37,7 @@ jobs:
           retention-days: 1
 
   test:
-    name: Run Tests
+    name: Run Unit Tests
     needs: build
     runs-on: ubuntu-latest
     steps:
@@ -73,6 +73,7 @@ jobs:
   backup_s3:
     name: Backup S3
     needs: test
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -92,6 +93,7 @@ jobs:
   deploy_to_s3:
     name: Deploy to S3
     needs: backup_s3
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -135,6 +137,7 @@ jobs:
   lighthouse_tests:
     name: Run Lighthouse Tests
     needs: deploy_to_s3
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -147,15 +150,15 @@ jobs:
           NODE_ENV=production npx lhci autorun --url=https://onehundredletters.com
         continue-on-error: true
 
-  check_lighthouse_results:
-    name: Check Lighthouse Results
+  rollback:
+    name: Revert S3 Deployment
     needs: lighthouse_tests
+    if: github.event_name == 'push' && failure()
     runs-on: ubuntu-latest
-    if: failure()
     steps:
       - name: Restore Backup
         run: |
-          echo "Lighthouse tests failed. Reverting deployment and invalidating cache."
+          echo "Lighthouse tests failed. Reverting S3 deployment and invalidating cache."
           aws s3 sync s3://${{ secrets.AWS_S3_BUCKET_BACKUP }}/ s3://${{ secrets.AWS_S3_BUCKET }} --delete
           aws cloudfront create-invalidation --distribution-id ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
         env:
