@@ -29,7 +29,7 @@ jobs:
         run: |
           NODE_ENV=production npm run build
           
-      - name: Archive Static Build Output
+      - name: Archive Build Output
         uses: actions/upload-artifact@v4
         with:
           name: next-build
@@ -37,7 +37,7 @@ jobs:
           retention-days: 1
 
   test:
-    name: Run Tests
+    name: Run Unit Tests
     needs: build
     runs-on: ubuntu-latest
     steps:
@@ -70,9 +70,29 @@ jobs:
             exit 1
           fi
 
-  deploy:
-    name: Deploy to S3
+  backup_s3:
+    name: Backup S3
     needs: test
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Backup S3
+        run: |
+          aws s3 rm s3://${{ secrets.AWS_S3_BUCKET_BACKUP }}/ --recursive
+          aws s3 sync s3://${{ secrets.AWS_S3_BUCKET }} s3://${{ secrets.AWS_S3_BUCKET_BACKUP }}/ --exact-timestamps
+        env:
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_S3_BUCKET_BACKUP: ${{ secrets.AWS_S3_BUCKET_BACKUP }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+
+  deploy_to_s3:
+    name: Deploy to S3
+    needs: backup_s3
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
@@ -88,23 +108,11 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Download Static Build Output
+      - name: Download Build Output
         uses: actions/download-artifact@v4
         with:
           name: next-build
           path: next-build
-
-      - name: Backup S3
-        id: backup_s3
-        run: |
-          aws s3 rm s3://${{ secrets.AWS_S3_BUCKET_BACKUP }}/ --recursive
-          aws s3 sync s3://${{ secrets.AWS_S3_BUCKET }} s3://${{ secrets.AWS_S3_BUCKET_BACKUP }}/ --exact-timestamps
-        env:
-          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-          AWS_S3_BUCKET_BACKUP: ${{ secrets.AWS_S3_BUCKET_BACKUP }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
 
       - name: Deploy to S3
         uses: jakejarvis/s3-sync-action@v0.5.0
@@ -126,6 +134,15 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
 
+  lighthouse_tests:
+    name: Run Lighthouse Tests
+    needs: deploy_to_s3
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
       - name: Run Lighthouse Tests
         id: lighthouse
         run: |
@@ -133,16 +150,17 @@ jobs:
           NODE_ENV=production npx lhci autorun --url=https://onehundredletters.com
         continue-on-error: true
 
-      - name: Check Lighthouse Results
+  rollback:
+    name: Revert S3 Deployment
+    needs: lighthouse_tests
+    if: github.event_name == 'push' && failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Restore Backup
         run: |
-          if [[ ${{ steps.lighthouse.outcome }} == 'failure' ]]; then
-            echo "Lighthouse tests failed. Reverting deployment."
-            # Rollback by restoring the backup
-            aws s3 sync s3://${{ secrets.AWS_S3_BUCKET_BACKUP }}/ s3://${{ secrets.AWS_S3_BUCKET }} --delete
-            # Invalidate the cache to reflect the restored version
-            aws cloudfront create-invalidation --distribution-id ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
-            exit 1
-          fi
+          echo "Lighthouse tests failed. Reverting S3 deployment and invalidating cache."
+          aws s3 sync s3://${{ secrets.AWS_S3_BUCKET_BACKUP }}/ s3://${{ secrets.AWS_S3_BUCKET }} --delete
+          aws cloudfront create-invalidation --distribution-id ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
         env:
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
           AWS_S3_BUCKET_BACKUP: ${{ secrets.AWS_S3_BUCKET_BACKUP }}
