@@ -1,0 +1,39 @@
+Parameters:
+  VPCId:
+    Type: AWS::EC2::VPC::Id
+    Description: "The VPC where the database should be deployed."
+
+Resources:
+  MyDBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "Allow PostgreSQL Access"
+      SecurityGroupIngress:
+        - IpProtocol: "tcp"
+          FromPort: "5432"
+          ToPort: "5432"
+          CidrIp: "0.0.0.0/0"
+      Tags:
+        - Key: "Name"
+          Value: "OneHundredLettersDatabaseSecurityGroup"
+      VpcId: !Ref VPCId
+
+  PostgreSQLDBInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier: "one-hundred-letters-db"
+      AllocatedStorage: 20
+      DBInstanceClass: db.t3.micro
+      Engine: postgres
+      EngineVersion: "17.4"
+      MasterUsername: "postgres"
+      MasterUserPassword: 
+        Fn::Sub: "{{resolve:secretsmanager:one-hundred-letters-db-credentials:SecretString:password}}"
+      DBName: "one_hundred_letters_db"
+      PubliclyAccessible: false
+      MultiAZ: false
+      VPCSecurityGroups:
+        - Ref: MyDBSecurityGroup
+      Tags:
+        - Key: "Name"
+          Value: "OneHundredLettersDatabase"
