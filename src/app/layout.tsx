@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     title: '100 Letters Project',
     description: '100 letters, 100 people, 1 year.',
     images: ['/og-image.png'],
-  }
+  },
 };
 
 export default function RootLayout({
