@@ -28,7 +28,13 @@ jobs:
       - name: Build Next.js
         run: |
           NODE_ENV=production npm run build
-          
+
+      - name: Copy Sitemap and Robots Files
+        run: |
+          cp public/sitemap.xml out/
+          cp public/robots.txt out/
+          cp public/sitemap-0.xml out/
+
       - name: Archive Build Output
         uses: actions/upload-artifact@v4
         with:
