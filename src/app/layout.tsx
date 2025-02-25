@@ -16,8 +16,33 @@ const geistMono = Geist_Mono({
 const GA_TRACKING_ID = 'G-T56NPJ5SBE';
 
 export const metadata: Metadata = {
-  title: '100 Letters Project',
+  alternates: {
+    canonical: 'https://onehundredletters.com',
+  },
   description: '100 letters, 100 people, 1 year.',
+  metadataBase: new URL('https://onehundredletters.com'),
+  openGraph: {
+    description: '100 letters, 100 people, 1 year.',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: '100 Letters Project',
+      },
+    ],
+    siteName: '100 Letters Project',
+    title: '100 Letters Project',
+    url: 'https://onehundredletters.com',
+    type: 'website',
+  },
+  title: '100 Letters Project',
+  twitter: {
+    card: 'summary_large_image',
+    title: '100 Letters Project',
+    description: '100 letters, 100 people, 1 year.',
+    images: ['/og-image.png'],
+  }
 };
 
 export default function RootLayout({
