@@ -82,7 +82,8 @@
     "prepare": "husky install",
     "start": "next start",
     "test": "jest --coverage",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "tunnel": "node ./scripts/tunnel.js"
   },
   "version": "0.1.0"
 }
