@@ -16,6 +16,7 @@
     "@eslint/eslintrc": "^3",
     "@faker-js/faker": "^9.5.0",
     "@lhci/cli": "^0.14.0",
+    "@prisma/client": "^6.4.1",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
     "@testing-library/user-event": "^14.6.1",
@@ -50,6 +51,7 @@
     "pg-hstore": "^2.3.4",
     "postcss": "^8.5.3",
     "prettier": "^3.5.2",
+    "prisma": "^6.4.1",
     "sequelize": "^6.37.5",
     "sequelize-cli": "^6.6.2",
     "sequelize-typescript": "^2.1.6",
@@ -70,20 +72,23 @@
   "scripts": {
     "build": "next build",
     "commit": "git-cz",
+    "db:migrate:dev": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "db:migrate:reset": "prisma migrate reset",
+    "db:seed": "node ./scripts/seed.js",
+    "db:tunnel": "node ./scripts/tunnel.js",
+    "db:generate": "prisma generate",
     "dev": "next dev --turbopack",
     "e2e": "cypress run",
     "export": "next export",
     "format": "prettier --write .",
     "lighthouse": "lhci autorun",
     "lint": "next lint --fix",
-    "migrate": "node ./scripts/migrate.js",
-    "migrate:reset": "node ./scripts/migrate-reset.js",
     "postbuild": "next-sitemap",
     "prepare": "husky install",
     "start": "next start",
     "test": "jest --coverage",
-    "test:watch": "jest --watch",
-    "tunnel": "node ./scripts/tunnel.js"
+    "test:watch": "jest --watch"
   },
   "version": "0.1.0"
 }
