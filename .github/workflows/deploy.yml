@@ -37,7 +37,8 @@ jobs:
 
       - name: Set Environment Variables
         run: |
-          if [[ "${{ github.event.inputs.environment }}" == "production" ]]; then
+          ENVIRONMENT=${{ github.event.inputs.environment || 'dev' }}
+          if [[ "$ENVIRONMENT" == "production" ]]; then
             echo "AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET_PROD }}" >> $GITHUB_ENV
             echo "AWS_S3_BUCKET_BACKUP=${{ secrets.AWS_S3_BUCKET_BACKUP_PROD }}" >> $GITHUB_ENV
             echo "AWS_CLOUDFRONT_DISTRIBUTION_ID=${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD }}" >> $GITHUB_ENV
