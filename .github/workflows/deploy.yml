@@ -61,10 +61,15 @@ jobs:
           echo "AWS_CLOUDFRONT_DISTRIBUTION_ID=$AWS_CLOUDFRONT_DISTRIBUTION_ID" >> "$GITHUB_OUTPUT"
           echo "E2E_TEST_URL=$E2E_TEST_URL" >> "$GITHUB_OUTPUT"
 
+          echo "$AWS_S3_BUCKET=$AWS_S3_BUCKET"
+          echo "$AWS_S3_BUCKET_BACKUP"
+          echo "$AWS_CLOUDFRONT_DISTRIBUTION_ID"
+          echo "$E2E_TEST_URL"
+
       - name: Build Next.js
         run: |
           echo "Deploying to ${{ github.event.inputs.environment }} environment"
-          NODE_ENV=${{ github.event.inputs.environment || 'development' }} npm run build
+          NODE_ENV=${{ github.event.inputs.environment }} npm run build
 
       - name: Copy Sitemap and Robots Files
         run: |
