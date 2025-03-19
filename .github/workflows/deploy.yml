@@ -150,7 +150,7 @@ jobs:
           AWS_REGION: ${{ secrets.AWS_REGION }}
 
   e2e_tests_prod:
-    name: Run E2E Tests (Production)
+    name: Run E2E Tests
     needs: deploy_to_s3
     runs-on: ubuntu-latest
     steps:
@@ -180,7 +180,6 @@ jobs:
       - name: Run Lighthouse Tests
         id: lighthouse
         run: |
-          echo "E2E_TEST_URL is: $E2E_TEST_URL"
           npm ci
           NODE_ENV=${{ inputs.environment }} npx lhci autorun --url=$E2E_TEST_URL
         continue-on-error: true
