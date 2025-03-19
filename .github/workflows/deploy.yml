@@ -55,7 +55,7 @@ jobs:
             echo "AWS_CLOUDFRONT_DISTRIBUTION_ID=${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV }}" >> $GITHUB_ENV
             echo "E2E_TEST_URL=${{ secrets.E2E_TEST_URL_DEV }}" >> $GITHUB_ENV
           fi
-          
+          printenv
           # Set output for downstream jobs
           echo "AWS_S3_BUCKET=$AWS_S3_BUCKET" >> "$GITHUB_OUTPUT"
           echo "AWS_S3_BUCKET_BACKUP=$AWS_S3_BUCKET_BACKUP" >> "$GITHUB_OUTPUT"
