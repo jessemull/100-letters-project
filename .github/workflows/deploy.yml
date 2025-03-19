@@ -21,11 +21,6 @@ on:
 jobs:
   build:
     name: Build Next.js
-    outputs:
-      AWS_S3_BUCKET: ${{ steps.set_env.outputs.AWS_S3_BUCKET }}
-      AWS_S3_BUCKET_BACKUP: ${{ steps.set_env.outputs.AWS_S3_BUCKET_BACKUP }}
-      AWS_CLOUDFRONT_DISTRIBUTION_ID: ${{ steps.set_env.outputs.AWS_CLOUDFRONT_DISTRIBUTION_ID }}
-      E2E_TEST_URL: ${{ steps.set_env.outputs.E2E_TEST_URL }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -39,31 +34,6 @@ jobs:
 
       - name: Install Dependencies
         run: npm ci
-
-      - name: Set Environment Variables
-        id: set_env
-        run: |
-          ENVIRONMENT=${{ github.event.inputs.environment || 'test' }}
-          echo "$ENVIRONMENT"
-          if [[ "$ENVIRONMENT" == "production" ]]; then
-            echo "SETTING_PROD"
-            echo "AWS_S3_BUCKET=100-letters-project-client-prod" >> $GITHUB_OUTPUT
-            echo "AWS_S3_BUCKET_BACKUP=100-letters-project-client-backup-prod" >> $GITHUB_OUTPUT
-            echo "AWS_CLOUDFRONT_DISTRIBUTION_ID=${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD }}" >> $GITHUB_OUTPUT
-            echo "E2E_TEST_URL=${{ secrets.E2E_TEST_URL_PROD }}" >> $GITHUB_OUTPUT
-          else
-            echo "SETTING TEST"
-            echo "AWS_S3_BUCKET=100-letters-project-client-dev" >> $GITHUB_OUTPUT
-            echo "AWS_S3_BUCKET_BACKUP=100-letters-project-client-backup-dev" >> $GITHUB_OUTPUT
-            echo "AWS_CLOUDFRONT_DISTRIBUTION_ID=${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV }}" >> $GITHUB_OUTPUT
-            echo "E2E_TEST_URL=${{ secrets.E2E_TEST_URL_DEV }}" >> $GITHUB_OUTPUT
-          fi
-
-          # Optional: print variables to the logs (useful for debugging)
-          echo "$AWS_S3_BUCKET=$AWS_S3_BUCKET"
-          echo "$AWS_S3_BUCKET_BACKUP=$AWS_S3_BUCKET_BACKUP"
-          echo "$AWS_CLOUDFRONT_DISTRIBUTION_ID=$AWS_CLOUDFRONT_DISTRIBUTION_ID"
-          echo "$E2E_TEST_URL=$E2E_TEST_URL"
 
       - name: Build Next.js
         run: |
@@ -122,28 +92,24 @@ jobs:
     needs: test
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
-    outputs:
-      BACKUP_DIR: ${{ steps.timestamp.outputs.BACKUP_DIR }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Generate Timestamp
         id: timestamp
-        run: echo "BACKUP_DIR=$(date +%Y%m%d%H%M%S)" >> $GITHUB_OUTPUT
+        run: echo "BACKUP_DIR=$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
 
       - name: Backup S3
         run: |
-          echo "AWS_S3_BUCKET: ${{ needs.build.outputs }}"
-          echo "AWS_S3_BUCKET: ${{ needs.build.outputs.AWS_S3_BUCKET }}"
-          echo "AWS_S3_BUCKET_BACKUP: ${{ needs.build.outputs.AWS_S3_BUCKET_BACKUP }}"
-          aws s3 sync s3://${{ needs.build.outputs.AWS_S3_BUCKET }} s3://${{ needs.build.outputs.AWS_S3_BUCKET_BACKUP }}/${{ steps.timestamp.outputs.BACKUP_DIR }}/ --exact-timestamps
-        env:
-          AWS_S3_BUCKET: ${{ needs.build.outputs.AWS_S3_BUCKET }}
-          AWS_S3_BUCKET_BACKUP: ${{ needs.build.outputs.AWS_S3_BUCKET_BACKUP }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
+          if [[ "${{ github.event.inputs.environment }}" == "test" ]]; then
+            BUCKET=${{ secrets.AWS_S3_BUCKET_DEV }}
+            BACKUP_BUCKET=${{ secrets.AWS_S3_BACKUP_BUCKET_DEV }}
+          else
+            BUCKET=${{ secrets.AWS_S3_BUCKET_PROD }}
+            BACKUP_BUCKET=${{ secrets.AWS_S3_BACKUP_BUCKET_PROD }}
+          fi
+          aws s3 sync s3://$BUCKET s3://$BACKUP_BUCKET/$BACKUP_DIR/ --exact-timestamps
 
       - name: Save Backup Directory
         run: echo "BACKUP_DIR=$BACKUP_DIR" >> $GITHUB_ENV
@@ -177,7 +143,7 @@ jobs:
         with:
           args: --delete
         env:
-          AWS_S3_BUCKET: ${{ needs.build.outputs.AWS_S3_BUCKET }}
+          AWS_S3_BUCKET: ${{ github.event.inputs.environment == 'test' && secrets.AWS_S3_BUCKET_DEV || secrets.AWS_S3_BUCKET_PROD }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
@@ -186,7 +152,7 @@ jobs:
       - name: Invalidate CloudFront Cache
         uses: chetan/invalidate-cloudfront-action@v2
         env:
-          DISTRIBUTION: ${{ needs.build.outputs.AWS_CLOUDFRONT_DISTRIBUTION_ID }}
+          DISTRIBUTION: ${{ github.event.inputs.environment == 'test' && secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV || secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD }}
           PATHS: "/*"
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -211,7 +177,7 @@ jobs:
         run: npm ci
 
       - name: Run Cypress Tests
-        run: NODE_ENV=${{ github.event.inputs.environment || 'test' }} npm run e2e
+        run: NODE_ENV=${{ github.event.inputs.environment }} npm run e2e
 
   lighthouse_tests:
     name: Run Lighthouse Tests
@@ -225,8 +191,13 @@ jobs:
       - name: Run Lighthouse Tests
         id: lighthouse
         run: |
+          if [[ "${{ github.event.inputs.environment }}" == "test" ]]; then
+            E2E_TEST_URL=${{ secrets.E2E_TEST_URL_DEV }}
+          else
+            E2E_TEST_URL=${{ secrets.E2E_TEST_URL_PROD }}
+          fi
           npm ci
-          NODE_ENV=${{ github.event.inputs.environment || 'test' }} npx lhci autorun --url=${{ needs.build.outputs.E2E_TEST_URL }}
+          NODE_ENV=${{ github.event.inputs.environment }} npx lhci autorun --url=$E2E_TEST_URL
         continue-on-error: true
 
   rollback:
@@ -237,15 +208,17 @@ jobs:
     steps:
       - name: Restore Latest Backup
         run: |
-          echo "Lighthouse tests failed. Reverting S3 deployment from backup directory: ${{ needs.backup_s3.outputs.BACKUP_DIR }}."
-          aws s3 sync s3://${{ needs.build.outputs.AWS_S3_BUCKET_BACKUP }}/${{ needs.backup_s3.outputs.BACKUP_DIR }}/ s3://${{ needs.build.outputs.AWS_S3_BUCKET }} --delete
-          aws cloudfront create-invalidation --distribution-id ${{ needs.build.outputs.AWS_CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
+          if [[ "${{ github.event.inputs.environment }}" == "test" ]]; then
+            CLOUDFRONT_ID=${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV }}
+            BUCKET=${{ secrets.AWS_S3_BUCKET_DEV }}
+            BACKUP_BUCKET=${{ secrets.AWS_S3_BACKUP_BUCKET_DEV }}
+          else
+            CLOUDFRONT_ID=${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD }}
+            BUCKET=${{ secrets.AWS_S3_BUCKET_PROD }}
+            BACKUP_BUCKET=${{ secrets.AWS_S3_BACKUP_BUCKET_PROD }}
+          fi
+          echo "Lighthouse tests failed. Reverting S3 deployment from backup directory: $BACKUP_DIR."
+          aws s3 sync s3://$BACKUP_BUCKET/$BACKUP_DIR/ s3://$BUCKET --delete
+          aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_ID --paths "/*"
         env:
-          AWS_S3_BUCKET: ${{ needs.build.outputs.AWS_S3_BUCKET }}
-          AWS_S3_BUCKET_BACKUP: ${{ needs.build.outputs.AWS_S3_BUCKET_BACKUP }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          AWS_CLOUDFRONT_DISTRIBUTION_ID: ${{ needs.build.outputs.AWS_CLOUDFRONT_DISTRIBUTION_ID }}
-          BACKUP_DIR: ${{ needs.backup_s3.outputs.BACKUP_DIR }}
-  
+          BACKUP_DIR: ${{ env.BACKUP_DIR }}
