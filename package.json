@@ -61,9 +61,9 @@
   "name": "100-letters-project",
   "private": true,
   "scripts": {
+    "bastion": "node ./scripts/connect.js",
     "build": "next build",
     "commit": "git-cz",
-    "db": "node ./scripts/connect.js",
     "dev": "next dev --turbopack",
     "e2e": "cypress run",
     "export": "next export",
