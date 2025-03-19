@@ -47,29 +47,23 @@ jobs:
           echo "$ENVIRONMENT"
           if [[ "$ENVIRONMENT" == "production" ]]; then
             echo "SETTING_PROD"
-            echo "AWS_S3_BUCKET=100-letters-project-client-dev" >> $GITHUB_ENV
-            echo "AWS_S3_BUCKET_BACKUP=100-letters-project-client-backup-dev" >> $GITHUB_ENV
-            echo "AWS_CLOUDFRONT_DISTRIBUTION_ID=${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD }}" >> $GITHUB_ENV
-            echo "E2E_TEST_URL=${{ secrets.E2E_TEST_URL_PROD }}" >> $GITHUB_ENV
+            echo "AWS_S3_BUCKET=100-letters-project-client-prod" >> $GITHUB_OUTPUT
+            echo "AWS_S3_BUCKET_BACKUP=100-letters-project-client-backup-prod" >> $GITHUB_OUTPUT
+            echo "AWS_CLOUDFRONT_DISTRIBUTION_ID=${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD }}" >> $GITHUB_OUTPUT
+            echo "E2E_TEST_URL=${{ secrets.E2E_TEST_URL_PROD }}" >> $GITHUB_OUTPUT
           else
             echo "SETTING TEST"
-            echo "AWS_S3_BUCKET=100-letters-project-client-dev" >> $GITHUB_ENV
-            echo "AWS_S3_BUCKET_BACKUP=100-letters-project-client-backup-dev" >> $GITHUB_ENV
-            echo "AWS_CLOUDFRONT_DISTRIBUTION_ID=${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD }}" >> $GITHUB_ENV
-            echo "E2E_TEST_URL=${{ secrets.E2E_TEST_URL_PROD }}" >> $GITHUB_ENV
+            echo "AWS_S3_BUCKET=100-letters-project-client-dev" >> $GITHUB_OUTPUT
+            echo "AWS_S3_BUCKET_BACKUP=100-letters-project-client-backup-dev" >> $GITHUB_OUTPUT
+            echo "AWS_CLOUDFRONT_DISTRIBUTION_ID=${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV }}" >> $GITHUB_OUTPUT
+            echo "E2E_TEST_URL=${{ secrets.E2E_TEST_URL_DEV }}" >> $GITHUB_OUTPUT
           fi
-          
-          # Set output for downstream jobs
-          echo "AWS_S3_BUCKET=$AWS_S3_BUCKET" >> "$GITHUB_OUTPUT"
-          echo "AWS_S3_BUCKET_BACKUP=$AWS_S3_BUCKET_BACKUP" >> "$GITHUB_OUTPUT"
-          echo "AWS_CLOUDFRONT_DISTRIBUTION_ID=$AWS_CLOUDFRONT_DISTRIBUTION_ID" >> "$GITHUB_OUTPUT"
-          echo "E2E_TEST_URL=$E2E_TEST_URL" >> "$GITHUB_OUTPUT"
 
           # Optional: print variables to the logs (useful for debugging)
           echo "$AWS_S3_BUCKET=$AWS_S3_BUCKET"
-          echo "$AWS_S3_BUCKET_BACKUP"
-          echo "$AWS_CLOUDFRONT_DISTRIBUTION_ID"
-          echo "$E2E_TEST_URL"
+          echo "$AWS_S3_BUCKET_BACKUP=$AWS_S3_BUCKET_BACKUP"
+          echo "$AWS_CLOUDFRONT_DISTRIBUTION_ID=$AWS_CLOUDFRONT_DISTRIBUTION_ID"
+          echo "$E2E_TEST_URL=$E2E_TEST_URL"
 
       - name: Build Next.js
         run: |
@@ -140,7 +134,6 @@ jobs:
 
       - name: Backup S3
         run: |
-          printenv
           echo "AWS_S3_BUCKET: ${{ needs.build.outputs }}"
           echo "AWS_S3_BUCKET: ${{ needs.build.outputs.AWS_S3_BUCKET }}"
           echo "AWS_S3_BUCKET_BACKUP: ${{ needs.build.outputs.AWS_S3_BUCKET_BACKUP }}"
