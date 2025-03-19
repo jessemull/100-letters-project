@@ -50,10 +50,10 @@ jobs:
             echo "AWS_CLOUDFRONT_DISTRIBUTION_ID=${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD }}" >> $GITHUB_ENV
             echo "E2E_TEST_URL=${{ secrets.E2E_TEST_URL_PROD }}" >> $GITHUB_ENV
           else
-            echo "AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET_DEV }}" >> $GITHUB_ENV
-            echo "AWS_S3_BUCKET_BACKUP=${{ secrets.AWS_S3_BUCKET_BACKUP_DEV }}" >> $GITHUB_ENV
-            echo "AWS_CLOUDFRONT_DISTRIBUTION_ID=${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV }}" >> $GITHUB_ENV
-            echo "E2E_TEST_URL=${{ secrets.E2E_TEST_URL_DEV }}" >> $GITHUB_ENV
+            echo "AWS_S3_BUCKET=100-letters-project-client-dev" >> $GITHUB_ENV
+            echo "AWS_S3_BUCKET_BACKUP=100-letters-project-client-backup-dev" >> $GITHUB_ENV
+            echo "AWS_CLOUDFRONT_DISTRIBUTION_ID=${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD }}" >> $GITHUB_ENV
+            echo "E2E_TEST_URL=${{ secrets.E2E_TEST_URL_PROD }}" >> $GITHUB_ENV
           fi
           printenv
           # Set output for downstream jobs
