@@ -105,7 +105,7 @@ jobs:
   backup_s3:
     name: Backup S3
     needs: test
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -131,7 +131,7 @@ jobs:
   deploy_to_s3:
     name: Deploy to S3
     needs: backup_s3
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -175,7 +175,7 @@ jobs:
   e2e_tests_prod:
     name: Run E2E Tests (Production)
     needs: deploy_to_s3
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -196,7 +196,7 @@ jobs:
   lighthouse_tests:
     name: Run Lighthouse Tests
     needs: deploy_to_s3
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -212,7 +212,7 @@ jobs:
   rollback:
     name: Revert S3 Deployment
     needs: lighthouse_tests
-    if: github.event_name == 'push' && failure()
+    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && failure()
     runs-on: ubuntu-latest
     steps:
       - name: Restore Latest Backup
