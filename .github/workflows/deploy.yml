@@ -44,12 +44,15 @@ jobs:
         id: set_env
         run: |
           ENVIRONMENT=${{ github.event.inputs.environment || 'test' }}
+          echo "$ENVIRONMENT"
           if [[ "$ENVIRONMENT" == "production" ]]; then
+            echo "SETTING_PROD"
             echo "AWS_S3_BUCKET=100-letters-project-client-dev" >> $GITHUB_ENV
             echo "AWS_S3_BUCKET_BACKUP=100-letters-project-client-backup-dev" >> $GITHUB_ENV
             echo "AWS_CLOUDFRONT_DISTRIBUTION_ID=${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD }}" >> $GITHUB_ENV
             echo "E2E_TEST_URL=${{ secrets.E2E_TEST_URL_PROD }}" >> $GITHUB_ENV
           else
+            echo "SETTING TEST"
             echo "AWS_S3_BUCKET=100-letters-project-client-dev" >> $GITHUB_ENV
             echo "AWS_S3_BUCKET_BACKUP=100-letters-project-client-backup-dev" >> $GITHUB_ENV
             echo "AWS_CLOUDFRONT_DISTRIBUTION_ID=${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD }}" >> $GITHUB_ENV
