@@ -1,27 +1,33 @@
 AWSTemplateFormatVersion: "2010-09-09"
+
 Parameters:
   BucketName:
     Type: String
     Description: The name of the S3 bucket for static website hosting.
-
   ACMCertificateArn:
     Type: String
     Description: The ARN of the ACM certificate for the CloudFront distribution.
-
   HostedZoneId:
     Type: String
-    Description: The ID of the Route 53 hosted zone for onehundredletters.com.
-
+    Description: The ID of the Route 53 hosted zone.
   CloudFrontHostedZoneId:
     Type: String
-    Description: The Hosted Zone ID for CloudFront alias record (use 'Z2FDTNDATAQYW2' for CloudFront).
+    Description: The Hosted Zone ID for CloudFront alias record.
+    Default: Z2FDTNDATAQYW2
+  Environment:
+    Type: String
+    Default: "dev"
+    Description: "The environment for the deployment (dev or prod)."
+    AllowedValues:
+      - dev
+      - prod
+    ConstraintDescription: "Must be either 'dev' or 'prod'."
 
 Resources:
   StaticWebsiteBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Ref BucketName
-      AccessControl: Private
+      BucketName: !Sub "${BucketName}-${Environment}"
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         IgnorePublicAcls: true
@@ -31,8 +37,7 @@ Resources:
   BackupBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub "${BucketName}-backup"
-      AccessControl: Private
+      BucketName: !Sub "${BucketName}-backup-${Environment}"
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         IgnorePublicAcls: true
@@ -43,13 +48,13 @@ Resources:
           - Id: ExpireOldBackups
             Status: Enabled
             ExpirationInDays: 30
-            Prefix: "" # Applies to all objects in the bucket
+            Prefix: ""
 
   CloudFrontOriginAccessIdentity:
     Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
     Properties:
       CloudFrontOriginAccessIdentityConfig:
-        Comment: "CloudFront Origin Access Identity for 100 Letters Project"
+        Comment: !Sub "CloudFront Origin Access Identity for 100 Letters Project - ${Environment}"
 
   StaticWebsiteBucketPolicy:
     Type: AWS::S3::BucketPolicy
@@ -62,14 +67,13 @@ Resources:
             Principal:
               AWS: !Sub "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${CloudFrontOriginAccessIdentity}"
             Action: "s3:GetObject"
-            Resource: !Sub "arn:aws:s3:::${BucketName}/*"
+            Resource: !Sub "arn:aws:s3:::${BucketName}-${Environment}/*"
 
   StaticWebsiteCloudFront:
     Type: AWS::CloudFront::Distribution
-    DependsOn: StaticWebsiteBucket
     Properties:
       DistributionConfig:
-        Comment: "CloudFront Distribution for 100 Letters Project"
+        Comment: !Sub "CloudFront Distribution for 100 Letters Project - ${Environment}"
         Enabled: true
         Origins:
           - Id: "S3Origin"
@@ -88,14 +92,23 @@ Resources:
           AcmCertificateArn: !Ref ACMCertificateArn
           SslSupportMethod: "sni-only"
         Aliases:
-          - "onehundredletters.com"
-          - "www.onehundredletters.com"
+          - !If 
+            - IsProd
+            - "onehundredletters.com"
+            - "dev.onehundredletters.com"
+          - !If 
+            - IsProd
+            - "www.onehundredletters.com"
+            - "www.dev.onehundredletters.com"
 
   Route53RootRecordSet:
     Type: AWS::Route53::RecordSet
     Properties:
       HostedZoneId: !Ref HostedZoneId
-      Name: "onehundredletters.com."
+      Name: !If 
+        - IsProd
+        - "onehundredletters.com."
+        - "dev.onehundredletters.com."
       Type: A
       AliasTarget:
         DNSName: !GetAtt StaticWebsiteCloudFront.DomainName
@@ -105,8 +118,14 @@ Resources:
     Type: AWS::Route53::RecordSet
     Properties:
       HostedZoneId: !Ref HostedZoneId
-      Name: "www.onehundredletters.com."
+      Name: !If 
+        - IsProd
+        - "www.onehundredletters.com."
+        - "www.dev.onehundredletters.com."
       Type: A
       AliasTarget:
         DNSName: !GetAtt StaticWebsiteCloudFront.DomainName
         HostedZoneId: !Ref CloudFrontHostedZoneId
+
+Conditions:
+  IsProd: !Equals [ !Ref Environment, "prod" ]
