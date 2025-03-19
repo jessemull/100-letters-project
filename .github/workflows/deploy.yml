@@ -10,12 +10,12 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Choose environment (dev/production)'
+        description: 'Choose environment (test/production)'
         required: true
-        default: 'dev'
+        default: 'test'
         type: choice
         options:
-          - dev
+          - test
           - production
 
 jobs:
@@ -104,7 +104,7 @@ jobs:
   backup_s3:
     name: Backup S3
     needs: test
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -116,10 +116,10 @@ jobs:
 
       - name: Backup S3
         run: |
-          aws s3 sync s3://${{ env.AWS_S3_BUCKET }} s3://${{ env.AWS_S3_BUCKET_BACKUP }}/$BACKUP_DIR/ --exact-timestamps
+          aws s3 sync s3://$AWS_S3_BUCKET s3://$AWS_S3_BACKUP_BUCKET/$BACKUP_DIR/ --exact-timestamps
         env:
-          AWS_S3_BUCKET: ${{ env.AWS_S3_BUCKET }}
-          AWS_S3_BUCKET_BACKUP: ${{ env.AWS_S3_BUCKET_BACKUP }}
+          AWS_S3_BUCKET: ${{ github.event.inputs.environment == 'test' && secrets.AWS_S3_BUCKET_DEV || secrets.AWS_S3_BUCKET_PROD }}
+          AWS_S3_BACKUP_BUCKET: ${{ github.event.inputs.environment == 'test' && secrets.AWS_S3_BUCKET_BACKUP_DEV || secrets.AWS_S3_BUCKET_BACKUP_PROD }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
@@ -130,7 +130,7 @@ jobs:
   deploy_to_s3:
     name: Deploy to S3
     needs: backup_s3
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -156,7 +156,7 @@ jobs:
         with:
           args: --delete
         env:
-          AWS_S3_BUCKET: ${{ env.AWS_S3_BUCKET }}
+          AWS_S3_BUCKET: ${{ github.event.inputs.environment == 'test' && secrets.AWS_S3_BUCKET_DEV || secrets.AWS_S3_BUCKET_PROD }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
@@ -165,7 +165,7 @@ jobs:
       - name: Invalidate CloudFront Cache
         uses: chetan/invalidate-cloudfront-action@v2
         env:
-          DISTRIBUTION: ${{ env.AWS_CLOUDFRONT_DISTRIBUTION_ID }}
+          DISTRIBUTION: ${{ github.event.inputs.environment == 'test' && secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV || secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD }}
           PATHS: "/*"
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -174,7 +174,7 @@ jobs:
   e2e_tests_prod:
     name: Run E2E Tests (Production)
     needs: deploy_to_s3
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -195,7 +195,7 @@ jobs:
   lighthouse_tests:
     name: Run Lighthouse Tests
     needs: deploy_to_s3
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -205,25 +205,24 @@ jobs:
         id: lighthouse
         run: |
           npm ci
-          NODE_ENV=${{ github.event.inputs.environment }} npx lhci autorun --url=${{ env.E2E_TEST_URL }}
+          NODE_ENV=${{ github.event.inputs.environment }} npx lhci autorun --url=$E2E_TEST_URL
         continue-on-error: true
+        env:
+          E2E_TEST_URL: ${{ github.event.inputs.environment == 'test' && secrets.E2E_TEST_URL_DEV || secrets.E2E_TEST_URL_PROD }}
 
   rollback:
     name: Revert S3 Deployment
     needs: lighthouse_tests
-    if: github.event_name == 'push' && failure()
+    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && failure()
     runs-on: ubuntu-latest
     steps:
       - name: Restore Latest Backup
         run: |
           echo "Lighthouse tests failed. Reverting S3 deployment from backup directory: $BACKUP_DIR."
-          aws s3 sync s3://${{ env.AWS_S3_BUCKET_BACKUP }}/$BACKUP_DIR/ s3://${{ env.AWS_S3_BUCKET }} --delete
-          aws cloudfront create-invalidation --distribution-id ${{ env.AWS_CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
+          aws s3 sync s3://$AWS_S3_BACKUP_BUCKET/$BACKUP_DIR/ s3://$AWS_S3_BUCKET --delete
+          aws cloudfront create-invalidation --distribution-id $AWS_CLOUDFRONT_DISTRIBUTION_ID --paths "/*"
         env:
-          AWS_S3_BUCKET: ${{ env.AWS_S3_BUCKET }}
-          AWS_S3_BUCKET_BACKUP: ${{ env.AWS_S3_BUCKET_BACKUP }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          AWS_CLOUDFRONT_DISTRIBUTION_ID: ${{ env.AWS_CLOUDFRONT_DISTRIBUTION_ID }}
+          AWS_S3_BUCKET: ${{ github.event.inputs.environment == 'test' && secrets.AWS_S3_BUCKET_DEV || secrets.AWS_S3_BUCKET_PROD }}
+          AWS_S3_BACKUP_BUCKET: ${{ github.event.inputs.environment == 'test' && secrets.AWS_S3_BUCKET_BACKUP_DEV || secrets.AWS_S3_BUCKET_BACKUP_PROD }}
+          AWS_CLOUDFRONT_DISTRIBUTION_ID: ${{ github.event.inputs.environment == 'test' && secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV || secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD }}
           BACKUP_DIR: ${{ env.BACKUP_DIR }}
