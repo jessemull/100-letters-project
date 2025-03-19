@@ -35,6 +35,20 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
+      - name: Set Environment Variables
+        run: |
+          if [[ "${{ github.event.inputs.environment }}" == "production" ]]; then
+            echo "AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET_PROD }}" >> $GITHUB_ENV
+            echo "AWS_S3_BUCKET_BACKUP=${{ secrets.AWS_S3_BUCKET_BACKUP_PROD }}" >> $GITHUB_ENV
+            echo "AWS_CLOUDFRONT_DISTRIBUTION_ID=${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD }}" >> $GITHUB_ENV
+            echo "E2E_TEST_URL=${{ secrets.E2E_TEST_URL_PROD }}" >> $GITHUB_ENV
+          else
+            echo "AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET_DEV }}" >> $GITHUB_ENV
+            echo "AWS_S3_BUCKET_BACKUP=${{ secrets.AWS_S3_BUCKET_BACKUP_DEV }}" >> $GITHUB_ENV
+            echo "AWS_CLOUDFRONT_DISTRIBUTION_ID=${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV }}" >> $GITHUB_ENV
+            echo "E2E_TEST_URL=${{ secrets.E2E_TEST_URL_DEV }}" >> $GITHUB_ENV
+          fi
+
       - name: Build Next.js
         run: |
           echo "Deploying to ${{ github.event.inputs.environment }} environment"
