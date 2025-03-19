@@ -7,6 +7,14 @@ on:
         description: 'S3 Key for the backup to restore e.g. 20250225083000'
         required: true
         type: string
+      environment:
+        description: 'Choose environment (test/production)'
+        required: true
+        default: 'test'
+        type: choice
+        options:
+          - test
+          - production
 
 jobs:
   rollback:
@@ -16,12 +24,19 @@ jobs:
       - name: Restore Selected Backup
         run: |
           echo "Rolling back to ${{ inputs.backup_s3_key }}..."
-          aws s3 sync s3://${{ secrets.AWS_S3_BUCKET_BACKUP }}/${{ inputs.backup_s3_key }}/ s3://${{ secrets.AWS_S3_BUCKET }} --delete
-          aws cloudfront create-invalidation --distribution-id ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
+          aws s3 sync s3://$AWS_S3_BUCKET_BACKUP/${{ inputs.backup_s3_key }}/ s3://$AWS_S3_BUCKET --delete
         env:
-          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-          AWS_S3_BUCKET_BACKUP: ${{ secrets.AWS_S3_BUCKET_BACKUP }}
+          AWS_S3_BUCKET: ${{ inputs.environment == 'test' && secrets.AWS_S3_BUCKET_DEV || secrets.AWS_S3_BUCKET_PROD }}
+          AWS_S3_BUCKET_BACKUP: ${{ inputs.environment == 'test' && secrets.AWS_S3_BUCKET_BACKUP_DEV || secrets.AWS_S3_BUCKET_BACKUP_PROD }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
-          AWS_CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID }}
+      
+      - name: Invalidate CloudFront Cache
+        uses: chetan/invalidate-cloudfront-action@v2
+        env:
+          DISTRIBUTION: ${{ inputs.environment == 'test' && secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV || secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD }}
+          PATHS: "/*"
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}

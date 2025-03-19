@@ -1,16 +1,9 @@
 name: Build, Test, and Deploy to S3
 
 on:
-  workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Choose environment (test/production)'
-        required: true
-        default: 'test'
-        type: choice
-        options:
-          - test
-          - production
+  push:
+    branches:
+      - main
 
 jobs:
   build:
@@ -31,8 +24,8 @@ jobs:
 
       - name: Build Next.js
         run: |
-          echo "Deploying to ${{ inputs.environment }} environment"
-          NODE_ENV=${{ inputs.environment }} npm run build
+          echo "Deploying to development environment"
+          NODE_ENV=test npm run build
 
       - name: Copy Sitemap and Robots Files
         run: |
@@ -97,8 +90,8 @@ jobs:
         run: |
           aws s3 sync s3://$AWS_S3_BUCKET s3://$AWS_S3_BACKUP_BUCKET/$BACKUP_DIR/ --exact-timestamps
         env:
-          AWS_S3_BUCKET: ${{ inputs.environment == 'test' && secrets.AWS_S3_BUCKET_DEV || secrets.AWS_S3_BUCKET_PROD }}
-          AWS_S3_BACKUP_BUCKET: ${{ inputs.environment == 'test' && secrets.AWS_S3_BUCKET_BACKUP_DEV || secrets.AWS_S3_BUCKET_BACKUP_PROD }}
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET_DEV }}
+          AWS_S3_BACKUP_BUCKET: ${{ secrets.AWS_S3_BUCKET_BACKUP_DEV }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
@@ -134,7 +127,7 @@ jobs:
         with:
           args: --delete
         env:
-          AWS_S3_BUCKET: ${{ inputs.environment == 'test' && secrets.AWS_S3_BUCKET_DEV || secrets.AWS_S3_BUCKET_PROD }}
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET_DEV }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
@@ -143,14 +136,14 @@ jobs:
       - name: Invalidate CloudFront Cache
         uses: chetan/invalidate-cloudfront-action@v2
         env:
-          DISTRIBUTION: ${{ inputs.environment == 'test' && secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV || secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD }}
+          DISTRIBUTION: ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV }}
           PATHS: "/*"
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
 
-  e2e_tests_prod:
-    name: Run E2E Tests (Production)
+  e2e_tests:
+    name: Run E2E Tests
     needs: deploy_to_s3
     runs-on: ubuntu-latest
     steps:
@@ -167,7 +160,7 @@ jobs:
         run: npm ci
 
       - name: Run Cypress Tests
-        run: NODE_ENV=${{ inputs.environment }} npm run e2e
+        run: NODE_ENV=test npm run e2e
 
   lighthouse_tests:
     name: Run Lighthouse Tests
@@ -181,10 +174,10 @@ jobs:
         id: lighthouse
         run: |
           npm ci
-          NODE_ENV=${{ inputs.environment }} npx lhci autorun --url=$E2E_TEST_URL
+          NODE_ENV=test npx lhci autorun --url=$E2E_TEST_URL
         continue-on-error: true
         env:
-          E2E_TEST_URL: ${{ inputs.environment == 'test' && secrets.E2E_TEST_URL_DEV || secrets.E2E_TEST_URL_PROD }}
+          E2E_TEST_URL: ${{ secrets.E2E_TEST_URL_DEV }}
 
   rollback:
     name: Revert S3 Deployment
@@ -197,14 +190,14 @@ jobs:
           echo "Lighthouse tests failed. Reverting S3 deployment from backup directory: $BACKUP_DIR."
           aws s3 sync s3://$AWS_S3_BACKUP_BUCKET/$BACKUP_DIR/ s3://$AWS_S3_BUCKET --delete
         env:
-          AWS_S3_BUCKET: ${{ inputs.environment == 'test' && secrets.AWS_S3_BUCKET_DEV || secrets.AWS_S3_BUCKET_PROD }}
-          AWS_S3_BACKUP_BUCKET: ${{ inputs.environment == 'test' && secrets.AWS_S3_BUCKET_BACKUP_DEV || secrets.AWS_S3_BUCKET_BACKUP_PROD }}
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET_DEV }}
+          AWS_S3_BACKUP_BUCKET: ${{ secrets.AWS_S3_BUCKET_BACKUP_DEV }}
           BACKUP_DIR: ${{ env.BACKUP_DIR }}
-      
+
       - name: Invalidate CloudFront Cache
         uses: chetan/invalidate-cloudfront-action@v2
         env:
-          DISTRIBUTION: ${{ inputs.environment == 'test' && secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV || secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD }}
+          DISTRIBUTION: ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV }}
           PATHS: "/*"
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
