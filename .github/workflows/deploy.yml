@@ -21,6 +21,11 @@ on:
 jobs:
   build:
     name: Build Next.js
+    outputs:
+      AWS_S3_BUCKET: ${{ steps.set_env.outputs.AWS_S3_BUCKET }}
+      AWS_S3_BUCKET_BACKUP: ${{ steps.set_env.outputs.AWS_S3_BUCKET_BACKUP }}
+      AWS_CLOUDFRONT_DISTRIBUTION_ID: ${{ steps.set_env.outputs.AWS_CLOUDFRONT_DISTRIBUTION_ID }}
+      E2E_TEST_URL: ${{ steps.set_env.outputs.E2E_TEST_URL }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -36,6 +41,7 @@ jobs:
         run: npm ci
 
       - name: Set Environment Variables
+        id: set_env
         run: |
           ENVIRONMENT=${{ github.event.inputs.environment || 'dev' }}
           if [[ "$ENVIRONMENT" == "production" ]]; then
@@ -49,11 +55,16 @@ jobs:
             echo "AWS_CLOUDFRONT_DISTRIBUTION_ID=${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV }}" >> $GITHUB_ENV
             echo "E2E_TEST_URL=${{ secrets.E2E_TEST_URL_DEV }}" >> $GITHUB_ENV
           fi
+          
+          echo "AWS_S3_BUCKET=$AWS_S3_BUCKET" >> "$GITHUB_OUTPUT"
+          echo "AWS_S3_BUCKET_BACKUP=$AWS_S3_BUCKET_BACKUP" >> "$GITHUB_OUTPUT"
+          echo "AWS_CLOUDFRONT_DISTRIBUTION_ID=$AWS_CLOUDFRONT_DISTRIBUTION_ID" >> "$GITHUB_OUTPUT"
+          echo "E2E_TEST_URL=$E2E_TEST_URL" >> "$GITHUB_OUTPUT"
 
       - name: Build Next.js
         run: |
           echo "Deploying to ${{ github.event.inputs.environment }} environment"
-          NODE_ENV=${{ github.event.inputs.environment }} npm run build
+          NODE_ENV=${{ github.event.inputs.environment || 'dev' }} npm run build
 
       - name: Copy Sitemap and Robots Files
         run: |
@@ -117,10 +128,10 @@ jobs:
 
       - name: Backup S3
         run: |
-          aws s3 sync s3://${{ env.AWS_S3_BUCKET }} s3://${{ env.AWS_S3_BUCKET_BACKUP }}/$BACKUP_DIR/ --exact-timestamps
+          aws s3 sync s3://${{ needs.build.outputs.AWS_S3_BUCKET }} s3://${{ needs.build.outputs.AWS_S3_BUCKET_BACKUP }}/$BACKUP_DIR/ --exact-timestamps
         env:
-          AWS_S3_BUCKET: ${{ env.AWS_S3_BUCKET }}
-          AWS_S3_BUCKET_BACKUP: ${{ env.AWS_S3_BUCKET_BACKUP }}
+          AWS_S3_BUCKET: ${{ needs.build.outputs.AWS_S3_BUCKET }}
+          AWS_S3_BUCKET_BACKUP: ${{ needs.build.outputs.AWS_S3_BUCKET_BACKUP }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
@@ -157,7 +168,7 @@ jobs:
         with:
           args: --delete
         env:
-          AWS_S3_BUCKET: ${{ env.AWS_S3_BUCKET }}
+          AWS_S3_BUCKET: ${{ needs.build.outputs.AWS_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
@@ -166,7 +177,7 @@ jobs:
       - name: Invalidate CloudFront Cache
         uses: chetan/invalidate-cloudfront-action@v2
         env:
-          DISTRIBUTION: ${{ env.AWS_CLOUDFRONT_DISTRIBUTION_ID }}
+          DISTRIBUTION: ${{ needs.build.outputs.AWS_CLOUDFRONT_DISTRIBUTION_ID }}
           PATHS: "/*"
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -191,7 +202,7 @@ jobs:
         run: npm ci
 
       - name: Run Cypress Tests
-        run: NODE_ENV=${{ github.event.inputs.environment }} npm run e2e
+        run: NODE_ENV=${{ github.event.inputs.environment || 'dev' }} npm run e2e
 
   lighthouse_tests:
     name: Run Lighthouse Tests
@@ -206,7 +217,7 @@ jobs:
         id: lighthouse
         run: |
           npm ci
-          NODE_ENV=${{ github.event.inputs.environment }} npx lhci autorun --url=${{ env.E2E_TEST_URL }}
+          NODE_ENV=${{ github.event.inputs.environment || 'dev' }} npx lhci autorun --url=${{ needs.build.outputs.E2E_TEST_URL }}
         continue-on-error: true
 
   rollback:
@@ -218,13 +229,13 @@ jobs:
       - name: Restore Latest Backup
         run: |
           echo "Lighthouse tests failed. Reverting S3 deployment from backup directory: $BACKUP_DIR."
-          aws s3 sync s3://${{ env.AWS_S3_BUCKET_BACKUP }}/$BACKUP_DIR/ s3://${{ env.AWS_S3_BUCKET }} --delete
-          aws cloudfront create-invalidation --distribution-id ${{ env.AWS_CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
+          aws s3 sync s3://${{ needs.build.outputs.AWS_S3_BUCKET_BACKUP }}/$BACKUP_DIR/ s3://${{ needs.build.outputs.AWS_S3_BUCKET }} --delete
+          aws cloudfront create-invalidation --distribution-id ${{ needs.build.outputs.AWS_CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
         env:
-          AWS_S3_BUCKET: ${{ env.AWS_S3_BUCKET }}
-          AWS_S3_BUCKET_BACKUP: ${{ env.AWS_S3_BUCKET_BACKUP }}
+          AWS_S3_BUCKET: ${{ needs.build.outputs.AWS_S3_BUCKET }}
+          AWS_S3_BUCKET_BACKUP: ${{ needs.build.outputs.AWS_S3_BUCKET_BACKUP }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
-          AWS_CLOUDFRONT_DISTRIBUTION_ID: ${{ env.AWS_CLOUDFRONT_DISTRIBUTION_ID }}
-          BACKUP_DIR: ${{ env.BACKUP_DIR }}
+          AWS_CLOUDFRONT_DISTRIBUTION_ID: ${{ needs.build.outputs.AWS_CLOUDFRONT_DISTRIBUTION_ID }}
+          BACKUP_DIR: ${{ needs.build.outputs.BACKUP_DIR }}
