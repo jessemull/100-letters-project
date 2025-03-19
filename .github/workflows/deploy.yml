@@ -10,12 +10,12 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Choose environment (dev/production)'
+        description: 'Choose environment (development/production)'
         required: true
-        default: 'dev'
+        default: 'development'
         type: choice
         options:
-          - dev
+          - development
           - production
 
 jobs:
@@ -43,7 +43,7 @@ jobs:
       - name: Set Environment Variables
         id: set_env
         run: |
-          ENVIRONMENT=${{ github.event.inputs.environment || 'dev' }}
+          ENVIRONMENT=${{ github.event.inputs.environment || 'development' }}
           if [[ "$ENVIRONMENT" == "production" ]]; then
             echo "AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET_PROD }}" >> $GITHUB_ENV
             echo "AWS_S3_BUCKET_BACKUP=${{ secrets.AWS_S3_BUCKET_BACKUP_PROD }}" >> $GITHUB_ENV
@@ -64,7 +64,7 @@ jobs:
       - name: Build Next.js
         run: |
           echo "Deploying to ${{ github.event.inputs.environment }} environment"
-          NODE_ENV=${{ github.event.inputs.environment || 'dev' }} npm run build
+          NODE_ENV=${{ github.event.inputs.environment || 'development' }} npm run build
 
       - name: Copy Sitemap and Robots Files
         run: |
@@ -118,17 +118,19 @@ jobs:
     needs: test
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
+    outputs:
+      BACKUP_DIR: ${{ steps.timestamp.outputs.BACKUP_DIR }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Generate Timestamp
         id: timestamp
-        run: echo "BACKUP_DIR=$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
+        run: echo "BACKUP_DIR=$(date +%Y%m%d%H%M%S)" >> $GITHUB_OUTPUT
 
       - name: Backup S3
         run: |
-          aws s3 sync s3://${{ needs.build.outputs.AWS_S3_BUCKET }} s3://${{ needs.build.outputs.AWS_S3_BUCKET_BACKUP }}/$BACKUP_DIR/ --exact-timestamps
+          aws s3 sync s3://${{ needs.build.outputs.AWS_S3_BUCKET }} s3://${{ needs.build.outputs.AWS_S3_BUCKET_BACKUP }}/${{ steps.timestamp.outputs.BACKUP_DIR }}/ --exact-timestamps
         env:
           AWS_S3_BUCKET: ${{ needs.build.outputs.AWS_S3_BUCKET }}
           AWS_S3_BUCKET_BACKUP: ${{ needs.build.outputs.AWS_S3_BUCKET_BACKUP }}
@@ -202,7 +204,7 @@ jobs:
         run: npm ci
 
       - name: Run Cypress Tests
-        run: NODE_ENV=${{ github.event.inputs.environment || 'dev' }} npm run e2e
+        run: NODE_ENV=${{ github.event.inputs.environment || 'development' }} npm run e2e
 
   lighthouse_tests:
     name: Run Lighthouse Tests
@@ -217,7 +219,7 @@ jobs:
         id: lighthouse
         run: |
           npm ci
-          NODE_ENV=${{ github.event.inputs.environment || 'dev' }} npx lhci autorun --url=${{ needs.build.outputs.E2E_TEST_URL }}
+          NODE_ENV=${{ github.event.inputs.environment || 'development' }} npx lhci autorun --url=${{ needs.build.outputs.E2E_TEST_URL }}
         continue-on-error: true
 
   rollback:
@@ -228,8 +230,8 @@ jobs:
     steps:
       - name: Restore Latest Backup
         run: |
-          echo "Lighthouse tests failed. Reverting S3 deployment from backup directory: $BACKUP_DIR."
-          aws s3 sync s3://${{ needs.build.outputs.AWS_S3_BUCKET_BACKUP }}/$BACKUP_DIR/ s3://${{ needs.build.outputs.AWS_S3_BUCKET }} --delete
+          echo "Lighthouse tests failed. Reverting S3 deployment from backup directory: ${{ needs.backup_s3.outputs.BACKUP_DIR }}."
+          aws s3 sync s3://${{ needs.build.outputs.AWS_S3_BUCKET_BACKUP }}/${{ needs.backup_s3.outputs.BACKUP_DIR }}/ s3://${{ needs.build.outputs.AWS_S3_BUCKET }} --delete
           aws cloudfront create-invalidation --distribution-id ${{ needs.build.outputs.AWS_CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
         env:
           AWS_S3_BUCKET: ${{ needs.build.outputs.AWS_S3_BUCKET }}
@@ -238,4 +240,5 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
           AWS_CLOUDFRONT_DISTRIBUTION_ID: ${{ needs.build.outputs.AWS_CLOUDFRONT_DISTRIBUTION_ID }}
-          BACKUP_DIR: ${{ needs.build.outputs.BACKUP_DIR }}
+          BACKUP_DIR: ${{ needs.backup_s3.outputs.BACKUP_DIR }}
+  
