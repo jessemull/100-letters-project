@@ -180,6 +180,7 @@ jobs:
       - name: Run Lighthouse Tests
         id: lighthouse
         run: |
+          echo "E2E_TEST_URL is: $E2E_TEST_URL"
           npm ci
           NODE_ENV=${{ inputs.environment }} npx lhci autorun --url=$E2E_TEST_URL
         continue-on-error: true
