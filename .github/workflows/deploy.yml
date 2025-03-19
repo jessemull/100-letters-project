@@ -10,12 +10,12 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Choose environment (development/production)'
+        description: 'Choose environment (test/production)'
         required: true
-        default: 'development'
+        default: 'test'
         type: choice
         options:
-          - development
+          - test
           - production
 
 jobs:
@@ -43,7 +43,7 @@ jobs:
       - name: Set Environment Variables
         id: set_env
         run: |
-          ENVIRONMENT=${{ github.event.inputs.environment || 'development' }}
+          ENVIRONMENT=${{ github.event.inputs.environment || 'test' }}
           if [[ "$ENVIRONMENT" == "production" ]]; then
             echo "AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET_PROD }}" >> $GITHUB_ENV
             echo "AWS_S3_BUCKET_BACKUP=${{ secrets.AWS_S3_BUCKET_BACKUP_PROD }}" >> $GITHUB_ENV
@@ -209,7 +209,7 @@ jobs:
         run: npm ci
 
       - name: Run Cypress Tests
-        run: NODE_ENV=${{ github.event.inputs.environment || 'development' }} npm run e2e
+        run: NODE_ENV=${{ github.event.inputs.environment || 'test' }} npm run e2e
 
   lighthouse_tests:
     name: Run Lighthouse Tests
@@ -224,7 +224,7 @@ jobs:
         id: lighthouse
         run: |
           npm ci
-          NODE_ENV=${{ github.event.inputs.environment || 'development' }} npx lhci autorun --url=${{ needs.build.outputs.E2E_TEST_URL }}
+          NODE_ENV=${{ github.event.inputs.environment || 'test' }} npx lhci autorun --url=${{ needs.build.outputs.E2E_TEST_URL }}
         continue-on-error: true
 
   rollback:
