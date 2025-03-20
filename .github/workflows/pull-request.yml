@@ -112,8 +112,7 @@ jobs:
 
       - name: Start Next.js Server Locally
         run: |
-          nohup npm run dev
-          sleep 10
+          npm run dev
 
       - name: Run Cypress Tests
         run: |
