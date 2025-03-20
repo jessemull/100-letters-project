@@ -181,10 +181,8 @@ jobs:
         id: lighthouse
         run: |
           npm ci
-          NODE_ENV=${{ inputs.environment }} npx lhci autorun --url=$E2E_TEST_URL
+          NODE_ENV=${{ inputs.environment }} npx lhci autorun
         continue-on-error: true
-        env:
-          E2E_TEST_URL: ${{ inputs.environment == 'test' && secrets.E2E_TEST_URL_DEV || secrets.E2E_TEST_URL_PROD }}
 
   rollback:
     name: Revert S3 Deployment
