@@ -94,7 +94,7 @@ jobs:
           fi
   
   e2e_and_lighthouse_tests:
-    name: Run E2E and Lighthouse Tests
+    name: Run E2E & Lighthouse Tests
     needs: test
     runs-on: ubuntu-latest
     steps:
@@ -112,7 +112,8 @@ jobs:
 
       - name: Start Next.js Server Locally
         run: |
-          npm run dev
+          nohup npm run dev &
+          sleep 10
 
       - name: Run Cypress Tests
         run: |
