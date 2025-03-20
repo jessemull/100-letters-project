@@ -1,4 +1,7 @@
-const isProduction = process.env.NODE_ENV === 'production';
+const urls = {
+  production: 'https://onehundredletters.com',
+  test: 'https://dev.onehundredletters.com',
+};
 
 module.exports = {
   ci: {
@@ -16,9 +19,7 @@ module.exports = {
         const execa = await import('execa');
         await execa('npm', ['run', 'dev'], { stdio: 'inherit' });
       },
-      url: isProduction
-        ? ['https://onehundredletters.com']
-        : ['https://dev.onehundredletters.com'],
+      url: urls[process.env.NODE_ENV] || 'http://localhost:3000',
     },
     upload: {
       target: 'temporary-public-storage',
