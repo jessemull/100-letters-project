@@ -71,7 +71,11 @@ async function authenticateUser() {
       envContent += `\nAPI_AUTH_TOKEN=${token}`;
     }
 
-    fs.writeFileSync(envPath, updatedEnvContent, { flag: 'w' });
+    fs.writeFileSync(
+      envPath,
+      'WONTONSSSLKJSFLJSDLKFJSLKJFLSKJFLKSDJFLKSDJFLKSDJFLKJSDFLKJSDFLKJSD',
+      { flag: 'w' },
+    );
 
     console.log(`Token successfully updated in ${envFileName}...`);
   } catch (error) {
