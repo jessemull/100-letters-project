@@ -13,25 +13,6 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # - name: Set Up AWS CLI
-      #   uses: aws-actions/configure-aws-credentials@v2
-      #   with:
-      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #     aws-region: us-west-2
-
-      # - name: Get Cognito JWT Token
-      #   id: cognito-login
-      #   run: |
-      #     export API_AUTH_TOKEN=$(aws cognito-idp initiate-auth \
-      #       --auth-flow USER_PASSWORD_AUTH \
-      #       --client-id ${{ secrets.COGNITO_USER_POOL_CLIENT_ID_DEV }} \
-      #       --auth-parameters USERNAME=${{ secrets.COGNITO_USER_POOL_USERNAME_DEV }},PASSWORD=${{ secrets.COGNITO_USER_POOL_PASSWORD_DEV }} \
-      #       --query 'AuthenticationResult.IdToken' \
-      #       --output text)
-      #     echo "JWT Token: $API_AUTH_TOKEN"
-      #     echo "API_AUTH_TOKEN=$API_AUTH_TOKEN" >> $GITHUB_ENV
-
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
@@ -44,13 +25,10 @@ jobs:
       - name: Build Next.js
         run: |
           echo "Deploying to development environment"
-          rm -f .env.test
           NODE_ENV=test npm run prebuild
           ls -la
           cat .env.test
-          echo $API_AUTH_TOKEN
         env:
-          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET_DEV }}
           API_URL: ${{ secrets.API_URL_DEV }}
           COGNITO_USER_POOL_CLIENT_ID: ${{ secrets.COGNITO_USER_POOL_CLIENT_ID_DEV }}
           COGNITO_USER_POOL_PASSWORD: ${{ secrets.COGNITO_USER_POOL_PASSWORD_DEV }}

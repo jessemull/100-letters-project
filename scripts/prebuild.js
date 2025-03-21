@@ -2,6 +2,7 @@ const envFileName =
   process.env.NODE_ENV === 'production' ? '.env.production' : '.env.test';
 
 require('dotenv').config({ path: envFileName });
+
 const fs = require('fs');
 const path = require('path');
 const {
@@ -12,6 +13,8 @@ const {
 const userPoolWebClientId = process.env.COGNITO_USER_POOL_CLIENT_ID;
 const username = process.env.COGNITO_USER_POOL_USERNAME;
 const password = process.env.COGNITO_USER_POOL_PASSWORD;
+
+console.log(userPoolWebClientId, username, password);
 
 const client = new CognitoIdentityProviderClient({
   region: 'us-west-2',
@@ -36,50 +39,48 @@ async function authenticateUser() {
       !response.AuthenticationResult ||
       !response.AuthenticationResult.IdToken
     ) {
-      console.error('Error authenticating user: ', error);
+      console.error('Error authenticating user');
       process.exit(1);
     }
 
     const token = response.AuthenticationResult.IdToken;
-
-    if (!token) {
-      console.error('Error authenticating user: ', error);
-      process.exit(1);
-    } else {
-      console.log('TOKEN: ' + token, response);
-    }
-
     const envPath = path.resolve(__dirname, `../${envFileName}`);
+
     let envContent = '';
 
     if (fs.existsSync(envPath)) {
-      if (!fs.accessSync(envPath, fs.constants.W_OK)) {
+      try {
+        fs.accessSync(envPath, fs.constants.W_OK);
+        envContent = fs.readFileSync(envPath, 'utf-8');
+      } catch (err) {
         console.error(`No write permission to ${envPath}`);
         process.exit(1);
       }
-      envContent = fs.readFileSync(envPath, 'utf-8');
+    } else {
+      console.log(`File ${envFileName} does not exist. Creating a new one...`);
     }
 
-    const updatedEnvContent = envContent
-      .split('\n')
-      .map((line) =>
-        line.startsWith('API_AUTH_TOKEN=') ? `API_AUTH_TOKEN=${token}` : line,
-      )
-      .join('\n');
+    let lines = envContent.split('\n').filter(Boolean);
+    let tokenUpdated = false;
 
-    if (!updatedEnvContent.includes('API_AUTH_TOKEN=')) {
-      envContent += `\nAPI_AUTH_TOKEN=${token}`;
+    lines = lines.map((line) => {
+      if (line.startsWith('API_AUTH_TOKEN=')) {
+        tokenUpdated = true;
+        return `API_AUTH_TOKEN=${token}`;
+      }
+      return line;
+    });
+
+    if (!tokenUpdated) {
+      lines.push(`API_AUTH_TOKEN=${token}`);
     }
 
-    fs.writeFileSync(
-      envPath,
-      'WONTONSSSLKJSFLJSDLKFJSLKJFLSKJFLKSDJFLKSDJFLKSDJFLKJSDFLKJSDFLKJSD',
-      { flag: 'w' },
-    );
+    const newEnvContent = lines.join('\n') + '\n';
+    fs.writeFileSync(envPath, newEnvContent, { flag: 'w' });
 
-    console.log(`Token successfully updated in ${envFileName}...`);
+    console.log(`Token successfully updated in ${envFileName}`);
   } catch (error) {
-    console.error('Error authenticating user: ', error);
+    console.error('Error authenticating user:', error);
     process.exit(1);
   }
 }
