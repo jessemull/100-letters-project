@@ -1,5 +1,5 @@
 import { Correspondence } from '../types';
-import { LetterMethod, LetterStatus, LetterType } from '../types/letters';
+import { LetterMethod, LetterStatus, LetterType } from '../types';
 
 interface CardProps {
   correspondence: Correspondence;

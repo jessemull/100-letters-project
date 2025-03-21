@@ -1,3 +1,3 @@
 export * from './correspondence';
-export * from './letters';
+export * from './letter';
 export * from './recipients';

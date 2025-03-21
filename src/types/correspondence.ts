@@ -1,4 +1,4 @@
-import { Letter, LetterCreateInput, LetterUpdateInput } from './letters';
+import { Letter, LetterCreateInput, LetterUpdateInput } from './letter';
 import {
   Recipient,
   RecipientCreateInput,
