@@ -44,9 +44,9 @@ jobs:
       - name: Build Next.js
         run: |
           echo "Deploying to development environment"
+          rm -f .env.test
           NODE_ENV=test npm run prebuild
           ls -la
-          ls -la .env.test
           cat .env.test
           echo $API_AUTH_TOKEN
         env:
