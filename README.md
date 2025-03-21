@@ -1,36 +1,228 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 100 Letters Project API
 
-## Getting Started
+The **100 Letters Project** is driven by the desire to promote real human interaction in an increasingly digital world and create meaningful connections through handwritten communication. Over the course of a year I will write 100 letters to 100 individuals.
 
-First, run the development server:
+The **100 Letters Project** website showcases these exchanges, offering a digital display of the letters with details about the recipients and the reasons behind their selection.
+
+## Table of Contents
+
+1. [Project Overview](#project-overview)
+2. [Environments](#environments)
+3. [Tech Stack](#tech-stack)
+4. [Setup Instructions](#setup-instructions)
+5. [Commits & Commitizen](#commits--commitizen)
+6. [Linting & Formatting](#linting--formatting)
+   - [Linting Commands](#linting-commands)
+   - [Formatting Commands](#formatting-commands)
+   - [Pre-Commit Hook](#pre-commit-hook)
+7. [Testing & Code Coverage](#testing--code-coverage)
+   - [Testing Commands](#testing-commands)
+   - [Code Coverage](#code-coverage)
+8. [Lighthouse](#lighthouse)
+9. [Build](#build)
+   - [Install](#install)
+   - [Build](#build)
+10. [Deployment Pipelines](#deployment-pipelines)
+    - [Deployment Strategy](#deployment-strategy)
+    - [Tools Used](#tools-used)
+    - [Pull Request](#pull-request)
+    - [Deploy](#deploy-on-merge)
+    - [Deploy On Merge](#deploy-on-merge)
+    - [Rollback](#rollback)
+11. [Cognito ID Token](#cognito-id-token)
+12. [Connecting to the Bastion Host](#connecting-to-the-bastion-host)
+    - [Environment Variables](#environment-variables)
+13. [License](#license)
+
+## Project Overview
+
+Coming soon...
+
+## Environments
+
+Coming soon...
+
+## Tech Stack
+
+Coming soon...
+
+## Setup Instructions
+
+Coming soon...
+
+## Commits & Commitizen
+
+This project uses **Commitizen** to ensure commit messages follow a structured format and versioning is consistent. Commit linting is enforced via a pre-commit husky hook.
+
+### Making a Commit
+
+To make a commit in the correct format, run the following command. Commitzen will walk the user through the creation of a structured commit message and versioning:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run commit
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Linting & Formatting
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+This project uses **ESLint** and **Prettier** for code quality enforcement. Linting is enforced during every CI/CD pipeline to ensure consistent standards.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Linting Commands
 
-## Learn More
+Run linting:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run lint
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Formatting Commands
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Format using prettier:
 
-## Deploy on Vercel
+```bash
+npm run format
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Pre-Commit Hook
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Lint-staged** is configured to run linting before each commit. The commit will be blocked if linting fails, ensuring code quality at the commit level.
+
+## Testing & Code Coverage
+
+### Unit Tests
+
+This project uses **Jest** for testing. Code coverage is enforced during every CI/CD pipeline. The build will fail if any tests fail or coverage drops below **80%**.
+
+Run tests:
+
+```bash
+npm run test
+```
+
+Run tests in watch mode:
+
+```bash
+npm run test:watch
+```
+
+### E2E Tests
+
+This project uses **Cypress** for end to end testing. The build will fail if any end to end test fails.
+
+Run E2E tests:
+
+```bash
+npm run e2e
+```
+
+### Code Coverage
+
+Coverage thresholds are enforced at **80%** for all metrics. The build will fail if coverage drops below this threshold.
+
+## Lighthouse
+
+Coming soon...
+
+## Build
+
+Coming soon...
+
+## Deployment Pipelines
+
+Coming soon...
+
+### Deployment Strategy
+
+Each deployment process involves:
+
+Coming soon...
+
+### Tools Used
+
+Coming soon...
+
+### Pull Request
+
+Coming soon...
+
+### Deploy
+
+Coming soon...
+
+### Deploy On Merge
+
+Coming soon...
+
+### Rollback
+
+Coming soon...
+
+## Cognito ID Token
+
+All write routes are protected via Cognito User Pools. A valid ID token is required to use these endpoints.
+
+### Generating An ID Token
+
+To generate a valid ID token:
+
+```bash
+npm run token
+```
+
+### Using An ID Token
+
+To use the token add it to the Authorization request header:
+
+```bash
+curl -X POST "https://api-dev.onehundredletters.com/<stage>/<route>"  -H "Authorization: Bearer <token>"
+```
+
+### Environment Variables
+
+The following environment variables must be set in a `.env.test` and `.env.production` file in the root of the project to generate a token:
+
+```
+COGNITO_USER_POOL_ID=cognito-user-pool-id
+COGNITO_USER_POOL_USERNAME=cognito-user-pool-username
+COGNITO_USER_POOL_PASSWORD=cognito-user-pool-password
+COGNITO_USER_POOL_CLIENT_ID=cognito-user-pool-client-id
+```
+
+## Connecting to the Bastion Host
+
+To connect to the AWS EC2 bastion host and access AWS resources, you can use the following command:
+
+```bash
+npm run bastion
+```
+
+### Environment Variables
+
+The following environment variables must be set in a `.env.local` file in the root of the project:
+
+```
+SSH_PRIVATE_KEY_PATH=/path/to/your/private/key
+SSH_USER=your-ssh-username
+SSH_HOST=your-ec2-instance-hostname-or-ip
+```
+
+Ensure you have the appropriate permissions set on your SSH key for secure access.
+
+## License
+
+    Apache License
+    Version 2.0, January 2004
+    http://www.apache.org/licenses/
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+---
