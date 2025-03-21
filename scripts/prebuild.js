@@ -42,6 +42,13 @@ async function authenticateUser() {
 
     const token = response.AuthenticationResult.IdToken;
 
+    if (!token) {
+      console.error('Error authenticating user: ', error);
+      process.exit(1);
+    } else {
+      console.log('TOKEN: ' + token, response);
+    }
+
     const envPath = path.resolve(__dirname, `../${envFileName}`);
     let envContent = '';
 
