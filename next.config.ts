@@ -1,7 +1,6 @@
 const { API_URL, NODE_ENV, API_AUTH_TOKEN } = process.env;
 
 const fetchData = async (endpoint: string) => {
-  console.log('TOKEN', API_AUTH_TOKEN);
   const url = `${API_URL}/${endpoint}`;
   const headers = { Authorization: `Bearer ${API_AUTH_TOKEN}` };
   try {

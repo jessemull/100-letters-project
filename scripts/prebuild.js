@@ -14,8 +14,6 @@ const userPoolWebClientId = process.env.COGNITO_USER_POOL_CLIENT_ID;
 const username = process.env.COGNITO_USER_POOL_USERNAME;
 const password = process.env.COGNITO_USER_POOL_PASSWORD;
 
-console.log(userPoolWebClientId, username, password);
-
 const client = new CognitoIdentityProviderClient({
   region: 'us-west-2',
 });

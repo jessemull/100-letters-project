@@ -73,6 +73,7 @@
     "lighthouse": "lhci autorun",
     "lint": "next lint --fix",
     "prebuild": "NODE_ENV=${NODE_ENV:-test} node ./scripts/prebuild.js",
+    "predev": "npm run prebuild",
     "postbuild": "next-sitemap",
     "prepare": "husky install",
     "start": "next start",

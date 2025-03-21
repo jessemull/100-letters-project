@@ -32,99 +32,99 @@ jobs:
           COGNITO_USER_POOL_PASSWORD: ${{ secrets.COGNITO_USER_POOL_PASSWORD_DEV }}
           COGNITO_USER_POOL_USERNAME: ${{ secrets.COGNITO_USER_POOL_USERNAME_DEV }}
 
-  #     - name: Copy Sitemap and Robots Files
-  #       run: |
-  #         cp public/sitemap.xml out/
-  #         cp public/robots.txt out/
-  #         cp public/sitemap-0.xml out/
+      - name: Copy Sitemap and Robots Files
+        run: |
+          cp public/sitemap.xml out/
+          cp public/robots.txt out/
+          cp public/sitemap-0.xml out/
 
-  #     - name: Archive Build Output
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: next-build
-  #         path: out
-  #         retention-days: 1
+      - name: Archive Build Output
+        uses: actions/upload-artifact@v4
+        with:
+          name: next-build
+          path: out
+          retention-days: 1
 
-  # lint:
-  #   name: Lint Code
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout Code
-  #       uses: actions/checkout@v4
+  lint:
+    name: Lint Code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-  #     - name: Install Node.js
-  #       uses: actions/setup-node@v4
-  #       with:
-  #         node-version: '20'
-  #         cache: 'npm'
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
 
-  #     - name: Install Dependencies
-  #       run: npm ci
+      - name: Install Dependencies
+        run: npm ci
 
-  #     - name: Run Linting
-  #       run: npm run lint
+      - name: Run Linting
+        run: npm run lint
 
-  # test:
-  #   name: Run Unit Tests
-  #   needs: lint
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout Code
-  #       uses: actions/checkout@v4
+  test:
+    name: Run Unit Tests
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-  #     - name: Install Node.js
-  #       uses: actions/setup-node@v4
-  #       with:
-  #         node-version: '20'
-  #         cache: 'npm'
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
 
-  #     - name: Install Dependencies
-  #       run: npm ci
+      - name: Install Dependencies
+        run: npm ci
 
-  #     - name: Run Jest Tests
-  #       run: npm run test
+      - name: Run Jest Tests
+        run: npm run test
 
-  #     - name: Upload Coverage Report
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: coverage-report
-  #         path: coverage
-  #         retention-days: 7
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage
+          retention-days: 7
 
-  #     - name: Coverage Threshold Check
-  #       run: |
-  #         if [[ $(grep "Statements" coverage/lcov-report/index.html | awk '{print $4}' | tr -d '%') -lt 80 ]]; then
-  #           echo "Code coverage is below threshold. Please update test coverage and try again."
-  #           exit 1
-  #         fi
+      - name: Coverage Threshold Check
+        run: |
+          if [[ $(grep "Statements" coverage/lcov-report/index.html | awk '{print $4}' | tr -d '%') -lt 80 ]]; then
+            echo "Code coverage is below threshold. Please update test coverage and try again."
+            exit 1
+          fi
   
-  # e2e_and_lighthouse_tests:
-  #   name: Run E2E & Lighthouse Tests
-  #   needs: test
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout Code
-  #       uses: actions/checkout@v4
+  e2e_and_lighthouse_tests:
+    name: Run E2E & Lighthouse Tests
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-  #     - name: Install Node.js
-  #       uses: actions/setup-node@v4
-  #       with:
-  #         node-version: '20'
-  #         cache: 'npm'
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
 
-  #     - name: Install Dependencies
-  #       run: npm ci
+      - name: Install Dependencies
+        run: npm ci
 
-  #     - name: Start Next.js Server Locally
-  #       run: |
-  #         nohup npm run dev &
-  #         sleep 10
+      - name: Start Next.js Server Locally
+        run: |
+          nohup npm run dev &
+          sleep 10
 
-  #     - name: Run Cypress Tests
-  #       run: |
-  #         npx cypress run --config baseUrl=http://localhost:3000
+      - name: Run Cypress Tests
+        run: |
+          npx cypress run --config baseUrl=http://localhost:3000
 
-  #     - name: Run Lighthouse Tests
-  #       run: |
-  #         npx lhci autorun
-  #       continue-on-error: true
+      - name: Run Lighthouse Tests
+        run: |
+          npx lhci autorun
+        continue-on-error: true
