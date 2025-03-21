@@ -13,7 +13,7 @@ jest.mock('next/link', () => {
 describe('HomePage Component', () => {
   it('Renders homepage.', () => {
     render(<HomePage />);
-    expect(screen.getByText('100 Letters Project')).toBeInTheDocument();
+    expect(screen.getAllByText('100 Letters Project').length).toBe(2);
     expect(
       screen.getByText('© 2025 100 Letters Project. All rights reserved.'),
     ).toBeInTheDocument();
