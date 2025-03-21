@@ -52,12 +52,11 @@ async function authenticateUser() {
     const envPath = path.resolve(__dirname, `../${envFileName}`);
     let envContent = '';
 
-    if (!fs.accessSync(envPath, fs.constants.W_OK)) {
-      console.error(`No write permission to ${envPath}`);
-      process.exit(1);
-    }
-
     if (fs.existsSync(envPath)) {
+      if (!fs.accessSync(envPath, fs.constants.W_OK)) {
+        console.error(`No write permission to ${envPath}`);
+        process.exit(1);
+      }
       envContent = fs.readFileSync(envPath, 'utf-8');
     }
 
