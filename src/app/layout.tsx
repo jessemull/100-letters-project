@@ -1,7 +1,12 @@
 import './globals.css';
 import Script from 'next/script';
-import { Geist, Geist_Mono } from 'next/font/google';
+import data from '../../public/data.json';
 import type { Metadata } from 'next';
+import { Correspondence, Letter, Recipient } from '../types';
+import { CorrespondenceProvider } from '../contexts';
+import { Geist, Geist_Mono } from 'next/font/google';
+
+const { correspondences, letters, recipients } = data;
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -56,7 +61,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <CorrespondenceProvider
+          correspondences={correspondences as Correspondence[]}
+          letters={letters as Letter[]}
+          recipients={recipients as Recipient[]}
+        >
+          {children}
+        </CorrespondenceProvider>
         {isProduction && (
           <>
             <Script

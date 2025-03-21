@@ -10,6 +10,7 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.768.0",
     "@axe-core/react": "^4.10.1",
     "@commitlint/cli": "^19.7.1",
     "@commitlint/config-conventional": "^19.7.1",
@@ -44,11 +45,13 @@
     "lighthouse": "^12.3.0",
     "lint-staged": "^15.4.3",
     "next-sitemap": "^4.2.3",
+    "node-fetch": "^3.3.2",
     "postcss": "^8.5.3",
     "prettier": "^3.5.2",
     "tailwindcss": "^3.4.17",
     "ts-jest": "^29.2.5",
-    "typescript": "^5"
+    "typescript": "^5",
+    "uuid": "^11.1.0"
   },
   "lint-staged": {
     "*.js": "prettier --write",
@@ -62,7 +65,7 @@
   "private": true,
   "scripts": {
     "bastion": "node ./scripts/connect.js",
-    "build": "next build",
+    "build": "NODE_ENV=${NODE_ENV:-test} next build",
     "commit": "git-cz",
     "dev": "next dev --turbopack",
     "e2e": "cypress run",
@@ -71,10 +74,13 @@
     "lighthouse": "lhci autorun",
     "lint": "next lint --fix",
     "postbuild": "next-sitemap",
+    "prebuild": "NODE_ENV=${NODE_ENV:-test} node ./scripts/prebuild.js",
+    "predev": "npm run prebuild -- --no-refresh",
     "prepare": "husky install",
     "start": "next start",
     "test": "jest --coverage",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "token": "node ./scripts/cognito-token.js"
   },
   "version": "0.1.0"
 }

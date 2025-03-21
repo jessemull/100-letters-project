@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ path: '.env.local' });
 const { exec } = require('child_process');
 
 const sshPrivateKeyPath = process.env.SSH_PRIVATE_KEY_PATH;

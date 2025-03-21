@@ -1,7 +1,8 @@
 import Card from './Card';
 import { axe } from 'jest-axe';
-import { CorrespondenceFactory } from '../factories';
+import { CorrespondenceFactory, LetterFactory } from '../factories';
 import { render, screen } from '@testing-library/react';
+import { LetterMethod, LetterStatus, LetterType } from '../types';
 
 const correspondence = CorrespondenceFactory.build();
 
@@ -13,69 +14,113 @@ describe('Card Component', () => {
     container = rendered.container;
   });
 
-  it('Renders the card and correspondence.', () => {
-    expect(screen.getByText(correspondence.title)).toBeInTheDocument();
+  it('Renders the card', () => {
     expect(
-      screen.getByText(`Corresponding with: ${correspondence.recipient}`),
-    ).toBeInTheDocument();
-  });
-
-  it('Renders sent letters.', () => {
-    correspondence.letters.sent.forEach((sentLetter) => {
-      expect(
-        screen.queryAllByText(`Date Received: ${sentLetter.date}`),
-      ).not.toBeNull();
-      expect(screen.queryAllByText(sentLetter.text)).not.toBeNull();
-      expect(
-        screen.queryAllByText(`Medium: ${sentLetter.medium}`),
-      ).not.toBeNull();
-      expect(
-        screen.queryAllByText(`Status: ${sentLetter.status}`),
-      ).not.toBeNull();
-    });
-  });
-
-  it('Renders received letters.', () => {
-    correspondence.letters.received.forEach((receivedLetter) => {
-      expect(
-        screen.queryAllByText(`Date Received: ${receivedLetter.date}`),
-      ).not.toBeNull();
-      expect(screen.queryAllByText(receivedLetter.text)).not.toBeNull();
-      expect(
-        screen.queryAllByText(`Medium: ${receivedLetter.medium}`),
-      ).not.toBeNull();
-      expect(
-        screen.queryAllByText(`Status: ${receivedLetter.status}`),
-      ).not.toBeNull();
-    });
-  });
-
-  it('Renders message when no sent letters are available.', () => {
-    const withoutSent = CorrespondenceFactory.build(
-      {},
-      {
-        transient: {
-          sent: [],
-        },
-      },
-    );
-    render(<Card correspondence={withoutSent} />);
-    expect(screen.getByText('No sent letters available.')).toBeInTheDocument();
-  });
-
-  it('Renders message when no received letters are available.', () => {
-    const withoutReceived = CorrespondenceFactory.build(
-      {},
-      {
-        transient: {
-          received: [],
-        },
-      },
-    );
-    render(<Card correspondence={withoutReceived} />);
+      screen.getAllByText(new RegExp(correspondence.title, 'i')).length,
+    ).toBeGreaterThan(0);
     expect(
-      screen.getByText('No received letters available.'),
-    ).toBeInTheDocument();
+      screen.getAllByText(new RegExp(correspondence.recipientId, 'i')).length,
+    ).toBeGreaterThan(0);
+    expect(
+      screen.getAllByText(
+        new RegExp(
+          new Date(correspondence.createdAt).toLocaleDateString(),
+          'i',
+        ),
+      ).length,
+    ).toBeGreaterThan(0);
+    expect(
+      screen.getAllByText(
+        new RegExp(
+          new Date(correspondence.updatedAt).toLocaleDateString(),
+          'i',
+        ),
+      ).length,
+    ).toBeGreaterThan(0);
+    expect(
+      screen.getAllByText(new RegExp(correspondence.reason.description, 'i'))
+        .length,
+    ).toBeGreaterThan(0);
+    expect(
+      screen.getAllByText(new RegExp(correspondence.reason.domain, 'i')).length,
+    ).toBeGreaterThan(0);
+    expect(
+      screen.getAllByText(new RegExp(correspondence.reason.impact, 'i')).length,
+    ).toBeGreaterThan(0);
+    expect(
+      screen.getAllByText(new RegExp(correspondence.status, 'i')).length,
+    ).toBeGreaterThan(0);
+
+    if (correspondence.letters.length > 0) {
+      correspondence.letters.forEach((letter) => {
+        expect(
+          screen.getAllByText(new RegExp(letter.title, 'i')).length,
+        ).toBeGreaterThan(0);
+        expect(
+          screen.getAllByText(new RegExp(letter.method, 'i')).length,
+        ).toBeGreaterThan(0);
+        expect(
+          screen.getAllByText(new RegExp(letter.status, 'i')).length,
+        ).toBeGreaterThan(0);
+        expect(
+          screen.getAllByText(new RegExp(letter.type, 'i')).length,
+        ).toBeGreaterThan(0);
+      });
+    }
+
+    expect(
+      screen.getAllByText(
+        new RegExp(
+          `${correspondence.recipient.firstName} ${correspondence.recipient.lastName}`,
+          'i',
+        ),
+      ).length,
+    ).toBeGreaterThan(0);
+    expect(
+      screen.getAllByText(
+        new RegExp(correspondence.recipient.address.street, 'i'),
+      ).length,
+    ).toBeGreaterThan(0);
+    expect(
+      screen.getAllByText(
+        new RegExp(correspondence.recipient.address.city, 'i'),
+      ).length,
+    ).toBeGreaterThan(0);
+    expect(
+      screen.getAllByText(
+        new RegExp(correspondence.recipient.address.state, 'i'),
+      ).length,
+    ).toBeGreaterThan(0);
+    expect(
+      screen.getAllByText(
+        new RegExp(correspondence.recipient.address.postalCode, 'i'),
+      ).length,
+    ).toBeGreaterThan(0);
+    expect(
+      screen.getAllByText(
+        new RegExp(correspondence.recipient.address.country, 'i'),
+      ).length,
+    ).toBeGreaterThan(0);
+  });
+
+  it('Displays default text when letter description is missing', () => {
+    const letter = LetterFactory.build({
+      description: undefined,
+      letterId: '1',
+      title: 'Test Letter',
+      method: LetterMethod.DIGITAL,
+      status: LetterStatus.SENT,
+      type: LetterType.MAIL,
+      sentAt: '2025-01-01',
+      text: 'This is a test letter.',
+    });
+    const correspondenceWithMissingDescription = CorrespondenceFactory.build({
+      letters: [letter],
+    });
+    render(<Card correspondence={correspondenceWithMissingDescription} />);
+    expect(
+      screen.getAllByText(new RegExp('No description available', 'i')).length,
+    ).toBeGreaterThan(0);
   });
 
   it('Has no accessibility errors.', async () => {

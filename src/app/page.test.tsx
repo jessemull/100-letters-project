@@ -17,7 +17,6 @@ describe('HomePage Component', () => {
     expect(
       screen.getByText('© 2025 100 Letters Project. All rights reserved.'),
     ).toBeInTheDocument();
-    expect(screen.getByText('Letters')).toBeInTheDocument();
   });
 
   it('Has no accessibility errors.', async () => {

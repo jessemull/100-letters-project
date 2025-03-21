@@ -26,6 +26,11 @@ jobs:
         run: |
           echo "Deploying to development environment"
           NODE_ENV=test npm run build
+        env:
+          API_URL: ${{ secrets.API_URL_DEV }}
+          COGNITO_USER_POOL_CLIENT_ID: ${{ secrets.COGNITO_USER_POOL_CLIENT_ID_DEV }}
+          COGNITO_USER_POOL_PASSWORD: ${{ secrets.COGNITO_USER_POOL_PASSWORD_DEV }}
+          COGNITO_USER_POOL_USERNAME: ${{ secrets.COGNITO_USER_POOL_USERNAME_DEV }}
 
       - name: Copy Sitemap and Robots Files
         run: |
@@ -114,6 +119,11 @@ jobs:
         run: |
           nohup npm run dev &
           sleep 10
+        env:
+          API_URL: ${{ secrets.API_URL_DEV }}
+          COGNITO_USER_POOL_CLIENT_ID: ${{ secrets.COGNITO_USER_POOL_CLIENT_ID_DEV }}
+          COGNITO_USER_POOL_PASSWORD: ${{ secrets.COGNITO_USER_POOL_PASSWORD_DEV }}
+          COGNITO_USER_POOL_USERNAME: ${{ secrets.COGNITO_USER_POOL_USERNAME_DEV }}
 
       - name: Run Cypress Tests
         run: |
