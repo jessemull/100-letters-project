@@ -1,7 +1,7 @@
 import Feed from './Feed';
 import { Correspondence } from '../types';
 import { CorrespondenceContext } from '../contexts';
-import { CorrespondenceFactory } from '@/factories';
+import { CorrespondenceFactory } from '../factories';
 import { axe } from 'jest-axe';
 import { render, screen } from '@testing-library/react';
 

@@ -1,4 +1,4 @@
-import { Correspondence, Impact, Letter, Status } from '@/types';
+import { Correspondence, Impact, Letter, Status } from '../types';
 import { Factory } from 'fishery';
 import { LetterFactory } from './letter';
 import { faker } from '@faker-js/faker';

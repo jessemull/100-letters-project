@@ -1,14 +1,12 @@
 import './globals.css';
 import Script from 'next/script';
+import data from '../../public/data.json';
 import type { Metadata } from 'next';
-import { CorrespondenceProvider } from '@/contexts';
+import { Correspondence, Letter, Recipient } from '../types';
+import { CorrespondenceProvider } from '../contexts';
 import { Geist, Geist_Mono } from 'next/font/google';
-import {
-  correspondences,
-  letters,
-  recipients,
-} from '../../public/data.json' assert { type: 'json' };
-import { Correspondence, Letter, Recipient } from '@/types';
+
+const { correspondences, letters, recipients } = data;
 
 const geistSans = Geist({
   variable: '--font-geist-sans',

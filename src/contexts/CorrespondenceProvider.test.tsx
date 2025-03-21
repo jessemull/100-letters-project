@@ -1,7 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import {
   CorrespondenceContext,
-  CorrespondenceContextType,
   CorrespondenceProvider,
   useCorrespondence,
 } from './CorrespondenceProvider';
@@ -10,9 +9,8 @@ import {
   CorrespondenceFactory,
   LetterFactory,
   RecipientFactory,
-} from '@/factories';
+} from '../factories';
 import { axe } from 'jest-axe';
-import { Context } from 'react';
 
 const mockCorrespondences: Correspondence[] =
   CorrespondenceFactory.buildList(2);
