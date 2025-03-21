@@ -45,7 +45,7 @@ jobs:
         run: |
           echo "Deploying to development environment"
           NODE_ENV=test npm run prebuild
-          ls
+          ls -la
           ls -la .env.test
           cat .env.test
           echo $API_AUTH_TOKEN
