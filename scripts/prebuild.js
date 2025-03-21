@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+
 require('dotenv').config({
   path: process.env.NODE_ENV === 'production' ? '.env.production' : '.env.test',
 });
