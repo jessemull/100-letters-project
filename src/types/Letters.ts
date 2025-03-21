@@ -1,34 +1,61 @@
-export enum LetterMedium {
-  EMAIL = 'EMAIL',
-  HOMING_PIGEON = 'HOMING_PIGEON',
+export enum LetterMethod {
+  TYPED = 'TYPED',
+  HANDWRITTEN = 'HANDWRITTEN',
+  PRINTED = 'PRINTED',
+  DIGITAL = 'DIGITAL',
   OTHER = 'OTHER',
-  PHYSICAL_MAIL = 'PHYSICAL_MAIL',
 }
 
 export enum LetterStatus {
   PENDING = 'PENDING',
+  SENT = 'SENT',
+  RECEIVED = 'RECEIVED',
   RESPONDED = 'RESPONDED',
-  UNSENT = 'UNSENT',
+}
+
+export enum LetterType {
+  MAIL = 'MAIL',
+  EMAIL = 'EMAIL',
+  SMS = 'SMS',
+  OTHER = 'OTHER',
 }
 
 export interface Letter {
-  attachments?: string[];
-  date: string;
-  id: string;
-  medium: LetterMedium;
-  recipient: string;
-  sender: string;
+  correspondenceId: string;
+  description?: string;
+  imageURLs: string[];
+  letterId: string;
+  method: LetterMethod;
+  receivedAt?: string;
+  sentAt?: string;
   status: LetterStatus;
   text: string;
   title: string;
+  type: LetterType;
 }
 
-export interface Correspondence {
-  id: string;
-  letters: {
-    received: Letter[];
-    sent: Letter[];
-  };
-  recipient: string;
+export type LetterCreateInput = {
+  correspondenceId: string;
+  description?: string;
+  imageURLs: string[];
+  method: LetterMethod;
+  receivedAt?: string;
+  sentAt?: string;
+  status: LetterStatus;
+  text: string;
   title: string;
-}
+  type: LetterType;
+};
+
+export type LetterUpdateInput = {
+  description?: string;
+  imageURLs: string[];
+  letterId: string;
+  method: LetterMethod;
+  receivedAt?: string;
+  sentAt?: string;
+  status: LetterStatus;
+  text: string;
+  title: string;
+  type: LetterType;
+};

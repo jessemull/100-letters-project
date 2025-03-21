@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://www.onehundredletters.com
+
+# Sitemaps
+Sitemap: https://www.onehundredletters.com/sitemap.xml

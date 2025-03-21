@@ -1,10 +1,9 @@
-const envFileName =
-  process.env.NODE_ENV === 'production' ? '.env.production' : '.env.test';
-
-require('dotenv').config({ path: envFileName });
-
 const fs = require('fs');
 const path = require('path');
+require('dotenv').config({
+  path: process.env.NODE_ENV === 'production' ? '.env.production' : '.env.test',
+});
+
 const {
   CognitoIdentityProviderClient,
   InitiateAuthCommand,
@@ -13,10 +12,28 @@ const {
 const userPoolWebClientId = process.env.COGNITO_USER_POOL_CLIENT_ID;
 const username = process.env.COGNITO_USER_POOL_USERNAME;
 const password = process.env.COGNITO_USER_POOL_PASSWORD;
+const apiUrl = process.env.API_URL;
 
-const client = new CognitoIdentityProviderClient({
-  region: 'us-west-2',
-});
+const client = new CognitoIdentityProviderClient({ region: 'us-west-2' });
+
+const fetchData = async (endpoint, token) => {
+  const url = `${apiUrl}/${endpoint}`;
+  const headers = { Authorization: `Bearer ${token}` };
+  try {
+    const response = await fetch(url, { headers });
+
+    if (!response.ok) {
+      console.error(`Error fetching data from ${url}: `, response.status);
+      process.exit(1);
+    }
+
+    const json = await response.json();
+    return json.data;
+  } catch (error) {
+    console.error(`Error fetching data from ${url}: `, error);
+    process.exit(1);
+  }
+};
 
 async function authenticateUser() {
   const params = {
@@ -37,50 +54,35 @@ async function authenticateUser() {
       !response.AuthenticationResult ||
       !response.AuthenticationResult.IdToken
     ) {
-      console.error('Error authenticating user');
+      console.error('Error authenticating user...');
       process.exit(1);
     }
 
     const token = response.AuthenticationResult.IdToken;
-    const envPath = path.resolve(__dirname, `../${envFileName}`);
 
-    let envContent = '';
+    const correspondences = await fetchData('correspondence', token);
+    const letters = await fetchData('letter', token);
+    const recipients = await fetchData('recipient', token);
 
-    if (fs.existsSync(envPath)) {
-      try {
-        fs.accessSync(envPath, fs.constants.W_OK);
-        envContent = fs.readFileSync(envPath, 'utf-8');
-      } catch (err) {
-        console.error(`No write permission to ${envPath}`);
-        process.exit(1);
-      }
-    } else {
-      console.log(`File ${envFileName} does not exist. Creating a new one...`);
-    }
+    const data = { correspondences, letters, recipients };
 
-    let lines = envContent.split('\n').filter(Boolean);
-    let tokenUpdated = false;
+    const outputPath = path.join(__dirname, '../public', 'data.json');
 
-    lines = lines.map((line) => {
-      if (line.startsWith('API_AUTH_TOKEN=')) {
-        tokenUpdated = true;
-        return `API_AUTH_TOKEN=${token}`;
-      }
-      return line;
-    });
+    fs.writeFileSync(outputPath, JSON.stringify(data, null, 2));
 
-    if (!tokenUpdated) {
-      lines.push(`API_AUTH_TOKEN=${token}`);
-    }
-
-    const newEnvContent = lines.join('\n') + '\n';
-    fs.writeFileSync(envPath, newEnvContent, { flag: 'w' });
-
-    console.log(`Token successfully updated in ${envFileName}`);
+    console.log(`Data successfully written to ${outputPath}`);
   } catch (error) {
-    console.error('Error authenticating user:', error);
+    console.error('Error loading data: ', error);
     process.exit(1);
   }
 }
 
-authenticateUser();
+const noRefresh = process.argv.includes('--no-refresh');
+const outputPath = path.join(__dirname, '../public', 'data.json');
+
+if (fs.existsSync(outputPath) && noRefresh) {
+  console.log('File public/data.json already exists. Skipping data refresh...');
+  process.exit(0);
+} else {
+  authenticateUser();
+}
