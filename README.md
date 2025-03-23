@@ -16,7 +16,9 @@ The **100 Letters Project** website showcases these exchanges, offering a digita
    - [Formatting Commands](#formatting-commands)
    - [Pre-Commit Hook](#pre-commit-hook)
 7. [Testing & Code Coverage](#testing--code-coverage)
-   - [Testing Commands](#testing-commands)
+   - [Unit Tests](#unit-tests)
+   - [E2E Tests](#e2e-tests)
+   - [Fishery Factories](#fishery-factories)
    - [Code Coverage](#code-coverage)
 8. [Development Website Proxy](#development-website-proxy)
 9. [Lighthouse](#lighthouse)
@@ -115,6 +117,10 @@ Run E2E tests:
 ```bash
 npm run e2e
 ```
+
+### Fishery Factories
+
+Coming soon...
 
 ### Code Coverage
 
