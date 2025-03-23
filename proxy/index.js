@@ -25,8 +25,6 @@ app.use((req, res, next) => {
       });
     });
 
-    console.log('Signed cookies set:', signedCookies);
-
     return res.redirect(req.originalUrl);
   }
   next();

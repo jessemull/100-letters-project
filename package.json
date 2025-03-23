@@ -5,13 +5,11 @@
     }
   },
   "dependencies": {
-    "@aws-sdk/cloudfront-signer": "^3.772.0",
     "next": "15.1.7",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "@aws-sdk/client-cognito-identity-provider": "^3.768.0",
     "@axe-core/react": "^4.10.1",
     "@commitlint/cli": "^19.7.1",
     "@commitlint/config-conventional": "^19.7.1",
@@ -27,7 +25,6 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "autoprefixer": "^10.4.20",
-    "aws-cloudfront-sign": "^3.0.2",
     "commitizen": "^4.3.1",
     "cookie-parser": "^1.4.7",
     "cypress": "^14.0.3",
