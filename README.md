@@ -18,24 +18,23 @@ The **100 Letters Project** website showcases these exchanges, offering a digita
 7. [Testing & Code Coverage](#testing--code-coverage)
    - [Testing Commands](#testing-commands)
    - [Code Coverage](#code-coverage)
-8. [Lighthouse](#lighthouse)
-9. [Accessibility](#accessibility)
-10. [Build](#build)
-
-- [Install](#install)
-- [Build](#build)
-
-11. [Deployment Pipelines](#deployment-pipelines)
+8. [Development Website Proxy](#development-website-proxy)
+9. [Lighthouse](#lighthouse)
+10. [Accessibility](#accessibility)
+11. [Build](#build)
+    - [Install](#install)
+    - [Build](#build)
+12. [Deployment Pipelines](#deployment-pipelines)
     - [Deployment Strategy](#deployment-strategy)
     - [Tools Used](#tools-used)
     - [Pull Request](#pull-request)
     - [Deploy](#deploy-on-merge)
     - [Deploy On Merge](#deploy-on-merge)
     - [Rollback](#rollback)
-12. [Cognito ID Token](#cognito-id-token)
-13. [Connecting to the Bastion Host](#connecting-to-the-bastion-host)
+13. [Cognito ID Token](#cognito-id-token)
+14. [Connecting to the Bastion Host](#connecting-to-the-bastion-host)
     - [Environment Variables](#environment-variables)
-14. [License](#license)
+15. [License](#license)
 
 ## Project Overview
 
@@ -120,6 +119,10 @@ npm run e2e
 ### Code Coverage
 
 Coverage thresholds are enforced at **80%** for all metrics. The build will fail if coverage drops below this threshold.
+
+## Development Website Proxy
+
+Coming soon...
 
 ## Lighthouse
 
