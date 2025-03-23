@@ -29,6 +29,9 @@ Parameters:
     AllowedValues:
       - "true"
       - "false"
+  CloudFrontKey:
+    Type: String
+    Description: The public key for the development website base 64 encoded.
 
 Resources:
   StaticWebsiteBucket:
@@ -94,6 +97,11 @@ Resources:
             QueryString: false
             Cookies:
               Forward: "none"
+          TrustedKeyGroups:
+            !If [IsProd, !Ref "AWS::NoValue", [!Ref CloudFrontKeyGroup]]
+          AllowedMethods:
+            - GET
+            - HEAD
         DefaultRootObject: "index.html"
         ViewerCertificate:
           AcmCertificateArn: !Ref ACMCertificateArn
@@ -135,6 +143,24 @@ Resources:
       AliasTarget:
         DNSName: !GetAtt StaticWebsiteCloudFront.DomainName
         HostedZoneId: !Ref CloudFrontHostedZoneId
+  
+  CloudFrontPublicKey:
+    Type: AWS::CloudFront::PublicKey
+    Properties:
+      PublicKeyConfig:
+        CallerReference: !Sub "PublicKey-${Environment}"
+        Name: !Sub "PublicKey-${Environment}"
+        EncodedKey: !Ref CloudFrontKey
+        Comment: "Public key for signed cookies"
+
+  CloudFrontKeyGroup:
+    Type: AWS::CloudFront::KeyGroup
+    Properties:
+      KeyGroupConfig:
+        Name: !Sub "KeyGroup-${Environment}"
+        Items:
+          - !Ref CloudFrontPublicKey
+        Comment: "Key group for signed cookies"
 
 Conditions:
   IsProd: !Equals [ !Ref Environment, "prod" ]
