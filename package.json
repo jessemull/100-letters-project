@@ -10,6 +10,7 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.768.0",
     "@axe-core/react": "^4.10.1",
     "@commitlint/cli": "^19.7.1",
     "@commitlint/config-conventional": "^19.7.1",
