@@ -16,23 +16,27 @@ The **100 Letters Project** website showcases these exchanges, offering a digita
    - [Formatting Commands](#formatting-commands)
    - [Pre-Commit Hook](#pre-commit-hook)
 7. [Testing & Code Coverage](#testing--code-coverage)
-   - [Testing Commands](#testing-commands)
+   - [Unit Tests](#unit-tests)
+   - [E2E Tests](#e2e-tests)
+   - [Fishery Factories](#fishery-factories)
    - [Code Coverage](#code-coverage)
-8. [Lighthouse](#lighthouse)
-9. [Build](#build)
-   - [Install](#install)
-   - [Build](#build)
-10. [Deployment Pipelines](#deployment-pipelines)
+8. [Development Website Proxy](#development-website-proxy)
+9. [Lighthouse](#lighthouse)
+10. [Accessibility](#accessibility)
+11. [Build](#build)
+    - [Install](#install)
+    - [Build](#build)
+12. [Deployment Pipelines](#deployment-pipelines)
     - [Deployment Strategy](#deployment-strategy)
     - [Tools Used](#tools-used)
     - [Pull Request](#pull-request)
     - [Deploy](#deploy-on-merge)
     - [Deploy On Merge](#deploy-on-merge)
     - [Rollback](#rollback)
-11. [Cognito ID Token](#cognito-id-token)
-12. [Connecting to the Bastion Host](#connecting-to-the-bastion-host)
+13. [Cognito ID Token](#cognito-id-token)
+14. [Connecting to the Bastion Host](#connecting-to-the-bastion-host)
     - [Environment Variables](#environment-variables)
-13. [License](#license)
+15. [License](#license)
 
 ## Project Overview
 
@@ -114,11 +118,23 @@ Run E2E tests:
 npm run e2e
 ```
 
+### Fishery Factories
+
+Coming soon...
+
 ### Code Coverage
 
 Coverage thresholds are enforced at **80%** for all metrics. The build will fail if coverage drops below this threshold.
 
+## Development Website Proxy
+
+Coming soon...
+
 ## Lighthouse
+
+Coming soon...
+
+## Accessibility
 
 Coming soon...
 
