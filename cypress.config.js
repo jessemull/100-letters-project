@@ -5,7 +5,7 @@ module.exports = {
     baseUrl:
       process.env.NODE_ENV === 'production'
         ? 'https://onehundredletters.com'
-        : 'https://localhost:8080',
+        : 'http://localhost:8080',
     supportFile: false,
   },
 };
