@@ -3,6 +3,8 @@ const crypto = require('crypto');
 
 const getSignedCookies = () => {
   const privateKeyPath = process.env.CLOUDFRONT_PRIVATE_KEY_PATH;
+  const keyPairId = process.env.CLOUDFRONT_KEY_PAIR_ID;
+  const domain = process.env.CLOUDFRONT_DOMAIN;
 
   const privateKey = fs.readFileSync(privateKeyPath, 'utf8');
 
@@ -11,7 +13,7 @@ const getSignedCookies = () => {
   const policy = {
     Statement: [
       {
-        Resource: 'https://dev.onehundredletters.com/*',
+        Resource: `https://${domain}/*`,
         Condition: {
           DateLessThan: { 'AWS:EpochTime': expireTime },
         },
@@ -30,7 +32,7 @@ const getSignedCookies = () => {
   const cookies = {
     'CloudFront-Policy': policyBase64,
     'CloudFront-Signature': signatureBase64,
-    'CloudFront-Key-Pair-Id': 'K3M6YXSO1HS1DC',
+    'CloudFront-Key-Pair-Id': keyPairId,
   };
 
   return cookies;

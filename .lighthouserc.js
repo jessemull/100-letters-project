@@ -1,6 +1,8 @@
+// Proxy server with signed cookie for accessing https://dev.onehundredletters.com at http://localhost:8080...
+
 const urls = {
   production: 'https://onehundredletters.com',
-  test: 'https://dev.onehundredletters.com',
+  test: 'http://localhost:8080',
 };
 
 module.exports = {
@@ -15,6 +17,9 @@ module.exports = {
     },
     collect: {
       numberOfRuns: 3,
+      settings: {
+        throttlingMethod: 'devtools',
+      },
       startServer: async () => {
         const execa = await import('execa');
         await execa('npm', ['run', 'dev'], { stdio: 'inherit' });
