@@ -179,7 +179,7 @@ jobs:
         env:
           CLOUDFRONT_DOMAIN: ${{ secrets.CLOUDFRONT_DOMAIN }}
           CLOUDFRONT_KEY_PAIR_ID: ${{ secrets.CLOUDFRONT_KEY_PAIR_ID }}
-          CLOUDFRONT_PRIVATE_KEY_PATH: ${{ secrets.CLOUDFRONT_PRIVATE_KEY_PATH }}
+          CLOUDFRONT_PRIVATE_KEY_PATH: ${{ secrets.CLOUDFRONT_PRIVATE_KEY }}
 
       - name: Run Cypress Tests
         run: NODE_ENV=${{ inputs.environment }} npm run e2e
@@ -203,7 +203,7 @@ jobs:
         env:
           CLOUDFRONT_DOMAIN: ${{ secrets.CLOUDFRONT_DOMAIN }}
           CLOUDFRONT_KEY_PAIR_ID: ${{ secrets.CLOUDFRONT_KEY_PAIR_ID }}
-          CLOUDFRONT_PRIVATE_KEY_PATH: ${{ secrets.CLOUDFRONT_PRIVATE_KEY_PATH }}
+          CLOUDFRONT_PRIVATE_KEY_PATH: ${{ secrets.CLOUDFRONT_PRIVATE_KEY }}
           
       - name: Run Lighthouse Tests
         id: lighthouse
