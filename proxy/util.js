@@ -2,11 +2,12 @@ const fs = require('fs');
 const crypto = require('crypto');
 
 const getSignedCookies = () => {
+  const key = process.env.CLOUDFRONT_PRIVATE_KEY;
   const privateKeyPath = process.env.CLOUDFRONT_PRIVATE_KEY_PATH;
   const keyPairId = process.env.CLOUDFRONT_KEY_PAIR_ID;
   const domain = process.env.CLOUDFRONT_DOMAIN;
 
-  const privateKey = fs.readFileSync(privateKeyPath, 'utf8');
+  const privateKey = key || fs.readFileSync(privateKeyPath, 'utf8');
 
   const expireTime = Math.floor((Date.now() + 60 * 60 * 1000) / 1000);
 
