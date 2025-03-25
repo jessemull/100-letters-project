@@ -174,7 +174,7 @@ jobs:
       - name: Start Proxy Server
         if: inputs.environment == 'test'
         run: |
-          NODE_ENV=${{ inputs.environment }} nohup npm run proxy > proxy.log 2>&1 &
+          NODE_ENV=${{ inputs.environment }} nohup npm run proxy &
         continue-on-error: true
         env:
           CLOUDFRONT_DOMAIN: ${{ secrets.CLOUDFRONT_DOMAIN }}
@@ -183,37 +183,33 @@ jobs:
 
       - name: Run Cypress Tests
         run: NODE_ENV=${{ inputs.environment }} npm run e2e
-      
-      - name: Print Proxy Logs
-        if: always()
-        run: cat proxy.log
 
-  # lighthouse_tests:
-  #   name: Run Lighthouse Tests
+  lighthouse_tests:
+    name: Run Lighthouse Tests
     # needs: deploy_to_s3
-    # runs-on: ubuntu-latest
-    # steps:
-    #   - name: Checkout Code
-    #     uses: actions/checkout@v4
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-    #   - name: Install Dependencies
-    #     run: npm ci
+      - name: Install Dependencies
+        run: npm ci
 
-    #   - name: Start Proxy Server
-    #     if: inputs.environment == 'test'
-    #     run: |
-    #       NODE_ENV=${{ inputs.environment }} nohup npm run proxy &
-    #     continue-on-error: true
-    #     env:
-    #       CLOUDFRONT_DOMAIN: ${{ secrets.CLOUDFRONT_DOMAIN }}
-    #       CLOUDFRONT_KEY_PAIR_ID: ${{ secrets.CLOUDFRONT_KEY_PAIR_ID }}
-    #       CLOUDFRONT_PRIVATE_KEY_PATH: ${{ secrets.CLOUDFRONT_PRIVATE_KEY }}
+      - name: Start Proxy Server
+        if: inputs.environment == 'test'
+        run: |
+          NODE_ENV=${{ inputs.environment }} nohup npm run proxy &
+        continue-on-error: true
+        env:
+          CLOUDFRONT_DOMAIN: ${{ secrets.CLOUDFRONT_DOMAIN }}
+          CLOUDFRONT_KEY_PAIR_ID: ${{ secrets.CLOUDFRONT_KEY_PAIR_ID }}
+          CLOUDFRONT_PRIVATE_KEY: ${{ secrets.CLOUDFRONT_PRIVATE_KEY }}
           
-    #   - name: Run Lighthouse Tests
-    #     id: lighthouse
-    #     run: |
-    #       NODE_ENV=${{ inputs.environment }} npx lhci autorun
-    #     continue-on-error: true
+      - name: Run Lighthouse Tests
+        id: lighthouse
+        run: |
+          NODE_ENV=${{ inputs.environment }} npx lhci autorun
+        continue-on-error: true
 
   # rollback:
   #   name: Revert S3 Deployment
