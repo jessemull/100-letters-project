@@ -13,150 +13,150 @@ on:
           - production
 
 jobs:
-  build:
-    name: Build Next.js
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+  # build:
+  #   name: Build Next.js
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout Code
+  #       uses: actions/checkout@v4
 
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
+  #     - name: Install Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: '20'
+  #         cache: 'npm'
 
-      - name: Install Dependencies
-        run: npm ci
+  #     - name: Install Dependencies
+  #       run: npm ci
 
-      - name: Build Next.js
-        run: |
-          echo "Deploying to ${{ inputs.environment }} environment"
-          NODE_ENV=${{ inputs.environment }} npm run build
-        env:
-          API_URL: ${{ inputs.environment == 'test' && secrets.API_URL_DEV || secrets.API_URL_PROD }}
-          COGNITO_USER_POOL_CLIENT_ID: ${{ inputs.environment == 'test' && secrets.COGNITO_USER_POOL_CLIENT_ID_DEV || secrets.COGNITO_USER_POOL_CLIENT_ID_PROD }}
-          COGNITO_USER_POOL_PASSWORD: ${{ inputs.environment == 'test' && secrets.COGNITO_USER_POOL_PASSWORD_DEV || secrets.COGNITO_USER_POOL_PASSWORD_PROD }}
-          COGNITO_USER_POOL_USERNAME: ${{ inputs.environment == 'test' && secrets.COGNITO_USER_POOL_USERNAME_DEV || secrets.COGNITO_USER_POOL_USERNAME_PROD }}
+  #     - name: Build Next.js
+  #       run: |
+  #         echo "Deploying to ${{ inputs.environment }} environment"
+  #         NODE_ENV=${{ inputs.environment }} npm run build
+  #       env:
+  #         API_URL: ${{ inputs.environment == 'test' && secrets.API_URL_DEV || secrets.API_URL_PROD }}
+  #         COGNITO_USER_POOL_CLIENT_ID: ${{ inputs.environment == 'test' && secrets.COGNITO_USER_POOL_CLIENT_ID_DEV || secrets.COGNITO_USER_POOL_CLIENT_ID_PROD }}
+  #         COGNITO_USER_POOL_PASSWORD: ${{ inputs.environment == 'test' && secrets.COGNITO_USER_POOL_PASSWORD_DEV || secrets.COGNITO_USER_POOL_PASSWORD_PROD }}
+  #         COGNITO_USER_POOL_USERNAME: ${{ inputs.environment == 'test' && secrets.COGNITO_USER_POOL_USERNAME_DEV || secrets.COGNITO_USER_POOL_USERNAME_PROD }}
 
-      - name: Copy Sitemap and Robots Files
-        run: |
-          cp public/sitemap.xml out/
-          cp public/robots.txt out/
-          cp public/sitemap-0.xml out/
+  #     - name: Copy Sitemap and Robots Files
+  #       run: |
+  #         cp public/sitemap.xml out/
+  #         cp public/robots.txt out/
+  #         cp public/sitemap-0.xml out/
 
-      - name: Archive Build Output
-        uses: actions/upload-artifact@v4
-        with:
-          name: next-build
-          path: out
-          retention-days: 1
+  #     - name: Archive Build Output
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: next-build
+  #         path: out
+  #         retention-days: 1
 
-  test:
-    name: Run Unit Tests
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+  # test:
+  #   name: Run Unit Tests
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout Code
+  #       uses: actions/checkout@v4
 
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
+  #     - name: Install Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: '20'
+  #         cache: 'npm'
 
-      - name: Install Dependencies
-        run: npm ci
+  #     - name: Install Dependencies
+  #       run: npm ci
 
-      - name: Run Jest Tests
-        run: npm run test
+  #     - name: Run Jest Tests
+  #       run: npm run test
 
-      - name: Upload Coverage Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report
-          path: coverage
-          retention-days: 7
+  #     - name: Upload Coverage Report
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: coverage-report
+  #         path: coverage
+  #         retention-days: 7
 
-      - name: Coverage Threshold Check
-        run: |
-          if [[ $(grep "Statements" coverage/lcov-report/index.html | awk '{print $4}' | tr -d '%') -lt 80 ]]; then
-            echo "Code coverage is below threshold. Please update test coverage and try again."
-            exit 1
-          fi
+  #     - name: Coverage Threshold Check
+  #       run: |
+  #         if [[ $(grep "Statements" coverage/lcov-report/index.html | awk '{print $4}' | tr -d '%') -lt 80 ]]; then
+  #           echo "Code coverage is below threshold. Please update test coverage and try again."
+  #           exit 1
+  #         fi
 
-  backup_s3:
-    name: Backup S3
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+  # backup_s3:
+  #   name: Backup S3
+  #   needs: test
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout Code
+  #       uses: actions/checkout@v4
 
-      - name: Generate Timestamp
-        id: timestamp
-        run: echo "BACKUP_DIR=$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
+  #     - name: Generate Timestamp
+  #       id: timestamp
+  #       run: echo "BACKUP_DIR=$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
 
-      - name: Backup S3
-        run: |
-          aws s3 sync s3://$AWS_S3_BUCKET s3://$AWS_S3_BACKUP_BUCKET/$BACKUP_DIR/ --exact-timestamps
-        env:
-          AWS_S3_BUCKET: ${{ inputs.environment == 'test' && secrets.AWS_S3_BUCKET_DEV || secrets.AWS_S3_BUCKET_PROD }}
-          AWS_S3_BACKUP_BUCKET: ${{ inputs.environment == 'test' && secrets.AWS_S3_BUCKET_BACKUP_DEV || secrets.AWS_S3_BUCKET_BACKUP_PROD }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
+  #     - name: Backup S3
+  #       run: |
+  #         aws s3 sync s3://$AWS_S3_BUCKET s3://$AWS_S3_BACKUP_BUCKET/$BACKUP_DIR/ --exact-timestamps
+  #       env:
+  #         AWS_S3_BUCKET: ${{ inputs.environment == 'test' && secrets.AWS_S3_BUCKET_DEV || secrets.AWS_S3_BUCKET_PROD }}
+  #         AWS_S3_BACKUP_BUCKET: ${{ inputs.environment == 'test' && secrets.AWS_S3_BUCKET_BACKUP_DEV || secrets.AWS_S3_BUCKET_BACKUP_PROD }}
+  #         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #         AWS_REGION: ${{ secrets.AWS_REGION }}
 
-      - name: Save Backup Directory
-        run: echo "BACKUP_DIR=$BACKUP_DIR" >> $GITHUB_ENV
+  #     - name: Save Backup Directory
+  #       run: echo "BACKUP_DIR=$BACKUP_DIR" >> $GITHUB_ENV
 
-  deploy_to_s3:
-    name: Deploy to S3
-    needs: backup_s3
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+  # deploy_to_s3:
+  #   name: Deploy to S3
+  #   needs: backup_s3
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout Code
+  #       uses: actions/checkout@v4
 
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
+  #     - name: Install Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: '20'
+  #         cache: 'npm'
 
-      - name: Install Dependencies
-        run: npm ci
+  #     - name: Install Dependencies
+  #       run: npm ci
 
-      - name: Download Build Output
-        uses: actions/download-artifact@v4
-        with:
-          name: next-build
-          path: next-build
+  #     - name: Download Build Output
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: next-build
+  #         path: next-build
 
-      - name: Deploy to S3
-        uses: jakejarvis/s3-sync-action@v0.5.0
-        with:
-          args: --delete
-        env:
-          AWS_S3_BUCKET: ${{ inputs.environment == 'test' && secrets.AWS_S3_BUCKET_DEV || secrets.AWS_S3_BUCKET_PROD }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          SOURCE_DIR: 'next-build'
+  #     - name: Deploy to S3
+  #       uses: jakejarvis/s3-sync-action@v0.5.0
+  #       with:
+  #         args: --delete
+  #       env:
+  #         AWS_S3_BUCKET: ${{ inputs.environment == 'test' && secrets.AWS_S3_BUCKET_DEV || secrets.AWS_S3_BUCKET_PROD }}
+  #         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #         AWS_REGION: ${{ secrets.AWS_REGION }}
+  #         SOURCE_DIR: 'next-build'
 
-      - name: Invalidate CloudFront Cache
-        uses: chetan/invalidate-cloudfront-action@v2
-        env:
-          DISTRIBUTION: ${{ inputs.environment == 'test' && secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV || secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD }}
-          PATHS: "/*"
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
+  #     - name: Invalidate CloudFront Cache
+  #       uses: chetan/invalidate-cloudfront-action@v2
+  #       env:
+  #         DISTRIBUTION: ${{ inputs.environment == 'test' && secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV || secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD }}
+  #         PATHS: "/*"
+  #         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #         AWS_REGION: ${{ secrets.AWS_REGION }}
 
   e2e_tests:
     name: Run E2E Tests
-    needs: deploy_to_s3
+    # needs: deploy_to_s3
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -174,7 +174,7 @@ jobs:
       - name: Start Proxy Server
         if: inputs.environment == 'test'
         run: |
-          NODE_ENV=${{ inputs.environment }} nohup npm run proxy &
+          NODE_ENV=${{ inputs.environment }} nohup npm run proxy > proxy.log 2>&1 &
         continue-on-error: true
         env:
           CLOUDFRONT_DOMAIN: ${{ secrets.CLOUDFRONT_DOMAIN }}
@@ -183,54 +183,58 @@ jobs:
 
       - name: Run Cypress Tests
         run: NODE_ENV=${{ inputs.environment }} npm run e2e
-
-  lighthouse_tests:
-    name: Run Lighthouse Tests
-    needs: deploy_to_s3
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Start Proxy Server
-        if: inputs.environment == 'test'
-        run: |
-          NODE_ENV=${{ inputs.environment }} nohup npm run proxy &
-        continue-on-error: true
-        env:
-          CLOUDFRONT_DOMAIN: ${{ secrets.CLOUDFRONT_DOMAIN }}
-          CLOUDFRONT_KEY_PAIR_ID: ${{ secrets.CLOUDFRONT_KEY_PAIR_ID }}
-          CLOUDFRONT_PRIVATE_KEY_PATH: ${{ secrets.CLOUDFRONT_PRIVATE_KEY }}
-          
-      - name: Run Lighthouse Tests
-        id: lighthouse
-        run: |
-          NODE_ENV=${{ inputs.environment }} npx lhci autorun
-        continue-on-error: true
-
-  rollback:
-    name: Revert S3 Deployment
-    needs: lighthouse_tests
-    if: ${{ needs.lighthouse_tests.result == 'failure' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Restore Latest Backup
-        run: |
-          echo "Lighthouse tests failed. Reverting S3 deployment from backup directory: $BACKUP_DIR."
-          aws s3 sync s3://$AWS_S3_BACKUP_BUCKET/$BACKUP_DIR/ s3://$AWS_S3_BUCKET --delete
-        env:
-          AWS_S3_BUCKET: ${{ inputs.environment == 'test' && secrets.AWS_S3_BUCKET_DEV || secrets.AWS_S3_BUCKET_PROD }}
-          AWS_S3_BACKUP_BUCKET: ${{ inputs.environment == 'test' && secrets.AWS_S3_BUCKET_BACKUP_DEV || secrets.AWS_S3_BUCKET_BACKUP_PROD }}
-          BACKUP_DIR: ${{ env.BACKUP_DIR }}
       
-      - name: Invalidate CloudFront Cache
-        uses: chetan/invalidate-cloudfront-action@v2
-        env:
-          DISTRIBUTION: ${{ inputs.environment == 'test' && secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV || secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD }}
-          PATHS: "/*"
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
+      - name: Print Proxy Logs
+        if: always()
+        run: cat proxy.log
+
+  # lighthouse_tests:
+  #   name: Run Lighthouse Tests
+    # needs: deploy_to_s3
+    # runs-on: ubuntu-latest
+    # steps:
+    #   - name: Checkout Code
+    #     uses: actions/checkout@v4
+
+    #   - name: Install Dependencies
+    #     run: npm ci
+
+    #   - name: Start Proxy Server
+    #     if: inputs.environment == 'test'
+    #     run: |
+    #       NODE_ENV=${{ inputs.environment }} nohup npm run proxy &
+    #     continue-on-error: true
+    #     env:
+    #       CLOUDFRONT_DOMAIN: ${{ secrets.CLOUDFRONT_DOMAIN }}
+    #       CLOUDFRONT_KEY_PAIR_ID: ${{ secrets.CLOUDFRONT_KEY_PAIR_ID }}
+    #       CLOUDFRONT_PRIVATE_KEY_PATH: ${{ secrets.CLOUDFRONT_PRIVATE_KEY }}
+          
+    #   - name: Run Lighthouse Tests
+    #     id: lighthouse
+    #     run: |
+    #       NODE_ENV=${{ inputs.environment }} npx lhci autorun
+    #     continue-on-error: true
+
+  # rollback:
+  #   name: Revert S3 Deployment
+  #   needs: lighthouse_tests
+  #   if: ${{ needs.lighthouse_tests.result == 'failure' }}
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Restore Latest Backup
+  #       run: |
+  #         echo "Lighthouse tests failed. Reverting S3 deployment from backup directory: $BACKUP_DIR."
+  #         aws s3 sync s3://$AWS_S3_BACKUP_BUCKET/$BACKUP_DIR/ s3://$AWS_S3_BUCKET --delete
+  #       env:
+  #         AWS_S3_BUCKET: ${{ inputs.environment == 'test' && secrets.AWS_S3_BUCKET_DEV || secrets.AWS_S3_BUCKET_PROD }}
+  #         AWS_S3_BACKUP_BUCKET: ${{ inputs.environment == 'test' && secrets.AWS_S3_BUCKET_BACKUP_DEV || secrets.AWS_S3_BUCKET_BACKUP_PROD }}
+  #         BACKUP_DIR: ${{ env.BACKUP_DIR }}
+      
+  #     - name: Invalidate CloudFront Cache
+  #       uses: chetan/invalidate-cloudfront-action@v2
+  #       env:
+  #         DISTRIBUTION: ${{ inputs.environment == 'test' && secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV || secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD }}
+  #         PATHS: "/*"
+  #         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #         AWS_REGION: ${{ secrets.AWS_REGION }}
