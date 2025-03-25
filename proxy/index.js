@@ -6,7 +6,7 @@ const { getSignedCookies } = require('./util');
 
 const app = express();
 
-const PORT = 3001;
+const PORT = 8080;
 const CLOUDFRONT_DOMAIN = process.env.CLOUDFRONT_DOMAIN;
 const COOKIE_TTL = 60 * 60 * 1000;
 
@@ -25,7 +25,14 @@ app.use((req, res, next) => {
       });
     });
 
-    return res.redirect(req.originalUrl);
+    return res.redirect(307, req.originalUrl);
+  }
+  next();
+});
+
+app.use((req, res, next) => {
+  if (req.url.match(/\.(js|css|png|jpg|jpeg|gif|svg|woff2?)$/)) {
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
   }
   next();
 });
@@ -33,8 +40,9 @@ app.use((req, res, next) => {
 app.use(
   '/',
   createProxyMiddleware({
-    target: `https://${CLOUDFRONT_DOMAIN}`,
     changeOrigin: true,
+    http2: true,
+    target: `https://${CLOUDFRONT_DOMAIN}`,
     onProxyReq: (proxyReq, req, res) => {
       if (req.headers.cookie) {
         proxyReq.setHeader('Cookie', req.headers.cookie);
