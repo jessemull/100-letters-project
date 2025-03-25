@@ -167,7 +167,6 @@ jobs:
       - name: Start Proxy Server
         run: |
           NODE_ENV=test nohup npm run proxy &
-        continue-on-error: true
         env:
           CLOUDFRONT_DOMAIN: ${{ secrets.CLOUDFRONT_DOMAIN }}
           CLOUDFRONT_KEY_PAIR_ID: ${{ secrets.CLOUDFRONT_KEY_PAIR_ID }}
@@ -190,7 +189,6 @@ jobs:
       - name: Start Proxy Server
         run: |
           NODE_ENV=test nohup npm run proxy &
-        continue-on-error: true
         env:
           CLOUDFRONT_DOMAIN: ${{ secrets.CLOUDFRONT_DOMAIN }}
           CLOUDFRONT_KEY_PAIR_ID: ${{ secrets.CLOUDFRONT_KEY_PAIR_ID }}
