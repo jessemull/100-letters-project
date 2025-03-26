@@ -133,3 +133,5 @@ jobs:
         run: |
           npx lhci autorun
         continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.LIGHTHOUSE_PAT }}
