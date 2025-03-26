@@ -1,4 +1,4 @@
-# 100 Letters Project API
+# 100 Letters Project
 
 The **100 Letters Project** is driven by the desire to promote real human interaction in an increasingly digital world and create meaningful connections through handwritten communication. Over the course of a year I will write 100 letters to 100 individuals.
 
@@ -15,28 +15,28 @@ The **100 Letters Project** website showcases these exchanges, offering a digita
    - [Linting Commands](#linting-commands)
    - [Formatting Commands](#formatting-commands)
    - [Pre-Commit Hook](#pre-commit-hook)
-7. [Testing & Code Coverage](#testing--code-coverage)
+7. [Unit Tests & Code Coverage](#unit-tests--code-coverage)
    - [Unit Tests](#unit-tests)
-   - [E2E Tests](#e2e-tests)
    - [Fishery Factories](#fishery-factories)
    - [Code Coverage](#code-coverage)
 8. [Development Website Proxy](#development-website-proxy)
-9. [Lighthouse](#lighthouse)
-10. [Accessibility](#accessibility)
-11. [Build](#build)
+9. [E2E Tests](#e2e-tests)
+10. [Lighthouse](#lighthouse)
+11. [Accessibility](#accessibility)
+12. [Build](#build)
     - [Install](#install)
     - [Build](#build)
-12. [Deployment Pipelines](#deployment-pipelines)
+13. [Deployment Pipelines](#deployment-pipelines)
     - [Deployment Strategy](#deployment-strategy)
     - [Tools Used](#tools-used)
     - [Pull Request](#pull-request)
     - [Deploy](#deploy-on-merge)
     - [Deploy On Merge](#deploy-on-merge)
     - [Rollback](#rollback)
-13. [Cognito ID Token](#cognito-id-token)
-14. [Connecting to the Bastion Host](#connecting-to-the-bastion-host)
+14. [Cognito ID Token](#cognito-id-token)
+15. [Connecting to the Bastion Host](#connecting-to-the-bastion-host)
     - [Environment Variables](#environment-variables)
-15. [License](#license)
+16. [License](#license)
 
 ## Project Overview
 
@@ -162,7 +162,7 @@ npm run format
 
 **Lint-staged** is configured to run linting before each commit. The commit will be blocked if linting fails, ensuring code quality at the commit level.
 
-## Testing & Code Coverage
+## Unit Tests & Code Coverage
 
 ### Unit Tests
 
