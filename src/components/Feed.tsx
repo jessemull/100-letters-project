@@ -3,7 +3,7 @@ import Card from './Card';
 import { Correspondence } from '../types';
 import { CorrespondenceContext } from '../contexts';
 import { useContext } from 'react';
-
+import EnvelopeAnimation from './EnvelopeAnimation';
 const Feed = () => {
   const { correspondences } = useContext(CorrespondenceContext);
 
@@ -11,7 +11,8 @@ const Feed = () => {
     <main className="bg-gray-100 py-12 min-h-[calc(100vh-120px)] flex flex-col justify-between">
       <div className="container mx-auto flex-grow">
         <div className="space-y-8">
-          {correspondences.length === 0 ? (
+          <EnvelopeAnimation />
+          {/* {correspondences.length === 0 ? (
             <>
               <p className="text-center text-xl text-gray-500 font-bold">
                 Coming Soon...
@@ -33,7 +34,7 @@ const Feed = () => {
             correspondences.map((item: Correspondence) => (
               <Card key={item.correspondenceId} correspondence={item} />
             ))
-          )}
+          )} */}
         </div>
       </div>
     </main>
