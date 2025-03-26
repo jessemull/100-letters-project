@@ -201,6 +201,8 @@ jobs:
         run: |
           NODE_ENV=test npx lhci autorun
         continue-on-error: true
+        env:
+          LHCI_GITHUB_TOKEN: ${{ secrets.LIGHTHOUSE_PAT }}
 
   rollback:
     name: Revert S3 Deployment
