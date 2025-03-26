@@ -40,19 +40,25 @@ The **100 Letters Project** website showcases these exchanges, offering a digita
 
 ## Project Overview
 
-This project uses a NextJS static export pushed to an S3 bucket behind cloudfront. All read data is fetched during the build and loaded into a JSON file inside of the public directory. Any updates are protected via user login and AWS cognito authentication.
+This project uses a NextJS static export to an S3 bucket behind AWS Cloudfront. All read data is fetched during the build from the 100 letters project API and loaded into a JSON file inside of the public directory. Any write operations are protected via user login and AWS Cognito authentication.
 
 ## Environments
 
-The **100 Letters Project API** operates in multiple environments to ensure smooth development, testing, and production workflows. Each environment includes custom DNS and a separate cloudfront distribution.
+The **100 Letters Project** operates in multiple environments to ensure smooth development, testing, and production workflows. Each environment includes custom DNS and a separate cloudfront distribution.
 
-- **Test Environment**: The test environment is protected via signed cookies and is inaccessible to the public:
-  `https://dev.onehundredletters.com`.
-  `https://www.dev.onehundredletters.com`.
-- **Production Environment**: Live version of the website lives here:
+### Test Environment
 
-  `https://onehundredletters.com`.
-  `https://www.onehundredletters.com`.
+The test environment is protected via signed cookies and is inaccessible to the public.
+
+- `https://dev.onehundredletters.com`
+- `https://www.dev.onehundredletters.com`
+
+### Production Environment
+
+The production environment is open to the public.
+
+- `https://onehundredletters.com`
+- `https://www.onehundredletters.com`
 
 ## Tech Stack
 
@@ -104,7 +110,17 @@ To clone the repository, install dependencies, and run the project locally follo
    npm install
    ```
 
-4. The website is is served at http://localhost:3000. To start the dev server:
+4. Set environment variables:
+
+   The development server has a predev script that will check for static data loaded during the build at public/data.json. If the file is missing, the script will fetch the data required to run the application. The predev script uses machine user credentials to grab a cognito token using the following environment variables set in a `.env.test` and `.env.production` files in the root of the project:
+
+   ```
+   COGNITO_USER_POOL_USERNAME=cognito-user-pool-username
+   COGNITO_USER_POOL_PASSWORD=cognito-user-pool-password
+   COGNITO_USER_POOL_CLIENT_ID=cognito-user-pool-client-id
+   ```
+
+5. Start the dev server:
 
    ```bash
    npm run dev
@@ -166,7 +182,7 @@ npm run test:watch
 
 ### Fishery Factories
 
-Fishery factory functions are available for all of the models used by the 100 letters project to provide mock data. Factories are positioned at src/factories:
+Fishery factory functions to provide mock data are available for all of the models used by the 100 letters project. Factories are located at src/factories:
 
 - Correspondences
 - Letters
@@ -206,7 +222,7 @@ This project uses **Cypress** for end to end testing. The build will fail on end
 
 Lighthouse tests for the development/test domain must be run through the proxy server with the appropriate environment variables set (see running the proxy).
 
-In order to have the proxy work as expected and not impact performance, throttling has been set to devtools in the lighthouse config and the proxy is set up to cache files and redirect with a temporary redirect after setting signed cookies (307).
+In order to have the proxy work as expected and not impact performance, throttling has been set to devtools in the lighthouse config and the proxy is set up to cache files and use a temporary redirect after setting signed cookies (307).
 
 ### Running E2E Tests - Development
 
@@ -227,7 +243,7 @@ npm run e2e
 Start the proxy server:
 
 ```bash
-npm run dev
+npm run proxy
 ```
 
 Run E2E tests:
@@ -246,13 +262,13 @@ NODE_ENV=production npm run e2e
 
 ## Lighthouse
 
-Lighthouse is used for performance, SEO and accessibility metrics. It is fully integrated into the CI/CD pipeline and runs on PR, merge and deployment.
+Lighthouse is used for performance, SEO and accessibility metrics. It is fully integrated into the CI/CD pipeline and runs on pull-request, merge and deployment.
 
 ### Configuration
 
 Lighthouse tests for the development/test domain must be run through the proxy server with the appropriate environment variables set (see running the proxy).
 
-In order to have the proxy work as expected and not impact performance, throttling has been set to devtools in the lighthouse config and the proxy is set up to cache files and redirect with a temporary redirect after setting signed cookies (307).
+In order to have the proxy work as expected and not impact performance, throttling has been set to devtools in the lighthouse config and the proxy is set up to cache files and use a temporary redirect after setting signed cookies (307).
 
 ### Running Lighthouse - Development
 
@@ -349,7 +365,15 @@ NODE_ENV=production npm run build
 
 ### Building The Development Server
 
-The development server has a predev script that will check for the static data loading during the build at public/data.json and fetch the data if the file is missing. The predev script uses machine user credentials to grab a cognito token.
+The development server has a predev script that will check for static data loaded during the build at public/data.json. If the file is missing, the script will fetch the data and write it. The predev script uses machine user credentials to grab a cognito token.
+
+The following environment variables must be set in `.env.test` and `env.production` files in the root of the project:
+
+```
+COGNITO_USER_POOL_CLIENT_ID=cognito-user-pool-client-id
+COGNITO_USER_POOL_PASSWORD=cognito-user-pool-password
+COGNITO_USER_POOL_USERNAME=cognito-user-pool-username
+```
 
 To run the pre-dev script:
 
@@ -391,7 +415,7 @@ This strategy ensures that the deployment process is automated, reliable, and ea
 
 ### Pull Request
 
-This pipeline automates the validation process for pull requests targeting the `main` branch. It ensures that new changes are properly built, linted, tested, and evaluated for performance before merging.
+This pipeline automates the validation process for pull requests targeting the `main` branch. It ensures that new changes are properly built, linted, tested and evaluated for performance before merging.
 
 The pipeline performs the following steps:
 
@@ -427,7 +451,7 @@ The workflow performs the following steps:
 4. **Deploy to S3** – Downloads the archived build output, syncs it to the S3 bucket, and invalidates the CloudFront cache.
 5. **Run E2E Tests** – Executes Cypress tests against the deployed site.
 6. **Run Lighthouse Tests** – Performs performance and accessibility audits using Lighthouse.
-7. **Rollback Deployment (if necessary)** – If Lighthouse tests fail, the workflow restores the previous deployment from the backup.
+7. **Rollback Deployment** – If Lighthouse tests fail, the workflow restores the previous deployment from the backup.
 
 This workflow is defined in the `.github/workflows/merge.yml` file.
 
@@ -467,7 +491,6 @@ curl -X POST "https://api-dev.onehundredletters.com/<stage>/<route>"  -H "Author
 The following environment variables must be set in a `.env.test` and `.env.production` file in the root of the project to generate a token:
 
 ```
-COGNITO_USER_POOL_ID=cognito-user-pool-id
 COGNITO_USER_POOL_USERNAME=cognito-user-pool-username
 COGNITO_USER_POOL_PASSWORD=cognito-user-pool-password
 COGNITO_USER_POOL_CLIENT_ID=cognito-user-pool-client-id
