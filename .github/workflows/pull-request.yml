@@ -131,8 +131,7 @@ jobs:
 
       - name: Run Lighthouse Tests
         run: |
-          echo $GH_TOKEN
-          GH_TOKEN=$GH_TOKEN npx lhci autorun
+          npx lhci autorun
         continue-on-error: true
         env:
-          GH_TOKEN: ${{ secrets.LIGHTHOUSE_PAT }}
+          LHCI_GITHUB_TOKEN: ${{ secrets.LIGHTHOUSE_PAT }}
