@@ -17,6 +17,7 @@ const EnvelopeAnimation: React.FC<EnvelopeAnimationProps> = ({
   const [showText, setShowText] = useState(false);
   const [size, setSize] = useState({ width: 320, height: 224, flap: 120 });
   const [textSize, setTextSize] = useState('text-4xl');
+  const [isReady, setIsReady] = useState(false); // Add isReady state
 
   // Resize listener for parent container
   const { width } = useResizeDetector({
@@ -51,24 +52,30 @@ const EnvelopeAnimation: React.FC<EnvelopeAnimationProps> = ({
         newTextSize = 'text-4xl';
       }
 
-      console.log(newWidth, newTextSize);
-
       // Only update text size if it's different from the current value
       if (newTextSize !== textSize) {
-        console.log(newWidth, newTextSize, textSize);
         setTextSize(newTextSize);
       }
+
+      // Set isReady to true once the size calculation is done
+      setIsReady(true);
     }
-  }, [width, textSize]); // Add textSize to dependency to avoid unnecessary updates
+  }, [width, textSize]);
 
   useEffect(() => {
-    setTimeout(() => setStartAnimation(true), 500);
-    setTimeout(() => setShowLetter(true), 800);
-    setTimeout(() => {
-      setFlapZIndex(5);
-    }, 1000);
-    setTimeout(() => setShowText(true), 1200);
-  }, []);
+    if (isReady) {
+      setTimeout(() => setStartAnimation(true), 500);
+      setTimeout(() => setShowLetter(true), 800);
+      setTimeout(() => {
+        setFlapZIndex(5);
+      }, 1000);
+      setTimeout(() => setShowText(true), 1200);
+    }
+  }, [isReady]);
+
+  if (!isReady) {
+    return null; // Don't render the animation until the sizes are calculated
+  }
 
   return (
     <div className="relative flex items-center justify-center h-screen bg-gray-100">
