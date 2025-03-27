@@ -8,9 +8,9 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-gray-800 text-white p-4">
+    <header className="bg-gray-800 text-white p-4 font-merriweather">
       <div className="container mx-auto flex justify-between items-center">
-        <div className="text-2xl font-bold">100 Letters Project</div>
+        <div className="text-2xl">100 Letters Project</div>
         <nav>
           <ul className="flex space-x-6">
             <li>
