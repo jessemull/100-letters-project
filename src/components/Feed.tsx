@@ -2,17 +2,20 @@
 import Card from './Card';
 import { Correspondence } from '../types';
 import { CorrespondenceContext } from '../contexts';
-import { useContext } from 'react';
+import { useContext, useRef, MutableRefObject } from 'react';
 import EnvelopeAnimation from './EnvelopeAnimation';
 const Feed = () => {
   const { correspondences } = useContext(CorrespondenceContext);
-
+  const containerRef = useRef<HTMLDivElement | null>(null);
   return (
-    <main className="bg-gray-100 py-12 min-h-[calc(100vh-120px)] flex flex-col justify-between">
-      <div className="container mx-auto flex-grow">
-        <div className="space-y-8">
-          <EnvelopeAnimation />
-          {/* {correspondences.length === 0 ? (
+    <main
+      ref={containerRef}
+      className="bg-gray-100 min-h-[calc(100vh-120px)] flex flex-col items-center justify-center"
+    >
+      <EnvelopeAnimation
+        containerRef={containerRef as MutableRefObject<HTMLElement>}
+      />
+      {/* {correspondences.length === 0 ? (
             <>
               <p className="text-center text-xl text-gray-500 font-bold">
                 Coming Soon...
@@ -35,8 +38,6 @@ const Feed = () => {
               <Card key={item.correspondenceId} correspondence={item} />
             ))
           )} */}
-        </div>
-      </div>
     </main>
   );
 };

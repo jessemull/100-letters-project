@@ -8,7 +8,7 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-gray-800 text-white p-4 font-merriweather">
+    <header className="bg-gray-800 text-white p-4 font-merriweather sticky top-0 z-50">
       <div className="container mx-auto flex justify-between items-center">
         <div className="text-2xl">100 Letters Project</div>
         <nav>
