@@ -3,7 +3,6 @@ import Script from 'next/script';
 import data from '../../public/data.json';
 import { Correspondence, Letter, Recipient } from '../types';
 import { CorrespondenceProvider } from '../contexts';
-import { GA_TRACKING_ID } from 'src/constants';
 
 const { correspondences, letters, recipients } = data;
 
@@ -37,13 +36,13 @@ export const metadata = {
   },
 };
 
+const GA_TRACKING_ID = process.env.GA_TRACKING_ID;
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const isProduction = process.env.NODE_ENV === 'production';
-
   return (
     <html lang="en">
       <head>
@@ -60,22 +59,20 @@ export default function RootLayout({
         >
           {children}
         </CorrespondenceProvider>
-        {isProduction && (
-          <>
-            <Script
-              strategy="afterInteractive"
-              src={`https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`}
-            />
-            <Script id="google-analytics" strategy="afterInteractive">
-              {`
+        <>
+          <Script
+            strategy="afterInteractive"
+            src={`https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`}
+          />
+          <Script id="google-analytics" strategy="afterInteractive">
+            {`
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){window.dataLayer.push(arguments);}
                 gtag('js', new Date());
                 gtag('config', '${GA_TRACKING_ID}');
               `}
-            </Script>
-          </>
-        )}
+          </Script>
+        </>
       </body>
     </html>
   );
