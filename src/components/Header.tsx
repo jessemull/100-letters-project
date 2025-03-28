@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { Menu, User } from 'lucide-react';
 
 const Header = () => {
@@ -10,18 +11,18 @@ const Header = () => {
           <Menu className="h-6 w-6 text-white" />
         </button>
         <div className="flex items-center space-x-3">
-          <img src="/favicon.svg" alt="Logo" className="h-8 w-8" />
+          <Image src="/favicon.svg" alt="Logo" className="h-8 w-8" />
           <div className="text-2xl whitespace-nowrap pr-4">
             100 Letters Project
           </div>
           <nav className="hidden md:flex space-x-7">
-            <a href="#" className="hover:text-gray-400">
+            <a href="/" className="hover:text-gray-400">
               Home
             </a>
-            <a href="#" className="hover:text-gray-400">
+            <a href="/about" className="hover:text-gray-400">
               About
             </a>
-            <a href="#" className="hover:text-gray-400">
+            <a href="/contact" className="hover:text-gray-400">
               Contact
             </a>
           </nav>
