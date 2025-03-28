@@ -1,43 +1,46 @@
 'use client';
-import Card from './Card';
-import { Correspondence } from '../types';
-import { CorrespondenceContext } from '../contexts';
-import { useContext, useRef, MutableRefObject } from 'react';
-import EnvelopeAnimation from './EnvelopeAnimation';
+
+import Envelope from './Envelope';
+import { useRef, MutableRefObject, useState, useEffect } from 'react';
+
 const Feed = () => {
-  const { correspondences } = useContext(CorrespondenceContext);
   const containerRef = useRef<HTMLDivElement | null>(null);
+
+  const [showContent, setShowContent] = useState(false);
+
+  useEffect(() => {
+    setTimeout(() => setShowContent(true), 3500);
+  }, []);
+
   return (
     <main
       ref={containerRef}
-      className="bg-gray-100 min-h-[calc(100vh-120px)] flex flex-col items-center justify-center"
+      className="bg-gray-100 flex flex-col items-center p-16 md:p-32 min-h-screen"
     >
-      <EnvelopeAnimation
-        containerRef={containerRef as MutableRefObject<HTMLElement>}
-      />
-      {/* {correspondences.length === 0 ? (
-            <>
-              <p className="text-center text-xl text-gray-500 font-bold">
-                Coming Soon...
-              </p>
-              <p className="text-center text-l text-gray-500 w-1/2 mx-auto">
-                The <strong>100 Letters Project</strong> is driven by the desire
-                to promote real world human interaction in an increasingly
-                digital landscape and create meaningful connections through
-                handwritten communication. Over the course of a year, I will
-                write 100 letters to 100 individuals.
-              </p>
-              <p className="text-center text-l text-gray-500 w-1/2 mx-auto">
-                This website will showcase these exchanges, offering a digital
-                display of the letters with details about the recipients and the
-                reasons behind their selection.
-              </p>
-            </>
-          ) : (
-            correspondences.map((item: Correspondence) => (
-              <Card key={item.correspondenceId} correspondence={item} />
-            ))
-          )} */}
+      {!showContent && (
+        <Envelope
+          containerRef={containerRef as MutableRefObject<HTMLElement>}
+        />
+      )}
+      <div
+        className={`font-merriweather flex flex-col items-center text-center space-y-4 transition-all duration-[1000ms] ease-in ${
+          showContent ? 'opacity-100' : 'opacity-0'
+        }`}
+      >
+        <p className="text-xl text-gray-500 font-bold">Coming Soon...</p>
+        <p className="text-lg text-gray-500 md:w-2/3 lg:2-2/3 xl:w-1/2 md:mx-auto">
+          The <strong>100 Letters Project</strong> is driven by the desire to
+          promote real-world human interaction in an increasingly digital
+          landscape and create meaningful connections through handwritten
+          communication. Over the course of a year, I will write 100 letters to
+          100 individuals.
+        </p>
+        <p className="text-lg text-gray-500 md:w-2/3 lg:w-2/3 xl:w-1/2 md:mx-auto">
+          This website will showcase these exchanges, offering a digital display
+          of the letters with details about the recipients and the reasons
+          behind their selection.
+        </p>
+      </div>
     </main>
   );
 };

@@ -3,21 +3,9 @@ import Script from 'next/script';
 import data from '../../public/data.json';
 import { Correspondence, Letter, Recipient } from '../types';
 import { CorrespondenceProvider } from '../contexts';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { GA_TRACKING_ID } from 'src/constants';
 
 const { correspondences, letters, recipients } = data;
-
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
-
-const GA_TRACKING_ID = 'G-T56NPJ5SBE';
 
 export const metadata = {
   alternates: {
@@ -64,9 +52,7 @@ export default function RootLayout({
         <meta property="og:title" content="100 Letters Project" />
         <meta property="og:image" content="/og-image.png" />
       </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className="antialiased">
         <CorrespondenceProvider
           correspondences={correspondences as Correspondence[]}
           letters={letters as Letter[]}

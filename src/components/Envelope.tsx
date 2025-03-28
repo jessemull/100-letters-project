@@ -4,36 +4,37 @@ import { motion } from 'framer-motion';
 import { useState, useEffect, MutableRefObject } from 'react';
 import { useResizeDetector } from 'react-resize-detector';
 
-interface EnvelopeAnimationProps {
+interface EnvelopeProps {
   containerRef: MutableRefObject<HTMLElement>;
 }
 
-const EnvelopeAnimation: React.FC<EnvelopeAnimationProps> = ({
-  containerRef,
-}) => {
-  const [startAnimation, setStartAnimation] = useState(false);
-  const [showLetter, setShowLetter] = useState(false);
+const Envelope: React.FC<EnvelopeProps> = ({ containerRef }) => {
+  const [fadeOutEnvelope, setFadeOutEnvelope] = useState(false);
   const [flapZIndex, setFlapZIndex] = useState(30);
+  const [isReady, setIsReady] = useState(false);
+  const [showLetter, setShowLetter] = useState(false);
   const [showText, setShowText] = useState(false);
   const [size, setSize] = useState({ width: 320, height: 224, flap: 120 });
+  const [startAnimation, setStartAnimation] = useState(false);
   const [textSize, setTextSize] = useState('text-4xl');
-  const [isReady, setIsReady] = useState(false); // Add isReady state
 
-  // Resize listener for parent container
   const { width } = useResizeDetector({
     targetRef: containerRef,
   });
 
-  // Dynamically adjust envelope and text size based on container width
   useEffect(() => {
     if (width) {
-      const newWidth = Math.max(width * 0.25, 110); // Set envelope width to 35% of container width
-      const height = newWidth * (224 / 320); // Maintain relative proportions
-      const flap = newWidth * (120 / 320); // Maintain flap size proportion
+      let newWidth = Math.max(width * 0.35, 110);
+
+      if (width < 768) {
+        newWidth = width * 0.6;
+      }
+
+      const height = newWidth * (224 / 320);
+      const flap = newWidth * (120 / 320);
 
       setSize({ width: newWidth, height, flap });
 
-      // Dynamically set text size based on the width
       let newTextSize: string;
 
       if (newWidth < 320 * 0.25) {
@@ -42,22 +43,20 @@ const EnvelopeAnimation: React.FC<EnvelopeAnimationProps> = ({
         newTextSize = 'text-sm';
       } else if (newWidth < 640 * 0.25) {
         newTextSize = 'text-lg';
-      } else if (newWidth < 740 * 0.25) {
+      } else if (newWidth < 768 * 0.25) {
         newTextSize = 'text-xl';
-      } else if (newWidth < 840 * 0.25) {
+      } else if (newWidth < 1024 * 0.25) {
         newTextSize = 'text-2xl';
-      } else if (newWidth < 940 * 0.25) {
+      } else if (newWidth < 1280 * 0.25) {
         newTextSize = 'text-3xl';
       } else {
         newTextSize = 'text-4xl';
       }
 
-      // Only update text size if it's different from the current value
       if (newTextSize !== textSize) {
         setTextSize(newTextSize);
       }
 
-      // Set isReady to true once the size calculation is done
       setIsReady(true);
     }
   }, [width, textSize]);
@@ -70,61 +69,58 @@ const EnvelopeAnimation: React.FC<EnvelopeAnimationProps> = ({
         setFlapZIndex(5);
       }, 1000);
       setTimeout(() => setShowText(true), 1200);
+      setTimeout(() => setFadeOutEnvelope(true), 2750);
     }
   }, [isReady]);
 
   if (!isReady) {
-    return null; // Don't render the animation until the sizes are calculated
+    return null;
   }
 
   return (
-    <div className="relative flex items-center justify-center h-screen bg-gray-100">
-      {/* Envelope Container (Dynamically sized) */}
+    <div
+      className="relative flex items-center justify-center bg-gray-100"
+      style={{ transform: 'translateY(156px)' }}
+    >
       <motion.div
         className="relative flex items-center justify-center"
         style={{ width: size.width, height: size.height }}
         animate={{
           translateY: startAnimation ? `${Math.round(size.flap / 4)}px` : '0',
-        }} // Move the envelope down by the flap height
-        transition={{ duration: 0.8 }} // Ensure the duration matches the flap animation
+          opacity: fadeOutEnvelope ? 0 : 1,
+        }}
+        transition={{ duration: 0.8 }}
       >
-        {/* Envelope Body */}
-        <div className="absolute top-0 left-0 w-full h-full bg-yellow-500 shadow-lg rounded-b-md z-20" />
-
-        {/* Letter (Moves up between envelope and flap) */}
+        <div className="absolute top-0 left-0 w-full h-full shadow-lg rounded-b-md z-20 bg-gradient-to-b from-yellow-400 to-yellow-500" />
         {showLetter && (
           <motion.div
-            className="absolute bg-white border shadow-md rounded-sm flex items-center justify-center"
+            className="absolute bg-white border shadow-lg rounded-md flex items-center justify-center z-10"
             style={{
-              width: size.width * 0.7, // 70% of envelope width
-              height: size.height * 0.6, // 60% of envelope height
-              top: `30%`, // Keep the letter in the correct position
-              zIndex: 10, // Appears in front of the envelope, but behind the flap
+              width: `${size.width * 0.7}px`,
+              height: `${size.height * 0.6}px`,
+              top: '30%',
             }}
             initial={{ y: 0, opacity: 0 }}
             animate={{
-              y: `calc(-${size.height * 0.6}px - ${size.flap / 8}px)`, // Moves the letter past the flap half the flap height
+              y: `calc(-${size.height * 0.6}px - ${size.flap / 8}px)`,
               opacity: 1,
             }}
             transition={{ duration: 0.8 }}
           />
         )}
-
-        {/* Flap (Triangle) */}
         <motion.div
-          className="absolute top-0 left-0 w-0 h-0 border-l-transparent border-r-transparent border-t-yellow-600 origin-top"
+          className="absolute top-0 left-0 w-0 h-0 border-l-transparent border-r-transparent  border-t-yellow-500 origin-top"
           style={{
-            borderLeftWidth: size.width * 0.5,
-            borderRightWidth: size.width * 0.5,
-            borderTopWidth: size.flap,
+            borderLeftWidth: `${size.width * 0.5}px`,
+            borderRightWidth: `${size.width * 0.5}px`,
+            borderTopWidth: `${size.flap}px`,
             zIndex: flapZIndex,
+            background: 'linear-gradient(to bottom, #fdd835 0%, #fbc02d 100%)',
           }}
           initial={{ rotateX: 0 }}
           animate={startAnimation ? { rotateX: 180 } : {}}
           transition={{ duration: 0.8 }}
         />
-
-        {/* Centered Text */}
         {showText && (
           <motion.div
             className={`absolute flex flex-col items-center justify-center ${textSize} font-bold z-40 font-merriweather text-midnight`}
@@ -142,4 +138,4 @@ const EnvelopeAnimation: React.FC<EnvelopeAnimationProps> = ({
   );
 };
 
-export default EnvelopeAnimation;
+export default Envelope;
