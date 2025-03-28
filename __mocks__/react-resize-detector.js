@@ -1,3 +1,3 @@
 module.exports = {
-  useResizeDetector: jest.fn(() => ({ width: 0, height: 0 })),
+  useResizeDetector: jest.fn(() => ({ width: 1000, height: 1000 })),
 };

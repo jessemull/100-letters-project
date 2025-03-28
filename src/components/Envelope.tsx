@@ -80,6 +80,7 @@ const Envelope: React.FC<EnvelopeProps> = ({ containerRef }) => {
   return (
     <div
       className="relative flex items-center justify-center bg-gray-100"
+      data-testid="envelope"
       style={{ transform: 'translateY(156px)' }}
     >
       <motion.div
@@ -128,9 +129,9 @@ const Envelope: React.FC<EnvelopeProps> = ({ containerRef }) => {
             animate={{ opacity: 1 }}
             transition={{ duration: 2.5 }}
           >
-            <div>100</div>
-            <div>Letters</div>
-            <div>Project</div>
+            <div data-testid="msg-100">100</div>
+            <div data-testid="msg-letters">Letters</div>
+            <div data-testid="msg-project">Project</div>
           </motion.div>
         )}
       </motion.div>
