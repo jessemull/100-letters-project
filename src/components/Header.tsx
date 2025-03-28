@@ -6,7 +6,7 @@ const Header = () => {
   return (
     <header className="bg-gray-900 text-white px-4 py-3 font-merriweather sticky top-0 z-50 w-full">
       <div className="flex justify-between items-center max-w-full">
-        <button className="md:hidden">
+        <button aria-label="Open Menu" className="md:hidden">
           <Menu className="h-6 w-6 text-white" />
         </button>
         <div className="flex items-center space-x-3">
@@ -26,7 +26,7 @@ const Header = () => {
             </a>
           </nav>
         </div>
-        <User className="h-6 w-6 text-white" />
+        <User className="h-6 w-6 text-white" data-testid="user-icon" />
       </div>
     </header>
   );

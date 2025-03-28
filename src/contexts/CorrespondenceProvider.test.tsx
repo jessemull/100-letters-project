@@ -3,7 +3,7 @@ import {
   CorrespondenceContext,
   CorrespondenceProvider,
   useCorrespondence,
-} from './CorrespondenceProvider';
+} from './index';
 import { Correspondence, Letter, Recipient } from '../types';
 import {
   CorrespondenceFactory,
