@@ -1,16 +1,16 @@
-import { render, screen } from '@testing-library/react';
+import { Correspondence, Letter, Recipient } from '../types';
 import {
   CorrespondenceContext,
   CorrespondenceProvider,
   useCorrespondence,
 } from './index';
-import { Correspondence, Letter, Recipient } from '../types';
 import {
   CorrespondenceFactory,
   LetterFactory,
   RecipientFactory,
 } from '../factories';
 import { axe } from 'jest-axe';
+import { render, screen } from '@testing-library/react';
 
 const mockCorrespondences: Correspondence[] =
   CorrespondenceFactory.buildList(2);
@@ -19,7 +19,6 @@ const mockRecipients: Recipient[] = RecipientFactory.buildList(2);
 
 const TestComponent = () => {
   const { correspondences, letters, recipients } = useCorrespondence();
-
   return (
     <div>
       <div data-testid="correspondence-count">
@@ -42,7 +41,6 @@ describe('CorrespondenceContext', () => {
         <TestComponent />
       </CorrespondenceProvider>,
     );
-
     expect(screen.getByTestId('correspondence-count')).toHaveTextContent(
       'Correspondences: 2',
     );

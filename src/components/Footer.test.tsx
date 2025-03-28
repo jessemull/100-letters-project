@@ -10,6 +10,7 @@ describe('Footer Component', () => {
     );
     expect(footer).toBeInTheDocument();
   });
+
   it('Has no accessibility errors.', async () => {
     const { container } = render(<Footer />);
     const results = await axe(container);

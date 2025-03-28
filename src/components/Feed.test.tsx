@@ -6,10 +6,12 @@ describe('Feed Component', () => {
   afterEach(() => {
     jest.useRealTimers();
   });
+
   it('Renders envelope.', () => {
     render(<Feed />);
     expect(screen.getByTestId('envelope')).toBeInTheDocument();
   });
+
   it('Renders coming soon message.', async () => {
     jest.useFakeTimers();
     render(<Feed />);
@@ -26,6 +28,7 @@ describe('Feed Component', () => {
       expect(screen.queryByTestId('envelope')).toBeNull();
     });
   });
+
   it('Has no accessibility errors.', async () => {
     const { container } = render(<Feed />);
     const results = await axe(container);

@@ -21,21 +21,26 @@ jest.mock('framer-motion', () => ({
 describe('Envelope Component', () => {
   let mockContainerRef;
   let useResizeDetectorMock;
+
   beforeEach(() => {
     mockContainerRef = { current: document.createElement('div') };
     useResizeDetectorMock = require('react-resize-detector').useResizeDetector;
   });
+
   afterEach(() => {
     jest.useRealTimers();
   });
+
   const renderWithWidth = (width) => {
     useResizeDetectorMock.mockReturnValue({ width });
     return render(<Envelope containerRef={mockContainerRef} />);
   };
+
   it('Renders envelope.', () => {
     renderWithWidth(1024);
     expect(screen.getByTestId('envelope')).toBeInTheDocument();
   });
+
   it('Triggers animations correctly.', async () => {
     jest.useFakeTimers();
     renderWithWidth(1024);
@@ -46,6 +51,7 @@ describe('Envelope Component', () => {
       expect(screen.getByText('Letters')).toBeInTheDocument();
     });
   });
+
   it.each([
     [100, 'text-xs'],
     [150, 'text-sm'],
@@ -63,6 +69,7 @@ describe('Envelope Component', () => {
     const message = screen.getByTestId('msg-100').parentElement;
     expect(message).toHaveClass(expectedTextSize);
   });
+
   it('Has no accessibility violations.', async () => {
     const { container } = renderWithWidth(1024);
     const results = await axe(container);

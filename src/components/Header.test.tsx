@@ -13,11 +13,13 @@ describe('Header Component', () => {
     expect(screen.getByText('Contact')).toBeInTheDocument();
     expect(screen.getByTestId('user-icon')).toBeInTheDocument();
   });
+
   it('Has no accessibility errors.', async () => {
     const { container } = render(<Header />);
     const results = await axe(container);
     expect(results).toHaveNoViolations();
   });
+
   it('Opens menu when the button is clicked (on mobile).', async () => {
     render(<Header />);
     const menuButton = screen.getByLabelText('Open Menu');
