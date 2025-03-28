@@ -131,7 +131,7 @@ const Envelope: React.FC<EnvelopeProps> = ({ containerRef }) => {
           >
             <div data-testid="msg-100">100</div>
             <div data-testid="msg-letters">Letters</div>
-            <div data-testid="msg-project">Project</div>
+            <div data-testid="msg-letters">Project</div>
           </motion.div>
         )}
       </motion.div>
