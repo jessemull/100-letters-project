@@ -1,7 +1,6 @@
 import './globals.css';
 import Script from 'next/script';
 import data from '../../public/data.json';
-import type { Metadata } from 'next';
 import { Correspondence, Letter, Recipient } from '../types';
 import { CorrespondenceProvider } from '../contexts';
 import { Geist, Geist_Mono } from 'next/font/google';
@@ -20,7 +19,7 @@ const geistMono = Geist_Mono({
 
 const GA_TRACKING_ID = 'G-T56NPJ5SBE';
 
-export const metadata: Metadata = {
+export const metadata = {
   alternates: {
     canonical: 'https://onehundredletters.com',
   },
@@ -56,8 +55,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const isProduction = process.env.NODE_ENV === 'production';
+
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <meta name="description" content="100 letters, 100 people, 1 year." />
+        <meta property="og:title" content="100 Letters Project" />
+        <meta property="og:image" content="/og-image.png" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

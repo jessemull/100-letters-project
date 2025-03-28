@@ -1,7 +1,5 @@
 'use client';
 
-import Link from 'next/link';
-
 const Header = () => {
   const handleDummyClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
@@ -9,8 +7,11 @@ const Header = () => {
 
   return (
     <header className="bg-gray-800 text-white p-4 font-merriweather sticky top-0 z-50">
-      <div className="container mx-auto flex justify-between items-center">
-        <div className="text-2xl">100 Letters Project</div>
+      <div className="flex justify-between items-center">
+        <div className="flex items-center">
+          <img src="/favicon.svg" alt="Logo" className="h-8 w-8" />
+          <div className="text-2xl pl-4">100 Letters Project</div>
+        </div>
         <nav>
           <ul className="flex space-x-6">
             <li>
