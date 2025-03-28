@@ -1,11 +1,10 @@
-import { Header, Feed, Footer } from '../components';
+import Feed from '../components/Feed';
+import MainLayout from './layout-main';
 
 const HomePage = () => (
-  <div className="min-h-screen h-[calc(100vh-32px)] overflow-auto">
-    <Header />
+  <MainLayout>
     <Feed />
-    <Footer />
-  </div>
+  </MainLayout>
 );
 
 export default HomePage;

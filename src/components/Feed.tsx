@@ -13,9 +13,9 @@ const Feed = () => {
   }, []);
 
   return (
-    <main
+    <div
       ref={containerRef}
-      className="bg-gray-100 flex flex-col items-center p-16 md:p-32 min-h-screen"
+      className="bg-gray-100 flex flex-col items-center p-16 md:p-32"
     >
       {!showContent && (
         <Envelope
@@ -41,7 +41,7 @@ const Feed = () => {
           behind their selection.
         </p>
       </div>
-    </main>
+    </div>
   );
 };
 
