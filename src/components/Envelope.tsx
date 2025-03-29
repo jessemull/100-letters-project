@@ -9,7 +9,6 @@ interface EnvelopeProps {
 }
 
 const Envelope: React.FC<EnvelopeProps> = ({ containerRef }) => {
-  const [fadeOutEnvelope, setFadeOutEnvelope] = useState(false);
   const [flapZIndex, setFlapZIndex] = useState(30);
   const [isReady, setIsReady] = useState(false);
   const [showLetter, setShowLetter] = useState(false);
@@ -24,7 +23,7 @@ const Envelope: React.FC<EnvelopeProps> = ({ containerRef }) => {
 
   useEffect(() => {
     if (width) {
-      let newWidth = Math.max(width * 0.35, 110);
+      let newWidth = Math.max(width * 0.2, 110);
 
       if (width < 768) {
         newWidth = width * 0.6;
@@ -69,7 +68,6 @@ const Envelope: React.FC<EnvelopeProps> = ({ containerRef }) => {
         setFlapZIndex(5);
       }, 1000);
       setTimeout(() => setShowText(true), 1200);
-      setTimeout(() => setFadeOutEnvelope(true), 2750);
     }
   }, [isReady]);
 
@@ -79,17 +77,13 @@ const Envelope: React.FC<EnvelopeProps> = ({ containerRef }) => {
 
   return (
     <div
-      className="relative flex items-center justify-center bg-gray-100"
+      className="relative flex flex-col items-center justify-end bg-gray-100"
       data-testid="envelope"
-      style={{ transform: 'translateY(156px)' }}
+      style={{ height: size.height + size.flap }}
     >
       <motion.div
         className="relative flex items-center justify-center"
         style={{ width: size.width, height: size.height }}
-        animate={{
-          translateY: startAnimation ? `${Math.round(size.flap / 4)}px` : '0',
-          opacity: fadeOutEnvelope ? 0 : 1,
-        }}
         transition={{ duration: 0.8 }}
       >
         <div className="absolute top-0 left-0 w-full h-full shadow-lg rounded-b-md z-20 bg-gradient-to-b from-yellow-400 to-yellow-500" />

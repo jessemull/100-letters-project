@@ -47,6 +47,16 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link
+          rel="preconnect"
+          href="https://www.googletagmanager.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preconnect"
+          href="https://www.google-analytics.com"
+          crossOrigin="anonymous"
+        />
         <meta name="description" content="100 letters, 100 people, 1 year." />
         <meta property="og:title" content="100 Letters Project" />
         <meta property="og:image" content="/og-image.png" />

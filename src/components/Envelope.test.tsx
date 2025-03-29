@@ -38,7 +38,7 @@ describe('Envelope Component', () => {
 
   it('Renders envelope.', () => {
     renderWithWidth(1024);
-    expect(screen.getByTestId('envelope')).toBeInTheDocument();
+    expect(screen.getByTestId('envelope')).toBeDefined();
   });
 
   it('Triggers animations correctly.', async () => {
@@ -48,7 +48,7 @@ describe('Envelope Component', () => {
       jest.advanceTimersByTime(3500);
     });
     await waitFor(() => {
-      expect(screen.getByText('Letters')).toBeInTheDocument();
+      expect(screen.getByText('Letters')).toBeDefined();
     });
   });
 
@@ -58,8 +58,8 @@ describe('Envelope Component', () => {
     [200, 'text-lg'],
     [300, 'text-xl'],
     [400, 'text-2xl'],
-    [800, 'text-3xl'],
-    [1024, 'text-4xl'],
+    [1500, 'text-3xl'],
+    [3000, 'text-4xl'],
   ])('Sets correct text size at width %i', (width, expectedTextSize) => {
     jest.useFakeTimers();
     renderWithWidth(width);
@@ -67,7 +67,7 @@ describe('Envelope Component', () => {
       jest.advanceTimersByTime(3500);
     });
     const message = screen.getByTestId('msg-100').parentElement;
-    expect(message).toHaveClass(expectedTextSize);
+    expect(message as HTMLElement).toHaveClass(expectedTextSize);
   });
 
   it('Has no accessibility violations.', async () => {
