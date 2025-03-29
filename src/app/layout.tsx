@@ -1,26 +1,12 @@
 import './globals.css';
 import Script from 'next/script';
 import data from '../../public/data.json';
-import type { Metadata } from 'next';
 import { Correspondence, Letter, Recipient } from '../types';
 import { CorrespondenceProvider } from '../contexts';
-import { Geist, Geist_Mono } from 'next/font/google';
 
 const { correspondences, letters, recipients } = data;
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
-
-const GA_TRACKING_ID = 'G-T56NPJ5SBE';
-
-export const metadata: Metadata = {
+export const metadata = {
   alternates: {
     canonical: 'https://onehundredletters.com',
   },
@@ -50,17 +36,32 @@ export const metadata: Metadata = {
   },
 };
 
+const GA_TRACKING_ID = process.env.GA_TRACKING_ID;
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const isProduction = process.env.NODE_ENV === 'production';
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <head>
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link
+          rel="preconnect"
+          href="https://www.googletagmanager.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preconnect"
+          href="https://www.google-analytics.com"
+          crossOrigin="anonymous"
+        />
+        <meta name="description" content="100 letters, 100 people, 1 year." />
+        <meta property="og:title" content="100 Letters Project" />
+        <meta property="og:image" content="/og-image.png" />
+      </head>
+      <body className="antialiased">
         <CorrespondenceProvider
           correspondences={correspondences as Correspondence[]}
           letters={letters as Letter[]}
@@ -68,22 +69,20 @@ export default function RootLayout({
         >
           {children}
         </CorrespondenceProvider>
-        {isProduction && (
-          <>
-            <Script
-              strategy="afterInteractive"
-              src={`https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`}
-            />
-            <Script id="google-analytics" strategy="afterInteractive">
-              {`
+        <>
+          <Script
+            strategy="afterInteractive"
+            src={`https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`}
+          />
+          <Script id="google-analytics" strategy="afterInteractive">
+            {`
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){window.dataLayer.push(arguments);}
                 gtag('js', new Date());
                 gtag('config', '${GA_TRACKING_ID}');
               `}
-            </Script>
-          </>
-        )}
+          </Script>
+        </>
       </body>
     </html>
   );

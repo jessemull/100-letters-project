@@ -85,5 +85,6 @@ if (fs.existsSync(outputPath) && noRefresh) {
   console.log('File public/data.json already exists. Skipping data refresh...');
   process.exit(0);
 } else {
+  console.log('Fetching static data from 100 Letters API...');
   authenticateUser();
 }

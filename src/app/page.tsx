@@ -1,11 +1,10 @@
-import { Header, Feed, Footer } from '../components';
+import Feed from '../components/Feed';
+import HomePageLayout from './page.layout';
 
 const HomePage = () => (
-  <div>
-    <Header />
+  <HomePageLayout>
     <Feed />
-    <Footer />
-  </div>
+  </HomePageLayout>
 );
 
 export default HomePage;
