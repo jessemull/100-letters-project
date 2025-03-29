@@ -38,6 +38,7 @@ jobs:
           COGNITO_USER_POOL_CLIENT_ID: ${{ inputs.environment == 'test' && secrets.COGNITO_USER_POOL_CLIENT_ID_DEV || secrets.COGNITO_USER_POOL_CLIENT_ID_PROD }}
           COGNITO_USER_POOL_PASSWORD: ${{ inputs.environment == 'test' && secrets.COGNITO_USER_POOL_PASSWORD_DEV || secrets.COGNITO_USER_POOL_PASSWORD_PROD }}
           COGNITO_USER_POOL_USERNAME: ${{ inputs.environment == 'test' && secrets.COGNITO_USER_POOL_USERNAME_DEV || secrets.COGNITO_USER_POOL_USERNAME_PROD }}
+          GA_TRACKING_ID: ${{ inputs.environment == 'test' && secrets.GA_TRACKING_ID_DEV || secrets.GA_TRACKING_ID_PROD }}
 
       - name: Copy Sitemap and Robots Files
         run: |
