@@ -9,6 +9,7 @@ jest.mock('react-resize-detector', () => ({
 
 jest.mock('framer-motion', () => ({
   __esModule: true,
+  AnimatePresence: ({ children }) => <>{children}</>,
   motion: {
     div: jest.fn().mockImplementation(({ animate, children, ...props }) => (
       <div data-animate={JSON.stringify(animate)} {...props}>
