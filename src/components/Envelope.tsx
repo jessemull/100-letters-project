@@ -1,12 +1,20 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { useState, useEffect, MutableRefObject } from 'react';
+import Heart from './Heart';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useState, useEffect, MutableRefObject, useMemo } from 'react';
 import { useResizeDetector } from 'react-resize-detector';
 
 interface EnvelopeProps {
   containerRef: MutableRefObject<HTMLElement>;
 }
+
+const heartsConfig = [
+  { delay: 1.5, baseOffsetY: 0.05, baseSize: 24 },
+  { delay: 0, baseOffsetY: 0.275, baseSize: 32 },
+  { delay: 2, baseOffsetY: 0.05, baseSize: 36 },
+  { delay: 1, baseOffsetY: 0.175, baseSize: 24 },
+];
 
 const Envelope: React.FC<EnvelopeProps> = ({ containerRef }) => {
   const [flapZIndex, setFlapZIndex] = useState(30);
@@ -71,6 +79,8 @@ const Envelope: React.FC<EnvelopeProps> = ({ containerRef }) => {
     }
   }, [isReady]);
 
+  const scaleFactor = useMemo(() => size.width / 287.8, [size.width]);
+
   if (!isReady) {
     return null;
   }
@@ -87,6 +97,7 @@ const Envelope: React.FC<EnvelopeProps> = ({ containerRef }) => {
         transition={{ duration: 0.8 }}
       >
         <div className="absolute top-0 left-0 w-full h-full shadow-lg rounded-b-md z-20 bg-gradient-to-b from-yellow-400 to-yellow-500" />
+
         {showLetter && (
           <motion.div
             className="absolute bg-white border shadow-lg rounded-md flex items-center justify-center z-10"
@@ -101,7 +112,21 @@ const Envelope: React.FC<EnvelopeProps> = ({ containerRef }) => {
               opacity: 1,
             }}
             transition={{ duration: 0.8 }}
-          />
+          >
+            <div className="flex justify-between">
+              <AnimatePresence>
+                {heartsConfig.map(({ delay, baseOffsetY, baseSize }, index) => (
+                  <Heart
+                    key={`heart-${index}`}
+                    delay={delay}
+                    offsetY={baseOffsetY * scaleFactor}
+                    size={baseSize * scaleFactor}
+                    envelopeHeight={size.height}
+                  />
+                ))}
+              </AnimatePresence>
+            </div>
+          </motion.div>
         )}
         <motion.div
           className="absolute top-0 left-0 w-0 h-0 border-l-transparent border-r-transparent  border-t-yellow-500 origin-top"
