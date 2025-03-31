@@ -30,6 +30,7 @@ const Button: React.FC<ButtonProps> = ({
         aria-busy={loading ? 'true' : 'false'}
         aria-label={loading ? 'Submitting...' : value}
         className={`w-full h-12 text-white text-base leading-[30px] bg-[#111827] border border-white rounded-[25px] ${disabledClasses}`}
+        data-testid="button"
         disabled={disabled || loading}
         id={id}
         onClick={disabled || loading ? undefined : onClick}

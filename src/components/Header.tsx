@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Menu, LogIn, LogOut } from 'lucide-react';
-import { useAuth } from 'src/contexts/AuthProvider';
+import { useAuth } from '../contexts/AuthProvider';
 
 const Header = () => {
   const { isLoggedIn, signOut } = useAuth();
@@ -51,7 +51,7 @@ const Header = () => {
             />
           </div>
         ) : (
-          <Link href="/login">
+          <Link href="/login" aria-label="Login">
             <LogIn className="h-6 w-6 text-white" data-testid="login-icon" />
           </Link>
         )}

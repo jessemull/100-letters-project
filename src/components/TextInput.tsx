@@ -41,7 +41,11 @@ const TextInput: React.FC<TextInputProps> = ({
     <div className="relative w-full">
       {IconStart && (
         <div className="absolute left-5 top-3.5 text-white">
-          <IconStart className="w-5 h-5" onClick={onIconStartClick} />
+          <IconStart
+            className="w-5 h-5"
+            data-testid="password-text-input-icon-start"
+            onClick={onIconStartClick}
+          />
         </div>
       )}
       <input
@@ -57,6 +61,7 @@ const TextInput: React.FC<TextInputProps> = ({
         <div className="absolute right-5 top-3.5 text-white">
           <IconEnd
             className="w-5 h-5 cursor-pointer"
+            data-testid="password-text-input-icon-end"
             onClick={onIconEndClick}
           />
         </div>

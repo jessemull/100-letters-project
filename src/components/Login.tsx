@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import TextInput from './TextInput';
 import { Eye, EyeOff, User, Lock } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from 'src/contexts/AuthProvider';
+import { useAuth } from '../contexts/AuthProvider';
 
 const DEFAULT_ERROR_MESSAGE = 'Error signing in. Please try again.';
 
@@ -91,12 +91,12 @@ const Login = () => {
         <Button id="cancel-button" onClick={handleCancel} value="Cancel" />
         {isLoggedIn && (
           <div className="flex justify-end w-full text-md -translate-y-1">
-            <div
+            <button
               onClick={handleSignOut}
               className="text-gray-300 hover:cursor-pointer hover:text-white border-b border-transparent hover:border-white transition"
             >
               Sign Out
-            </div>
+            </button>
           </div>
         )}
       </div>

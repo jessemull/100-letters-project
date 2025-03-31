@@ -8,13 +8,11 @@ import React, {
   useState,
 } from 'react';
 import { Amplify } from 'aws-amplify';
-import { AuthSession } from '@aws-amplify/core';
 import {
   getCurrentUser,
   fetchAuthSession,
   signIn as amplifySignIn,
   signOut as amplifySignOut,
-  JWT,
 } from '@aws-amplify/auth';
 
 const DEFAULT_ERROR_MESSAGE = 'Error signing in. Please try again.';
@@ -30,26 +28,29 @@ Amplify.configure({
 });
 
 export interface AuthContextType {
-  idToken: string | null;
+  getIdToken: () => Promise<string | null>;
   isLoggedIn: boolean;
   user: any | null;
   signIn: (
     username: string,
     password: string,
-  ) => Promise<{ isSignedIn: boolean }>;
+  ) => Promise<{ isSignedIn: boolean } | null>;
   signOut: () => void;
 }
 
+export const defaultGetIdToken = async () => Promise.resolve(null);
+export const defaultSignIn = async () => Promise.resolve(null);
+export const defaultSignOut = () => null;
+
 export const AuthContext = createContext<AuthContextType>({
-  idToken: null,
+  getIdToken: defaultGetIdToken,
   isLoggedIn: false,
   user: null,
-  signIn: async () => Promise.resolve({ isSignedIn: false }),
-  signOut: () => {},
+  signIn: defaultSignIn,
+  signOut: defaultSignOut,
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [idToken, setIdToken] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [user, setUser] = useState<any | null>(null);
 
@@ -58,18 +59,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       try {
         const currentUser = await getCurrentUser();
         setUser(currentUser);
-        const session = await fetchAuthSession();
-        const token = session?.tokens?.idToken?.toString();
-        setIdToken(token || null);
         setIsLoggedIn(true);
       } catch (error) {
         setIsLoggedIn(false);
-        setIdToken(null);
         setUser(null);
       }
     };
     checkAuthStatus();
   }, []);
+
+  const getIdToken = async (): Promise<string | null> => {
+    try {
+      const session = await fetchAuthSession();
+      return session?.tokens?.idToken?.toString() || null;
+    } catch (error) {
+      return null;
+    }
+  };
 
   const signIn = async (
     username: string,
@@ -82,27 +88,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
 
     const user = await getCurrentUser();
-    const session: AuthSession = await fetchAuthSession();
-
-    if (session) {
-      setUser(user);
-      setIdToken(session?.tokens?.idToken?.toString() || null);
-      setIsLoggedIn(true);
-    }
+    setUser(user);
+    setIsLoggedIn(true);
 
     return { isSignedIn };
   };
 
-  const signOut = () => {
-    amplifySignOut();
+  const signOut = async () => {
+    await amplifySignOut();
     setIsLoggedIn(false);
     setUser(null);
-    setIdToken(null);
   };
 
   return (
     <AuthContext.Provider
-      value={{ idToken, isLoggedIn, user, signIn, signOut }}
+      value={{ getIdToken, isLoggedIn, signIn, signOut, user }}
     >
       {children}
     </AuthContext.Provider>
