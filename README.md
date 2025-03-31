@@ -134,7 +134,7 @@ To clone the repository, install dependencies, and run the project locally follo
    ```
    COGNITO_USER_POOL_USERNAME=cognito-user-pool-username
    COGNITO_USER_POOL_PASSWORD=cognito-user-pool-password
-   COGNITO_USER_POOL_CLIENT_ID=cognito-user-pool-client-id
+   NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID=cognito-user-pool-client-id
    ```
 
 5. Start the dev server:
@@ -341,7 +341,7 @@ The following environment variables must be set in `.env.test` and `env.producti
 
 ```
 API_URL=one-hundred-letters-api-url
-COGNITO_USER_POOL_CLIENT_ID=cognito-user-pool-client-id
+NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID=cognito-user-pool-client-id
 COGNITO_USER_POOL_PASSWORD=cognito-user-pool-password
 COGNITO_USER_POOL_USERNAME=cognito-user-pool-username
 ```
@@ -387,7 +387,7 @@ The development server has a predev script that will check for static data loade
 The following environment variables must be set in `.env.test` and `env.production` files in the root of the project:
 
 ```
-COGNITO_USER_POOL_CLIENT_ID=cognito-user-pool-client-id
+NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID=cognito-user-pool-client-id
 COGNITO_USER_POOL_PASSWORD=cognito-user-pool-password
 COGNITO_USER_POOL_USERNAME=cognito-user-pool-username
 ```
@@ -510,7 +510,7 @@ The following environment variables must be set in a `.env.test` and `.env.produ
 ```
 COGNITO_USER_POOL_USERNAME=cognito-user-pool-username
 COGNITO_USER_POOL_PASSWORD=cognito-user-pool-password
-COGNITO_USER_POOL_CLIENT_ID=cognito-user-pool-client-id
+NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID=cognito-user-pool-client-id
 ```
 
 ## Connecting to the Bastion Host

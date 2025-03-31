@@ -2,9 +2,20 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Menu, User } from 'lucide-react';
+import { Menu, LogIn, LogOut } from 'lucide-react';
+import { useAuth } from 'src/contexts/AuthProvider';
 
 const Header = () => {
+  const { isLoggedIn, signOut } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+    } catch (error) {
+      console.error('Error signing out: ', error);
+    }
+  };
+
   return (
     <header className="bg-gray-900 text-white px-4 py-3 font-merriweather sticky top-0 z-50 w-full">
       <div className="flex justify-between items-center max-w-full">
@@ -28,7 +39,22 @@ const Header = () => {
             </Link>
           </nav>
         </div>
-        <User className="h-6 w-6 text-white" data-testid="user-icon" />
+        {isLoggedIn ? (
+          <div className="flex space-x-4">
+            <Link href="/" className="hover:text-gray-400">
+              Admin
+            </Link>
+            <LogOut
+              className="h-6 w-6 text-white cursor-pointer"
+              data-testid="logout-icon"
+              onClick={handleLogout}
+            />
+          </div>
+        ) : (
+          <Link href="/login">
+            <LogIn className="h-6 w-6 text-white" data-testid="login-icon" />
+          </Link>
+        )}
       </div>
     </header>
   );
