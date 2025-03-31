@@ -28,6 +28,7 @@ jobs:
           NODE_ENV=test npm run build
         env:
           API_URL: ${{ secrets.API_URL_DEV }}
+          NEXT_PUBLIC_COGNITO_USER_POOL_ID: ${{ secrets.COGNITO_USER_POOL_ID_DEV }}
           NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID: ${{ secrets.COGNITO_USER_POOL_CLIENT_ID_DEV }}
           COGNITO_USER_POOL_PASSWORD: ${{ secrets.COGNITO_USER_POOL_PASSWORD_DEV }}
           COGNITO_USER_POOL_USERNAME: ${{ secrets.COGNITO_USER_POOL_USERNAME_DEV }}
@@ -122,6 +123,7 @@ jobs:
           sleep 10
         env:
           API_URL: ${{ secrets.API_URL_DEV }}
+          NEXT_PUBLIC_COGNITO_USER_POOL_ID: ${{ secrets.COGNITO_USER_POOL_ID_DEV }}
           NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID: ${{ secrets.COGNITO_USER_POOL_CLIENT_ID_DEV }}
           COGNITO_USER_POOL_PASSWORD: ${{ secrets.COGNITO_USER_POOL_PASSWORD_DEV }}
           COGNITO_USER_POOL_USERNAME: ${{ secrets.COGNITO_USER_POOL_USERNAME_DEV }}

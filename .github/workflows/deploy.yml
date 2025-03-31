@@ -35,6 +35,7 @@ jobs:
           NODE_ENV=${{ inputs.environment }} npm run build
         env:
           API_URL: ${{ inputs.environment == 'test' && secrets.API_URL_DEV || secrets.API_URL_PROD }}
+          NEXT_PUBLIC_COGNITO_USER_POOL_ID: ${{ inputs.environment == 'test' && secrets.COGNITO_USER_POOL_ID_DEV || secrets.COGNITO_USER_POOL_ID_PROD }}
           NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID: ${{ inputs.environment == 'test' && secrets.COGNITO_USER_POOL_CLIENT_ID_DEV || secrets.COGNITO_USER_POOL_CLIENT_ID_PROD }}
           COGNITO_USER_POOL_PASSWORD: ${{ inputs.environment == 'test' && secrets.COGNITO_USER_POOL_PASSWORD_DEV || secrets.COGNITO_USER_POOL_PASSWORD_PROD }}
           COGNITO_USER_POOL_USERNAME: ${{ inputs.environment == 'test' && secrets.COGNITO_USER_POOL_USERNAME_DEV || secrets.COGNITO_USER_POOL_USERNAME_PROD }}
