@@ -19,7 +19,7 @@ const Login = () => {
   const [username, setUsername] = useState('');
 
   const router = useRouter();
-  const { signIn } = useAuth();
+  const { isLoggedIn, signIn, signOut } = useAuth();
 
   const handleCancel = () => {
     router.push('/');
@@ -41,6 +41,14 @@ const Login = () => {
 
   const toggleVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+    } catch (error) {
+      console.error('Error signing out: ', error);
+    }
   };
 
   return (
@@ -81,6 +89,16 @@ const Login = () => {
           value="Sign In"
         />
         <Button id="cancel-button" onClick={handleCancel} value="Cancel" />
+        {isLoggedIn && (
+          <div className="flex justify-end w-full text-md -translate-y-1">
+            <div
+              onClick={handleSignOut}
+              className="text-gray-300 hover:cursor-pointer hover:text-white border-b border-transparent hover:border-white transition"
+            >
+              Sign Out
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
