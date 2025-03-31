@@ -1,6 +1,6 @@
-import { render, screen, fireEvent } from '@testing-library/react';
 import TextInput from './TextInput';
 import { Eye, EyeOff } from 'lucide-react';
+import { render, screen, fireEvent } from '@testing-library/react';
 
 describe('TextInput Component', () => {
   const handleChangeMock = jest.fn();
@@ -11,7 +11,7 @@ describe('TextInput Component', () => {
     jest.clearAllMocks();
   });
 
-  it('renders correctly with all props', () => {
+  it('Renders correctly with all props.', () => {
     render(
       <TextInput
         IconStart={Eye}
@@ -36,7 +36,7 @@ describe('TextInput Component', () => {
     expect(iconEnd).toBeInTheDocument();
   });
 
-  it('renders without icons if no IconStart or IconEnd is provided', () => {
+  it('Renders without icons if no IconStart or IconEnd is provided.', () => {
     render(
       <TextInput
         id="username"
@@ -47,12 +47,11 @@ describe('TextInput Component', () => {
       />,
     );
 
-    // Ensure no icons are rendered
     expect(screen.queryByTestId('password-text-input-icon-start')).toBeNull();
     expect(screen.queryByTestId('password-text-input-icon-end')).toBeNull();
   });
 
-  it('triggers onIconStartClick when IconStart is clicked', () => {
+  it('Triggers onIconStartClick when IconStart is clicked.', () => {
     render(
       <TextInput
         IconStart={Eye}
@@ -67,14 +66,12 @@ describe('TextInput Component', () => {
 
     const iconStart = screen.getByTestId('password-text-input-icon-start');
 
-    // Simulate icon click
     fireEvent.click(iconStart);
 
-    // Check if the click handler was called
     expect(handleIconStartClickMock).toHaveBeenCalledTimes(1);
   });
 
-  it('triggers onIconEndClick when IconEnd is clicked', () => {
+  it('Triggers onIconEndClick when IconEnd is clicked.', () => {
     render(
       <TextInput
         IconEnd={EyeOff}
@@ -89,14 +86,12 @@ describe('TextInput Component', () => {
 
     const iconEnd = screen.getByTestId('password-text-input-icon-end');
 
-    // Simulate icon click
     fireEvent.click(iconEnd);
 
-    // Check if the click handler was called
     expect(handleIconEndClickMock).toHaveBeenCalledTimes(1);
   });
 
-  it('renders errors correctly when errors prop is passed', () => {
+  it('Renders errors correctly when errors prop is passed.', () => {
     render(
       <TextInput
         id="username"
@@ -108,14 +103,13 @@ describe('TextInput Component', () => {
       />,
     );
 
-    // Check if errors are displayed
     const errorList = screen.getByRole('list');
     expect(errorList).toBeInTheDocument();
     expect(screen.getByText('Invalid username')).toBeInTheDocument();
     expect(screen.getByText('Username too short')).toBeInTheDocument();
   });
 
-  it('does not render error list when no errors are passed', () => {
+  it('Does not render error list when no errors are passed.', () => {
     render(
       <TextInput
         id="username"
@@ -126,11 +120,10 @@ describe('TextInput Component', () => {
       />,
     );
 
-    // Ensure no errors are rendered
     expect(screen.queryByRole('list')).toBeNull();
   });
 
-  it('renders errors correctly when a single error string is passed', () => {
+  it('Renders errors correctly when a single error string is passed.', () => {
     render(
       <TextInput
         id="username"
@@ -142,11 +135,10 @@ describe('TextInput Component', () => {
       />,
     );
 
-    // Check if the error is displayed
     expect(screen.getByText('Invalid username')).toBeInTheDocument();
   });
 
-  it('applies correct padding classes when IconStart or IconEnd are provided', () => {
+  it('Applies correct padding classes when IconStart or IconEnd are provided.', () => {
     render(
       <TextInput
         IconStart={Eye}
@@ -161,7 +153,6 @@ describe('TextInput Component', () => {
 
     const inputElement = screen.getByPlaceholderText('Enter your username');
 
-    // Check if padding classes are applied for the icons
     expect(inputElement).toHaveClass('pl-12');
     expect(inputElement).toHaveClass('pr-12');
   });

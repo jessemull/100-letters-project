@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   AuthContext,
   AuthProvider,
@@ -64,7 +64,7 @@ describe('AuthProvider', () => {
     jest.clearAllMocks();
   });
 
-  it('provides default values when unauthenticated', async () => {
+  it('Provides default values when unauthenticated.', async () => {
     (getCurrentUser as jest.Mock).mockRejectedValue(new Error('Failed'));
     (fetchAuthSession as jest.Mock).mockRejectedValue(new Error('Failed'));
 
@@ -81,7 +81,7 @@ describe('AuthProvider', () => {
     expect(screen.getByTestId('user')).toHaveTextContent('No User');
   });
 
-  it('sets user and idToken when authenticated on mount', async () => {
+  it('Sets user and idToken when authenticated on mount.', async () => {
     (getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
     (fetchAuthSession as jest.Mock).mockResolvedValue(mockSession);
 
@@ -98,7 +98,7 @@ describe('AuthProvider', () => {
     });
   });
 
-  it('handles sign-in correctly', async () => {
+  it('Handles sign-in correctly.', async () => {
     (amplifySignIn as jest.Mock).mockResolvedValue({ isSignedIn: true });
     (getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
     (fetchAuthSession as jest.Mock).mockResolvedValue(mockSession);
@@ -120,7 +120,7 @@ describe('AuthProvider', () => {
     });
   });
 
-  it('handles sign-in failure', async () => {
+  it('Handles sign-in failure.', async () => {
     (amplifySignIn as jest.Mock).mockResolvedValue({ isSignedIn: false });
     (getCurrentUser as jest.Mock).mockResolvedValue({});
     (fetchAuthSession as jest.Mock).mockResolvedValue({});
@@ -142,7 +142,7 @@ describe('AuthProvider', () => {
     });
   });
 
-  it('should handle defaults', async () => {
+  it('Handles and sets default values.', async () => {
     const idToken = await defaultGetIdToken();
     const signIn = await defaultSignIn();
     const signOut = defaultSignOut();
@@ -152,34 +152,29 @@ describe('AuthProvider', () => {
     expect(AuthContext).toBeDefined();
   });
 
-  it('handles sign-out correctly', async () => {
+  it('Handles sign-out correctly.', async () => {
     (getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
     (fetchAuthSession as jest.Mock).mockResolvedValue(mockSession);
 
-    // Render component
     render(
       <AuthProvider>
         <TestComponent />
       </AuthProvider>,
     );
 
-    // Wait for initial render when the user is authenticated
     await waitFor(() => {
       expect(screen.getByTestId('id-token')).toHaveTextContent('mockIdToken');
       expect(screen.getByTestId('is-logged-in')).toHaveTextContent('Yes');
       expect(screen.getByTestId('user')).toHaveTextContent('testUser');
     });
 
-    // Mock sign-out and simulate state change (simulate a sign-out by clearing session data)
-    (getCurrentUser as jest.Mock).mockResolvedValue(null); // Simulate no current user
-    (fetchAuthSession as jest.Mock).mockResolvedValue({}); // Simulate empty session
+    (getCurrentUser as jest.Mock).mockResolvedValue(null);
+    (fetchAuthSession as jest.Mock).mockResolvedValue({});
 
-    // Simulate clicking the sign-out button
     await act(async () => {
       screen.getByText('Sign Out').click();
     });
 
-    // Ensure the state updates after sign-out
     await waitFor(() => {
       expect(screen.getByTestId('id-token')).toHaveTextContent('No Token');
       expect(screen.getByTestId('is-logged-in')).toHaveTextContent('No');
@@ -187,7 +182,7 @@ describe('AuthProvider', () => {
     });
   });
 
-  it('handles authentication check failure', async () => {
+  it('Handles authentication check failure.', async () => {
     (getCurrentUser as jest.Mock).mockRejectedValue(new Error('Failed'));
     (fetchAuthSession as jest.Mock).mockRejectedValue(new Error('Failed'));
 
