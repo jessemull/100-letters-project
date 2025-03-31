@@ -1,10 +1,10 @@
 import Feed from '../components/Feed';
-import HomePageLayout from './page.layout';
+import PageLayout from './page.layout';
 
 const HomePage = () => (
-  <HomePageLayout>
+  <PageLayout>
     <Feed />
-  </HomePageLayout>
+  </PageLayout>
 );
 
 export default HomePage;

@@ -9,7 +9,7 @@ const Feed = () => {
   return (
     <div
       ref={containerRef}
-      className="bg-gray-100 flex flex-col items-center p-16 md:p-32 min-h-screen"
+      className="bg-gray-100 flex flex-col items-center p-16 md:p-32"
     >
       <div className="relative flex flex-col items-center justify-center space-y-8 z-10 min-h-[500px]">
         <Envelope

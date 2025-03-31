@@ -3,6 +3,7 @@ import Script from 'next/script';
 import data from '../../public/data.json';
 import { Correspondence, Letter, Recipient } from '../types';
 import { CorrespondenceProvider } from '../contexts';
+import { AuthProvider } from 'src/contexts/AuthProvider';
 
 const { correspondences, letters, recipients } = data;
 
@@ -36,7 +37,7 @@ export const metadata = {
   },
 };
 
-const GA_TRACKING_ID = process.env.GA_TRACKING_ID;
+const NEXT_PUBLIC_GA_TRACKING_ID = process.env.NEXT_PUBLIC_GA_TRACKING_ID;
 
 export default function RootLayout({
   children,
@@ -62,24 +63,26 @@ export default function RootLayout({
         <meta property="og:image" content="/og-image.png" />
       </head>
       <body className="antialiased">
-        <CorrespondenceProvider
-          correspondences={correspondences as Correspondence[]}
-          letters={letters as Letter[]}
-          recipients={recipients as Recipient[]}
-        >
-          {children}
-        </CorrespondenceProvider>
+        <AuthProvider>
+          <CorrespondenceProvider
+            correspondences={correspondences as Correspondence[]}
+            letters={letters as Letter[]}
+            recipients={recipients as Recipient[]}
+          >
+            {children}
+          </CorrespondenceProvider>
+        </AuthProvider>
         <>
           <Script
             strategy="afterInteractive"
-            src={`https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`}
+            src={`https://www.googletagmanager.com/gtag/js?id=${NEXT_PUBLIC_GA_TRACKING_ID}`}
           />
           <Script id="google-analytics" strategy="afterInteractive">
             {`
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){window.dataLayer.push(arguments);}
                 gtag('js', new Date());
-                gtag('config', '${GA_TRACKING_ID}');
+                gtag('config', '${NEXT_PUBLIC_GA_TRACKING_ID}');
               `}
           </Script>
         </>
