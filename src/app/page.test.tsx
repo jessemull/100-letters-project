@@ -2,6 +2,10 @@ import HomePage from './page';
 import { axe } from 'jest-axe';
 import { render, screen } from '@testing-library/react';
 
+jest.mock('next/navigation', () => ({
+  useRouter: jest.fn(),
+}));
+
 jest.mock('next/link', () => {
   const MockLink = ({ children }: { children: React.ReactNode }) => (
     <>{children}</>
