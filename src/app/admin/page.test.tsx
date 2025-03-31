@@ -13,7 +13,7 @@ describe('AdminPage Component', () => {
     await act(async () => {
       render(<AdminPage />);
     });
-    expect(screen.getAllByText('100 Letters Project').length).toBe(1);
+    expect(screen.getAllByText('100 Letters Project').length).toBe(2);
     expect(
       screen.getByText('© 2025 100 Letters Project. All rights reserved.'),
     ).toBeInTheDocument();

@@ -4,13 +4,16 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Menu, LogIn, LogOut } from 'lucide-react';
 import { useAuth } from '../contexts/AuthProvider';
+import { useRouter } from 'next/navigation';
 
 const Header = () => {
+  const router = useRouter();
   const { isLoggedIn, signOut } = useAuth();
 
   const handleLogout = async () => {
     try {
       await signOut();
+      router.push('/');
     } catch (error) {
       console.error('Error signing out: ', error);
     }

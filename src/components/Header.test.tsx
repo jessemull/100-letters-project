@@ -9,6 +9,10 @@ import {
 } from '@testing-library/react';
 import { useAuth } from '../contexts/AuthProvider';
 
+jest.mock('next/navigation', () => ({
+  useRouter: jest.fn().mockImplementation(() => ({ push: jest.fn() })),
+}));
+
 jest.mock('../contexts/AuthProvider', () => ({
   useAuth: jest.fn(),
 }));

@@ -1,8 +1,9 @@
 'use client';
 
+import ComingSoon from './ComingSoon';
 import React, { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { useAuth } from '../contexts/AuthProvider';
+import { useRouter } from 'next/navigation';
 
 const Login = () => {
   const router = useRouter();
@@ -12,7 +13,7 @@ const Login = () => {
     if (!isLoggedIn) {
       router.push('/');
     }
-  }, [isLoggedIn]);
+  }, [isLoggedIn, router]);
 
   return (
     <div
@@ -21,7 +22,7 @@ const Login = () => {
         height: 'calc(100vh - 56px - 36px)',
       }}
     >
-      Coming soon...
+      <ComingSoon />
     </div>
   );
 };
