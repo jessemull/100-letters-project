@@ -41,7 +41,7 @@ const Header = () => {
         </div>
         {isLoggedIn ? (
           <div className="flex space-x-4">
-            <Link href="/" className="hover:text-gray-400">
+            <Link href="/admin" className="hover:text-gray-400">
               Admin
             </Link>
             <LogOut

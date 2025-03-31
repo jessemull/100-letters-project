@@ -4,10 +4,10 @@ import React from 'react';
 import Login from '../../components/Login';
 import PageLayout from '../page.layout';
 
-const HomePage = () => (
+const LoginPage = () => (
   <PageLayout>
     <Login />
   </PageLayout>
 );
 
-export default HomePage;
+export default LoginPage;
