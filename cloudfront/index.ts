@@ -4,9 +4,8 @@ import { decode, JwtPayload, verify } from 'jsonwebtoken';
 import { logger } from './logger';
 
 const ADMIN_PATH_REGEX = /^\/admin(\/.*)?$/;
-const COGNITO_USER_POOL_CLIENT_ID =
-  process.env.NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID;
-const COGNITO_USER_POOL_ID = process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID;
+const COGNITO_USER_POOL_CLIENT_ID = process.env.COGNITO_USER_POOL_CLIENT_ID;
+const COGNITO_USER_POOL_ID = process.env.COGNITO_USER_POOL_ID;
 const JWKS_URI = `https://cognito-idp.${process.env.AWS_REGION}.amazonaws.com/${COGNITO_USER_POOL_ID}/.well-known/jwks.json`;
 
 const client = jwksClient({ jwksUri: JWKS_URI });
@@ -26,17 +25,23 @@ async function verifyToken(token: string): Promise<JwtPayload | null> {
   const signingKey = await getSigningKey(decoded.header.kid);
 
   return new Promise((resolve, reject) => {
-    verify(token, signingKey, { algorithms: ['RS256'] }, (err, payload) => {
-      if (err) return reject(err);
-      if (!payload || typeof payload === 'string')
-        return reject(new Error('Invalid payload'));
+    verify(
+      token,
+      signingKey,
+      { algorithms: ['RS256'] },
+      (err: Error, payload: { aud: string }) => {
+        if (err) return reject(err);
 
-      if (payload.aud !== COGNITO_USER_POOL_CLIENT_ID) {
-        return reject(new Error('Invalid audience'));
-      }
+        if (!payload || typeof payload === 'string')
+          return reject(new Error('Invalid payload'));
 
-      resolve(payload);
-    });
+        if (payload.aud !== COGNITO_USER_POOL_CLIENT_ID) {
+          return reject(new Error('Invalid audience'));
+        }
+
+        resolve(payload);
+      },
+    );
   });
 }
 

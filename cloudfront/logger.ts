@@ -2,7 +2,7 @@ import * as bunyan from 'bunyan';
 import BunyanCloudWatch from 'bunyan-cloudwatch';
 
 const logger = bunyan.createLogger({
-  name: 'one-hundred-letters-api-logger',
+  name: 'one-hundred-letters-auth-at-edge-logger',
   level: (process.env.LOG_LEVEL as bunyan.LogLevel) || 'info',
   serializers: bunyan.stdSerializers,
   streams: [
@@ -14,8 +14,8 @@ const logger = bunyan.createLogger({
       level: 'error',
       type: 'raw',
       stream: BunyanCloudWatch({
-        logGroupName: '/aws/lambda/one-hundred-letters-api-log-group',
-        logStreamName: 'one-hundred-letters-api-log-stream',
+        logGroupName: '/aws/lambda/one-hundred-letters-auth-at-edge-log-group',
+        logStreamName: 'one-hundred-letters-auth-at-edge-log-stream',
         awsRegion: 'us-west-2',
       }),
     },
