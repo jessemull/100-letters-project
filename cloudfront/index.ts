@@ -29,8 +29,8 @@ async function verifyToken(token: string): Promise<JwtPayload | null> {
       signingKey,
       { algorithms: ['RS256'], complete: true },
       (err: VerifyErrors | null, jwt: Jwt | undefined) => {
-        logger.info('Verified Payload:', jwt?.payload);
-
+        logger.error('Verified Payload:', jwt?.payload);
+        console.log(jwt);
         if (err) {
           return reject(err);
         }
