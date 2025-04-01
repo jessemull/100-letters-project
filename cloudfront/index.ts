@@ -1,6 +1,6 @@
 import jwksClient from 'jwks-rsa';
 import { CloudFrontRequestEvent, CloudFrontRequestResult } from 'aws-lambda';
-import { decode, JwtPayload, verify } from 'jsonwebtoken';
+import { decode, Jwt, JwtPayload, verify, VerifyErrors } from 'jsonwebtoken';
 import { logger } from './logger';
 
 const ADMIN_PATH_REGEX = /^\/admin(\/.*)?$/;
@@ -28,8 +28,8 @@ async function verifyToken(token: string): Promise<JwtPayload | null> {
     verify(
       token,
       signingKey,
-      { algorithms: ['RS256'] },
-      (err: Error, payload: { aud: string }) => {
+      { algorithms: ['RS256'], complete: true },
+      (err: VerifyErrors | null, payload: JwtPayload | undefined) => {
         if (err) return reject(err);
 
         if (!payload || typeof payload === 'string')
