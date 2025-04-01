@@ -1,4 +1,4 @@
-name: Deploy Lambda
+name: Deploy Cloudfront Lambda
 
 on:
   workflow_dispatch:
@@ -9,8 +9,8 @@ on:
         default: 'test'
         type: choice
         options:
-          - test
-          - production
+          - dev
+          - prod
   
 jobs:
   deploy-lambda:
