@@ -1,7 +1,7 @@
 import jwksClient from 'jwks-rsa';
 import { COGNITO_USER_POOL_CLIENT_ID, COGNITO_USER_POOL_ID } from './config';
 import { CloudFrontRequestEvent, CloudFrontRequestResult } from 'aws-lambda';
-import { decode, JwtPayload, verify, VerifyErrors } from 'jsonwebtoken';
+import { decode, Jwt, JwtPayload, verify, VerifyErrors } from 'jsonwebtoken';
 import { logger } from './logger';
 
 const ADMIN_PATH_REGEX = /^\/admin(\/.*)?$/;
@@ -28,22 +28,22 @@ async function verifyToken(token: string): Promise<JwtPayload | null> {
       token,
       signingKey,
       { algorithms: ['RS256'], complete: true },
-      (err: VerifyErrors | null, payload: JwtPayload | undefined) => {
-        logger.info('Verified Payload:', payload);
+      (err: VerifyErrors | null, jwt: Jwt | undefined) => {
+        logger.info('Verified Payload:', jwt?.payload);
 
         if (err) {
           return reject(err);
         }
 
-        if (!payload || typeof payload === 'string') {
+        if (!jwt?.payload || typeof jwt?.payload === 'string') {
           return reject(new Error('Invalid payload'));
         }
 
-        if (payload.aud !== COGNITO_USER_POOL_CLIENT_ID) {
+        if (jwt?.payload.aud !== COGNITO_USER_POOL_CLIENT_ID) {
           return reject(new Error('Invalid audience'));
         }
 
-        resolve(payload);
+        resolve(jwt);
       },
     );
   });
