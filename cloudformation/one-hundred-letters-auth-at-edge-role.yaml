@@ -22,6 +22,7 @@ Resources:
             Principal:
               Service:
                 - lambda.amazonaws.com
+                - edgelambda.amazonaws.com
             Action: sts:AssumeRole
       Policies:
         - PolicyName: LambdaBasicExecution
