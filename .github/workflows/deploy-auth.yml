@@ -29,6 +29,7 @@ jobs:
 
       - name: Build Lambda Package
         run: |
+          export NODE_ENV="${{ github.event.inputs.environment }}"
           cd cloudfront
           npm install
           npm run build

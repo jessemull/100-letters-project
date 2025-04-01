@@ -34,7 +34,7 @@
     "lint": "eslint --ext .ts",
     "lint:fix": "eslint --ext .ts --fix",
     "package": "cd dist && zip -rq auth-at-edge.zip ./*",
-    "postbuild": "NODE_ENV=dev node ./postbuild.js",
+    "postbuild": "node ./postbuild.js",
     "prebuild": "npm run clean",
     "test": "jest",
     "test:watch": "jest --watch"
