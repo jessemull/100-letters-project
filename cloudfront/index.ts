@@ -29,6 +29,8 @@ async function verifyToken(token: string): Promise<JwtPayload | null> {
       signingKey,
       { algorithms: ['RS256'], complete: true },
       (err: VerifyErrors | null, payload: JwtPayload | undefined) => {
+        logger.info('Verified Payload:', payload);
+
         if (err) {
           return reject(err);
         }
@@ -38,8 +40,6 @@ async function verifyToken(token: string): Promise<JwtPayload | null> {
         }
 
         if (payload.aud !== COGNITO_USER_POOL_CLIENT_ID) {
-          logger.error(payload);
-          logger.error(payload.aud);
           return reject(new Error('Invalid audience'));
         }
 
