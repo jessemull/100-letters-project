@@ -36,7 +36,7 @@ jobs:
       - name: Generate Artifact Name
         run: |
           COMMIT_HASH=$(git rev-parse --short HEAD)
-          VERSION=$(jq -r .version < src/routes/${FUNCTION_NAME}/package.json)
+          VERSION=$(jq -r .version < cloudfront/package.json)
           TIMESTAMP=$(date -u +"%Y%m%dT%H%M%SZ")
           ARTIFACT_NAME="auth-at-edge-${VERSION}-${COMMIT_HASH}-${TIMESTAMP}.zip"
           echo "Artifact: $ARTIFACT_NAME"
