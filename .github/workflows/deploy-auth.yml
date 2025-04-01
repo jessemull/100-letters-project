@@ -4,12 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: "Development environment"
+        description: 'Choose environment (test/production)'
         required: true
+        default: 'test'
         type: choice
         options:
-          - dev
-          - prod
+          - test
+          - production
   
 jobs:
   deploy-lambda:
