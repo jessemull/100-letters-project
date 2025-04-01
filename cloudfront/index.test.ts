@@ -35,14 +35,8 @@ const getMockEvent = () =>
   }) as unknown as CloudFrontRequestEvent;
 
 describe('Lambda handler tests', () => {
-  beforeAll(() => {
-    jest.resetModules();
-    process.env.NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID = 'valid-client-id';
-  });
-
   beforeEach(() => {
     mockEvent = getMockEvent();
-    jest.clearAllMocks();
     jest.resetAllMocks();
   });
 
