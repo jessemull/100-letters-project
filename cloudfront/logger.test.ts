@@ -10,7 +10,7 @@ describe('Logger', () => {
   });
 
   it('should create a logger with the correct name', () => {
-    expect(logger.fields.name).toBe('one-hundred-letters-api-logger');
+    expect(logger.fields.name).toBe('one-hundred-letters-auth-at-edge-logger');
   });
 
   it('should use the correct log level', () => {
@@ -20,9 +20,9 @@ describe('Logger', () => {
   it('should configure a CloudWatch stream with the correct parameters', () => {
     expect(BunyanCloudWatch).toHaveBeenCalledWith(
       expect.objectContaining({
-        logGroupName: '/aws/lambda/one-hundred-letters-api-log-group',
-        logStreamName: 'one-hundred-letters-api-log-stream',
-        awsRegion: 'us-west-2',
+        logGroupName: '/aws/lambda/one-hundred-letters-auth-at-edge-log-group',
+        logStreamName: 'one-hundred-letters-auth-at-edge-log-stream',
+        awsRegion: 'us-east-1',
       }),
     );
   });

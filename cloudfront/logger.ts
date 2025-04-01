@@ -16,7 +16,7 @@ const logger = bunyan.createLogger({
       stream: BunyanCloudWatch({
         logGroupName: '/aws/lambda/one-hundred-letters-auth-at-edge-log-group',
         logStreamName: 'one-hundred-letters-auth-at-edge-log-stream',
-        awsRegion: 'us-west-2',
+        awsRegion: 'us-east-1',
       }),
     },
   ],

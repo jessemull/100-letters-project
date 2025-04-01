@@ -1,11 +1,10 @@
 import jwksClient from 'jwks-rsa';
+import { COGNITO_USER_POOL_CLIENT_ID, COGNITO_USER_POOL_ID } from './config';
 import { CloudFrontRequestEvent, CloudFrontRequestResult } from 'aws-lambda';
 import { decode, JwtPayload, verify, VerifyErrors } from 'jsonwebtoken';
 import { logger } from './logger';
 
 const ADMIN_PATH_REGEX = /^\/admin(\/.*)?$/;
-const COGNITO_USER_POOL_CLIENT_ID = process.env.COGNITO_USER_POOL_CLIENT_ID;
-const COGNITO_USER_POOL_ID = process.env.COGNITO_USER_POOL_ID;
 const JWKS_URI = `https://cognito-idp.us-east-1.amazonaws.com/${COGNITO_USER_POOL_ID}/.well-known/jwks.json`;
 
 const client = jwksClient({ jwksUri: JWKS_URI });

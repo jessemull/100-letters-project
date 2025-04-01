@@ -84,7 +84,7 @@ describe('Lambda handler tests', () => {
   });
 
   it('should forward the request if JWT verification is successful', async () => {
-    const mockDecodedToken = { aud: undefined };
+    const mockDecodedToken = { aud: '26cmfhu1kfr9t3s9j85ia8qda2' };
     (mockDecode as jest.Mock).mockReturnValue({
       header: { kid: 'test-kid' },
     });

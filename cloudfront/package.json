@@ -34,7 +34,7 @@
     "lint": "eslint --ext .ts",
     "lint:fix": "eslint --ext .ts --fix",
     "package": "cd dist && zip -rq auth-at-edge.zip ./*",
-    "postbuild": "cp package.json dist/ && [ -f package-lock.json ] && cp package-lock.json dist/ || true && cd dist && npm install --omit=dev",
+    "postbuild": "NODE_ENV=dev node ./postbuild.js",
     "prebuild": "npm run clean",
     "test": "jest",
     "test:watch": "jest --watch"

@@ -28,11 +28,7 @@ Resources:
         S3Key: !Ref S3Key
       Timeout: 5
       MemorySize: 128
-      Environment:
-        Variables:
-          COGNITO_USER_POOL_CLIENT_ID: !Sub "{{resolve:secretsmanager:one-hundred-letters-auth-at-edge-${Environment}:SecretString:COGNITO_USER_POOL_CLIENT_ID}}"
-          COGNITO_USER_POOL_ID: !Sub "{{resolve:secretsmanager:one-hundred-letters-auth-at-edge-${Environment}:SecretString:COGNITO_USER_POOL_ID}}"
-
+      
   MyLambdaVersion:
     Type: AWS::Lambda::Version
     Properties:

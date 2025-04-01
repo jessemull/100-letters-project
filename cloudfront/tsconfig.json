@@ -10,6 +10,6 @@
     "rootDir": ".",
     "baseUrl": "."
   },
-  "include": ["./index.ts"],
+  "include": ["./index.ts", "./config.dev.ts", "./config.prod.ts"],
   "exclude": ["node_modules", "./dist"]
 }

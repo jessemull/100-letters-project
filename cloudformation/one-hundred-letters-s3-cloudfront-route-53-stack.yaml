@@ -104,7 +104,7 @@ Resources:
             - HEAD
           LambdaFunctionAssociations:
             - EventType: viewer-request
-              LambdaFunctionARN: !Sub arn:aws:lambda:us-east-1:771265364914:function:auth-at-edge-${Environment}:1
+              LambdaFunctionARN: !Sub arn:aws:lambda:us-east-1:771265364914:function:auth-at-edge-${Environment}:2
         DefaultRootObject: "index.html"
         ViewerCertificate:
           AcmCertificateArn: !Ref ACMCertificateArn

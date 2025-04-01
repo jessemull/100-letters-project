@@ -48,3 +48,9 @@ public/data.json
 public/robots.txt
 public/sitemap-0.xml
 public/sitemap.xml
+
+# ignore node_modules everywhere
+**/node_modules
+
+# ignore coverage everywhere
+**/coverage
