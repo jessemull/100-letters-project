@@ -58,15 +58,28 @@ export const handler = async (
 ): Promise<CloudFrontRequestResult> => {
   const request = event.Records[0].cf.request;
   const headers = request.headers;
-  const uri = request.uri;
+  let uri = request.uri;
 
-  // First, check if the path matches the admin regex (before modifying the URI)
+  // If the uri is '/' (root), rewrite it to '/index.html'
+  if (uri === '/') {
+    uri = '/index.html';
+  }
+
+  // If the uri does not already end with .html, append it
+  if (!uri.endsWith('.html')) {
+    uri = uri + '.html';
+  }
+
+  // Log the modified URI
+  console.log('Modified URI: ', uri);
+
+  // Now the URI should be either '/index.html' or another page with '.html' appended
+  request.uri = uri;
+
+  // Handle the authentication if necessary
   if (ADMIN_PATH_REGEX.test(uri)) {
-    console.log('Admin path detected, proceeding with JWT verification...');
-
     const authHeader = headers['authorization']?.[0]?.value;
 
-    // Check if authorization header is present and starts with "Bearer "
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return {
         status: '403',
@@ -90,12 +103,5 @@ export const handler = async (
     }
   }
 
-  // Now handle the URI rewrite only for non-admin paths
-  if (!uri.includes('.')) {
-    console.log(`Rewriting URI: ${uri} to ${uri}.html`);
-    request.uri = `${uri}.html`;
-  }
-
-  // Return the request (after authentication and URI rewriting)
   return request;
 };
