@@ -1,7 +1,6 @@
 import { CloudFrontRequestEvent, CloudFrontResultResponse } from 'aws-lambda';
 import { decode as mockDecode, verify as mockVerify } from 'jsonwebtoken';
 import { handler } from './index';
-import { logger } from './logger';
 
 jest.mock('jwks-rsa', () => {
   return jest.fn().mockImplementation(() => ({
@@ -10,11 +9,6 @@ jest.mock('jwks-rsa', () => {
 });
 
 jest.mock('jsonwebtoken');
-jest.mock('./logger', () => ({
-  logger: {
-    error: jest.fn(),
-  },
-}));
 
 let mockEvent: CloudFrontRequestEvent;
 
@@ -36,8 +30,13 @@ const getMockEvent = () =>
 
 describe('Lambda handler tests', () => {
   beforeEach(() => {
+    console.error = jest.fn();
     mockEvent = getMockEvent();
     jest.resetAllMocks();
+  });
+
+  afterAll(() => {
+    jest.restoreAllMocks();
   });
 
   it('should forward the request if the URI is not an admin path', async () => {
@@ -77,14 +76,14 @@ describe('Lambda handler tests', () => {
     const result = (await handler(mockEvent)) as CloudFrontResultResponse;
     expect(result.status).toBe('403');
     expect(result.body).toBe('Access denied!');
-    expect(logger.error).toHaveBeenCalledWith(
+    expect(console.error).toHaveBeenCalledWith(
       'JWT Verification Failed: ',
       new Error('Invalid JWT'),
     );
   });
 
   it('should forward the request if JWT verification is successful', async () => {
-    const mockDecodedToken = { aud: undefined };
+    const mockDecodedToken = { payload: { aud: undefined } };
     (mockDecode as jest.Mock).mockReturnValue({
       header: { kid: 'test-kid' },
     });
@@ -100,6 +99,26 @@ describe('Lambda handler tests', () => {
     );
     const result = await handler(mockEvent);
     expect(result).toEqual(mockEvent.Records[0].cf.request);
+  });
+
+  it('should throw an error if JWT audience is wrong', async () => {
+    const mockDecodedToken = { payload: { aud: 'invalid' } };
+    (mockDecode as jest.Mock).mockReturnValue({
+      header: { kid: 'test-kid' },
+    });
+    (mockVerify as jest.Mock).mockImplementationOnce(
+      (
+        token: string,
+        secret: string,
+        options: unknown,
+        callback: (error: Error | null, decoded: unknown) => void,
+      ) => {
+        callback(null, mockDecodedToken);
+      },
+    );
+    const result = (await handler(mockEvent)) as CloudFrontResultResponse;
+    expect(result.status).toBe('403');
+    expect(result.body).toBe('Access denied!');
   });
 
   it('should throw an error if the aud is wrong', async () => {

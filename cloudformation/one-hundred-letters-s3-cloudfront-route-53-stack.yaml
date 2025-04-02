@@ -102,10 +102,6 @@ Resources:
           AllowedMethods:
             - GET
             - HEAD
-          LambdaFunctionAssociations:
-            - EventType: viewer-request
-              LambdaFunctionARN: !ImportValue 
-                Fn::Sub: "AuthAtEdgeFunctionArn-${Environment}"
         DefaultRootObject: "index.html"
         ViewerCertificate:
           AcmCertificateArn: !Ref ACMCertificateArn

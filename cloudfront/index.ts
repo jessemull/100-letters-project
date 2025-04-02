@@ -1,48 +1,55 @@
-import jwksClient from 'jwks-rsa';
 import { CloudFrontRequestEvent, CloudFrontRequestResult } from 'aws-lambda';
-import { decode, Jwt, JwtPayload, verify, VerifyErrors } from 'jsonwebtoken';
-import { logger } from './logger';
+import { jwtVerify, importJWK } from 'jose';
+import axios from 'axios';
 
-const ADMIN_PATH_REGEX = /^\/admin(\/.*)?$/;
-const COGNITO_USER_POOL_CLIENT_ID = process.env.COGNITO_USER_POOL_CLIENT_ID;
 const COGNITO_USER_POOL_ID = process.env.COGNITO_USER_POOL_ID;
-const JWKS_URI = `https://cognito-idp.${process.env.AWS_REGION}.amazonaws.com/${COGNITO_USER_POOL_ID}/.well-known/jwks.json`;
+const COGNITO_USER_POOL_CLIENT_ID = process.env.COGNITO_USER_POOL_CLIENT_ID;
+const ADMIN_PATH_REGEX = /^\/admin(\/.*)?$/;
+const JWKS_URI = `https://cognito-idp.us-west-2.amazonaws.com/${COGNITO_USER_POOL_ID}/.well-known/jwks.json`;
 
-const client = jwksClient({ jwksUri: JWKS_URI });
-
-async function getSigningKey(kid: string): Promise<string> {
-  const key = await client.getSigningKey(kid);
-  return key.getPublicKey();
+async function fetchJWKS() {
+  try {
+    const response = await axios.get(JWKS_URI);
+    return response.data.keys;
+  } catch (error) {
+    console.error('Unable to fetch JWKS: ', error);
+    throw new Error('Unable to fetch JWKS');
+  }
 }
 
-async function verifyToken(token: string): Promise<JwtPayload | null> {
-  const decoded = decode(token, { complete: true });
+async function getSigningKey(kid: string) {
+  const keys = await fetchJWKS();
+  const signingKey = keys.find((key: { kid: string }) => key.kid === kid);
 
-  if (!decoded || typeof decoded === 'string' || !decoded.header.kid) {
-    throw new Error('Invalid JWT');
+  if (!signingKey) {
+    throw new Error('No signing key found');
   }
 
-  const signingKey = await getSigningKey(decoded.header.kid);
+  return await importJWK(signingKey, 'RS256');
+}
 
-  return new Promise((resolve, reject) => {
-    verify(
-      token,
-      signingKey,
-      { algorithms: ['RS256'], complete: true },
-      (err: VerifyErrors | null, payload: JwtPayload | undefined) => {
-        if (err) return reject(err);
+async function verifyToken(token: string) {
+  const decodedHeader = JSON.parse(
+    Buffer.from(token.split('.')[0], 'base64').toString(),
+  );
 
-        if (!payload || typeof payload === 'string')
-          return reject(new Error('Invalid payload'));
+  if (!decodedHeader.kid) {
+    throw new Error('Invalid JWT: Missing kid');
+  }
 
-        if (payload.aud !== COGNITO_USER_POOL_CLIENT_ID) {
-          return reject(new Error('Invalid audience'));
-        }
+  const key = await getSigningKey(decodedHeader.kid);
 
-        resolve(payload);
-      },
-    );
-  });
+  try {
+    const { payload } = await jwtVerify(token, key, { algorithms: ['RS256'] });
+
+    if (payload.aud !== COGNITO_USER_POOL_CLIENT_ID) {
+      throw new Error('Invalid audience');
+    }
+
+    return payload;
+  } catch (error) {
+    throw new Error('JWT verification failed: ' + (error as Error).message);
+  }
 }
 
 export const handler = async (
@@ -50,33 +57,61 @@ export const handler = async (
 ): Promise<CloudFrontRequestResult> => {
   const request = event.Records[0].cf.request;
   const headers = request.headers;
-  const uri = request.uri;
+  let uri = request.uri;
 
-  if (!ADMIN_PATH_REGEX.test(uri)) {
-    return request;
+  const assetExtensions = [
+    '.css',
+    '.js',
+    '.png',
+    '.jpg',
+    '.jpeg',
+    '.gif',
+    '.svg',
+    '.woff',
+    '.woff2',
+    '.eot',
+    '.ttf',
+    '.otf',
+    '.webp',
+  ];
+
+  if (uri === '/') {
+    uri = '/index.html';
   }
 
-  const authHeader = headers['authorization']?.[0]?.value;
-
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return {
-      status: '403',
-      statusDescription: 'Forbidden',
-      body: 'Access denied!',
-    };
+  if (!assetExtensions.some((ext) => uri.endsWith(ext))) {
+    if (!uri.endsWith('.html')) {
+      uri = uri + '.html';
+    }
   }
 
-  const token = authHeader.split(' ')[1];
+  request.uri = uri;
 
-  try {
-    await verifyToken(token);
-    return request;
-  } catch (error) {
-    logger.error('JWT Verification Failed: ', error);
-    return {
-      status: '403',
-      statusDescription: 'Forbidden',
-      body: 'Access denied!',
-    };
+  if (ADMIN_PATH_REGEX.test(uri)) {
+    const authHeader = headers['authorization']?.[0]?.value;
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return {
+        status: '403',
+        statusDescription: 'Forbidden',
+        body: 'Access denied!',
+      };
+    }
+
+    const token = authHeader.split(' ')[1];
+
+    try {
+      await verifyToken(token);
+      return request;
+    } catch (error) {
+      console.error('JWT Verification Failed: ', error);
+      return {
+        status: '403',
+        statusDescription: 'Forbidden',
+        body: 'Access denied!',
+      };
+    }
   }
+
+  return request;
 };

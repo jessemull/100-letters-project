@@ -26,9 +26,9 @@ Resources:
         S3Bucket:
           Fn::ImportValue: !Sub "AuthAtEdgeBucketName-${Environment}"
         S3Key: !Ref S3Key
-      Timeout: 10
+      Timeout: 5
       MemorySize: 128
-
+      
   MyLambdaVersion:
     Type: AWS::Lambda::Version
     Properties:
