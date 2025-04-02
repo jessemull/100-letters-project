@@ -12,6 +12,7 @@
     "@typescript-eslint/eslint-plugin": "^8.26.0",
     "@typescript-eslint/parser": "^8.26.0",
     "crypto-browserify": "^3.12.1",
+    "dotenv": "^16.4.7",
     "eslint": "^9.21.0",
     "eslint-config-prettier": "^10.0.2",
     "eslint-plugin-import": "^2.31.0",
