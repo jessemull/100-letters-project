@@ -52,7 +52,6 @@ async function verifyToken(token: string) {
   }
 }
 
-// Lambda handler
 export const handler = async (
   event: CloudFrontRequestEvent,
 ): Promise<CloudFrontRequestResult> => {
@@ -60,7 +59,6 @@ export const handler = async (
   const headers = request.headers;
   let uri = request.uri;
 
-  // Skip appending .html if the URI refers to assets (like CSS, JS, or image files)
   const assetExtensions = [
     '.css',
     '.js',
@@ -77,12 +75,10 @@ export const handler = async (
     '.webp',
   ];
 
-  // If the URI is '/', rewrite it to '/index.html'
   if (uri === '/') {
     uri = '/index.html';
   }
 
-  // If the URI doesn't end with an asset extension and isn't '/index.html', append .html
   if (!assetExtensions.some((ext) => uri.endsWith(ext))) {
     if (!uri.endsWith('.html')) {
       uri = uri + '.html';
