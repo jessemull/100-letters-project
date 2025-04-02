@@ -13,9 +13,17 @@ const client = jwksClient({ jwksUri: JWKS_URI });
 
 async function getSigningKey(kid: string): Promise<string> {
   console.log('BEFORE SIGN KEY...', JWKS_URI, kid);
-  const key = await client.getSigningKey(kid);
-  console.log('SIGN KEY...');
-  return key.getPublicKey();
+  try {
+    const key = await client.getSigningKey(kid);
+    if (!key) {
+      throw new Error('No signing key found');
+    }
+    console.log('SIGN KEY: ', key);
+    return key.getPublicKey();
+  } catch (error) {
+    console.error('Error fetching signing key:', error);
+    throw error;
+  }
 }
 
 async function verifyToken(token: string): Promise<JwtPayload | null> {
