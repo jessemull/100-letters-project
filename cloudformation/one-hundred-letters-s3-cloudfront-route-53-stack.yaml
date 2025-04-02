@@ -32,6 +32,13 @@ Parameters:
   CloudFrontKey:
     Type: String
     Description: The public key for the development website base 64 encoded.
+  EnableSignedCookiesCheck:
+    Type: String
+    Default: "true"
+    Description: "Set to 'true' to enable signed cookies check, 'false' to disable."
+    AllowedValues:
+      - "true"
+      - "false"
 
 Resources:
   StaticWebsiteBucket:
@@ -98,7 +105,7 @@ Resources:
             Cookies:
               Forward: "none"
           TrustedKeyGroups:
-            !If [IsProd, !Ref "AWS::NoValue", [!Ref CloudFrontKeyGroup]]
+            !If [IsProdAndSignedCookies, !Ref "AWS::NoValue", [!Ref CloudFrontKeyGroup]]
           AllowedMethods:
             - GET
             - HEAD
@@ -164,4 +171,7 @@ Resources:
 
 Conditions:
   IsProd: !Equals [ !Ref Environment, "prod" ]
+  IsProdAndSignedCookies: !And
+    - !Equals [ !Ref Environment, "prod" ]
+    - !Equals [ !Ref EnableSignedCookiesCheck, "true" ]
   CreateDNSRecordsCondition: !Equals [ !Ref CreateDNSRecords, "true" ]

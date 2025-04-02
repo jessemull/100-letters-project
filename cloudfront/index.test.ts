@@ -99,6 +99,20 @@ describe('Lambda handler tests', () => {
     expect(result).toEqual(mockEvent.Records[0].cf.request);
   });
 
+  it('should handle query params if JWT verification is successful', async () => {
+    mockEvent.Records[0].cf.request.uri =
+      mockEvent.Records[0].cf.request.uri + '?key=value';
+    (importJWK as jest.Mock).mockResolvedValue('mocked-key');
+    (jwtVerify as jest.Mock).mockResolvedValue({
+      payload: { aud: process.env.COGNITO_USER_POOL_CLIENT_ID },
+    });
+    (axios.get as jest.Mock).mockResolvedValue({
+      data: { keys: [{ kid: 'mocked-kid', alg: 'RS256' }] },
+    });
+    const result = await handler(mockEvent);
+    expect(result).toEqual(mockEvent.Records[0].cf.request);
+  });
+
   it('should return 403 if JWT audience is invalid', async () => {
     (importJWK as jest.Mock).mockResolvedValue('mocked-key');
     (jwtVerify as jest.Mock).mockResolvedValue({
