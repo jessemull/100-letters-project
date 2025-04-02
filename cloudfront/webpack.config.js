@@ -1,13 +1,16 @@
 const webpack = require('webpack');
 const path = require('path');
 const dotenv = require('dotenv');
+const TerserPlugin = require('terser-webpack-plugin'); // Import TerserPlugin
 
 dotenv.config();
 
 module.exports = {
   entry: './index.ts',
+  devtool: false,
   output: {
     filename: 'index.js',
+    libraryTarget: 'commonjs2',
     path: path.resolve(__dirname, 'dist'),
   },
   resolve: {
@@ -29,8 +32,21 @@ module.exports = {
       {
         test: /\.ts$/,
         use: 'ts-loader',
-        exclude: /node_modules/,
+        exclude: /node_modules/, // Do not minify own code
       },
+    ],
+  },
+  optimization: {
+    minimize: true, // Enable minification
+    minimizer: [
+      new TerserPlugin({
+        test: /node_modules/, // Minify only node_modules
+        terserOptions: {
+          compress: {
+            drop_console: true, // Optional: drop console logs
+          },
+        },
+      }),
     ],
   },
   plugins: [
