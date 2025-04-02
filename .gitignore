@@ -54,3 +54,6 @@ public/sitemap.xml
 
 # ignore coverage everywhere
 **/coverage
+
+# ignore coverage everywhere
+**/dist

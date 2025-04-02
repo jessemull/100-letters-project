@@ -1,15 +1,8 @@
 const webpack = require('webpack');
 const path = require('path');
 const dotenv = require('dotenv');
-const DotenvWebpackPlugin = require('dotenv-webpack');
 
-const env = process.env.NODE_ENV || 'dev';
-const envFile = `.env.${env}`;
-const envConfig = dotenv.config({
-  path: path.resolve(__dirname, envFile),
-}).parsed;
-
-console.log(envConfig);
+dotenv.config();
 
 module.exports = {
   mode: 'development',
@@ -18,7 +11,6 @@ module.exports = {
     filename: 'index.js',
     path: path.resolve(__dirname, 'dist'),
   },
-  mode: env === 'prod' ? 'production' : 'development',
   resolve: {
     extensions: ['.ts', '.js'],
     fallback: {
@@ -42,15 +34,12 @@ module.exports = {
     ],
   },
   plugins: [
-    new DotenvWebpackPlugin({
-      path: envFile,
-    }),
     new webpack.DefinePlugin({
       'process.env.COGNITO_USER_POOL_ID': JSON.stringify(
-        envConfig.COGNITO_USER_POOL_ID,
+        process.env.COGNITO_USER_POOL_ID,
       ),
       'process.env.COGNITO_USER_POOL_CLIENT_ID': JSON.stringify(
-        envConfig.COGNITO_USER_POOL_CLIENT_ID,
+        process.env.COGNITO_USER_POOL_CLIENT_ID,
       ),
     }),
   ],
