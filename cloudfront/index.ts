@@ -59,33 +59,43 @@ export const handler = async (
   const request = event.Records[0].cf.request;
   const headers = request.headers;
   const uri = request.uri;
-  console.log('request', request);
-  if (!ADMIN_PATH_REGEX.test(uri)) {
-    console.log('returing request..');
-    return request;
+
+  // First, check if the path matches the admin regex (before modifying the URI)
+  if (ADMIN_PATH_REGEX.test(uri)) {
+    console.log('Admin path detected, proceeding with JWT verification...');
+
+    const authHeader = headers['authorization']?.[0]?.value;
+
+    // Check if authorization header is present and starts with "Bearer "
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return {
+        status: '403',
+        statusDescription: 'Forbidden',
+        body: 'Access denied!',
+      };
+    }
+
+    const token = authHeader.split(' ')[1];
+
+    try {
+      await verifyToken(token);
+      return request;
+    } catch (error) {
+      console.error('JWT Verification Failed: ', error);
+      return {
+        status: '403',
+        statusDescription: 'Forbidden',
+        body: 'Access denied!',
+      };
+    }
   }
 
-  const authHeader = headers['authorization']?.[0]?.value;
-
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return {
-      status: '403',
-      statusDescription: 'Forbidden',
-      body: 'Access denied!',
-    };
+  // Now handle the URI rewrite only for non-admin paths
+  if (!uri.includes('.')) {
+    console.log(`Rewriting URI: ${uri} to ${uri}.html`);
+    request.uri = `${uri}.html`;
   }
 
-  const token = authHeader.split(' ')[1];
-
-  try {
-    await verifyToken(token);
-    return request;
-  } catch (error) {
-    console.error('JWT Verification Failed: ', error);
-    return {
-      status: '403',
-      statusDescription: 'Forbidden',
-      body: 'Access denied!',
-    };
-  }
+  // Return the request (after authentication and URI rewriting)
+  return request;
 };
