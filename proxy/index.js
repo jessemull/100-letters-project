@@ -38,9 +38,10 @@ app.use((req, res, next) => {
 });
 
 app.use((req, res, next) => {
-  if (req.url === '/') {
+  const baseUrl = req.originalUrl.split('?')[0];
+  if (baseUrl === '/') {
     req.url = '/index.html';
-  } else if (!req.url.match(/\.[a-zA-Z0-9]+$/)) {
+  } else if (!baseUrl.match(/\.[a-zA-Z0-9]+$/)) {
     req.url += '.html';
   }
   next();
