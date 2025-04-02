@@ -13,17 +13,22 @@ const client = jwksClient({ jwksUri: JWKS_URI });
 
 async function getSigningKey(kid: string): Promise<string> {
   const key = await client.getSigningKey(kid);
+  console.log('SIGN KEY...');
   return key.getPublicKey();
 }
 
 async function verifyToken(token: string): Promise<JwtPayload | null> {
   const decoded = decode(token, { complete: true });
 
+  console.log('DECODED...');
+
   if (!decoded || typeof decoded === 'string' || !decoded.header.kid) {
     throw new Error('Invalid JWT');
   }
 
   const signingKey = await getSigningKey(decoded.header.kid);
+
+  console.log('SIGNING KEY...');
 
   return new Promise((resolve, reject) => {
     verify(
