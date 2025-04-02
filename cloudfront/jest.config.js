@@ -2,11 +2,6 @@ module.exports = {
   collectCoverage: true,
   collectCoverageFrom: ['**/*.{ts,tsx}'],
   coverageDirectory: './coverage',
-  coveragePathIgnorePatterns: [
-    'bunyan-cloudwatch.d.ts',
-    'config.dev.ts',
-    'config.prod.ts',
-  ],
   coverageReporters: ['json', 'lcov', 'text', 'clover'],
   coverageThreshold: {
     global: {

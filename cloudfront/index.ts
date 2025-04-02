@@ -9,7 +9,9 @@ const JWKS_URI = `https://cognito-idp.us-west-2.amazonaws.com/${COGNITO_USER_POO
 
 async function fetchJWKS() {
   try {
+    console.log('FETCHING');
     const response = await axios.get(JWKS_URI);
+
     return response.data.keys;
   } catch (error) {
     console.error('Unable to fetch JWKS: ', error);
@@ -20,7 +22,7 @@ async function fetchJWKS() {
 async function getSigningKey(kid: string) {
   const keys = await fetchJWKS();
   const signingKey = keys.find((key: { kid: string }) => key.kid === kid);
-
+  console.log(signingKey);
   if (!signingKey) {
     throw new Error('No signing key found');
   }
