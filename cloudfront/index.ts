@@ -1,5 +1,5 @@
 import { CloudFrontRequestEvent, CloudFrontRequestResult } from 'aws-lambda';
-import { jwtVerify, importSPKI } from 'jose';
+import { jwtVerify, importJWK } from 'jose';
 import axios from 'axios';
 
 const COGNITO_USER_POOL_ID = process.env.COGNITO_USER_POOL_ID;
@@ -29,9 +29,10 @@ async function getSigningKey(kid: string) {
     throw new Error('No signing key found');
   }
 
-  // Convert the key to a format `jose` can use
-  const publicKeyPEM = `-----BEGIN PUBLIC KEY-----\n${signingKey.n}\n-----END PUBLIC KEY-----`;
-  return await importSPKI(publicKeyPEM, 'RS256');
+  console.log('Found signing key:', signingKey);
+
+  // Convert JWKS key to JWK format that `jose` understands
+  return await importJWK(signingKey, 'RS256');
 }
 
 // Verify JWT
@@ -55,6 +56,7 @@ async function verifyToken(token: string) {
 
     return payload;
   } catch (error) {
+    console.error('JWT verification failed:', error);
     throw new Error('JWT verification failed: ' + (error as Error).message);
   }
 }
