@@ -31,14 +31,17 @@ app.use((req, res, next) => {
 });
 
 app.use((req, res, next) => {
-  if (req.url.match(/\.(js|css|png|jpg|jpeg|gif|svg|woff2?)$/)) {
+  if (req.url.match(/\.(js|css|png|jpg|jpeg|gif|svg|woff2|webp|ico?)$/)) {
     res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
   }
   next();
 });
 
 app.use((req, res, next) => {
-  if (!req.url.match(/\.(js|css|png|jpg|jpeg|gif|svg|woff2?|html)$/)) {
+  const baseUrl = req.originalUrl.split('?')[0];
+  if (baseUrl === '/') {
+    req.url = '/index.html';
+  } else if (!baseUrl.match(/\.[a-zA-Z0-9]+$/)) {
     req.url += '.html';
   }
   next();

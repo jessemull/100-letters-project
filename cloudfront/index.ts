@@ -1,10 +1,10 @@
+import axios from 'axios';
+import path from 'path';
 import { CloudFrontRequestEvent, CloudFrontRequestResult } from 'aws-lambda';
 import { jwtVerify, importJWK } from 'jose';
-import axios from 'axios';
 
 const COGNITO_USER_POOL_ID = process.env.COGNITO_USER_POOL_ID;
 const COGNITO_USER_POOL_CLIENT_ID = process.env.COGNITO_USER_POOL_CLIENT_ID;
-const ADMIN_PATH_REGEX = /^\/admin(\/.*)?$/;
 const JWKS_URI = `https://cognito-idp.us-west-2.amazonaws.com/${COGNITO_USER_POOL_ID}/.well-known/jwks.json`;
 
 async function fetchJWKS() {
@@ -59,35 +59,23 @@ export const handler = async (
   const headers = request.headers;
   let uri = request.uri;
 
-  const assetExtensions = [
-    '.css',
-    '.js',
-    '.png',
-    '.jpg',
-    '.jpeg',
-    '.gif',
-    '.svg',
-    '.woff',
-    '.woff2',
-    '.eot',
-    '.ttf',
-    '.otf',
-    '.webp',
-  ];
-
   if (uri === '/') {
     uri = '/index.html';
   }
 
-  if (!assetExtensions.some((ext) => uri.endsWith(ext))) {
-    if (!uri.endsWith('.html')) {
-      uri = uri + '.html';
-    }
+  const [uriWithoutQuery] = uri.split('?');
+  const normalizedUri = path
+    .normalize(decodeURIComponent(uriWithoutQuery))
+    .toLowerCase();
+  const hasExtension = /\.[a-zA-Z0-9]+$/.test(normalizedUri);
+
+  if (!hasExtension) {
+    uri = `${uriWithoutQuery}.html${uri.includes('?') ? '?' + uri.split('?')[1] : ''}`;
   }
 
   request.uri = uri;
 
-  if (ADMIN_PATH_REGEX.test(uri)) {
+  if (normalizedUri.startsWith('/admin')) {
     const authHeader = headers['authorization']?.[0]?.value;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {

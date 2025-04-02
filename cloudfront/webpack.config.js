@@ -21,6 +21,7 @@ module.exports = {
       events: require.resolve('events'),
       http: require.resolve('stream-http'),
       https: require.resolve('https-browserify'),
+      path: require.resolve('path-browserify'),
       stream: require.resolve('stream-browserify'),
       url: require.resolve('url'),
       util: require.resolve('util'),
@@ -36,15 +37,18 @@ module.exports = {
       },
     ],
   },
-  mode: 'production',
+  mode: 'none',
   optimization: {
     minimize: true,
     minimizer: [
       new TerserPlugin({
-        test: /node_modules/,
+        exclude: /index\.ts$/,
         terserOptions: {
           compress: {
             drop_console: true,
+          },
+          output: {
+            comments: false,
           },
         },
       }),

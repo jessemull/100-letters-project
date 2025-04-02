@@ -1,7 +1,7 @@
-import { CloudFrontRequestEvent, CloudFrontResultResponse } from 'aws-lambda';
-import { jwtVerify, importJWK } from 'jose';
 import axios from 'axios';
+import { CloudFrontRequestEvent, CloudFrontResultResponse } from 'aws-lambda';
 import { handler } from './index';
+import { jwtVerify, importJWK } from 'jose';
 
 jest.mock('axios');
 jest.mock('jose', () => ({
@@ -88,6 +88,20 @@ describe('Lambda handler tests', () => {
   });
 
   it('should forward the request if JWT verification is successful', async () => {
+    (importJWK as jest.Mock).mockResolvedValue('mocked-key');
+    (jwtVerify as jest.Mock).mockResolvedValue({
+      payload: { aud: process.env.COGNITO_USER_POOL_CLIENT_ID },
+    });
+    (axios.get as jest.Mock).mockResolvedValue({
+      data: { keys: [{ kid: 'mocked-kid', alg: 'RS256' }] },
+    });
+    const result = await handler(mockEvent);
+    expect(result).toEqual(mockEvent.Records[0].cf.request);
+  });
+
+  it('should handle query params if JWT verification is successful', async () => {
+    mockEvent.Records[0].cf.request.uri =
+      mockEvent.Records[0].cf.request.uri + '?key=value';
     (importJWK as jest.Mock).mockResolvedValue('mocked-key');
     (jwtVerify as jest.Mock).mockResolvedValue({
       payload: { aud: process.env.COGNITO_USER_POOL_CLIENT_ID },
