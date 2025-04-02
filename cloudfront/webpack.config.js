@@ -5,7 +5,6 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 module.exports = {
-  mode: 'development',
   entry: './index.ts',
   output: {
     filename: 'index.js',
