@@ -12,6 +12,7 @@ async function fetchJWKS() {
     const response = await axios.get(JWKS_URI);
     return response.data.keys;
   } catch (error) {
+    console.error('Unable to fetch JWKS: ', error);
     throw new Error('Unable to fetch JWKS');
   }
 }
@@ -27,7 +28,6 @@ async function getSigningKey(kid: string) {
   return await importJWK(signingKey, 'RS256');
 }
 
-// Verify JWT
 async function verifyToken(token: string) {
   const decodedHeader = JSON.parse(
     Buffer.from(token.split('.')[0], 'base64').toString(),
@@ -60,23 +60,36 @@ export const handler = async (
   const headers = request.headers;
   let uri = request.uri;
 
-  // If the uri is '/' (root), rewrite it to '/index.html'
+  // Skip appending .html if the URI refers to assets (like CSS, JS, or image files)
+  const assetExtensions = [
+    '.css',
+    '.js',
+    '.png',
+    '.jpg',
+    '.jpeg',
+    '.gif',
+    '.svg',
+    '.woff',
+    '.woff2',
+    '.eot',
+    '.ttf',
+    '.otf',
+  ];
+
+  // If the URI is '/', rewrite it to '/index.html'
   if (uri === '/') {
     uri = '/index.html';
   }
 
-  // If the uri does not already end with .html, append it
-  if (!uri.endsWith('.html')) {
-    uri = uri + '.html';
+  // If the URI doesn't end with an asset extension and isn't '/index.html', append .html
+  if (!assetExtensions.some((ext) => uri.endsWith(ext))) {
+    if (!uri.endsWith('.html')) {
+      uri = uri + '.html';
+    }
   }
 
-  // Log the modified URI
-  console.log('Modified URI: ', uri);
-
-  // Now the URI should be either '/index.html' or another page with '.html' appended
   request.uri = uri;
 
-  // Handle the authentication if necessary
   if (ADMIN_PATH_REGEX.test(uri)) {
     const authHeader = headers['authorization']?.[0]?.value;
 
