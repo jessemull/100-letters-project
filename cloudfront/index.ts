@@ -1,9 +1,9 @@
 import jwksClient from 'jwks-rsa';
-import { COGNITO_USER_POOL_CLIENT_ID, COGNITO_USER_POOL_ID } from './config';
 import { CloudFrontRequestEvent, CloudFrontRequestResult } from 'aws-lambda';
 import { decode, Jwt, JwtPayload, verify, VerifyErrors } from 'jsonwebtoken';
-import { logger } from './logger';
 
+const COGNITO_USER_POOL_ID = process.env.COGNITO_USER_POOL_ID;
+const COGNITO_USER_POOL_CLIENT_ID = process.env.COGNITO_USER_POOL_CLIENT_ID;
 const ADMIN_PATH_REGEX = /^\/admin(\/.*)?$/;
 const JWKS_URI = `https://cognito-idp.us-west-2.amazonaws.com/${COGNITO_USER_POOL_ID}/.well-known/jwks.json`;
 
@@ -29,17 +29,15 @@ async function verifyToken(token: string): Promise<JwtPayload | null> {
       signingKey,
       { algorithms: ['RS256'], complete: true },
       (err: VerifyErrors | null, jwt: Jwt | undefined) => {
-        logger.error('Verified Payload:', jwt?.payload);
-        console.log(jwt);
         if (err) {
           return reject(err);
         }
 
-        if (!jwt?.payload || typeof jwt?.payload === 'string') {
+        if (!jwt || !jwt.payload || typeof jwt.payload === 'string') {
           return reject(new Error('Invalid payload'));
         }
 
-        if (jwt?.payload.aud !== COGNITO_USER_POOL_CLIENT_ID) {
+        if (jwt.payload.aud !== COGNITO_USER_POOL_CLIENT_ID) {
           return reject(new Error('Invalid audience'));
         }
 
@@ -76,7 +74,7 @@ export const handler = async (
     await verifyToken(token);
     return request;
   } catch (error) {
-    logger.error('JWT Verification Failed: ', error);
+    console.error('JWT Verification Failed: ', error);
     return {
       status: '403',
       statusDescription: 'Forbidden',
