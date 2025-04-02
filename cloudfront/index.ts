@@ -7,6 +7,8 @@ const COGNITO_USER_POOL_CLIENT_ID = process.env.COGNITO_USER_POOL_CLIENT_ID;
 const ADMIN_PATH_REGEX = /^\/admin(\/.*)?$/;
 const JWKS_URI = `https://cognito-idp.us-west-2.amazonaws.com/${COGNITO_USER_POOL_ID}/.well-known/jwks.json`;
 
+console.log('JWKS_URI:', JWKS_URI);
+
 const client = jwksClient({ jwksUri: JWKS_URI });
 
 async function getSigningKey(kid: string): Promise<string> {
