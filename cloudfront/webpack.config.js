@@ -14,14 +14,15 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '.js'],
     fallback: {
-      stream: require.resolve('stream-browserify'),
-      events: require.resolve('events'),
+      buffer: require.resolve('buffer'),
       crypto: require.resolve('crypto-browserify'),
+      events: require.resolve('events'),
       http: require.resolve('stream-http'),
       https: require.resolve('https-browserify'),
+      stream: require.resolve('stream-browserify'),
+      url: require.resolve('url'),
       util: require.resolve('util'),
       vm: require.resolve('vm-browserify'),
-      url: require.resolve('url'),
     },
   },
   module: {
