@@ -1,6 +1,6 @@
-import jwksClient from 'jwks-rsa';
 import { CloudFrontRequestEvent, CloudFrontRequestResult } from 'aws-lambda';
-import { decode, Jwt, JwtPayload, verify, VerifyErrors } from 'jsonwebtoken';
+import { jwtVerify, importSPKI } from 'jose';
+import axios from 'axios';
 
 const COGNITO_USER_POOL_ID = process.env.COGNITO_USER_POOL_ID;
 const COGNITO_USER_POOL_CLIENT_ID = process.env.COGNITO_USER_POOL_CLIENT_ID;
@@ -9,62 +9,57 @@ const JWKS_URI = `https://cognito-idp.us-west-2.amazonaws.com/${COGNITO_USER_POO
 
 console.log('JWKS_URI:', JWKS_URI);
 
-const client = jwksClient({ jwksUri: JWKS_URI });
-
-async function getSigningKey(kid: string): Promise<string> {
-  console.log('BEFORE SIGN KEY...', JWKS_URI, kid);
+// Fetch the JWKS from Cognito
+async function fetchJWKS() {
   try {
-    const key = await client.getSigningKey(kid);
-    if (!key) {
-      throw new Error('No signing key found');
-    }
-    console.log('SIGN KEY: ', key);
-    return key.getPublicKey();
+    const response = await axios.get(JWKS_URI);
+    return response.data.keys;
   } catch (error) {
-    console.error('Error fetching signing key:', error);
-    throw error;
+    console.error('Error fetching JWKS:', error);
+    throw new Error('Unable to fetch JWKS');
   }
 }
 
-async function verifyToken(token: string): Promise<JwtPayload | null> {
-  const decoded = decode(token, { complete: true });
+// Get the correct signing key from JWKS
+async function getSigningKey(kid: string) {
+  const keys = await fetchJWKS();
+  const signingKey = keys.find((key: { kid: string }) => key.kid === kid);
 
-  console.log('DECODED...', decoded);
-
-  if (!decoded || typeof decoded === 'string' || !decoded.header.kid) {
-    throw new Error('Invalid JWT');
+  if (!signingKey) {
+    throw new Error('No signing key found');
   }
 
-  console.log('BEFORE SIGNING KEY...');
-
-  const signingKey = await getSigningKey(decoded.header.kid);
-
-  console.log('SIGNING KEY...');
-
-  return new Promise((resolve, reject) => {
-    verify(
-      token,
-      signingKey,
-      { algorithms: ['RS256'], complete: true },
-      (err: VerifyErrors | null, jwt: Jwt | undefined) => {
-        if (err) {
-          return reject(err);
-        }
-
-        if (!jwt || !jwt.payload || typeof jwt.payload === 'string') {
-          return reject(new Error('Invalid payload'));
-        }
-
-        if (jwt.payload.aud !== COGNITO_USER_POOL_CLIENT_ID) {
-          return reject(new Error('Invalid audience'));
-        }
-
-        resolve(jwt);
-      },
-    );
-  });
+  // Convert the key to a format `jose` can use
+  const publicKeyPEM = `-----BEGIN PUBLIC KEY-----\n${signingKey.n}\n-----END PUBLIC KEY-----`;
+  return await importSPKI(publicKeyPEM, 'RS256');
 }
 
+// Verify JWT
+async function verifyToken(token: string) {
+  const decodedHeader = JSON.parse(
+    Buffer.from(token.split('.')[0], 'base64').toString(),
+  );
+
+  if (!decodedHeader.kid) {
+    throw new Error('Invalid JWT: Missing kid');
+  }
+
+  const key = await getSigningKey(decodedHeader.kid);
+
+  try {
+    const { payload } = await jwtVerify(token, key, { algorithms: ['RS256'] });
+
+    if (payload.aud !== COGNITO_USER_POOL_CLIENT_ID) {
+      throw new Error('Invalid audience');
+    }
+
+    return payload;
+  } catch (error) {
+    throw new Error('JWT verification failed: ' + (error as Error).message);
+  }
+}
+
+// Lambda handler
 export const handler = async (
   event: CloudFrontRequestEvent,
 ): Promise<CloudFrontRequestResult> => {

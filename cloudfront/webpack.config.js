@@ -36,6 +36,7 @@ module.exports = {
       },
     ],
   },
+  mode: 'production',
   optimization: {
     minimize: true, // Enable minification
     minimizer: [
