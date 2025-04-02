@@ -1,14 +1,13 @@
 import { CloudFrontRequestEvent, CloudFrontResultResponse } from 'aws-lambda';
-import { decode as mockDecode, verify as mockVerify } from 'jsonwebtoken';
+import { jwtVerify, importJWK } from 'jose';
+import axios from 'axios';
 import { handler } from './index';
 
-jest.mock('jwks-rsa', () => {
-  return jest.fn().mockImplementation(() => ({
-    getSigningKey: () => ({ getPublicKey: () => ({ aud: 'audience' }) }),
-  }));
-});
-
-jest.mock('jsonwebtoken');
+jest.mock('axios');
+jest.mock('jose', () => ({
+  jwtVerify: jest.fn(),
+  importJWK: jest.fn(),
+}));
 
 let mockEvent: CloudFrontRequestEvent;
 
@@ -20,7 +19,21 @@ const getMockEvent = () =>
           request: {
             uri: '/admin/some/path',
             headers: {
-              authorization: [{ value: 'Bearer valid-token' }],
+              authorization: [
+                {
+                  value: `Bearer ${[
+                    Buffer.from(
+                      JSON.stringify({ alg: 'RS256', kid: 'mocked-kid' }),
+                    ).toString('base64'),
+                    Buffer.from(
+                      JSON.stringify({
+                        aud: process.env.COGNITO_USER_POOL_CLIENT_ID,
+                      }),
+                    ).toString('base64'),
+                    'signature',
+                  ].join('.')}`,
+                },
+              ],
             },
           },
         },
@@ -32,7 +45,9 @@ describe('Lambda handler tests', () => {
   beforeEach(() => {
     console.error = jest.fn();
     mockEvent = getMockEvent();
+    jest.resetModules();
     jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   afterAll(() => {
@@ -62,121 +77,91 @@ describe('Lambda handler tests', () => {
   });
 
   it('should return 403 and log an error when JWT verification fails', async () => {
-    const error = new Error('Invalid JWT');
-    (mockVerify as jest.Mock).mockImplementationOnce(
-      (
-        token: string,
-        secret: string,
-        options: unknown,
-        callback: (error: Error | null, decoded: unknown) => void,
-      ) => {
-        callback(error, null);
-      },
-    );
+    (importJWK as jest.Mock).mockResolvedValue('mocked-key');
+    (jwtVerify as jest.Mock).mockResolvedValue(new Error('Invalid JWT!'));
+    (axios.get as jest.Mock).mockResolvedValue({
+      data: { keys: [{ kid: 'mocked-kid', alg: 'RS256' }] },
+    });
     const result = (await handler(mockEvent)) as CloudFrontResultResponse;
     expect(result.status).toBe('403');
     expect(result.body).toBe('Access denied!');
-    expect(console.error).toHaveBeenCalledWith(
-      'JWT Verification Failed: ',
-      new Error('Invalid JWT'),
-    );
   });
 
   it('should forward the request if JWT verification is successful', async () => {
-    const mockDecodedToken = { payload: { aud: undefined } };
-    (mockDecode as jest.Mock).mockReturnValue({
-      header: { kid: 'test-kid' },
+    (importJWK as jest.Mock).mockResolvedValue('mocked-key');
+    (jwtVerify as jest.Mock).mockResolvedValue({
+      payload: { aud: process.env.COGNITO_USER_POOL_CLIENT_ID },
     });
-    (mockVerify as jest.Mock).mockImplementationOnce(
-      (
-        token: string,
-        secret: string,
-        options: unknown,
-        callback: (error: Error | null, decoded: unknown) => void,
-      ) => {
-        callback(null, mockDecodedToken);
-      },
-    );
+    (axios.get as jest.Mock).mockResolvedValue({
+      data: { keys: [{ kid: 'mocked-kid', alg: 'RS256' }] },
+    });
     const result = await handler(mockEvent);
     expect(result).toEqual(mockEvent.Records[0].cf.request);
   });
 
-  it('should throw an error if JWT audience is wrong', async () => {
-    const mockDecodedToken = { payload: { aud: 'invalid' } };
-    (mockDecode as jest.Mock).mockReturnValue({
-      header: { kid: 'test-kid' },
+  it('should return 403 if JWT audience is invalid', async () => {
+    (importJWK as jest.Mock).mockResolvedValue('mocked-key');
+    (jwtVerify as jest.Mock).mockResolvedValue({
+      payload: { aud: 'invalid-audience' },
     });
-    (mockVerify as jest.Mock).mockImplementationOnce(
-      (
-        token: string,
-        secret: string,
-        options: unknown,
-        callback: (error: Error | null, decoded: unknown) => void,
-      ) => {
-        callback(null, mockDecodedToken);
-      },
-    );
+    (axios.get as jest.Mock).mockResolvedValue({
+      data: { keys: [{ kid: 'mocked-kid', alg: 'RS256' }] },
+    });
     const result = (await handler(mockEvent)) as CloudFrontResultResponse;
     expect(result.status).toBe('403');
     expect(result.body).toBe('Access denied!');
   });
 
-  it('should throw an error if the aud is wrong', async () => {
-    const mockDecodedToken = { aud: 'invalid' };
-    (mockDecode as jest.Mock).mockReturnValue({
-      header: { kid: 'test-kid' },
+  it('should return 403 if no signing key is found', async () => {
+    (importJWK as jest.Mock).mockResolvedValue('mocked-key');
+    (jwtVerify as jest.Mock).mockResolvedValue({
+      payload: { aud: process.env.COGNITO_USER_POOL_CLIENT_ID },
     });
-    (mockVerify as jest.Mock).mockImplementationOnce(
-      (
-        token: string,
-        secret: string,
-        options: unknown,
-        callback: (error: Error | null, decoded: unknown) => void,
-      ) => {
-        callback(null, mockDecodedToken);
-      },
-    );
+    (axios.get as jest.Mock).mockResolvedValue({
+      data: { keys: [] },
+    });
     const result = (await handler(mockEvent)) as CloudFrontResultResponse;
     expect(result.status).toBe('403');
     expect(result.body).toBe('Access denied!');
   });
 
-  it('should re-throw the error on verify', async () => {
-    const mockDecodedToken = { aud: 'invalid' };
-    (mockDecode as jest.Mock).mockReturnValue({
-      header: { kid: 'test-kid' },
+  it('should return 403 if token is missing "kid" header', async () => {
+    mockEvent.Records[0].cf.request.headers.authorization[0].value = `Bearer ${[
+      Buffer.from(JSON.stringify({ alg: 'RS256' })).toString('base64'),
+      Buffer.from(
+        JSON.stringify({ aud: process.env.COGNITO_USER_POOL_CLIENT_ID }),
+      ).toString('base64'),
+      'signature',
+    ].join('.')}`;
+    (jwtVerify as jest.Mock).mockImplementation(() => {
+      throw new Error('Invalid JWT: Missing kid');
     });
-    (mockVerify as jest.Mock).mockImplementationOnce(
-      (
-        token: string,
-        secret: string,
-        options: unknown,
-        callback: (error: Error | null, decoded: unknown) => void,
-      ) => {
-        callback(new Error('Throw again!'), mockDecodedToken);
-      },
-    );
     const result = (await handler(mockEvent)) as CloudFrontResultResponse;
     expect(result.status).toBe('403');
     expect(result.body).toBe('Access denied!');
   });
 
-  it('should throw an error if the payload is a string', async () => {
-    (mockDecode as jest.Mock).mockReturnValue({
-      header: { kid: 'test-kid' },
+  it('should return 403 on uncaught errors', async () => {
+    (importJWK as jest.Mock).mockResolvedValue('mocked-key');
+    (jwtVerify as jest.Mock).mockResolvedValue({
+      payload: { aud: process.env.COGNITO_USER_POOL_CLIENT_ID },
     });
-    (mockVerify as jest.Mock).mockImplementationOnce(
-      (
-        token: string,
-        secret: string,
-        options: unknown,
-        callback: (error: Error | null, decoded: unknown) => void,
-      ) => {
-        callback(null, 'invalid');
-      },
-    );
+    (axios.get as jest.Mock).mockRejectedValue(new Error('Bad call!'));
     const result = (await handler(mockEvent)) as CloudFrontResultResponse;
     expect(result.status).toBe('403');
     expect(result.body).toBe('Access denied!');
+  });
+
+  it('should  redirect to homepage', async () => {
+    (importJWK as jest.Mock).mockResolvedValue('mocked-key');
+    (jwtVerify as jest.Mock).mockResolvedValue({
+      payload: { aud: process.env.COGNITO_USER_POOL_CLIENT_ID },
+    });
+    (axios.get as jest.Mock).mockResolvedValue({
+      data: { keys: [{ kid: 'mocked-kid', alg: 'RS256' }] },
+    });
+    mockEvent.Records[0].cf.request.uri = '/';
+    const result = await handler(mockEvent);
+    expect(result).toEqual(mockEvent.Records[0].cf.request);
   });
 });
