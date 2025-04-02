@@ -7,11 +7,11 @@ dotenv.config();
 
 module.exports = {
   entry: './index.ts',
-  devtool: false, // Disable source maps, or keep it depending on your needs for debugging
+  devtool: false,
   output: {
-    filename: 'index.js', // Ensure this matches the Lambda handler entry
-    libraryTarget: 'commonjs2', // Required for AWS Lambda
-    path: path.resolve(__dirname, 'dist'), // Output directory for bundled files
+    filename: 'index.js',
+    libraryTarget: 'commonjs2',
+    path: path.resolve(__dirname, 'dist'),
   },
   resolve: {
     extensions: ['.ts', '.js'],
@@ -31,24 +31,24 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.ts$/, // Handle TypeScript files with ts-loader
+        test: /\.ts$/,
         use: 'ts-loader',
-        exclude: /node_modules/, // Keep your own code unminified
+        exclude: /node_modules/,
       },
     ],
   },
-  mode: 'none', // Keeps Webpack from applying its own minification
+  mode: 'none',
   optimization: {
-    minimize: true, // Enable Terser for minification
+    minimize: true,
     minimizer: [
       new TerserPlugin({
-        exclude: /index\.ts$/, // Exclude the handler from minification
+        exclude: /index\.ts$/,
         terserOptions: {
           compress: {
-            drop_console: true, // Optionally remove console logs
+            drop_console: true,
           },
           output: {
-            comments: false, // Strip comments to minimize size
+            comments: false,
           },
         },
       }),
