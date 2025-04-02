@@ -5,7 +5,7 @@ const typescriptEslintParser = require('@typescript-eslint/parser');
 
 module.exports = [
   {
-    ignores: ['node_modules', 'dist', 'build'],
+    ignores: ['node_modules', 'dist', 'build', 'coverage'],
   },
   {
     files: ['**/*.ts'],
@@ -20,7 +20,7 @@ module.exports = [
     },
     rules: {
       'prettier/prettier': 'error',
-      'no-console': 'warn',
+      'no-console': 'off',
       ...typescriptEslint.configs.recommended.rules,
       ...eslintConfigPrettier.rules,
     },

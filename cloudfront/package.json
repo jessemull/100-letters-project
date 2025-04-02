@@ -5,13 +5,10 @@
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.147",
-    "@types/bunyan": "^1.8.11",
     "@types/jest": "^29.5.14",
-    "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^22.13.9",
     "@typescript-eslint/eslint-plugin": "^8.26.0",
     "@typescript-eslint/parser": "^8.26.0",
-    "babel-loader": "^10.0.0",
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.1",
     "dotenv": "^16.4.7",
