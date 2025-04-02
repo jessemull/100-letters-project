@@ -20,6 +20,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Install Dependencies
+        run: |
+          cd cloudfront
+          npm ci
+
+      - name: Lint Code
+        run: |
+          cd cloudfront
+          npm run lint
+
+      - name: Run Unit Tests
+        run: |
+          cd cloudfront
+          npm test
+
       - name: Set Up AWS CLI
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -31,7 +46,6 @@ jobs:
         run: |
           export NODE_ENV="${{ github.event.inputs.environment }}"
           cd cloudfront
-          npm install
           npm run build
           npm run package
         env:
