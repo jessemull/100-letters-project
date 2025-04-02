@@ -92,34 +92,16 @@ Resources:
               OriginAccessIdentity: !Sub "origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}"
         DefaultCacheBehavior:
           TargetOriginId: "S3Origin"
-          CachePolicyId: !Ref DefaultCachePolicy  # Use a Cache Policy
           ViewerProtocolPolicy: "redirect-to-https"
           ForwardedValues:
             QueryString: false
             Cookies:
               Forward: "none"
-            Headers:
-              - "Host"  # Forward Host header
+          TrustedKeyGroups:
+            !If [IsProd, !Ref "AWS::NoValue", [!Ref CloudFrontKeyGroup]]
           AllowedMethods:
             - GET
             - HEAD
-          LambdaFunctionAssociations:
-            - EventType: viewer-request
-              LambdaFunctionARN: "arn:aws:cloudfront::771265364914:function/auth-at-edge-dev/4"
-        CacheBehaviors:
-          - PathPattern: "*"
-            TargetOriginId: "S3Origin"
-            ViewerProtocolPolicy: "redirect-to-https"
-            CachePolicyId: !Ref QueryStringCachePolicy  # Use Cache Policy for query strings
-            ForwardedValues:
-              QueryString: true
-              Cookies:
-                Forward: "all"
-              Headers:
-                - "Host"
-            FunctionAssociations:
-              - EventType: viewer-request
-                FunctionARN: "arn:aws:cloudfront::771265364914:function/auth-at-edge-dev/4"
         DefaultRootObject: "index.html"
         ViewerCertificate:
           AcmCertificateArn: !Ref ACMCertificateArn
@@ -179,44 +161,6 @@ Resources:
         Items:
           - !Ref CloudFrontPublicKey
         Comment: "Key group for signed cookies"
-
-  # Cache Policy for Default Cache Behavior (no query string forwarding)
-  DefaultCachePolicy:
-    Type: AWS::CloudFront::CachePolicy
-    Properties:
-      CachePolicyConfig:
-        Name: !Sub "DefaultCachePolicy-${Environment}"
-        Comment: !Sub "Cache Policy for Default Cache Behavior - ${Environment}"
-        DefaultTTL: 86400
-        MaxTTL: 31536000
-        MinTTL: 0
-        ParametersInCacheKeyAndForwardedToOrigin:
-          EnableAcceptEncodingGzip: true
-          CookiesConfig:
-            CookieBehavior: none
-          HeadersConfig:
-            HeaderBehavior: none
-          QueryStringsConfig:
-            QueryStringBehavior: none
-
-  # Cache Policy for Query String Cache Behavior (forward query strings)
-  QueryStringCachePolicy:
-    Type: AWS::CloudFront::CachePolicy
-    Properties:
-      CachePolicyConfig:
-        Name: !Sub "QueryStringCachePolicy-${Environment}"
-        Comment: !Sub "Cache Policy for Query String Cache Behavior - ${Environment}"
-        DefaultTTL: 86400
-        MaxTTL: 31536000
-        MinTTL: 0
-        ParametersInCacheKeyAndForwardedToOrigin:
-          EnableAcceptEncodingGzip: true
-          CookiesConfig:
-            CookieBehavior: all
-          HeadersConfig:
-            HeaderBehavior: none
-          QueryStringsConfig:
-            QueryStringBehavior: all
 
 Conditions:
   IsProd: !Equals [ !Ref Environment, "prod" ]

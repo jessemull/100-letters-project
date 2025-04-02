@@ -37,6 +37,13 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use((req, res, next) => {
+  if (!req.url.match(/\.(js|css|png|jpg|jpeg|gif|svg|woff2?|html)$/)) {
+    req.url += '.html';
+  }
+  next();
+});
+
 app.use(
   '/',
   createProxyMiddleware({
