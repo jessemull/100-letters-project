@@ -59,8 +59,9 @@ export const handler = async (
   const request = event.Records[0].cf.request;
   const headers = request.headers;
   const uri = request.uri;
-
+  console.log('request', request);
   if (!ADMIN_PATH_REGEX.test(uri)) {
+    console.log('returing request..');
     return request;
   }
 
