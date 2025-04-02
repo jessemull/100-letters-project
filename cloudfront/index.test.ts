@@ -1,7 +1,7 @@
-import { CloudFrontRequestEvent, CloudFrontResultResponse } from 'aws-lambda';
-import { jwtVerify, importJWK } from 'jose';
 import axios from 'axios';
+import { CloudFrontRequestEvent, CloudFrontResultResponse } from 'aws-lambda';
 import { handler } from './index';
+import { jwtVerify, importJWK } from 'jose';
 
 jest.mock('axios');
 jest.mock('jose', () => ({
