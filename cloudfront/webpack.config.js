@@ -1,7 +1,7 @@
 const webpack = require('webpack');
 const path = require('path');
 const dotenv = require('dotenv');
-const TerserPlugin = require('terser-webpack-plugin'); // Import TerserPlugin
+const TerserPlugin = require('terser-webpack-plugin');
 
 dotenv.config();
 
@@ -32,19 +32,19 @@ module.exports = {
       {
         test: /\.ts$/,
         use: 'ts-loader',
-        exclude: /node_modules/, // Do not minify own code
+        exclude: /node_modules/,
       },
     ],
   },
   mode: 'production',
   optimization: {
-    minimize: true, // Enable minification
+    minimize: true,
     minimizer: [
       new TerserPlugin({
-        test: /node_modules/, // Minify only node_modules
+        test: /node_modules/,
         terserOptions: {
           compress: {
-            drop_console: true, // Optional: drop console logs
+            drop_console: true,
           },
         },
       }),
