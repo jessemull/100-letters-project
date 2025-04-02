@@ -44,7 +44,7 @@ jobs:
 
       - name: Coverage Threshold Check
         run: |
-          if [[ $(grep "Statements" coverage/lcov-report/index.html | awk '{print $4}' | tr -d '%') -lt 80 ]]; then
+          if [[ $(grep "Statements" cloudfront/coverage/lcov-report/index.html | awk '{print $4}' | tr -d '%') -lt 80 ]]; then
             echo "Code coverage is below threshold. Please update test coverage and try again."
             exit 1
           fi
