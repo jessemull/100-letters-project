@@ -74,6 +74,7 @@ export const handler = async (
     '.eot',
     '.ttf',
     '.otf',
+    '.webp',
   ];
 
   // If the URI is '/', rewrite it to '/index.html'
