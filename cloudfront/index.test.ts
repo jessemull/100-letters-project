@@ -9,32 +9,28 @@ jest.mock('jose', () => ({
   importJWK: jest.fn(),
 }));
 
-let mockEvent: CloudFrontRequestEvent;
+const getToken = (
+  aud = process.env.COGNITO_USER_POOL_CLIENT_ID,
+  kid = 'mocked-kid',
+) =>
+  [
+    Buffer.from(JSON.stringify({ alg: 'RS256', kid })).toString('base64'),
+    Buffer.from(
+      JSON.stringify({
+        aud,
+      }),
+    ).toString('base64'),
+    'signature',
+  ].join('.');
 
-const getMockEvent = () =>
+const getMockEvent = (cookieValue?: string, uri = '/admin/some/path') =>
   ({
     Records: [
       {
         cf: {
           request: {
-            uri: '/admin/some/path',
-            headers: {
-              authorization: [
-                {
-                  value: `Bearer ${[
-                    Buffer.from(
-                      JSON.stringify({ alg: 'RS256', kid: 'mocked-kid' }),
-                    ).toString('base64'),
-                    Buffer.from(
-                      JSON.stringify({
-                        aud: process.env.COGNITO_USER_POOL_CLIENT_ID,
-                      }),
-                    ).toString('base64'),
-                    'signature',
-                  ].join('.')}`,
-                },
-              ],
-            },
+            uri,
+            headers: cookieValue ? { cookie: [{ value: cookieValue }] } : {},
           },
         },
       },
@@ -43,8 +39,7 @@ const getMockEvent = () =>
 
 describe('Lambda handler tests', () => {
   beforeEach(() => {
-    console.error = jest.fn();
-    mockEvent = getMockEvent();
+    //console.error = jest.fn();
     jest.resetModules();
     jest.resetAllMocks();
     jest.clearAllMocks();
@@ -55,34 +50,48 @@ describe('Lambda handler tests', () => {
   });
 
   it('should forward the request if the URI is not an admin path', async () => {
-    mockEvent.Records[0].cf.request.uri = '/non-admin-path';
-    const result = await handler(mockEvent);
-    expect(result).toEqual(mockEvent.Records[0].cf.request);
+    const event = getMockEvent();
+    event.Records[0].cf.request.uri = '/non-admin-path';
+    const result = await handler(event);
+    expect(result).toEqual(event.Records[0].cf.request);
   });
 
-  it('should return 403 if Authorization header is missing', async () => {
-    mockEvent.Records[0].cf.request.headers = {};
-    const result = (await handler(mockEvent)) as CloudFrontResultResponse;
+  it('should return 403 if cookie header is missing', async () => {
+    const event = getMockEvent();
+    const result = (await handler(event)) as CloudFrontResultResponse;
     expect(result.status).toBe('403');
     expect(result.body).toBe('Access denied!');
   });
 
-  it('should return 403 if Authorization header does not start with "Bearer "', async () => {
-    mockEvent.Records[0].cf.request.headers = {
-      authorization: [{ value: 'Basic invalid-token' }],
-    };
-    const result = (await handler(mockEvent)) as CloudFrontResultResponse;
+  it('should return 403 if token is missing in the cookie', async () => {
+    const event = getMockEvent('some_other_cookie=value');
+    const result = (await handler(event)) as CloudFrontResultResponse;
     expect(result.status).toBe('403');
     expect(result.body).toBe('Access denied!');
   });
 
-  it('should return 403 and log an error when JWT verification fails', async () => {
+  it('should return 403 when JWT verification fails', async () => {
     (importJWK as jest.Mock).mockResolvedValue('mocked-key');
-    (jwtVerify as jest.Mock).mockResolvedValue(new Error('Invalid JWT!'));
+    (jwtVerify as jest.Mock).mockRejectedValue(new Error('Invalid JWT!'));
     (axios.get as jest.Mock).mockResolvedValue({
       data: { keys: [{ kid: 'mocked-kid', alg: 'RS256' }] },
     });
-    const result = (await handler(mockEvent)) as CloudFrontResultResponse;
+
+    const event = getMockEvent('100_letters_cognito_id_token=invalid.token');
+    const result = (await handler(event)) as CloudFrontResultResponse;
+    expect(result.status).toBe('403');
+    expect(result.body).toBe('Access denied!');
+  });
+
+  it('should catch errors from JWT verify', async () => {
+    (importJWK as jest.Mock).mockResolvedValue('mocked-key');
+    (jwtVerify as jest.Mock).mockRejectedValue(new Error('Network issues!'));
+    (axios.get as jest.Mock).mockResolvedValue({
+      data: { keys: [{ kid: 'mocked-kid', alg: 'RS256' }] },
+    });
+
+    const event = getMockEvent(`100_letters_cognito_id_token=${getToken()}`);
+    const result = (await handler(event)) as CloudFrontResultResponse;
     expect(result.status).toBe('403');
     expect(result.body).toBe('Access denied!');
   });
@@ -95,13 +104,13 @@ describe('Lambda handler tests', () => {
     (axios.get as jest.Mock).mockResolvedValue({
       data: { keys: [{ kid: 'mocked-kid', alg: 'RS256' }] },
     });
-    const result = await handler(mockEvent);
-    expect(result).toEqual(mockEvent.Records[0].cf.request);
+
+    const event = getMockEvent(`100_letters_cognito_id_token=${getToken()}`);
+    const result = await handler(event);
+    expect(result).toEqual(event.Records[0].cf.request);
   });
 
   it('should handle query params if JWT verification is successful', async () => {
-    mockEvent.Records[0].cf.request.uri =
-      mockEvent.Records[0].cf.request.uri + '?key=value';
     (importJWK as jest.Mock).mockResolvedValue('mocked-key');
     (jwtVerify as jest.Mock).mockResolvedValue({
       payload: { aud: process.env.COGNITO_USER_POOL_CLIENT_ID },
@@ -109,8 +118,43 @@ describe('Lambda handler tests', () => {
     (axios.get as jest.Mock).mockResolvedValue({
       data: { keys: [{ kid: 'mocked-kid', alg: 'RS256' }] },
     });
-    const result = await handler(mockEvent);
-    expect(result).toEqual(mockEvent.Records[0].cf.request);
+
+    const event = getMockEvent(
+      `100_letters_cognito_id_token=${getToken()}`,
+      '/admin/some/path?key=value',
+    );
+    const result = await handler(event);
+    expect(result).toEqual(event.Records[0].cf.request);
+  });
+
+  it('should handle request for root directory', async () => {
+    (importJWK as jest.Mock).mockResolvedValue('mocked-key');
+    (jwtVerify as jest.Mock).mockResolvedValue({
+      payload: { aud: process.env.COGNITO_USER_POOL_CLIENT_ID },
+    });
+    (axios.get as jest.Mock).mockResolvedValue({
+      data: { keys: [{ kid: 'mocked-kid', alg: 'RS256' }] },
+    });
+
+    const event = getMockEvent(
+      `100_letters_cognito_id_token=${getToken()}`,
+      '/',
+    );
+    const result = await handler(event);
+    expect(result).toEqual(event.Records[0].cf.request);
+  });
+
+  it('should handle errors fetching jwks', async () => {
+    (importJWK as jest.Mock).mockResolvedValue('mocked-key');
+    (jwtVerify as jest.Mock).mockResolvedValue({
+      payload: { aud: 'invalid-audience' },
+    });
+    (axios.get as jest.Mock).mockRejectedValue(new Error('Network out!'));
+
+    const event = getMockEvent(`100_letters_cognito_id_token=${getToken()}`);
+    const result = (await handler(event)) as CloudFrontResultResponse;
+    expect(result.status).toBe('403');
+    expect(result.body).toBe('Access denied!');
   });
 
   it('should return 403 if JWT audience is invalid', async () => {
@@ -121,61 +165,41 @@ describe('Lambda handler tests', () => {
     (axios.get as jest.Mock).mockResolvedValue({
       data: { keys: [{ kid: 'mocked-kid', alg: 'RS256' }] },
     });
-    const result = (await handler(mockEvent)) as CloudFrontResultResponse;
+
+    const event = getMockEvent(`100_letters_cognito_id_token=${getToken()}`);
+    const result = (await handler(event)) as CloudFrontResultResponse;
     expect(result.status).toBe('403');
     expect(result.body).toBe('Access denied!');
   });
 
   it('should return 403 if no signing key is found', async () => {
-    (importJWK as jest.Mock).mockResolvedValue('mocked-key');
-    (jwtVerify as jest.Mock).mockResolvedValue({
-      payload: { aud: process.env.COGNITO_USER_POOL_CLIENT_ID },
-    });
     (axios.get as jest.Mock).mockResolvedValue({
       data: { keys: [] },
     });
-    const result = (await handler(mockEvent)) as CloudFrontResultResponse;
+
+    const event = getMockEvent(`100_letters_cognito_id_token=${getToken()}`);
+    const result = (await handler(event)) as CloudFrontResultResponse;
     expect(result.status).toBe('403');
     expect(result.body).toBe('Access denied!');
   });
 
   it('should return 403 if token is missing "kid" header', async () => {
-    mockEvent.Records[0].cf.request.headers.authorization[0].value = `Bearer ${[
-      Buffer.from(JSON.stringify({ alg: 'RS256' })).toString('base64'),
-      Buffer.from(
-        JSON.stringify({ aud: process.env.COGNITO_USER_POOL_CLIENT_ID }),
-      ).toString('base64'),
-      'signature',
-    ].join('.')}`;
     (jwtVerify as jest.Mock).mockImplementation(() => {
       throw new Error('Invalid JWT: Missing kid');
     });
-    const result = (await handler(mockEvent)) as CloudFrontResultResponse;
+    const event = getMockEvent(
+      `100_letters_cognito_id_token=${getToken(undefined, '')}`,
+    );
+    const result = (await handler(event)) as CloudFrontResultResponse;
     expect(result.status).toBe('403');
     expect(result.body).toBe('Access denied!');
   });
 
   it('should return 403 on uncaught errors', async () => {
-    (importJWK as jest.Mock).mockResolvedValue('mocked-key');
-    (jwtVerify as jest.Mock).mockResolvedValue({
-      payload: { aud: process.env.COGNITO_USER_POOL_CLIENT_ID },
-    });
     (axios.get as jest.Mock).mockRejectedValue(new Error('Bad call!'));
-    const result = (await handler(mockEvent)) as CloudFrontResultResponse;
+    const event = getMockEvent('100_letters_cognito_id_token=valid.token');
+    const result = (await handler(event)) as CloudFrontResultResponse;
     expect(result.status).toBe('403');
     expect(result.body).toBe('Access denied!');
-  });
-
-  it('should  redirect to homepage', async () => {
-    (importJWK as jest.Mock).mockResolvedValue('mocked-key');
-    (jwtVerify as jest.Mock).mockResolvedValue({
-      payload: { aud: process.env.COGNITO_USER_POOL_CLIENT_ID },
-    });
-    (axios.get as jest.Mock).mockResolvedValue({
-      data: { keys: [{ kid: 'mocked-kid', alg: 'RS256' }] },
-    });
-    mockEvent.Records[0].cf.request.uri = '/';
-    const result = await handler(mockEvent);
-    expect(result).toEqual(mockEvent.Records[0].cf.request);
   });
 });
