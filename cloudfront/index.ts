@@ -76,9 +76,9 @@ export const handler = async (
   request.uri = uri;
 
   if (normalizedUri.startsWith('/admin')) {
-    const authHeader = headers['authorization']?.[0]?.value;
+    const cookieHeader = headers['cookie']?.[0]?.value;
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    if (!cookieHeader) {
       return {
         status: '403',
         statusDescription: 'Forbidden',
@@ -86,7 +86,19 @@ export const handler = async (
       };
     }
 
-    const token = authHeader.split(' ')[1];
+    const tokenMatch = cookieHeader.match(
+      /100_letters_cognito_id_token=([^;]+)/,
+    );
+
+    if (!tokenMatch) {
+      return {
+        status: '403',
+        statusDescription: 'Forbidden',
+        body: 'Access denied!',
+      };
+    }
+
+    const token = tokenMatch[1];
 
     try {
       await verifyToken(token);

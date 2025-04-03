@@ -1,5 +1,6 @@
 'use client';
 
+import cookies from 'js-cookie';
 import React, {
   ReactNode,
   createContext,
@@ -91,6 +92,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(user);
     setIsLoggedIn(true);
 
+    const session = await fetchAuthSession();
+    const idToken = session?.tokens?.idToken?.toString();
+
+    if (idToken) {
+      cookies.set('100_letters_cognito_id_token', idToken, {
+        expires: 1,
+        secure: true,
+        sameSite: 'Strict',
+        httpOnly: true,
+      });
+    }
+
     return { isSignedIn };
   };
 
@@ -98,6 +111,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     await amplifySignOut();
     setIsLoggedIn(false);
     setUser(null);
+    cookies.remove('auth_token');
   };
 
   return (
