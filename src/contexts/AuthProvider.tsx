@@ -100,7 +100,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         expires: 1,
         secure: true,
         sameSite: 'Strict',
-        httpOnly: true,
       });
     }
 
