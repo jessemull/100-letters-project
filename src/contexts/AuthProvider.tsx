@@ -110,7 +110,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     await amplifySignOut();
     setIsLoggedIn(false);
     setUser(null);
-    cookies.remove('auth_token');
+    cookies.remove('100_letters_cognito_id_token');
   };
 
   return (
