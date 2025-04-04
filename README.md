@@ -4,6 +4,12 @@ The **100 Letters Project** is driven by the desire to promote real human intera
 
 The **100 Letters Project** website showcases these exchanges, offering a digital display of the letters with details about the recipients and the reasons behind their selection.
 
+This repository is part of the **100 Letters Project** which includes the following repositories:
+
+- **[100 Letters Project API](https://github.com/jessemull/100-letters-project-api)**: The **100 Letters Project** API.
+- **[100 Letters Project Client](https://github.com/jessemull/100-letters-project)**: The **100 Letters Project** NextJS client.
+- **[100 Letters Project Lambda@Edge](https://github.com/jessemull/100-letters-project-lambda-at-edge)**: The **100 Letters Project** Lambda@Edge.
+
 ## Table of Contents
 
 1. [Project Overview](#project-overview)
@@ -37,23 +43,28 @@ The **100 Letters Project** website showcases these exchanges, offering a digita
     - [Running Lighthouse - Production](#running-lighthouse---production)
     - [Code Coverage](#code-coverage-1)
 11. [Accessibility](#accessibility)
-12. [Build](#build)
+12. [Deep Linking & Cognito Authentication](#deep-linking--cognito-authentication)
+    - [Deep Linking](#deep-linking)
+    - [Cognito Authentication](#cognito-authentication)
+    - [Bundle Optimization](#bundle-optimization)
+    - [Key Benefits](#key-benefits)
+13. [Build](#build)
     - [Environment Variables](#environment-variables-1)
     - [Pre-build Script](#pre-build-script)
     - [Post-build script](#post-build-script)
     - [Build](#build-1)
     - [Building The Development Server](#building-the-development-server)
-13. [Deployment Pipelines](#deployment-pipelines)
+14. [Deployment Pipelines](#deployment-pipelines)
     - [Deployment Strategy](#deployment-strategy)
     - [Tools Used](#tools-used)
     - [Pull Request](#pull-request)
     - [Deploy](#deploy-on-merge)
     - [Deploy On Merge](#deploy-on-merge)
     - [Rollback](#rollback)
-14. [Cognito ID Token](#cognito-id-token)
-15. [Connecting to the Bastion Host](#connecting-to-the-bastion-host)
+15. [Cognito ID Token](#cognito-id-token)
+16. [Connecting to the Bastion Host](#connecting-to-the-bastion-host)
     - [Environment Variables](#environment-variables-2)
-16. [License](#license)
+17. [License](#license)
 
 ## Project Overview
 
@@ -330,6 +341,28 @@ Coverage thresholds are enforced at **80%** for all metrics. The build will fail
 ## Accessibility
 
 Accessibility metrics are measured using lighthouse. All components are unit tested using the jest-axe library.
+
+## Deep Linking & Cognito Authentication
+
+This project uses **Lambda@Edge** to enable deep linking and secure access control for `/admin` routes, optimizing performance and security.
+
+### Deep Linking
+
+Lambda at Edge allows direct access to routes like `/login`, enabling deep linking without redirects. The function runs at CloudFront edge locations to reduce latency.
+
+### Cognito Authentication
+
+For `/admin` routes, the Lambda function checks for a **Cognito auth token** in request cookies. If valid, access is granted; otherwise, it's denied, ensuring secure access without unnecessary overhead.
+
+### Bundle Optimization
+
+The Lambda function is bundled and minified with **Webpack**, reducing the package size from **16MB** to **20KB**. This minimizes deployment time and enhances execution speed.
+
+### Key Benefits
+
+- **Low latency** with CloudFront edge deployment.
+- **Small bundle size** (~20KB) for faster deployment and execution.
+- **Secure access** for `/admin` with token-based Cognito authentication.
 
 ## Build
 
