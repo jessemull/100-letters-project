@@ -46,8 +46,6 @@ This repository is part of the **100 Letters Project** which includes the follow
 12. [Deep Linking & Cognito Authentication](#deep-linking--cognito-authentication)
     - [Deep Linking](#deep-linking)
     - [Cognito Authentication](#cognito-authentication)
-    - [Bundle Optimization](#bundle-optimization)
-    - [Key Benefits](#key-benefits)
 13. [Build](#build)
     - [Environment Variables](#environment-variables-1)
     - [Pre-build Script](#pre-build-script)
@@ -68,7 +66,7 @@ This repository is part of the **100 Letters Project** which includes the follow
 
 ## Project Overview
 
-This project uses a NextJS static export to an S3 bucket behind AWS Cloudfront. All read data is fetched during the build from the 100 letters project API and loaded into a JSON file inside of the public directory. Any write operations are protected via user login and AWS Cognito authentication.
+This project uses a NextJS static export to an S3 bucket behind AWS Cloudfront. All read data is fetched at build time from the **100 Letters Project** API. Write operations and routes are protected via user login and AWS Cognito authentication.
 
 ## Environments
 
@@ -113,6 +111,8 @@ The **100 Letters Project Website** is built using modern web technologies to en
 - **Commitizen**: A tool for enforcing a standardized commit message format, improving version control history and making collaboration more structured.
 
 - **HTTP Proxy**: Used to sign cookies and securely proxy requests to the development website, enabling local testing and authentication workflows.
+
+- **AWS Lambda@Edge**: Provides authentication and request routing logic at CloudFront's edge locations, enabling low-latency security enforcement.
 
 This tech stack ensures that the **100 Letters Project** website remains performant, secure, and easily maintainable while leveraging AWS infrastructure for scalability and reliability.
 
@@ -353,16 +353,6 @@ Lambda at Edge allows direct access to routes like `/login`, enabling deep linki
 ### Cognito Authentication
 
 For `/admin` routes, the Lambda function checks for a **Cognito auth token** in request cookies. If valid, access is granted; otherwise, it's denied, ensuring secure access without unnecessary overhead.
-
-### Bundle Optimization
-
-The Lambda function is bundled and minified with **Webpack**, reducing the package size from **16MB** to **20KB**. This minimizes deployment time and enhances execution speed.
-
-### Key Benefits
-
-- **Low latency** with CloudFront edge deployment.
-- **Small bundle size** (~20KB) for faster deployment and execution.
-- **Secure access** for `/admin` with token-based Cognito authentication.
 
 ## Build
 
