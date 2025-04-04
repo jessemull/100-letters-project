@@ -5,15 +5,7 @@ import { faker } from '@faker-js/faker';
 import { v4 as uuidv4 } from 'uuid';
 import { RecipientFactory } from './recipient';
 
-interface CorrespondenceFactoryArgs {
-  sent?: Letter[];
-  received?: Letter[];
-}
-
-export const CorrespondenceFactory = Factory.define<
-  Correspondence,
-  CorrespondenceFactoryArgs
->(() => ({
+export const CorrespondenceFactory = Factory.define<Correspondence>(() => ({
   correspondenceId: uuidv4(),
   createdAt: faker.date.past().toISOString(),
   letters: LetterFactory.buildList(Math.floor(Math.random() * 3) + 1),
