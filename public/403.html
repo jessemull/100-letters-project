@@ -1,80 +1,116 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>403 Forbidden</title>
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
-        <style>
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-            }
-            body {
-                font-family: 'Merriweather', serif;
-                background-color: #f8f9fa;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                min-height: 100vh;
-                text-align: center;
-                padding: 20px;
-            }
-            .container {
-                max-width: 600px;
-                width: 100%;
-            }
-            .icon {
-                font-size: 20vw;
-                color: #000000;
-                margin-bottom: 20px;
-            }
-            h1 {
-                color: #000000;
-                font-size: 3rem;
-                margin-bottom: 20px;
-                font-weight: bold;
-            }
-            p {
-                font-size: 1.125rem;
-                line-height: 1.6;
-                color: #000000;
-                margin-bottom: 20px;
-                font-weight: bold;
-            }
-            a {
-                color: #111827;
-                text-decoration: none;
-                font-size: 1.125rem;
-            }
-            a:hover {
-                text-decoration: underline;
-            }
-            @media (max-width: 768px) {
-                .icon {
-                    font-size: 30vw;
-                }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>403 Forbidden</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-                h1 {
-                    font-size: 2.5rem;
-                }
+      body {
+        font-family: 'Merriweather', serif;
+        background-color: #f3f4f6;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        text-align: center;
+        padding: 20px;
+      }
 
-                p {
-                    font-size: 1rem;
-                }
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="icon">
-                <i class="fas fa-skull-crossbones"></i>
-            </div>
-            <h1>Access Denied</h1>
-            <p>You do not have permission to view this page. If you believe this is an error, please contact the site administrator.</p>
-            <a href="/">Home</a>
-        </div>
-    </body>
+      .container {
+        max-width: 576px;
+        width: 100%;
+      }
+
+      .icon {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 24px;
+      }
+
+      .icon svg {
+        width: 20vw;
+        height: 20vw;
+        max-width: 160px;
+        max-height: 160px;
+        color: #000;
+      }
+
+      h1 {
+        color: #000;
+        font-size: 2.5rem;
+        margin-bottom: 24px;
+        font-weight: bold;
+      }
+
+      p {
+        font-size: 1.25rem;
+        color: #000;
+        margin-bottom: 24px;
+        font-weight: bold;
+        line-height: 1.75rem;
+        max-width: 90%;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      a {
+        color: #111827;
+        font-size: 1.5rem;
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      @media (max-width: 768px) {
+        h1 {
+          font-size: 2rem;
+        }
+
+        p {
+          font-size: 1rem;
+          max-width: 95%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="icon">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="m12.5 17-.5-1-.5 1h1z" />
+          <path d="M15 22a1 1 0 0 0 1-1v-1a2 2 0 0 0 1.56-3.25 8 8 0 1 0-11.12 0A2 2 0 0 0 8 20v1a1 1 0 0 0 1 1z" />
+          <circle cx="15" cy="12" r="1" />
+          <circle cx="9" cy="12" r="1" />
+        </svg>
+      </div>
+      <h1>Access Denied</h1>
+      <p>
+        You do not have permission to view this page. If you believe this is an
+        error, please contact the site administrator.
+      </p>
+      <a href="/">Home</a>
+    </div>
+  </body>
 </html>

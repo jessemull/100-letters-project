@@ -2,9 +2,9 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { AlertTriangle } from 'lucide-react';
+import { Skull } from 'lucide-react';
 
-const AccessDenied = () => {
+const Forbidden = () => {
   return (
     <div
       className="flex items-center justify-center bg-gray-100 px-4 text-center font-merriweather"
@@ -14,9 +14,9 @@ const AccessDenied = () => {
     >
       <div className="max-w-xl w-full">
         <div className="text-black mb-6 flex justify-center">
-          <AlertTriangle className="w-[20vw] h-[20vw] max-w-[160px] max-h-[160px]" />
+          <Skull className="w-[20vw] h-[20vw] max-w-[160px] max-h-[160px]" />
         </div>
-        <h1 className="text-4xl md:text-5xl font-bold text-black mb-6">
+        <h1 className="text-3xl md:text-4xl font-bold text-black mb-6">
           Access Denied
         </h1>
         <p className="text-lg md:text-xl text-black font-bold mb-6">
@@ -34,4 +34,4 @@ const AccessDenied = () => {
   );
 };
 
-export default AccessDenied;
+export default Forbidden;
