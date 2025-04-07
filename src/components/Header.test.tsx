@@ -9,15 +9,34 @@ import {
 } from '@testing-library/react';
 import { useAuth } from '../contexts/AuthProvider';
 
-jest.mock('next/navigation', () => ({
-  useRouter: jest.fn().mockImplementation(() => ({ push: jest.fn() })),
-}));
+jest.mock('next/navigation', () => {
+  return {
+    useRouter: () => ({
+      push: jest.fn(),
+      prefetch: jest.fn(), // optional, if used
+    }),
+  };
+});
 
 jest.mock('../contexts/AuthProvider', () => ({
   useAuth: jest.fn(),
 }));
 
 describe('Header Component', () => {
+  const originalLocation = window.location;
+
+  beforeAll(() => {
+    delete (window as any).location;
+    (window as any).location = {
+      ...originalLocation,
+      assign: jest.fn(),
+    };
+  });
+
+  afterAll(() => {
+    window.location = originalLocation;
+  });
+
   it('Renders header with logged-in state.', async () => {
     (useAuth as jest.Mock).mockReturnValue({
       getIdToken: jest.fn(),

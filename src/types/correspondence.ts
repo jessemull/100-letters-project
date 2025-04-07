@@ -56,3 +56,8 @@ export type CorrespondenceUpdateInput = {
   recipient: RecipientUpdateInput;
   letters: LetterUpdateInput[];
 };
+
+export type GetCorrespondencesResponse = {
+  data: Correspondence[];
+  lastEvaluatedKey: string;
+};

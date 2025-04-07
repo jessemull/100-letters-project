@@ -27,7 +27,7 @@ jobs:
           echo "Deploying to development environment"
           NODE_ENV=test npm run build
         env:
-          API_URL: ${{ secrets.API_URL_DEV }}
+          NEXT_PUBLIC_API_URL: ${{ secrets.API_URL_DEV }}
           NEXT_PUBLIC_COGNITO_USER_POOL_ID: ${{ secrets.COGNITO_USER_POOL_ID_DEV }}
           NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID: ${{ secrets.COGNITO_USER_POOL_CLIENT_ID_DEV }}
           COGNITO_USER_POOL_PASSWORD: ${{ secrets.COGNITO_USER_POOL_PASSWORD_DEV }}

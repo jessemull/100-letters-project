@@ -8,12 +8,13 @@ jest.mock('next/navigation', () => ({
   }),
 }));
 
-describe('AdminPage Component', () => {
-  it('Renders admin page.', async () => {
+describe('AccessDeniedPage Component', () => {
+  it('Renders access denied 403 page.', async () => {
     await act(async () => {
       render(<AdminPage />);
     });
     expect(screen.getAllByText('100 Letters Project').length).toBe(1);
+    expect(screen.getByText('Access Denied')).toBeInTheDocument();
     expect(
       screen.getByText('© 2025 100 Letters Project. All rights reserved.'),
     ).toBeInTheDocument();

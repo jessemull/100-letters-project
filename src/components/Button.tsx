@@ -42,7 +42,7 @@ const Button: React.FC<ButtonProps> = ({
           aria-live="assertive"
           className="absolute inset-0 flex justify-center items-center"
         >
-          <Progress />
+          <Progress color="white" />
         </div>
       )}
     </div>

@@ -1,3 +1,4 @@
+export { default as AccessDenied } from './AccessDenied';
 export { default as Admin } from './Admin';
 export { default as Button } from './Button';
 export { default as ComingSoon } from './ComingSoon';

@@ -34,3 +34,8 @@ export type RecipientUpdateInput = {
   organization?: string;
   recipientId: string;
 };
+
+export type GetRecipientsResponse = {
+  data: Recipient[];
+  lastEvaluatedKey: string;
+};
