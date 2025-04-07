@@ -1,4 +1,4 @@
-import * as useDataHook from '../hooks/useData';
+import * as useDataHook from '../hooks/useSWRWithAuth';
 import Admin from './Admin';
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 
 jest.mock('../contexts/AuthProvider');
 jest.mock('next/navigation');
-jest.mock('../hooks/useData');
+jest.mock('../hooks/useSWRWithAuth');
 
 describe('Admin Component', () => {
   it('Redirects to /403 if user is not logged in and not authenticating.', async () => {
@@ -20,8 +20,8 @@ describe('Admin Component', () => {
       token: null,
     });
 
-    const mockUseData = useDataHook.useData as jest.Mock;
-    mockUseData.mockReturnValue({ data: [], loading: true });
+    const mockUseSWRWithAuth = useDataHook.useSWRWithAuth as jest.Mock;
+    mockUseSWRWithAuth.mockReturnValue({ data: [], isLoading: true });
 
     render(<Admin />);
 

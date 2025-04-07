@@ -60,7 +60,7 @@ export type LetterUpdateInput = {
   type: LetterType;
 };
 
-export interface LetterResponse {
+export interface GetLettersResponse {
   data: Letter[];
   lastEvaluatedKey: string;
 }

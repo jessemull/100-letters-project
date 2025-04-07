@@ -2,28 +2,27 @@
 
 import React, { useEffect } from 'react';
 import Progress from './Progress';
+import {
+  GetCorrespondencesResponse,
+  GetLettersResponse,
+  GetRecipientsResponse,
+} from 'src/types';
 import { useAuth } from '../contexts/AuthProvider';
 import { useRouter } from 'next/navigation';
-import { useData } from '../hooks/useData';
+import { useSWRWithAuth } from '../hooks';
 
-const Login = () => {
+const Admin = () => {
   const router = useRouter();
   const { isLoggedIn, loading: authenticating, token } = useAuth();
 
-  const { data: correspondences, loading: loadingCorrespondences } = useData({
-    route: '/correspondence',
-    token,
-  });
+  const { data: correspondences, isLoading: loadingCorrespondences } =
+    useSWRWithAuth<GetCorrespondencesResponse>('/correspondence', token);
 
-  const { data: letters, loading: loadingLetters } = useData({
-    route: '/letter',
-    token,
-  });
+  const { data: letters, isLoading: loadingLetters } =
+    useSWRWithAuth<GetRecipientsResponse>('/recipient', token);
 
-  const { data: recipients, loading: loadingRecipients } = useData({
-    route: '/recipient',
-    token,
-  });
+  const { data: recipients, isLoading: loadingRecipients } =
+    useSWRWithAuth<GetLettersResponse>('/letter', token);
 
   useEffect(() => {
     if (!isLoggedIn && !authenticating) {
@@ -38,20 +37,21 @@ const Login = () => {
         height: 'calc(100vh - 56px - 36px)',
       }}
     >
-      {!loadingLetters && !loadingRecipients && !loadingCorrespondences ? (
+      {!loadingCorrespondences && !loadingRecipients && !loadingLetters ? (
         <div>
           <div>
             Successfully loaded <strong>correspondence</strong>,{' '}
             <strong>recipients</strong> and <strong>letters</strong>:
           </div>
           <div>
-            There are <strong>{correspondences.length}</strong> correspondences.
+            There are <strong>{correspondences?.data.length}</strong>{' '}
+            correspondences.
           </div>
           <div>
-            There are <strong>{recipients.length}</strong> recipients.
+            There are <strong>{recipients?.data.length}</strong> recipients.
           </div>
           <div>
-            There are <strong>{letters.length}</strong> letters.
+            There are <strong>{letters?.data.length}</strong> letters.
           </div>
         </div>
       ) : (
@@ -61,4 +61,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Admin;
