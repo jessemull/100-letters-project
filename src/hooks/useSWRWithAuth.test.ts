@@ -1,5 +1,5 @@
-import { renderHook } from '@testing-library/react';
 import useSWR from 'swr';
+import { renderHook } from '@testing-library/react';
 import { useSWRWithAuth } from '../hooks/useSWRWithAuth';
 
 jest.mock('swr');
@@ -13,13 +13,13 @@ describe('useSWRWithAuth', () => {
     jest.clearAllMocks();
   });
 
-  it('returns null URL and fetcher if token is null', () => {
+  it('Returns null URL and fetcher if token is null.', () => {
     useSWRWithAuth('/some-path', null);
 
     expect(mockUseSWR).toHaveBeenCalledWith(null, null, undefined);
   });
 
-  it('returns null URL and a defined fetcher if path is null but token is present', () => {
+  it('Returns null URL and a defined fetcher if path is null but token is present.', () => {
     useSWRWithAuth(null, 'fake-token');
 
     expect(mockUseSWR).toHaveBeenCalledWith(
@@ -29,7 +29,7 @@ describe('useSWRWithAuth', () => {
     );
   });
 
-  it('calls useSWR with constructed URL and fetcher when token and path are valid', async () => {
+  it('Calls useSWR with constructed URL and fetcher when token and path are valid.', async () => {
     const fakeResponse = { data: ['mocked data'] };
 
     // Mock fetch response
@@ -67,7 +67,7 @@ describe('useSWRWithAuth', () => {
     }
   });
 
-  it('throws an error if fetch response is not ok', async () => {
+  it('Throws an error if fetch response is not ok.', async () => {
     global.fetch = jest.fn().mockResolvedValue({
       ok: false,
       status: 403,
@@ -90,7 +90,7 @@ describe('useSWRWithAuth', () => {
     }
   });
 
-  it('passes through custom SWR configuration', () => {
+  it('Passes through custom SWR configuration.', () => {
     const config = { revalidateOnFocus: false };
     useSWRWithAuth('/custom', 'abc123', config);
 
