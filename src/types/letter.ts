@@ -59,3 +59,8 @@ export type LetterUpdateInput = {
   title: string;
   type: LetterType;
 };
+
+export interface LetterResponse {
+  data: Letter[];
+  lastEvaluatedKey: string;
+}

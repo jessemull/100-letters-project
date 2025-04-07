@@ -1,19 +1,35 @@
 'use client';
 
-import ComingSoon from './ComingSoon';
 import React, { useEffect } from 'react';
+import Progress from './Progress';
 import { useAuth } from '../contexts/AuthProvider';
 import { useRouter } from 'next/navigation';
+import { useData } from '../hooks/useData';
 
 const Login = () => {
   const router = useRouter();
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, loading: authenticating, token } = useAuth();
+
+  const { data: correspondences, loading: loadingCorrespondences } = useData({
+    route: '/correspondence',
+    token,
+  });
+
+  const { data: letters, loading: loadingLetters } = useData({
+    route: '/letter',
+    token,
+  });
+
+  const { data: recipients, loading: loadingRecipients } = useData({
+    route: '/recipient',
+    token,
+  });
 
   useEffect(() => {
-    if (!isLoggedIn) {
-      router.push('/');
+    if (!isLoggedIn && !authenticating) {
+      router.push('/403');
     }
-  }, [isLoggedIn, router]);
+  }, [authenticating, isLoggedIn, router]);
 
   return (
     <div
@@ -22,7 +38,25 @@ const Login = () => {
         height: 'calc(100vh - 56px - 36px)',
       }}
     >
-      <ComingSoon />
+      {!loadingLetters && !loadingRecipients && !loadingCorrespondences ? (
+        <div>
+          <div>
+            Successfully loaded <strong>correspondence</strong>,{' '}
+            <strong>recipients</strong> and <strong>letters</strong>:
+          </div>
+          <div>
+            There are <strong>{correspondences.length}</strong> correspondences.
+          </div>
+          <div>
+            There are <strong>{recipients.length}</strong> recipients.
+          </div>
+          <div>
+            There are <strong>{letters.length}</strong> letters.
+          </div>
+        </div>
+      ) : (
+        <Progress size={16} />
+      )}
     </div>
   );
 };

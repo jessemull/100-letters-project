@@ -27,7 +27,7 @@ const Header = () => {
         </button>
         <div className="flex items-center space-x-3">
           <Image src="/favicon.svg" alt="Logo" height={32} width={32} />
-          <div className="text-2xl whitespace-nowrap pr-4">
+          <div className="text-2xl whitespace-nowrap md:pr-4">
             100 Letters Project
           </div>
           <nav className="hidden md:flex space-x-7">
@@ -40,24 +40,24 @@ const Header = () => {
             <Link href="/" className="hover:text-gray-400">
               Contact
             </Link>
+            {isLoggedIn && (
+              <Link href="/admin" className="hover:text-gray-400">
+                Admin
+              </Link>
+            )}
           </nav>
         </div>
-        {isLoggedIn ? (
-          <div className="flex space-x-4">
-            <Link href="/admin" className="hover:text-gray-400">
-              Admin
-            </Link>
+        <Link href="/login" aria-label="Login">
+          {isLoggedIn ? (
             <LogOut
               className="h-6 w-6 text-white cursor-pointer"
               data-testid="logout-icon"
               onClick={handleLogout}
             />
-          </div>
-        ) : (
-          <Link href="/login" aria-label="Login">
+          ) : (
             <LogIn className="h-6 w-6 text-white" data-testid="login-icon" />
-          </Link>
-        )}
+          )}
+        </Link>
       </div>
     </header>
   );

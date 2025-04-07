@@ -4,6 +4,7 @@ import cookies from 'js-cookie';
 import React, {
   ReactNode,
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useState,
@@ -28,8 +29,12 @@ Amplify.configure({
   },
 });
 
+export const defaultSignIn = async () => null;
+export const defaultSignOut = () => null;
+
 export interface AuthContextType {
-  getIdToken: () => Promise<string | null>;
+  token: string | null;
+  loading: boolean;
   isLoggedIn: boolean;
   user: any | null;
   signIn: (
@@ -39,44 +44,68 @@ export interface AuthContextType {
   signOut: () => void;
 }
 
-export const defaultGetIdToken = async () => Promise.resolve(null);
-export const defaultSignIn = async () => Promise.resolve(null);
-export const defaultSignOut = () => null;
-
 export const AuthContext = createContext<AuthContextType>({
-  getIdToken: defaultGetIdToken,
+  token: null,
   isLoggedIn: false,
+  loading: true,
   user: null,
   signIn: defaultSignIn,
   signOut: defaultSignOut,
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [user, setUser] = useState<any | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+
+  const reset = () => {
+    setIsLoggedIn(false);
+    setToken(null);
+    setUser(null);
+  };
+
+  const getIdToken = useCallback(async (): Promise<string | null> => {
+    try {
+      const session = await fetchAuthSession();
+      return session?.tokens?.idToken?.toString() || null;
+    } catch (error) {
+      reset();
+      return null;
+    }
+  }, []);
 
   useEffect(() => {
+    setLoading(true);
     const checkAuthStatus = async () => {
       try {
         const currentUser = await getCurrentUser();
         setUser(currentUser);
         setIsLoggedIn(true);
       } catch (error) {
-        setIsLoggedIn(false);
-        setUser(null);
+        reset();
+      } finally {
+        setLoading(false);
       }
     };
     checkAuthStatus();
   }, []);
 
-  const getIdToken = async (): Promise<string | null> => {
-    try {
-      const session = await fetchAuthSession();
-      return session?.tokens?.idToken?.toString() || null;
-    } catch (error) {
-      return null;
+  useEffect(() => {
+    if (isLoggedIn) {
+      const fetchToken = async () => {
+        const idToken = await getIdToken();
+        if (idToken) {
+          setToken(idToken);
+        } else {
+          reset();
+        }
+      };
+      fetchToken();
+    } else {
+      reset();
     }
-  };
+  }, [isLoggedIn, getIdToken]);
 
   const signIn = async (
     username: string,
@@ -85,6 +114,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const { isSignedIn } = await amplifySignIn({ username, password });
 
     if (!isSignedIn) {
+      reset();
       throw new Error(DEFAULT_ERROR_MESSAGE);
     }
 
@@ -92,8 +122,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(user);
     setIsLoggedIn(true);
 
-    const session = await fetchAuthSession();
-    const idToken = session?.tokens?.idToken?.toString();
+    const idToken = await getIdToken();
 
     if (idToken) {
       cookies.set('100_letters_cognito_id_token', idToken, {
@@ -101,6 +130,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         secure: true,
         sameSite: 'Strict',
       });
+    } else {
+      reset();
     }
 
     return { isSignedIn };
@@ -108,14 +139,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signOut = async () => {
     await amplifySignOut();
-    setIsLoggedIn(false);
-    setUser(null);
-    cookies.remove('100_letters_cognito_id_token');
+    setTimeout(() => {
+      reset();
+      cookies.remove('100_letters_cognito_id_token');
+    }, 200);
   };
 
   return (
     <AuthContext.Provider
-      value={{ getIdToken, isLoggedIn, signIn, signOut, user }}
+      value={{ token, loading, isLoggedIn, signIn, signOut, user }}
     >
       {children}
     </AuthContext.Provider>

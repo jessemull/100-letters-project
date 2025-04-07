@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
   AuthContext,
   AuthProvider,
-  defaultGetIdToken,
   defaultSignIn,
   defaultSignOut,
   useAuth,
@@ -31,16 +30,7 @@ const mockSession = {
 };
 
 const TestComponent = () => {
-  const { getIdToken, isLoggedIn, user, signIn, signOut } = useAuth();
-  const [idToken, setIdToken] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchIdToken = async () => {
-      const token = await getIdToken();
-      setIdToken(token);
-    };
-    fetchIdToken();
-  }, [getIdToken, isLoggedIn]);
+  const { isLoggedIn, token, user, signIn, signOut } = useAuth();
 
   const handleClick = async () => {
     try {
@@ -50,7 +40,7 @@ const TestComponent = () => {
 
   return (
     <div>
-      <div data-testid="id-token">{idToken || 'No Token'}</div>
+      <div data-testid="id-token">{token || 'No Token'}</div>
       <div data-testid="is-logged-in">{isLoggedIn ? 'Yes' : 'No'}</div>
       <div data-testid="user">{user ? user.username : 'No User'}</div>
       <button onClick={handleClick}>Sign In</button>
@@ -98,6 +88,40 @@ describe('AuthProvider', () => {
     });
   });
 
+  it('Sets idToken to null if fetching session fails.', async () => {
+    (getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
+    (fetchAuthSession as jest.Mock).mockRejectedValue(new Error('Failed'));
+
+    await act(async () => {
+      render(
+        <AuthProvider>
+          <TestComponent />
+        </AuthProvider>,
+      );
+    });
+
+    expect(screen.getByTestId('id-token')).toHaveTextContent('No Token');
+    expect(screen.getByTestId('is-logged-in')).toHaveTextContent('No');
+    expect(screen.getByTestId('user')).toHaveTextContent('No User');
+  });
+
+  it('Sets idToken to null if fetching session returns bad data.', async () => {
+    (getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
+    (fetchAuthSession as jest.Mock).mockResolvedValue({});
+
+    await act(async () => {
+      render(
+        <AuthProvider>
+          <TestComponent />
+        </AuthProvider>,
+      );
+    });
+
+    expect(screen.getByTestId('id-token')).toHaveTextContent('No Token');
+    expect(screen.getByTestId('is-logged-in')).toHaveTextContent('No');
+    expect(screen.getByTestId('user')).toHaveTextContent('No User');
+  });
+
   it('Handles sign-in correctly.', async () => {
     (amplifySignIn as jest.Mock).mockResolvedValue({ isSignedIn: true });
     (getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
@@ -117,6 +141,28 @@ describe('AuthProvider', () => {
       expect(screen.getByTestId('id-token')).toHaveTextContent('mockIdToken');
       expect(screen.getByTestId('is-logged-in')).toHaveTextContent('Yes');
       expect(screen.getByTestId('user')).toHaveTextContent('testUser');
+    });
+  });
+
+  it('Handles bad data on sign-in correctly.', async () => {
+    (amplifySignIn as jest.Mock).mockResolvedValue({ isSignedIn: true });
+    (getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
+    (fetchAuthSession as jest.Mock).mockResolvedValue({});
+
+    render(
+      <AuthProvider>
+        <TestComponent />
+      </AuthProvider>,
+    );
+
+    await act(async () => {
+      screen.getByText('Sign In').click();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('id-token')).toHaveTextContent('No Token');
+      expect(screen.getByTestId('is-logged-in')).toHaveTextContent('No');
+      expect(screen.getByTestId('user')).toHaveTextContent('No User');
     });
   });
 
@@ -143,10 +189,8 @@ describe('AuthProvider', () => {
   });
 
   it('Handles and sets default values.', async () => {
-    const idToken = await defaultGetIdToken();
     const signIn = await defaultSignIn();
     const signOut = defaultSignOut();
-    expect(idToken).toBeNull();
     expect(signIn).toBeNull();
     expect(signOut).toBeNull();
     expect(AuthContext).toBeDefined();
