@@ -26,7 +26,7 @@ const Admin = () => {
 
   useEffect(() => {
     if (!isLoggedIn && !authenticating) {
-      router.push('/403');
+      router.push('/forbidden');
     }
   }, [authenticating, isLoggedIn, router]);
 

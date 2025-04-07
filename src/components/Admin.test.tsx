@@ -26,7 +26,7 @@ describe('Admin Component', () => {
     render(<Admin />);
 
     await waitFor(() => {
-      expect(mockPush).toHaveBeenCalledWith('/403');
+      expect(mockPush).toHaveBeenCalledWith('/forbidden');
     });
   });
 });
