@@ -191,8 +191,8 @@ describe('AuthProvider', () => {
   it('Handles and sets default values.', async () => {
     const signIn = await defaultSignIn();
     const signOut = defaultSignOut();
-    expect(signIn).toBeNull();
-    expect(signOut).toBeNull();
+    expect(signIn).toEqual({ isSignedIn: false });
+    expect(signOut).toBeUndefined();
     expect(AuthContext).toBeDefined();
   });
 

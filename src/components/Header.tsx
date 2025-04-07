@@ -27,9 +27,9 @@ const Header = () => {
         </button>
         <div className="flex items-center space-x-3">
           <Image src="/favicon.svg" alt="Logo" height={32} width={32} />
-          <div className="text-2xl whitespace-nowrap md:pr-4">
+          <Link href="/" className="text-2xl whitespace-nowrap md:pr-4">
             100 Letters Project
-          </div>
+          </Link>
           <nav className="hidden md:flex space-x-7">
             <Link href="/" className="hover:text-gray-400">
               Home

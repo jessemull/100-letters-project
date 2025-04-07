@@ -2,12 +2,12 @@
 
 import cookies from 'js-cookie';
 import React, {
-  ReactNode,
   createContext,
-  useCallback,
   useContext,
   useEffect,
   useState,
+  useCallback,
+  ReactNode,
 } from 'react';
 import { Amplify } from 'aws-amplify';
 import {
@@ -17,22 +17,19 @@ import {
   signOut as amplifySignOut,
 } from '@aws-amplify/auth';
 
-const DEFAULT_ERROR_MESSAGE = 'Error signing in. Please try again.';
-
 Amplify.configure({
   Auth: {
     Cognito: {
-      userPoolId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID as string,
-      userPoolClientId: process.env
-        .NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID as string,
+      userPoolId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID!,
+      userPoolClientId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID!,
     },
   },
 });
 
-export const defaultSignIn = async () => null;
-export const defaultSignOut = () => null;
+const COOKIE_KEY = '100_letters_cognito_id_token';
+const DEFAULT_ERROR_MESSAGE = 'Error signing in. Please try again.';
 
-export interface AuthContextType {
+interface AuthContextType {
   token: string | null;
   loading: boolean;
   isLoggedIn: boolean;
@@ -40,14 +37,17 @@ export interface AuthContextType {
   signIn: (
     username: string,
     password: string,
-  ) => Promise<{ isSignedIn: boolean } | null>;
+  ) => Promise<{ isSignedIn: boolean }>;
   signOut: () => void;
 }
 
+export const defaultSignIn = async () => ({ isSignedIn: false });
+export const defaultSignOut = () => {};
+
 export const AuthContext = createContext<AuthContextType>({
   token: null,
-  isLoggedIn: false,
   loading: true,
+  isLoggedIn: false,
   user: null,
   signIn: defaultSignIn,
   signOut: defaultSignOut,
@@ -55,99 +55,72 @@ export const AuthContext = createContext<AuthContextType>({
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<any | null>(null);
   const [token, setToken] = useState<string | null>(null);
 
-  const reset = () => {
+  const resetAuthState = () => {
     setIsLoggedIn(false);
-    setToken(null);
     setUser(null);
+    setToken(null);
+    cookies.remove(COOKIE_KEY);
   };
 
   const getIdToken = useCallback(async (): Promise<string | null> => {
     try {
       const session = await fetchAuthSession();
-      return session?.tokens?.idToken?.toString() || null;
-    } catch (error) {
-      reset();
+      return session.tokens?.idToken?.toString() || null;
+    } catch {
       return null;
     }
   }, []);
 
-  useEffect(() => {
-    setLoading(true);
-    const checkAuthStatus = async () => {
-      try {
-        const currentUser = await getCurrentUser();
-        setUser(currentUser);
-        setIsLoggedIn(true);
-      } catch (error) {
-        reset();
-      } finally {
-        setLoading(false);
-      }
-    };
-    checkAuthStatus();
-  }, []);
+  const initializeSession = useCallback(async () => {
+    try {
+      const currentUser = await getCurrentUser();
+      const idToken = await getIdToken();
+      if (!idToken) throw new Error('Missing ID token');
+
+      setUser(currentUser);
+      setToken(idToken);
+      setIsLoggedIn(true);
+      cookies.set(COOKIE_KEY, idToken, {
+        expires: 1,
+        secure: true,
+        sameSite: 'Strict',
+      });
+    } catch {
+      resetAuthState();
+    } finally {
+      setLoading(false);
+    }
+  }, [getIdToken]);
 
   useEffect(() => {
-    if (isLoggedIn) {
-      const fetchToken = async () => {
-        const idToken = await getIdToken();
-        if (idToken) {
-          setToken(idToken);
-        } else {
-          reset();
-        }
-      };
-      fetchToken();
-    } else {
-      reset();
-    }
-  }, [isLoggedIn, getIdToken]);
+    initializeSession();
+  }, [initializeSession]);
 
   const signIn = async (
     username: string,
     password: string,
   ): Promise<{ isSignedIn: boolean }> => {
     const { isSignedIn } = await amplifySignIn({ username, password });
-
     if (!isSignedIn) {
-      reset();
+      resetAuthState();
       throw new Error(DEFAULT_ERROR_MESSAGE);
     }
-
-    const user = await getCurrentUser();
-    setUser(user);
-    setIsLoggedIn(true);
-
-    const idToken = await getIdToken();
-
-    if (idToken) {
-      cookies.set('100_letters_cognito_id_token', idToken, {
-        expires: 1,
-        secure: true,
-        sameSite: 'Strict',
-      });
-    } else {
-      reset();
-    }
-
+    await initializeSession();
     return { isSignedIn };
   };
 
   const signOut = async () => {
     await amplifySignOut();
-    setTimeout(() => {
-      reset();
-      cookies.remove('100_letters_cognito_id_token');
-    }, 200);
+    resetAuthState();
   };
 
   return (
     <AuthContext.Provider
-      value={{ token, loading, isLoggedIn, signIn, signOut, user }}
+      value={{ token, loading, isLoggedIn, user, signIn, signOut }}
     >
       {children}
     </AuthContext.Provider>
