@@ -12,7 +12,7 @@ const Header = () => {
 
   const handleLogout = async () => {
     try {
-      await signOut();
+      signOut();
       router.push('/');
     } catch (error) {
       console.error('Error signing out: ', error);
@@ -47,17 +47,17 @@ const Header = () => {
             )}
           </nav>
         </div>
-        <Link href="/login" aria-label="Login">
-          {isLoggedIn ? (
-            <LogOut
-              className="h-6 w-6 text-white cursor-pointer"
-              data-testid="logout-icon"
-              onClick={handleLogout}
-            />
-          ) : (
+        {isLoggedIn ? (
+          <LogOut
+            className="h-6 w-6 text-white cursor-pointer"
+            data-testid="logout-icon"
+            onClick={handleLogout}
+          />
+        ) : (
+          <Link href="/login" aria-label="Login">
             <LogIn className="h-6 w-6 text-white" data-testid="login-icon" />
-          )}
-        </Link>
+          </Link>
+        )}
       </div>
     </header>
   );

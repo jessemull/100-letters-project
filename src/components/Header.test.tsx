@@ -130,9 +130,9 @@ describe('Header Component', () => {
   });
 
   it('Handles error when signOut fails.', async () => {
-    const signOutMock = jest
-      .fn()
-      .mockRejectedValue(new Error('Sign out failed'));
+    const signOutMock = jest.fn().mockImplementation(() => {
+      throw new Error('Sign out failed');
+    });
     (useAuth as jest.Mock).mockReturnValue({
       getIdToken: jest.fn(),
       isLoggedIn: true,
