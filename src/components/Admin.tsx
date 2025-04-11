@@ -6,7 +6,7 @@ import {
   GetCorrespondencesResponse,
   GetLettersResponse,
   GetRecipientsResponse,
-} from 'src/types';
+} from '../types';
 import { useAuth } from '../contexts/AuthProvider';
 import { useRouter } from 'next/navigation';
 import { useSWRQuery } from '../hooks';

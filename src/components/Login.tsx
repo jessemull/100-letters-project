@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import TextInput from './TextInput';
 import { Eye, EyeOff, User, Lock } from 'lucide-react';
 import { LoginForm } from '../types';
-import { maxLength, required } from 'src/util';
+import { maxLength, required } from '../util';
 import { useAuth } from '../contexts/AuthProvider';
 import { useForm } from '../hooks/useForm';
 import { useRouter } from 'next/navigation';

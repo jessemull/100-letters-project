@@ -33,8 +33,6 @@ const TextInput: React.FC<TextInputProps> = ({
     [errors],
   );
 
-  console.log(errors);
-
   const paddingClasses = useMemo(() => {
     if (IconStart && IconEnd) return 'pl-12 pr-12';
     if (IconStart) return 'pl-12 pr-4';
