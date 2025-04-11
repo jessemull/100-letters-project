@@ -1,37 +1,32 @@
 import { useState, useMemo } from 'react';
 import { FormData, Validator } from '../types';
 
-export function useForm<T extends FormData>(
-  initial: T,
-  validators: Record<keyof T, Validator[] | undefined>,
-) {
+type UseForm<T> = {
+  initial: T;
+  validators: Record<keyof T, Validator[] | undefined>;
+  validateOnInit?: boolean;
+};
+
+export function useForm<T extends FormData>({
+  initial,
+  validators,
+  validateOnInit = false,
+}: UseForm<T>) {
   // Keeps track of dirty fields.
 
-  const [dirty, setDirty] = useState<Record<keyof T, boolean>>(
-    Object.keys(initial).reduce(
-      (acc, key) => {
-        acc[key as keyof T] = false;
-        return acc;
-      },
-      {} as Record<keyof T, boolean>,
-    ),
-  );
+  const [dirty, setDirty] = useState<Partial<Record<keyof T, boolean>>>({});
 
   // Keeps track of errors as an array for each field.
 
-  const [errors, setErrors] = useState<Record<keyof T, string[]>>(
-    Object.keys(initial).reduce(
-      (acc, key) => {
-        acc[key as keyof T] = [];
-        return acc;
-      },
-      {} as Record<keyof T, string[]>,
-    ),
-  );
+  const [errors, setErrors] = useState<Partial<Record<keyof T, string[]>>>({});
 
   // The form values.
 
   const [values, setValues] = useState<T>(initial);
+
+  // Has the form been submitted at least once?
+
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
   const updateField = (field: keyof T, value: T[keyof T]) => {
     // Set the new value.
@@ -56,7 +51,9 @@ export function useForm<T extends FormData>(
     // Validate the field if a validator exists for it.
 
     if (validators[field]) {
-      validateField(field, value);
+      if (validateOnInit || hasSubmitted) {
+        validateField(field, value);
+      }
     }
   };
 
@@ -113,6 +110,7 @@ export function useForm<T extends FormData>(
   // Submit handler takes a callback and fires it if the form is in a valid state.
 
   const onSubmit = (callback: (values: T) => void) => {
+    setHasSubmitted(true);
     if (validate()) {
       callback(values);
     }
@@ -121,7 +119,7 @@ export function useForm<T extends FormData>(
   const isDirty = useMemo(() => Object.values(dirty).includes(true), [dirty]);
 
   const isValid = useMemo(
-    () => !Object.values(errors).some((err) => err.length > 0),
+    () => !Object.values(errors).some((err) => err && err.length > 0),
     [errors],
   );
 

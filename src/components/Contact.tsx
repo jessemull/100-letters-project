@@ -4,29 +4,44 @@ import Button from './Button';
 import React, { useState } from 'react';
 import TextArea from './TextArea';
 import TextInput from './TextInput';
-import { useSWRMutation } from '../hooks';
+import { ContactForm, ContactFormBody, ContactFormResponse } from '../types';
+import { useForm } from '../hooks/useForm';
 import { useRouter } from 'next/navigation';
-import { ContactFormBody, ContactFormResponse } from 'src/types';
-
-const MAX_NAME_LENGTH = 64;
-const MAX_MESSAGE_LENGTH = 1500;
+import { useSWRMutation } from '../hooks';
+import { isEmail, maxLength, required } from '../util';
 
 const background = `linear-gradient( rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75) ), url('/signin.webp')`;
 
 const defaultErrorMessage = 'Something went wrong! Please try again.';
 
+const initial = {
+  firstName: '',
+  lastName: '',
+  email: '',
+  message: '',
+};
+
+const validators = {
+  firstName: [required('Please enter a first name')],
+  lastName: [required('Please enter a last name')],
+  email: [
+    required('Please enter an e-mail address'),
+    isEmail('Please enter a valid e-mail address'),
+  ],
+  message: [
+    required('Please enter a message'),
+    maxLength(1500, 'Length must be less than 1500 characters'),
+  ],
+};
+
 const Contact = () => {
   const [error, setError] = useState('');
-  const [errors, setErrors] = useState<Record<string, string | null>>({});
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    message: '',
-  });
   const [success, setSuccess] = useState(false);
 
   const router = useRouter();
+
+  const { errors, isDirty, onSubmit, updateField, values } =
+    useForm<ContactForm>({ initial, validators });
 
   const { mutate, loading } = useSWRMutation<
     ContactFormBody,
@@ -41,46 +56,14 @@ const Contact = () => {
     },
   });
 
-  const onChange =
-    (field: keyof typeof formData) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      setFormData({ ...formData, [field]: e.target.value });
-      const next = { ...errors };
-      delete next[field];
-      setErrors(next);
-    };
-
-  const validate = () => {
-    const newErrors: Record<string, string | null> = {};
-    const { firstName, lastName, email, message } = formData;
-
-    if (!firstName.trim()) newErrors.firstName = 'First name is required';
-    else if (firstName.length > MAX_NAME_LENGTH)
-      newErrors.firstName = 'Too long';
-
-    if (!lastName.trim()) newErrors.lastName = 'Last name is required';
-    else if (lastName.length > MAX_NAME_LENGTH) newErrors.lastName = 'Too long';
-
-    if (!email.trim()) newErrors.email = 'Email is required';
-    else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))
-      newErrors.email = 'Invalid email';
-
-    if (!message.trim()) newErrors.message = 'Message is required';
-    else if (message.length > MAX_MESSAGE_LENGTH)
-      newErrors.message = 'Too long';
-
-    setErrors(newErrors);
-    return Object.values(newErrors).every((e) => !e);
-  };
-
-  const onSubmit = async () => {
-    if (!validate()) return;
-    try {
-      await mutate(formData);
-      setFormData({ firstName: '', lastName: '', email: '', message: '' });
-    } catch (e) {
-      setError(defaultErrorMessage);
-    }
+  const handleSubmit = async () => {
+    onSubmit(async () => {
+      try {
+        await mutate(values);
+      } catch (e) {
+        setError(defaultErrorMessage);
+      }
+    });
   };
 
   const goHome = () => {
@@ -110,43 +93,45 @@ const Contact = () => {
         <div className="w-full max-w-lg space-y-6">
           <h1 className="text-white text-3xl font-semibold">Contact Us</h1>
           <TextInput
-            id="firstName"
-            type="text"
-            placeholder="First Name"
-            value={formData.firstName}
-            onChange={onChange('firstName')}
             errors={errors.firstName || undefined}
-          />
-          <TextInput
-            id="lastName"
+            id="firstName"
+            onChange={({ target: { value } }) =>
+              updateField('firstName', value)
+            }
+            placeholder="First Name"
             type="text"
-            placeholder="Last Name"
-            value={formData.lastName}
-            onChange={onChange('lastName')}
-            errors={errors.lastName || undefined}
+            value={values.firstName}
           />
           <TextInput
+            errors={errors.lastName || undefined}
+            id="lastName"
+            onChange={({ target: { value } }) => updateField('lastName', value)}
+            placeholder="Last Name"
+            type="text"
+            value={values.lastName}
+          />
+          <TextInput
+            errors={errors.email ? errors.email[0] : undefined}
             id="email"
-            type="email"
+            onChange={({ target: { value } }) => updateField('email', value)}
             placeholder="Email"
-            value={formData.email}
-            onChange={onChange('email')}
-            errors={errors.email || undefined}
+            type="email"
+            value={values.email}
           />
           <TextArea
-            id="message"
-            placeholder="Write your message here..."
-            value={formData.message}
-            onChange={onChange('message')}
             errors={error || errors.message || undefined}
+            id="message"
+            onChange={({ target: { value } }) => updateField('message', value)}
+            placeholder="Write your message here..."
+            value={values.message}
           />
           <div className="flex flex-col xl:flex-row xl:flex-row-reverse gap-4 xl:justify-between">
             <div className="w-full xl:w-1/3">
               <Button
-                disabled={loading || Object.keys(errors).length > 0}
+                disabled={!isDirty || loading || Object.keys(errors).length > 0}
                 id="contact-submit"
                 loading={loading}
-                onClick={onSubmit}
+                onClick={handleSubmit}
                 value="Submit"
               />
             </div>
