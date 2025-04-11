@@ -13,6 +13,7 @@
     "next": "15.1.7",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-google-recaptcha": "^3.1.0",
     "react-resize-detector": "^12.0.2",
     "swr": "^2.3.3"
   },
@@ -33,6 +34,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/react-google-recaptcha": "^2.1.9",
     "autoprefixer": "^10.4.20",
     "commitizen": "^4.3.1",
     "cookie-parser": "^1.4.7",
@@ -64,21 +66,12 @@
     "uuid": "^11.1.0"
   },
   "lint-staged": {
-    "*.ts": [
-      "eslint --fix",
-      "prettier --write"
+    "*.{ts,tsx,js}": [
+      "next lint --fix --file"
     ],
-    "*.tsx": [
-      "eslint --fix",
+    "*.{json,css,md}": [
       "prettier --write"
-    ],
-    "*.js": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "*.json": "prettier --write",
-    "*.css": "prettier --write",
-    "*.md": "prettier --write"
+    ]
   },
   "name": "100-letters-project",
   "private": true,
