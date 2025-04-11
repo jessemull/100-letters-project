@@ -32,7 +32,6 @@ describe('useSWRQuery', () => {
   it('Calls useSWR with constructed URL and fetcher when token and path are valid.', async () => {
     const fakeResponse = { data: ['mocked data'] };
 
-    // Mock fetch response
     global.fetch = jest.fn().mockResolvedValue({
       ok: true,
       json: jest.fn().mockResolvedValue(fakeResponse),
@@ -54,7 +53,6 @@ describe('useSWRQuery', () => {
       undefined,
     );
 
-    // Test fetcher separately
     if (capturedFetcher) {
       const result = await (capturedFetcher as jest.Mock)(expectedUrl);
       expect(result).toEqual(fakeResponse);

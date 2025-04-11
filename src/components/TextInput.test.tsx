@@ -1,5 +1,6 @@
 import TextInput from './TextInput';
 import { Eye, EyeOff } from 'lucide-react';
+import { axe } from 'jest-axe';
 import { render, screen, fireEvent } from '@testing-library/react';
 
 describe('TextInput Component', () => {
@@ -24,12 +25,10 @@ describe('TextInput Component', () => {
       />,
     );
 
-    // Check if the input element exists
     const inputElement = screen.getByPlaceholderText('Enter your username');
     expect(inputElement).toBeInTheDocument();
     expect(inputElement).toHaveValue('testuser');
 
-    // Check if the icons are rendered
     const iconStart = screen.getByTestId('password-text-input-icon-start');
     const iconEnd = screen.getByTestId('password-text-input-icon-end');
     expect(iconStart).toBeInTheDocument();
@@ -155,5 +154,21 @@ describe('TextInput Component', () => {
 
     expect(inputElement).toHaveClass('pl-12');
     expect(inputElement).toHaveClass('pr-12');
+  });
+
+  it('Has no accessibility violations.', async () => {
+    const { container } = render(
+      <TextInput
+        IconStart={Eye}
+        IconEnd={EyeOff}
+        id="username"
+        onChange={handleChangeMock}
+        placeholder="Enter your username"
+        type="text"
+        value="testuser"
+      />,
+    );
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

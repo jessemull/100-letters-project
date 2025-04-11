@@ -1,6 +1,7 @@
 import * as useDataHook from '../hooks/useSWRQuery';
 import Admin from './Admin';
 import React from 'react';
+import { axe } from 'jest-axe';
 import { render, waitFor } from '@testing-library/react';
 import { useAuth } from '../contexts/AuthProvider';
 import { useRouter } from 'next/navigation';
@@ -28,5 +29,11 @@ describe('Admin Component', () => {
     await waitFor(() => {
       expect(mockPush).toHaveBeenCalledWith('/forbidden');
     });
+  });
+
+  it('Has no accessibility violations.', async () => {
+    const { container } = render(<Admin />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

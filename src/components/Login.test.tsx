@@ -1,11 +1,12 @@
 import Login from './Login';
 import {
+  act,
+  fireEvent,
   render,
   screen,
-  fireEvent,
   waitFor,
-  act,
 } from '@testing-library/react';
+import { axe } from 'jest-axe';
 import { useAuth } from '../contexts/AuthProvider';
 import { useRouter } from 'next/navigation';
 
@@ -205,5 +206,11 @@ describe('Login Component', () => {
     );
 
     consoleErrorMock.mockRestore();
+  });
+
+  it('Has no accessibility violations.', async () => {
+    const { container } = render(<Login />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });
