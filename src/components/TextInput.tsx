@@ -32,11 +32,14 @@ const TextInput: React.FC<TextInputProps> = ({
     () => (Array.isArray(errors) ? errors : errors ? [errors] : []),
     [errors],
   );
-  const IconStartClasses = useMemo(
-    () => (IconStart ? 'pl-12' : ''),
-    [IconStart],
-  );
-  const IconEndClasses = useMemo(() => (IconEnd ? 'pr-12' : ''), [IconEnd]);
+
+  const paddingClasses = useMemo(() => {
+    if (IconStart && IconEnd) return 'pl-12 pr-12';
+    if (IconStart) return 'pl-12 pr-4';
+    if (IconEnd) return 'pl-4 pr-12';
+    return 'px-4';
+  }, [IconStart, IconEnd]);
+
   return (
     <div className="relative w-full">
       {IconStart && (
@@ -50,7 +53,7 @@ const TextInput: React.FC<TextInputProps> = ({
       )}
       <input
         autoComplete={autocomplete}
-        className={`w-full h-12 rounded-full bg-white/25 border border-white text-white text-base placeholder-white/70 focus:outline-none ${IconStartClasses} ${IconEndClasses}`}
+        className={`w-full h-12 rounded-full bg-white/25 border border-white text-white text-base placeholder-white/70 focus:outline-none ${paddingClasses}`}
         id={id}
         onChange={onChange}
         placeholder={placeholder}
@@ -67,7 +70,7 @@ const TextInput: React.FC<TextInputProps> = ({
         </div>
       )}
       {errorsArray.length > 0 && (
-        <ul className="pl-4 mt-2 list-none text-white text-base">
+        <ul className="pl-4 mt-2 list-none text-red-400 text-base">
           {errorsArray.map((error) => (
             <li key={error}>{error}</li>
           ))}

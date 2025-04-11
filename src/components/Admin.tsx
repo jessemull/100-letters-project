@@ -6,23 +6,23 @@ import {
   GetCorrespondencesResponse,
   GetLettersResponse,
   GetRecipientsResponse,
-} from 'src/types';
+} from '../types';
 import { useAuth } from '../contexts/AuthProvider';
 import { useRouter } from 'next/navigation';
-import { useSWRWithAuth } from '../hooks';
+import { useSWRQuery } from '../hooks';
 
 const Admin = () => {
   const router = useRouter();
   const { isLoggedIn, loading: authenticating, token } = useAuth();
 
   const { data: correspondences, isLoading: loadingCorrespondences } =
-    useSWRWithAuth<GetCorrespondencesResponse>('/correspondence', token);
+    useSWRQuery<GetCorrespondencesResponse>('/correspondence', token);
 
   const { data: letters, isLoading: loadingLetters } =
-    useSWRWithAuth<GetRecipientsResponse>('/recipient', token);
+    useSWRQuery<GetRecipientsResponse>('/recipient', token);
 
   const { data: recipients, isLoading: loadingRecipients } =
-    useSWRWithAuth<GetLettersResponse>('/letter', token);
+    useSWRQuery<GetLettersResponse>('/letter', token);
 
   useEffect(() => {
     if (!isLoggedIn && !authenticating) {

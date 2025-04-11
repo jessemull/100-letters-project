@@ -1,12 +1,12 @@
 import useSWR from 'swr';
 import { renderHook } from '@testing-library/react';
-import { useSWRWithAuth } from '../hooks/useSWRWithAuth';
+import { useSWRQuery } from './useSWRQuery';
 
 jest.mock('swr');
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
-describe('useSWRWithAuth', () => {
+describe('useSWRQuery', () => {
   const mockUseSWR = useSWR as jest.Mock;
 
   beforeEach(() => {
@@ -14,13 +14,13 @@ describe('useSWRWithAuth', () => {
   });
 
   it('Returns null URL and fetcher if token is null.', () => {
-    useSWRWithAuth('/some-path', null);
+    useSWRQuery('/some-path', null);
 
     expect(mockUseSWR).toHaveBeenCalledWith(null, null, undefined);
   });
 
   it('Returns null URL and a defined fetcher if path is null but token is present.', () => {
-    useSWRWithAuth(null, 'fake-token');
+    useSWRQuery(null, 'fake-token');
 
     expect(mockUseSWR).toHaveBeenCalledWith(
       null,
@@ -45,7 +45,7 @@ describe('useSWRWithAuth', () => {
       return { data: null, isLoading: true };
     });
 
-    const { result } = renderHook(() => useSWRWithAuth('/test', 'abc123'));
+    const { result } = renderHook(() => useSWRQuery('/test', 'abc123'));
 
     const expectedUrl = `${API_BASE_URL}/test`;
     expect(mockUseSWR).toHaveBeenCalledWith(
@@ -81,7 +81,7 @@ describe('useSWRWithAuth', () => {
       return { data: null, isLoading: true };
     });
 
-    renderHook(() => useSWRWithAuth('/unauthorized', 'abc123'));
+    renderHook(() => useSWRQuery('/unauthorized', 'abc123'));
 
     if (capturedFetcher) {
       await expect(
@@ -92,7 +92,7 @@ describe('useSWRWithAuth', () => {
 
   it('Passes through custom SWR configuration.', () => {
     const config = { revalidateOnFocus: false };
-    useSWRWithAuth('/custom', 'abc123', config);
+    useSWRQuery('/custom', 'abc123', config);
 
     expect(mockUseSWR).toHaveBeenCalledWith(
       `${API_BASE_URL}/custom`,
