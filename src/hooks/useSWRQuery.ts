@@ -2,7 +2,7 @@ import useSWR, { SWRConfiguration } from 'swr';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export function useSWRWithAuth<T = any>(
+export function useSWRQuery<T = any>(
   path: string | null,
   token: string | null,
   config?: SWRConfiguration,

@@ -37,7 +37,7 @@ const Header = () => {
             <Link href="/" className="hover:text-gray-400">
               About
             </Link>
-            <Link href="/" className="hover:text-gray-400">
+            <Link href="/contact" className="hover:text-gray-400">
               Contact
             </Link>
             {isLoggedIn && (

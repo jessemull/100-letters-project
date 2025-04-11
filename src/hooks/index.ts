@@ -1,1 +1,2 @@
-export * from './useSWRWithAuth';
+export * from './useSWRMutation';
+export * from './useSWRQuery';

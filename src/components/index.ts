@@ -1,6 +1,7 @@
 export { default as Admin } from './Admin';
 export { default as Button } from './Button';
 export { default as ComingSoon } from './ComingSoon';
+export { default as Contact } from './Contact';
 export { default as Envelope } from './Envelope';
 export { default as Feed } from './Feed';
 export { default as Footer } from './Footer';
