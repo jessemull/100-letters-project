@@ -6,9 +6,8 @@ interface ProgressProps {
 }
 
 const Progress: React.FC<ProgressProps> = ({ color = 'black', size = 6 }) => {
-  const spinnerSize = useMemo(() => size * 4, [size]); // Scale spinner size by the `size` prop
-  const borderWidth = useMemo(() => Math.round(size / 4), [size]); // Dynamically calculate border width
-
+  const spinnerSize = useMemo(() => size * 4, [size]);
+  const borderWidth = useMemo(() => Math.round(size / 4), [size]);
   return (
     <div
       data-testid="progress"
@@ -21,7 +20,7 @@ const Progress: React.FC<ProgressProps> = ({ color = 'black', size = 6 }) => {
           borderColor: `${color} transparent transparent transparent`,
           height: `${spinnerSize}px`,
           width: `${spinnerSize}px`,
-          borderWidth: `${borderWidth}px`, // Dynamically set border width based on `size`
+          borderWidth: `${borderWidth}px`,
         }}
       ></div>
     </div>

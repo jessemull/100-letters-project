@@ -1,4 +1,5 @@
 import TextArea from './TextArea';
+import { axe } from 'jest-axe';
 import { render, screen, fireEvent } from '@testing-library/react';
 
 describe('TextArea', () => {
@@ -70,7 +71,6 @@ describe('TextArea', () => {
       expect(screen.getByText(error)).toBeInTheDocument();
     });
 
-    // Optional: Check that the errors are rendered inside a list
     expect(screen.getByRole('list')).toBeInTheDocument();
   });
 
@@ -85,5 +85,18 @@ describe('TextArea', () => {
     );
 
     expect(screen.queryByRole('list')).toBeNull();
+  });
+
+  it('Has no accessibility violations.', async () => {
+    const { container } = render(
+      <TextArea
+        id="message"
+        value=""
+        onChange={handleChangeMock}
+        placeholder="Write your message"
+      />,
+    );
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

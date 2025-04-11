@@ -13,7 +13,7 @@ jest.mock('next/navigation', () => {
   return {
     useRouter: () => ({
       push: jest.fn(),
-      prefetch: jest.fn(), // optional, if used
+      prefetch: jest.fn(),
     }),
   };
 });

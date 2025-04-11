@@ -94,7 +94,7 @@ describe('Button Component', () => {
     );
 
     const button = screen.getByRole('button');
-    expect(button).toHaveClass('bg-gray-500 cursor-not-allowed'); // Disabled styles
+    expect(button).toHaveClass('bg-gray-500 cursor-not-allowed');
   });
 
   it('Applies correct styles when not disabled.', () => {
@@ -110,7 +110,7 @@ describe('Button Component', () => {
     const button = screen.getByRole('button');
     expect(button).toHaveClass(
       'bg-[#111827] hover:bg-[#293E6A] cursor-pointer',
-    ); // Normal styles
+    );
   });
 
   it('Has no accessibility violations.', async () => {
