@@ -1,6 +1,7 @@
 'use client';
 
 import Button from './Button';
+import ReCAPTCHA from 'react-google-recaptcha';
 import React, { useState } from 'react';
 import TextArea from './TextArea';
 import TextInput from './TextInput';
@@ -9,6 +10,8 @@ import { useForm } from '../hooks/useForm';
 import { useRouter } from 'next/navigation';
 import { useSWRMutation } from '../hooks';
 import { isEmail, maxLength, required } from '../util';
+
+const CAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_CAPTCHA_SITE_KEY as string;
 
 const background = `linear-gradient( rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75) ), url('/signin.webp')`;
 
@@ -35,6 +38,7 @@ const validators = {
 };
 
 const Contact = () => {
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
@@ -53,13 +57,24 @@ const Contact = () => {
     },
     onSuccess: () => {
       setSuccess(true);
+      setCaptchaToken(null);
     },
   });
 
   const handleSubmit = async () => {
+    if (!captchaToken) {
+      setError('Please complete the CAPTCHA.');
+      return;
+    }
+
     onSubmit(async () => {
       try {
-        await mutate(values);
+        await mutate(
+          { ...values },
+          {
+            'g-recaptcha-response': captchaToken,
+          },
+        );
       } catch (e) {
         setError(defaultErrorMessage);
       }
@@ -68,6 +83,11 @@ const Contact = () => {
 
   const goHome = () => {
     router.push('/');
+  };
+
+  const handleCaptchaToken = (token: string | null) => {
+    setCaptchaToken(token);
+    setError('');
   };
 
   return (
@@ -125,6 +145,13 @@ const Contact = () => {
             placeholder="Write your message here..."
             value={values.message}
           />
+          <div className="flex justify-end">
+            <ReCAPTCHA
+              sitekey={CAPTCHA_SITE_KEY}
+              onChange={(token) => handleCaptchaToken(token)}
+              className="mt-[-6px]"
+            />
+          </div>
           <div className="flex flex-col xl:flex-row xl:flex-row-reverse gap-4 xl:justify-between">
             <div className="w-full xl:w-1/3">
               <Button

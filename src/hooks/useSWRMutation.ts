@@ -23,7 +23,10 @@ export function useSWRMutation<Body, Response = unknown>(
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<Response | null>(null);
 
-  const mutate = async (body: Body): Promise<Response | undefined> => {
+  const mutate = async (
+    body: Body,
+    headers: HeadersInit,
+  ): Promise<Response | undefined> => {
     setLoading(true);
     setError(null);
 
@@ -33,6 +36,7 @@ export function useSWRMutation<Body, Response = unknown>(
         headers: {
           'Content-Type': 'application/json',
           ...(token && { Authorization: `Bearer ${token}` }),
+          ...headers,
         },
         body: JSON.stringify(body),
       });
