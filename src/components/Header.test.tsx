@@ -158,4 +158,34 @@ describe('Header Component', () => {
 
     consoleErrorMock.mockRestore();
   });
+
+  it('Opens and then closes the mobile menu.', async () => {
+    (useAuth as jest.Mock).mockReturnValue({
+      getIdToken: jest.fn(),
+      isLoggedIn: false,
+      signOut: jest.fn(),
+    });
+
+    render(<Header />);
+
+    const menuButton = screen.getByTestId('open-menu');
+    expect(menuButton).toBeInTheDocument();
+
+    await act(async () => {
+      fireEvent.click(menuButton);
+    });
+
+    const mobileMenu = screen.getByTestId('mobile-menu');
+    expect(mobileMenu).toBeInTheDocument();
+
+    const closeButton = screen.getByTestId('close-menu');
+
+    await act(async () => {
+      fireEvent.click(closeButton);
+    });
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('mobile-menu')).not.toBeInTheDocument();
+    });
+  });
 });
