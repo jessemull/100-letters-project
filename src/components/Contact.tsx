@@ -145,7 +145,7 @@ const Contact = () => {
             placeholder="Write your message here..."
             value={values.message}
           />
-          <div className="flex justify-end">
+          <div className="flex justify-center">
             <ReCAPTCHA
               sitekey={CAPTCHA_SITE_KEY}
               onChange={(token) => handleCaptchaToken(token)}
@@ -153,7 +153,7 @@ const Contact = () => {
             />
           </div>
           <div className="flex flex-col xl:flex-row xl:flex-row-reverse gap-4 xl:justify-between">
-            <div className="w-full xl:w-1/3">
+            <div className="w-full">
               <Button
                 disabled={!isDirty || loading || Object.keys(errors).length > 0}
                 id="contact-submit"
@@ -162,7 +162,7 @@ const Contact = () => {
                 value="Submit"
               />
             </div>
-            <div className="w-full xl:w-1/3">
+            <div className="w-full">
               <Button
                 disabled={loading}
                 id="contact-cancel"

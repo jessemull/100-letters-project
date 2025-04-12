@@ -2,12 +2,17 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import MobileMenu from './MobileMenu';
 import { Menu, LogIn, LogOut } from 'lucide-react';
 import { useAuth } from '../contexts/AuthProvider';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 const Header = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   const router = useRouter();
+
   const { isLoggedIn, signOut } = useAuth();
 
   const handleLogout = async () => {
@@ -23,7 +28,11 @@ const Header = () => {
     <header className="bg-gray-900 text-white px-4 py-3 font-merriweather sticky top-0 z-50 w-full">
       <div className="flex justify-between items-center max-w-full">
         <button aria-label="Open Menu" className="md:hidden">
-          <Menu className="h-6 w-6 text-white" />
+          <Menu
+            className="h-6 w-6 text-white"
+            data-testid="open-menu"
+            onClick={() => setIsMenuOpen(true)}
+          />
         </button>
         <div className="flex items-center space-x-3">
           <Image src="/favicon.svg" alt="Logo" height={32} width={32} />
@@ -59,6 +68,12 @@ const Header = () => {
           </Link>
         )}
       </div>
+      <MobileMenu
+        isOpen={isMenuOpen}
+        onClose={() => setIsMenuOpen(false)}
+        isLoggedIn={isLoggedIn}
+        handleLogout={handleLogout}
+      />
     </header>
   );
 };
