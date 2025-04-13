@@ -87,12 +87,11 @@ const Login = () => {
 
   return (
     <div
-      className="p-8 flex justify-center items-center w-full"
+      className="p-8 flex items-center justify-center items-center w-full h-full min-h-[calc(100vh-110px)]"
       style={{
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundImage: background,
-        height: 'calc(100vh - 56px - 36px)',
       }}
     >
       <div className="w-full sm:w-full md:w-1/2 lg:w-1/3 xl:w-1/5 flex flex-col justify-center items-center space-y-6">

@@ -1,16 +1,11 @@
+import { Status } from './correspondence';
+
 export enum LetterMethod {
   TYPED = 'TYPED',
   HANDWRITTEN = 'HANDWRITTEN',
   PRINTED = 'PRINTED',
   DIGITAL = 'DIGITAL',
   OTHER = 'OTHER',
-}
-
-export enum LetterStatus {
-  PENDING = 'PENDING',
-  SENT = 'SENT',
-  RECEIVED = 'RECEIVED',
-  RESPONDED = 'RESPONDED',
 }
 
 export enum LetterType {
@@ -28,7 +23,7 @@ export interface Letter {
   method: LetterMethod;
   receivedAt?: string;
   sentAt?: string;
-  status: LetterStatus;
+  status: Status;
   text: string;
   title: string;
   type: LetterType;
@@ -41,7 +36,7 @@ export type LetterCreateInput = {
   method: LetterMethod;
   receivedAt?: string;
   sentAt?: string;
-  status: LetterStatus;
+  status: Status;
   text: string;
   title: string;
   type: LetterType;
@@ -54,7 +49,7 @@ export type LetterUpdateInput = {
   method: LetterMethod;
   receivedAt?: string;
   sentAt?: string;
-  status: LetterStatus;
+  status: Status;
   text: string;
   title: string;
   type: LetterType;

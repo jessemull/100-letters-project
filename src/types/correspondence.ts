@@ -20,7 +20,9 @@ export type Reason = {
 export enum Status {
   COMPLETED = 'COMPLETED',
   PENDING = 'PENDING',
+  RECEIVED = 'RECEIVED',
   RESPONDED = 'RESPONDED',
+  SENT = 'SENT',
   UNSENT = 'UNSENT',
 }
 
