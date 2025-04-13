@@ -1,4 +1,4 @@
-import { Correspondence, Impact, Status } from '../types';
+import { Correspondence, Impact, Status } from '@ts-types/correspondence';
 import { Factory } from 'fishery';
 import { LetterFactory } from './letter';
 import { faker } from '@faker-js/faker';

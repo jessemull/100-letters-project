@@ -4,16 +4,14 @@ import React, { useEffect, useMemo, useState } from 'react';
 import {
   Correspondence,
   GetCorrespondencesResponse,
-  GetLettersResponse,
-  GetRecipientsResponse,
-  Letter,
-  Recipient,
-} from '../../types';
+} from '@ts-types/correspondence';
 import {
   CorrespondenceItem,
   LetterItem,
   RecipientItem,
 } from '@components/Admin';
+import { GetLettersResponse, Letter } from '@ts-types/letter';
+import { GetRecipientsResponse, Recipient } from '@ts-types/recipients';
 import { Progress } from '@components/Form';
 import { Search } from 'lucide-react';
 import { Tab, TabList, TabPanel, TabPanels, TabGroup } from '@headlessui/react';

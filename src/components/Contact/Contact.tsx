@@ -3,7 +3,11 @@
 import ReCAPTCHA from 'react-google-recaptcha';
 import React, { useState } from 'react';
 import { Button, TextArea, TextInput } from '@components/Form';
-import { ContactForm, ContactFormBody, ContactFormResponse } from '../../types';
+import {
+  ContactForm,
+  ContactFormBody,
+  ContactFormResponse,
+} from '@ts-types/contact';
 import { isEmail, maxLength, required } from '@util/validators';
 import { useForm } from '@hooks/useForm';
 import { useRouter } from 'next/navigation';

@@ -1,6 +1,6 @@
 import { renderHook, act } from '@testing-library/react';
 import { useForm } from '@hooks/useForm';
-import { Validator } from '../types';
+import { Validator } from '@ts-types/form';
 
 type TestForm = {
   email: string;

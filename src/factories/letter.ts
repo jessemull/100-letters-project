@@ -1,5 +1,6 @@
 import { Factory } from 'fishery';
-import { Letter, LetterMethod, Status, LetterType } from '../types';
+import { Letter, LetterMethod, LetterType } from '@ts-types/letter';
+import { Status } from '@ts-types/correspondence';
 import { faker } from '@faker-js/faker';
 import { v4 as uuidv4 } from 'uuid';
 

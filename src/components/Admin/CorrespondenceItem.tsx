@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Correspondence } from '../../types';
+import { Correspondence } from '@ts-types/correspondence';
 import { PenSquare, Trash2 } from 'lucide-react';
 
 interface Props {

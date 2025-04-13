@@ -1,7 +1,9 @@
 'use client';
 
+import { Correspondence } from '@ts-types/correspondence';
+import { Letter } from '@ts-types/letter';
+import { Recipient } from '@ts-types/recipients';
 import { createContext, useContext, ReactNode } from 'react';
-import { Correspondence, Letter, Recipient } from '../types';
 
 export interface CorrespondenceContextType {
   correspondences: Correspondence[];

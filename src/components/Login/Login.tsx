@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, TextInput } from '@components/Form';
 import { Eye, EyeOff, User, Lock } from 'lucide-react';
-import { LoginForm } from '../../types';
+import { LoginForm } from '@ts-types/login';
 import { maxLength, required } from '@util/validators';
 import { useAuth } from '@contexts/AuthProvider';
 import { useForm } from '@hooks/useForm';

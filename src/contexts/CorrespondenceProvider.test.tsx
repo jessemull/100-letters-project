@@ -1,11 +1,13 @@
-import { Correspondence, Letter, Recipient } from '../types';
+import { Correspondence } from '@ts-types/correspondence';
 import {
   CorrespondenceContext,
   CorrespondenceProvider,
   useCorrespondence,
 } from './index';
 import { CorrespondenceFactory } from '@factories/correspondence';
+import { Letter } from '@ts-types/letter';
 import { LetterFactory } from '@factories/letter';
+import { Recipient } from '@ts-types/recipients';
 import { RecipientFactory } from '@factories/recipient';
 import { axe } from 'jest-axe';
 import { render, screen } from '@testing-library/react';

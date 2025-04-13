@@ -17,7 +17,7 @@
       "@hooks/*": ["src/hooks/*"],
       "@pages/*": ["src/app/*"],
       "@public/*": ["public/*"],
-      "@types/*": ["src/types/*"],
+      "@ts-types/*": ["src/types/*"],
       "@util/*": ["src/util/*"]
     },
     "resolveJsonModule": true,

@@ -1,4 +1,4 @@
-import { Validator } from '../types';
+import { Validator } from '@ts-types/form';
 
 export const required =
   (message: string = 'Required'): Validator =>
