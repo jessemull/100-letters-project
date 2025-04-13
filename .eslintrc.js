@@ -1,16 +1,21 @@
 module.exports = {
   extends: [
-    "next",
-    "plugin:jsx-a11y/recommended",
-    "plugin:prettier/recommended",
+    'next',
+    'plugin:jsx-a11y/recommended',
+    'plugin:prettier/recommended',
   ],
-  plugins: ["jsx-a11y"],
+  plugins: ['jsx-a11y'],
   rules: {
-    "prettier/prettier": [
-      "error",
+    'prettier/prettier': [
+      'error',
       {
-        "singleQuote": true,
+        singleQuote: true,
       },
     ],
+  },
+  settings: {
+    'import/resolver': {
+      typescript: {},
+    },
   },
 };

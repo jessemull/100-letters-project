@@ -5,7 +5,7 @@ import {
   defaultSignIn,
   defaultSignOut,
   useAuth,
-} from './AuthProvider';
+} from '@contexts/AuthProvider';
 import {
   getCurrentUser,
   fetchAuthSession,

@@ -10,7 +10,11 @@ const customJestConfig = {
   coveragePathIgnorePatterns: [
     '/src/app/layout.tsx',
     '/src/components/index.ts',
+    '/src/contexts/index.ts',
+    '/src/factories/index.ts',
+    '/src/hooks/index.ts',
     '/src/types/',
+    '/src/util/index.ts',
   ],
   coverageReporters: ['json', 'lcov', 'text', 'clover'],
   coverageThreshold: {
@@ -22,7 +26,13 @@ const customJestConfig = {
     },
   },
   moduleNameMapper: {
-    '^react-resize-detector$': '<rootDir>/__mocks__/react-resize-detector.js', // Use the mock
+    '^@components/(.*)$': '<rootDir>/src/components/$1',
+    '^@contexts/(.*)$': '<rootDir>/src/contexts/$1',
+    '^@factories/(.*)$': '<rootDir>/src/factories/$1',
+    '^@hooks/(.*)$': '<rootDir>/src/hooks/$1',
+    '^@ts-types/(.*)$': '<rootDir>/src/types/$1',
+    '^@util/(.*)$': '<rootDir>/src/util/$1',
+    '^react-resize-detector$': '<rootDir>/__mocks__/react-resize-detector.js',
   },
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   testEnvironment: 'jest-environment-jsdom',

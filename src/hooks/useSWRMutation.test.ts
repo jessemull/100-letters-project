@@ -1,5 +1,5 @@
 import { renderHook, act } from '@testing-library/react';
-import { useSWRMutation } from './useSWRMutation';
+import { useSWRMutation } from '@hooks/useSWRMutation';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 

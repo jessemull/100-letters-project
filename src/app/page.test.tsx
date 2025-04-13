@@ -1,4 +1,4 @@
-import HomePage from './page';
+import HomePage from '@pages/page';
 import { axe } from 'jest-axe';
 import { render, screen } from '@testing-library/react';
 

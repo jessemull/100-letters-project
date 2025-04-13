@@ -1,4 +1,4 @@
-import LoginPage from './page';
+import LoginPage from '@pages/login/page';
 import { axe } from 'jest-axe';
 import { render, screen, act } from '@testing-library/react';
 

@@ -1,9 +1,9 @@
-import { Correspondence, Impact, Letter, Status } from '../types';
+import { Correspondence, Impact, Status } from '@ts-types/correspondence';
 import { Factory } from 'fishery';
 import { LetterFactory } from './letter';
 import { faker } from '@faker-js/faker';
 import { v4 as uuidv4 } from 'uuid';
-import { RecipientFactory } from './recipient';
+import { RecipientFactory } from '@factories/recipient';
 
 export const CorrespondenceFactory = Factory.define<Correspondence>(() => ({
   correspondenceId: uuidv4(),
