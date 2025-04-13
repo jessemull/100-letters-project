@@ -7,7 +7,17 @@ import { render, screen, fireEvent } from '@testing-library/react';
 const mockRecipient = RecipientFactory.build();
 
 describe('RecipientItem', () => {
-  it('Renders full name and organization.', () => {
+  let consoleSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    consoleSpy.mockRestore();
+  });
+
+  it('Renders the recipient full name and organization.', () => {
     render(<RecipientItem data={mockRecipient} />);
     expect(
       screen.getByText(`${mockRecipient.firstName} ${mockRecipient.lastName}`),
@@ -18,31 +28,17 @@ describe('RecipientItem', () => {
     }
   });
 
-  it('Triggers onClick when clicked.', () => {
-    const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+  it('Calls onEdit when edit button is clicked.', () => {
     render(<RecipientItem data={mockRecipient} />);
-    const item = screen.getByRole('button');
-    fireEvent.click(item);
-    expect(consoleSpy).toHaveBeenCalledWith(mockRecipient);
-    consoleSpy.mockRestore();
+    fireEvent.click(screen.getByTestId('edit-button'));
+    expect(consoleSpy).toHaveBeenCalledWith('onEdit', mockRecipient);
   });
 
-  it('Triggers onClick when Enter is pressed.', () => {
-    const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+  it('Calls onDelete when delete button is clicked.', () => {
     render(<RecipientItem data={mockRecipient} />);
-    const item = screen.getByRole('button');
-    fireEvent.keyDown(item, { key: 'Enter' });
-    expect(consoleSpy).toHaveBeenCalledWith(mockRecipient);
-    consoleSpy.mockRestore();
-  });
-
-  it('Triggers onClick when Space is pressed.', () => {
-    const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
-    render(<RecipientItem data={mockRecipient} />);
-    const item = screen.getByRole('button');
-    fireEvent.keyDown(item, { key: ' ' });
-    expect(consoleSpy).toHaveBeenCalledWith(mockRecipient);
-    consoleSpy.mockRestore();
+    const deleteButtons = screen.getAllByLabelText('Edit');
+    fireEvent.click(deleteButtons[1]);
+    expect(consoleSpy).toHaveBeenCalledWith('onDelete', mockRecipient);
   });
 
   it('Has no accessibility violations.', async () => {

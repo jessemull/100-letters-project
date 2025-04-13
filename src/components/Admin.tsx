@@ -72,14 +72,7 @@ const Admin = () => {
         placeholder: 'Search by name or organization…',
       },
     ],
-    [
-      correspondencesData,
-      lettersData,
-      loadingCorrespondences,
-      loadingLetters,
-      loadingRecipients,
-      recipientsData,
-    ],
+    [correspondencesData, lettersData, recipientsData],
   );
 
   const activeTab = tabs[selectedIndex];
@@ -135,9 +128,10 @@ const Admin = () => {
                   strokeWidth={3}
                 />
                 <input
+                  data-testid="admin-search"
                   className="w-full pl-10 pr-3 py-3 rounded-xl border-2 border-black shadow-sm bg-white placeholder-gray-500 text-xl sm:text-xl"
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder={activeTab.placeholder || 'Search...'}
+                  placeholder={activeTab.placeholder}
                   type="text"
                   value={search}
                 />

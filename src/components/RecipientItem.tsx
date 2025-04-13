@@ -19,26 +19,19 @@ const RecipientItem = ({ data }: Props) => {
 
   return (
     <div
-      role="button"
-      tabIndex={0}
+      data-testid="card-edit-button"
       className="p-4 border-2 border-black rounded-xl shadow transition-transform transition-shadow transform hover:scale-[1.01] hover:shadow-2xl cursor-pointer"
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') onEdit();
-      }}
     >
       <div className="flex items-center justify-between">
         <div>
           <h3 className="font-semibold text-xl">
-            {data?.firstName && data?.lastName
-              ? `${data?.firstName} ${data?.lastName}`
-              : 'No Recipient'}
+            {`${data?.firstName} ${data?.lastName}`}
           </h3>
-          <p className="text-md text-gray-600">
-            {data?.organization || 'No Organization'}
-          </p>
+          <p className="text-md text-gray-600">{data?.organization}</p>
         </div>
         <div className="space-x-2 flex align-center justify-center">
           <button
+            data-testid="edit-button"
             onClick={onEdit}
             className="text-gray-500 hover:text-black"
             aria-label="Edit"

@@ -19,24 +19,19 @@ const CorrespondenceItem = ({ data }: Props) => {
 
   return (
     <div
-      role="button"
-      tabIndex={0}
+      data-testid="card-edit-button"
       className="p-4 border-2 border-black rounded-xl shadow transition-transform transition-shadow transform hover:scale-[1.01] hover:shadow-2xl cursor-pointer"
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') onEdit();
-      }}
     >
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="font-semibold text-xl">{data.title || 'No Title'}</h3>
+          <h3 className="font-semibold text-xl">{data.title}</h3>
           <p className="text-md text-gray-600">
-            {data?.recipient
-              ? `${data.recipient?.firstName} ${data.recipient?.lastName}`
-              : 'No Recipient'}
+            {`${data.recipient?.firstName} ${data.recipient?.lastName}`}
           </p>
         </div>
         <div className="space-x-2 flex align-center justify-center">
           <button
+            data-testid="edit-button"
             onClick={onEdit}
             className="text-gray-500 hover:text-black"
             aria-label="Edit"
