@@ -1,5 +1,5 @@
 import { Factory } from 'fishery';
-import { Letter, LetterMethod, LetterStatus, LetterType } from '../types';
+import { Letter, LetterMethod, Status, LetterType } from '../types';
 import { faker } from '@faker-js/faker';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -21,7 +21,7 @@ export const LetterFactory = Factory.define<Letter>(() => ({
     'SENT',
     'RECEIVED',
     'RESPONDED',
-  ]) as LetterStatus,
+  ]) as Status,
   text: faker.lorem.paragraph(),
   title: faker.lorem.words(),
   type: faker.helpers.arrayElement([
