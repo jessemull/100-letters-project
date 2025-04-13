@@ -1,4 +1,5 @@
-import { Header, Footer } from '../components';
+import { Header } from '@components/Header';
+import { Footer } from '@components/Footer';
 
 const PageLayout = ({ children }: { children: React.ReactNode }) => (
   <div className="flex flex-col min-h-screen">

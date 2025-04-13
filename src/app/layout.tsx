@@ -1,9 +1,9 @@
 import './globals.css';
 import Script from 'next/script';
-import data from '../../public/data.json';
+import data from '@public/data.json';
+import { AuthProvider } from '@contexts/AuthProvider';
 import { Correspondence, Letter, Recipient } from '../types';
-import { CorrespondenceProvider } from '../contexts';
-import { AuthProvider } from 'src/contexts/AuthProvider';
+import { CorrespondenceProvider } from '@contexts/CorrespondenceProvider';
 
 const { correspondences, letters, recipients } = data;
 

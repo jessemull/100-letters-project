@@ -1,8 +1,8 @@
 'use client';
 
+import PageLayout from '@pages/page.layout';
 import React from 'react';
-import Login from '../../components/Login';
-import PageLayout from '../page.layout';
+import { Login } from '@components/Login';
 
 const LoginPage = () => (
   <PageLayout>

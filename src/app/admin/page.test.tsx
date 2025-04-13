@@ -1,4 +1,4 @@
-import AdminPage from './page';
+import AdminPage from '@pages/admin/page';
 import { axe } from 'jest-axe';
 import { render, screen, act } from '@testing-library/react';
 

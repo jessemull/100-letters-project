@@ -1,6 +1,6 @@
 import useSWR from 'swr';
 import { renderHook } from '@testing-library/react';
-import { useSWRQuery } from './useSWRQuery';
+import { useSWRQuery } from '@hooks/useSWRQuery';
 
 jest.mock('swr');
 

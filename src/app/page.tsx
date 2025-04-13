@@ -1,5 +1,5 @@
-import Feed from '../components/Feed';
 import PageLayout from './page.layout';
+import { Feed } from '../components';
 
 const HomePage = () => (
   <PageLayout>

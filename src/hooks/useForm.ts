@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
 import { FormData, Validator } from '../types';
+import { useState, useMemo } from 'react';
 
 type UseForm<T> = {
   initial: T;

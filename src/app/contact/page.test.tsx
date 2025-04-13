@@ -1,4 +1,4 @@
-import ContactPage from './page';
+import ContactPage from '@pages/contact/page';
 import { axe } from 'jest-axe';
 import { render, screen, act } from '@testing-library/react';
 

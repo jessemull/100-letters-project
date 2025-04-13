@@ -1,8 +1,8 @@
 'use client';
 
-import Admin from '../../components/Admin';
-import PageLayout from '../page.layout';
+import PageLayout from '@pages/page.layout';
 import React from 'react';
+import { Admin } from '@components/Admin';
 
 const AdminPage = () => (
   <PageLayout>

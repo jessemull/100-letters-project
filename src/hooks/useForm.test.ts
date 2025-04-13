@@ -1,5 +1,5 @@
 import { renderHook, act } from '@testing-library/react';
-import { useForm } from './useForm';
+import { useForm } from '@hooks/useForm';
 import { Validator } from '../types';
 
 type TestForm = {

@@ -4,11 +4,9 @@ import {
   CorrespondenceProvider,
   useCorrespondence,
 } from './index';
-import {
-  CorrespondenceFactory,
-  LetterFactory,
-  RecipientFactory,
-} from '../factories';
+import { CorrespondenceFactory } from '@factories/correspondence';
+import { LetterFactory } from '@factories/letter';
+import { RecipientFactory } from '@factories/recipient';
 import { axe } from 'jest-axe';
 import { render, screen } from '@testing-library/react';
 

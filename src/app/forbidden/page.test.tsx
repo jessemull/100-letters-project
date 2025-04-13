@@ -1,4 +1,4 @@
-import ForbiddenPage from './page';
+import ForbiddenPage from '@pages/forbidden/page';
 import { axe } from 'jest-axe';
 import { render, screen, act } from '@testing-library/react';
 
