@@ -1,79 +1,37 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
-import {
-  Correspondence,
-  GetCorrespondencesResponse,
-} from '@ts-types/correspondence';
-import {
-  CorrespondenceItem,
-  LetterItem,
-  RecipientItem,
-} from '@components/Admin';
-import { GetLettersResponse, Letter } from '@ts-types/letter';
-import { GetRecipientsResponse, Recipient } from '@ts-types/recipients';
-import { Progress } from '@components/Form';
+import CorrespondencesTab from './CorrespondencesTab';
+import LettersTab from './LettersTab';
+import React, { useEffect, useState } from 'react';
+import RecipientsTab from './RecipientsTab';
 import { Search } from 'lucide-react';
 import { Tab, TabList, TabPanel, TabPanels, TabGroup } from '@headlessui/react';
 import { useAuth } from '@contexts/AuthProvider';
 import { useRouter } from 'next/navigation';
-import { useSWRQuery } from '@hooks/useSWRQuery';
 
-interface TabDefinition<T> {
-  data: T[];
-  key: string;
-  label: string;
-  placeholder: string;
-  ItemComponent: React.ComponentType<{
-    data: T;
-  }>;
-}
+const tabs = [
+  {
+    key: 'correspondences',
+    label: 'Correspondences',
+    placeholder: 'Search by title or recipient…',
+  },
+  {
+    key: 'letters',
+    label: 'Letters',
+    placeholder: 'Search letter text or title…',
+  },
+  {
+    key: 'recipients',
+    label: 'Recipients',
+    placeholder: 'Search by name or organization…',
+  },
+];
 
 const Admin = () => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [search, setSearch] = useState('');
 
   const { isLoggedIn, loading: authenticating, token } = useAuth();
-
-  const { data: correspondencesData, isLoading: loadingCorrespondences } =
-    useSWRQuery<GetCorrespondencesResponse>('/correspondence', token);
-
-  const { data: recipientsData, isLoading: loadingLetters } =
-    useSWRQuery<GetRecipientsResponse>('/recipient', token);
-
-  const { data: lettersData, isLoading: loadingRecipients } =
-    useSWRQuery<GetLettersResponse>('/letter', token);
-
-  const tabs: [
-    TabDefinition<Correspondence>,
-    TabDefinition<Letter>,
-    TabDefinition<Recipient>,
-  ] = useMemo(
-    () => [
-      {
-        ItemComponent: CorrespondenceItem,
-        data: correspondencesData?.data || [],
-        key: 'correspondences',
-        label: 'Correspondences',
-        placeholder: 'Search by title or recipient…',
-      },
-      {
-        ItemComponent: LetterItem,
-        data: lettersData?.data || [],
-        key: 'letters',
-        label: 'Letters',
-        placeholder: 'Search letter text or title…',
-      },
-      {
-        ItemComponent: RecipientItem,
-        data: recipientsData?.data || [],
-        key: 'recipients',
-        label: 'Recipients',
-        placeholder: 'Search by name or organization…',
-      },
-    ],
-    [correspondencesData, lettersData, recipientsData],
-  );
 
   const activeTab = tabs[selectedIndex];
 
@@ -137,30 +95,17 @@ const Admin = () => {
                 />
               </div>
             </div>
-            {loadingCorrespondences || loadingLetters || loadingRecipients ? (
-              <div className="w-full flex-grow flex items-center justify-center py-24 min-h-[calc(100vh-475px)]">
-                <Progress size={16} />
-              </div>
-            ) : (
-              <TabPanels>
-                {tabs.map(({ ItemComponent, data, key }) => (
-                  <TabPanel key={key}>
-                    <ul className="grid gap-4">
-                      {data.map((item, idx) => (
-                        <li key={idx}>
-                          <ItemComponent data={item as any} />
-                        </li>
-                      ))}
-                      {data.length === 0 && (
-                        <li className="text-center text-gray-500">
-                          No results found.
-                        </li>
-                      )}
-                    </ul>
-                  </TabPanel>
-                ))}
-              </TabPanels>
-            )}
+            <TabPanels>
+              <TabPanel>
+                <CorrespondencesTab token={token} />
+              </TabPanel>
+              <TabPanel>
+                <LettersTab token={token} />
+              </TabPanel>
+              <TabPanel>
+                <RecipientsTab token={token} />
+              </TabPanel>
+            </TabPanels>
           </TabGroup>
         </div>
       </div>
