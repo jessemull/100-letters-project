@@ -43,3 +43,7 @@ export type GetRecipientsResponse = {
 export type GetRecipientByIdResponse = {
   data: Recipient;
 };
+
+export type RecipientFormResponse = {
+  message: string;
+};
