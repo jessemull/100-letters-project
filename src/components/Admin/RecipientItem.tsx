@@ -3,14 +3,17 @@
 import React from 'react';
 import { Recipient } from '@ts-types/recipients';
 import { PenSquare, Trash2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 interface Props {
   data: Recipient;
 }
 
 const RecipientItem = ({ data }: Props) => {
+  const router = useRouter();
+
   const onEdit = () => {
-    console.log('onEdit', data);
+    router.push(`/admin/recipient?recipientId=${data.recipientId}`);
   };
 
   const onDelete = () => {
