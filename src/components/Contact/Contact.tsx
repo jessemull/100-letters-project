@@ -15,14 +15,12 @@ import { useSWRMutation } from '@hooks/useSWRMutation';
 
 const CAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_CAPTCHA_SITE_KEY as string;
 
-const background = `linear-gradient( rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75) ), url('/signin.webp')`;
-
 const defaultErrorMessage = 'Something went wrong! Please try again.';
 
 const initial = {
+  email: '',
   firstName: '',
   lastName: '',
-  email: '',
   message: '',
 };
 
@@ -93,14 +91,7 @@ const Contact = () => {
   };
 
   return (
-    <div
-      className="p-8 flex items-center justify-center items-center w-full h-full min-h-[calc(100vh-110px)]"
-      style={{
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundImage: background,
-      }}
-    >
+    <div className="p-8 flex items-center justify-center items-center w-full h-full">
       {success ? (
         <div className="w-3/4 flex flex-col items-center justify-center space-y-4 md:space-y-6">
           <p className="w-full text-white text-xl text-center">

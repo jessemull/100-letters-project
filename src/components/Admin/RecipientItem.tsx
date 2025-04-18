@@ -23,28 +23,28 @@ const RecipientItem = ({ data }: Props) => {
   return (
     <div
       data-testid="card-edit-button"
-      className="p-4 border border-black rounded-xl shadow transition-transform transition-shadow transform hover:scale-[1.01] hover:shadow-2xl cursor-pointer"
+      className="p-4 bg-white/10 border border-white rounded-xl transition-transform transform hover:scale-[1.01] cursor-pointer"
     >
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="font-semibold text-lg">
+          <h3 className="font-semibold text-lg text-white">
             {`${data?.firstName} ${data?.lastName}`}
           </h3>
-          <p className="text-sm text-gray-600">{data?.organization}</p>
+          <p className="text-sm text-gray-300">{data?.organization}</p>
         </div>
-        <div className="space-x-2 flex align-center justify-center">
+        <div className="space-x-2 flex items-center justify-center">
           <button
             data-testid="edit-button"
             onClick={onEdit}
-            className="text-gray-500 hover:text-black"
+            className="text-white hover:text-gray-400"
             aria-label="Edit"
           >
             <PenSquare className="w-6 h-6" />
           </button>
           <button
             onClick={onDelete}
-            className="text-gray-500 hover:text-black"
-            aria-label="Edit"
+            className="text-white hover:text-gray-400"
+            aria-label="Delete"
           >
             <Trash2 className="w-6 h-6" />
           </button>

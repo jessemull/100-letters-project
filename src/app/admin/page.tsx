@@ -5,7 +5,7 @@ import React from 'react';
 import { Admin } from '@components/Admin';
 
 const AdminPage = () => (
-  <PageLayout>
+  <PageLayout envelopeBorder>
     <Admin />
   </PageLayout>
 );
