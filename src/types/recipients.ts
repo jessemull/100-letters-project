@@ -39,3 +39,11 @@ export type GetRecipientsResponse = {
   data: Recipient[];
   lastEvaluatedKey: string;
 };
+
+export type GetRecipientByIdResponse = {
+  data: Recipient;
+};
+
+export type RecipientFormResponse = {
+  message: string;
+};

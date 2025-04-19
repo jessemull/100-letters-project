@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { ChangeEvent, ElementType } from 'react';
 
 interface TextInputProps {
+  label?: string; // Optional label prop
   IconEnd?: ElementType;
   IconStart?: ElementType;
   autocomplete?: string;
@@ -16,6 +17,7 @@ interface TextInputProps {
 }
 
 const TextInput: React.FC<TextInputProps> = ({
+  label,
   IconEnd,
   IconStart,
   autocomplete,
@@ -42,6 +44,12 @@ const TextInput: React.FC<TextInputProps> = ({
 
   return (
     <div className="relative w-full">
+      {label && (
+        <label htmlFor={id} className="block text-white text-base mb-2">
+          {label}
+        </label>
+      )}
+
       {IconStart && (
         <div className="absolute left-5 top-3.5 text-white">
           <IconStart

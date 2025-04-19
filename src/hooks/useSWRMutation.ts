@@ -25,7 +25,7 @@ export function useSWRMutation<Body, Response = unknown>(
 
   const mutate = async (
     body: Body,
-    headers: HeadersInit,
+    headers: HeadersInit = {},
   ): Promise<Response | undefined> => {
     setLoading(true);
     setError(null);

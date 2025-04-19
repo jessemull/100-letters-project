@@ -17,7 +17,7 @@ const CorrespondencesTab: React.FC<Props> = ({ token }) => {
   );
   return isLoading ? (
     <div className="w-full flex-grow flex items-center justify-center py-24 min-h-[calc(100vh-475px)]">
-      <Progress size={16} />
+      <Progress color="white" size={16} />
     </div>
   ) : (
     <ul className="grid gap-4">
