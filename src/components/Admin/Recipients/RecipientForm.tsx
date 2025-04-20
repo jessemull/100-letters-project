@@ -63,18 +63,19 @@ const RecipientForm = () => {
       validators,
     });
 
-  const { mutate, loading } = useSWRMutation<
+  const { mutate, isLoading: isUpdating } = useSWRMutation<
     Partial<Recipient>,
     RecipientFormResponse
-  >(recipientId ? `/recipient/${recipientId}` : `/recipient`, {
+  >({
     method: recipientId ? 'PUT' : 'POST',
+    path: recipientId ? `/recipient/${recipientId}` : `/recipient`,
     token,
     onSuccess: () => router.back(),
   });
 
   const handleSubmit = () => {
     onSubmit(async () => {
-      await mutate(values);
+      await mutate({ body: values });
     });
   };
 
@@ -207,7 +208,7 @@ const RecipientForm = () => {
         <Button
           id="submit"
           onClick={handleSubmit}
-          loading={loading}
+          loading={isUpdating}
           disabled={!isDirty || Object.keys(errors).length > 0}
           value={recipientId ? 'Update' : 'Create'}
         />

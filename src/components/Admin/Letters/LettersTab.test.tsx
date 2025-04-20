@@ -1,5 +1,5 @@
-import LettersTab from './LettersTab';
 import React from 'react';
+import { LettersTab } from '@components/Admin';
 import { render, screen } from '@testing-library/react';
 import { useSWRQuery } from '@hooks/useSWRQuery';
 
@@ -12,7 +12,7 @@ describe('LettersTab', () => {
       isLoading: true,
     });
 
-    render(<LettersTab token="mock-token" />);
+    render(<LettersTab />);
 
     expect(screen.getByTestId('progress')).toBeInTheDocument();
   });

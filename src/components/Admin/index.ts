@@ -1,7 +1,15 @@
 import Admin from './Admin';
-import CorrespondenceItem from './CorrespondenceItem';
-import LetterItem from './LetterItem';
-import RecipientItem from './RecipientItem';
-import RecipientForm from './RecipientForm';
+import { CorrespondenceItem, CorrespondencesTab } from './Correspondences';
+import { LetterItem, LettersTab } from './Letters';
+import { RecipientForm, RecipientItem, RecipientsTab } from './Recipients';
 
-export { Admin, CorrespondenceItem, LetterItem, RecipientItem, RecipientForm };
+export {
+  Admin,
+  CorrespondenceItem,
+  CorrespondencesTab,
+  LetterItem,
+  LettersTab,
+  RecipientItem,
+  RecipientForm,
+  RecipientsTab,
+};

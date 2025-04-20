@@ -47,11 +47,12 @@ const Contact = () => {
   const { errors, isDirty, onSubmit, updateField, values } =
     useForm<ContactForm>({ initial, validators });
 
-  const { mutate, loading } = useSWRMutation<
+  const { mutate, isLoading } = useSWRMutation<
     ContactFormBody,
     ContactFormResponse
-  >('/contact', {
+  >({
     method: 'POST',
+    path: '/contact',
     onError: () => {
       setError(defaultErrorMessage);
     },
@@ -69,12 +70,12 @@ const Contact = () => {
 
     onSubmit(async () => {
       try {
-        await mutate(
-          { ...values },
-          {
+        await mutate({
+          body: { ...values },
+          headers: {
             'g-recaptcha-response': captchaToken,
           },
-        );
+        });
       } catch (e) {
         setError(defaultErrorMessage);
       }
@@ -147,16 +148,18 @@ const Contact = () => {
           <div className="flex flex-col xl:flex-row xl:flex-row-reverse gap-4 xl:justify-between">
             <div className="w-full">
               <Button
-                disabled={!isDirty || loading || Object.keys(errors).length > 0}
+                disabled={
+                  !isDirty || isLoading || Object.keys(errors).length > 0
+                }
                 id="contact-submit"
-                loading={loading}
+                loading={isLoading}
                 onClick={handleSubmit}
                 value="Submit"
               />
             </div>
             <div className="w-full">
               <Button
-                disabled={loading}
+                disabled={isLoading}
                 id="contact-cancel"
                 onClick={goHome}
                 value="Cancel"

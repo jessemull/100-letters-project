@@ -1,8 +1,8 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
-import RecipientsTab from './RecipientsTab'; // Adjust this path if needed
-import { useSWRQuery } from '@hooks/useSWRQuery';
 import { RecipientFactory } from '@factories/recipient';
+import { RecipientsTab } from '@components/Admin';
+import { render, screen } from '@testing-library/react';
+import { useSWRQuery } from '@hooks/useSWRQuery';
 
 jest.mock('@hooks/useSWRQuery');
 

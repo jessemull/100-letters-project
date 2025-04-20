@@ -1,14 +1,16 @@
 'use client';
 
-import CorrespondencesTab from './CorrespondencesTab';
-import LettersTab from './LettersTab';
 import React, { useEffect, useState } from 'react';
-import RecipientsTab from './RecipientsTab';
-import { Search, Plus, ChevronDown } from 'lucide-react';
+import { Button, TextInput } from '@components/Form';
+import {
+  CorrespondencesTab,
+  LettersTab,
+  RecipientsTab,
+} from '@components/Admin';
+import { Search, ChevronDown } from 'lucide-react';
 import { Tab, TabList, TabPanel, TabPanels, TabGroup } from '@headlessui/react';
 import { useAuth } from '@contexts/AuthProvider';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import { Button, TextInput } from '@components/Form';
 
 const tabs = [
   {
@@ -45,7 +47,7 @@ const Admin = () => {
   const [selectedIndex, setSelectedIndex] = useState(initialTabIndex);
   const [search, setSearch] = useState('');
 
-  const { isLoggedIn, loading: authenticating, token } = useAuth();
+  const { isLoggedIn, loading: authenticating } = useAuth();
 
   const activeTab = tabs[selectedIndex];
 
@@ -132,13 +134,13 @@ const Admin = () => {
           <div className="flex-1 min-h-0">
             <TabPanels className="h-full">
               <TabPanel className="h-full">
-                <CorrespondencesTab token={token} />
+                <CorrespondencesTab />
               </TabPanel>
               <TabPanel className="h-full">
-                <LettersTab token={token} />
+                <LettersTab />
               </TabPanel>
               <TabPanel className="h-full">
-                <RecipientsTab token={token} />
+                <RecipientsTab />
               </TabPanel>
             </TabPanels>
           </div>

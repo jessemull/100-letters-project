@@ -1,20 +1,20 @@
 'use client';
 
 import React from 'react';
-import { GetRecipientsResponse } from '@ts-types/recipients';
+import { CorrespondenceItem } from '@components/Admin';
+import { GetCorrespondencesResponse } from '@ts-types/correspondence';
 import { Progress } from '@components/Form';
-import { RecipientItem } from '@components/Admin';
 import { useSWRQuery } from '@hooks/useSWRQuery';
+import { useAuth } from '@contexts/AuthProvider';
 
-interface Props {
-  token: string | null;
-}
+const CorrespondencesTab: React.FC = () => {
+  const { token } = useAuth();
 
-const RecipientsTab: React.FC<Props> = ({ token }) => {
-  const { data, isLoading } = useSWRQuery<GetRecipientsResponse>(
-    '/recipient',
+  const { data, isLoading } = useSWRQuery<GetCorrespondencesResponse>(
+    '/correspondence',
     token,
   );
+
   return isLoading ? (
     <div className="w-full flex-grow flex items-center justify-center py-24 min-h-[calc(100vh-475px)]">
       <Progress color="white" size={16} />
@@ -23,7 +23,7 @@ const RecipientsTab: React.FC<Props> = ({ token }) => {
     <ul className="grid gap-4">
       {data?.data.map((item, idx) => (
         <li key={idx}>
-          <RecipientItem data={item} />
+          <CorrespondenceItem data={item} />
         </li>
       ))}
       {data?.data.length === 0 && (
@@ -33,4 +33,4 @@ const RecipientsTab: React.FC<Props> = ({ token }) => {
   );
 };
 
-export default RecipientsTab;
+export default CorrespondencesTab;

@@ -7,19 +7,11 @@ import { useRouter } from 'next/navigation';
 
 interface Props {
   data: Recipient;
+  onEdit: (recipientId: string) => void;
+  onDelete: (recipientId: string) => void;
 }
 
-const RecipientItem = ({ data }: Props) => {
-  const router = useRouter();
-
-  const onEdit = () => {
-    router.push(`/admin/recipient?recipientId=${data.recipientId}`);
-  };
-
-  const onDelete = () => {
-    console.log('onDelete', data);
-  };
-
+const RecipientItem = ({ data, onDelete, onEdit }: Props) => {
   return (
     <div
       data-testid="card-edit-button"
@@ -35,14 +27,14 @@ const RecipientItem = ({ data }: Props) => {
         <div className="space-x-2 flex items-center justify-center">
           <button
             data-testid="edit-button"
-            onClick={onEdit}
+            onClick={() => onEdit(data?.recipientId)}
             className="text-white hover:text-gray-400"
             aria-label="Edit"
           >
             <PenSquare className="w-6 h-6" />
           </button>
           <button
-            onClick={onDelete}
+            onClick={() => onDelete(data?.recipientId)}
             className="text-white hover:text-gray-400"
             aria-label="Delete"
           >

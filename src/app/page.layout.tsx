@@ -1,13 +1,8 @@
 import { Header } from '@components/Header';
 import { Footer } from '@components/Footer';
+import { Toaster } from 'react-hot-toast';
 
-const PageLayout = ({
-  children,
-  envelopeBorder,
-}: {
-  children: React.ReactNode;
-  envelopeBorder?: boolean;
-}) => (
+const PageLayout = ({ children }: { children: React.ReactNode }) => (
   <div className="flex flex-col min-h-screen relative">
     <div
       className="min-h-screen fixed inset-0 z-0 bg-cover bg-center"
@@ -32,6 +27,7 @@ const PageLayout = ({
       </main>
       <Footer />
     </div>
+    <Toaster position="top-center" />
   </div>
 );
 

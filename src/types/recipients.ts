@@ -47,3 +47,7 @@ export type GetRecipientByIdResponse = {
 export type RecipientFormResponse = {
   message: string;
 };
+
+export type DeleteRecipientResponse = {
+  message: string;
+};
