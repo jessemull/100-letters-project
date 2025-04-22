@@ -1,12 +1,12 @@
-import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { RecipientsTab } from '@components/Admin';
-import { RecipientFactory } from '@factories/recipient';
-import { Recipient } from '@ts-types/recipients';
-import { useRouter } from 'next/navigation';
-import { AuthContextType } from '@contexts/AuthProvider';
 import * as AuthProvider from '@contexts/AuthProvider';
+import React from 'react';
 import showToast from '@components/Form/Toast';
+import { AuthContextType } from '@contexts/AuthProvider';
+import { Recipient } from '@ts-types/recipients';
+import { RecipientFactory } from '@factories/recipient';
+import { RecipientsTab } from '@components/Admin';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { useRouter } from 'next/navigation';
 
 jest.mock('@hooks/useSWRQuery', () => ({
   __esModule: true,
@@ -51,7 +51,7 @@ describe('RecipientsTab', () => {
     (showToast as jest.Mock).mockClear();
   });
 
-  it('renders loading state', () => {
+  it('Renders loading state.', () => {
     useSWRQuery.mockImplementation(() => ({
       data: undefined,
       isLoading: true,
@@ -68,7 +68,7 @@ describe('RecipientsTab', () => {
     expect(screen.getByTestId('progress')).toBeInTheDocument();
   });
 
-  it('renders recipient list', () => {
+  it('Renders recipient list.', () => {
     useSWRQuery.mockImplementation(() => ({
       data: { data: [mockRecipient], lastEvaluatedKey: '' },
       isLoading: false,
@@ -87,7 +87,7 @@ describe('RecipientsTab', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders empty state when there are no recipients', () => {
+  it('Renders empty state when there are no recipients.', () => {
     useSWRQuery.mockImplementation(() => ({
       data: { data: [], lastEvaluatedKey: '' },
       isLoading: false,
@@ -105,7 +105,7 @@ describe('RecipientsTab', () => {
     expect(screen.getByText('No results found.')).toBeInTheDocument();
   });
 
-  it('opens and confirms deletion via modal', async () => {
+  it('Opens and confirms deletion via modal.', async () => {
     useSWRQuery.mockImplementation(() => ({
       data: { data: [mockRecipient], lastEvaluatedKey: '' },
       isLoading: false,
@@ -133,7 +133,7 @@ describe('RecipientsTab', () => {
     });
   });
 
-  it('navigates to edit page on edit', () => {
+  it('Navigates to edit page on edit.', () => {
     useSWRQuery.mockImplementation(() => ({
       data: { data: [mockRecipient], lastEvaluatedKey: '' },
       isLoading: false,
@@ -153,14 +153,13 @@ describe('RecipientsTab', () => {
     );
   });
 
-  it('calls onSuccess and shows success toast', async () => {
+  it('Calls onSuccess and shows success toast.', async () => {
     useSWRQuery.mockImplementation(() => ({
       data: { data: [mockRecipient], lastEvaluatedKey: '' },
       isLoading: false,
     }));
 
     const mutateFn = async (_: any) => {
-      // Simulate what would happen after successful deletion
       const onSuccess = useSWRMutation.mock.calls[0][0].onSuccess;
       if (onSuccess) onSuccess({});
 
@@ -190,7 +189,7 @@ describe('RecipientsTab', () => {
     });
   });
 
-  it('calls onError and shows error toast', async () => {
+  it('Calls onError and shows error toast.', async () => {
     useSWRQuery.mockImplementation(() => ({
       data: { data: [mockRecipient], lastEvaluatedKey: '' },
       isLoading: false,

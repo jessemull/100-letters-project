@@ -1,8 +1,8 @@
 'use client';
 
 import {
-  Recipient,
   GetRecipientByIdResponse,
+  Recipient,
   RecipientFormResponse,
 } from '@ts-types/recipients';
 import { TextInput, Button, TextArea, Progress } from '@components/Form';

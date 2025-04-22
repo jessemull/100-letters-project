@@ -8,11 +8,13 @@ import { useAuth } from '@contexts/AuthProvider';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
 jest.mock('@contexts/AuthProvider');
+
 jest.mock('next/navigation', () => ({
   usePathname: jest.fn(),
   useSearchParams: jest.fn(),
   useRouter: jest.fn(),
 }));
+
 jest.mock('@hooks/useSWRQuery');
 
 const mockPush = jest.fn();
@@ -32,7 +34,7 @@ const renderWithAuth = (overrides = {}) => {
   });
 
   (useSearchParams as jest.Mock).mockReturnValue({
-    get: () => null, // Simulates no "tab" param by default
+    get: () => null,
   });
 
   (usePathname as jest.Mock).mockReturnValue('/admin');
@@ -183,7 +185,7 @@ describe('Admin', () => {
     expect(await screen.findByText('Mobile Test Letter')).toBeInTheDocument();
   });
 
-  it('navigates to correct create route when "Create New" is clicked', async () => {
+  it('Navigates to correct create route when "Create New" is clicked.', async () => {
     renderWithAuth();
 
     (useDataHook.useSWRQuery as jest.Mock).mockReturnValue({
@@ -200,7 +202,6 @@ describe('Admin', () => {
       expect(mockPush).toHaveBeenCalledWith('/admin/correspondence');
     });
 
-    // Change tab and assert route changes accordingly
     fireEvent.click(screen.getByRole('tab', { name: 'Recipients' }));
     await waitFor(() => {
       expect(mockReplace).toHaveBeenCalledWith('/admin?tab=recipients');

@@ -1,9 +1,4 @@
-import {
-  NestedValidatorObject,
-  PathValidator,
-  DeepKeys,
-  Validator,
-} from '@ts-types/form';
+import { DeepKeys, NestedValidatorObject, PathValidator } from '@ts-types/form';
 
 export function flattenValidators<T>(
   nested: NestedValidatorObject<T>,

@@ -1,12 +1,15 @@
 'use client';
 
-import React from 'react';
 import PageLayout from '@pages/page.layout';
+import React, { Suspense } from 'react';
+import { Progress } from '@components/Form';
 import { RecipientForm } from '@components/Admin';
 
 const RecipientPage = () => (
   <PageLayout>
-    <RecipientForm />
+    <Suspense fallback={<Progress size={16} color="white" />}>
+      <RecipientForm />
+    </Suspense>
   </PageLayout>
 );
 

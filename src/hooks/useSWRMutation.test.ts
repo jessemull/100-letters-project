@@ -11,7 +11,7 @@ const mockMutateResponse = {
 describe('useSWRMutation', () => {
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
-  it('Initializes with correct state and calls mutate', async () => {
+  it('Initializes with correct state and calls mutate.', async () => {
     const onSuccess = jest.fn();
     const onError = jest.fn();
     const { result } = renderHook(() =>
@@ -53,7 +53,7 @@ describe('useSWRMutation', () => {
     });
   });
 
-  it('Handles error from fetch correctly', async () => {
+  it('Handles error from fetch correctly.', async () => {
     const onError = jest.fn();
     const { result } = renderHook(() =>
       useSWRMutation({
@@ -83,7 +83,7 @@ describe('useSWRMutation', () => {
     });
   });
 
-  it('Handles fetch failure gracefully', async () => {
+  it('Handles fetch failure gracefully.', async () => {
     const onError = jest.fn();
     const { result } = renderHook(() =>
       useSWRMutation({
@@ -110,7 +110,7 @@ describe('useSWRMutation', () => {
     });
   });
 
-  it('Calls onUpdate with mutate if provided', async () => {
+  it('Calls onUpdate with mutate if provided.', async () => {
     const onUpdate = jest.fn();
     const { result } = renderHook(() =>
       useSWRMutation({
@@ -140,7 +140,7 @@ describe('useSWRMutation', () => {
     });
   });
 
-  it('Calls onSuccess if provided on success', async () => {
+  it('Calls onSuccess if provided on success.', async () => {
     const onSuccess = jest.fn();
     const { result } = renderHook(() =>
       useSWRMutation({
@@ -169,7 +169,7 @@ describe('useSWRMutation', () => {
     });
   });
 
-  it('Throws an error if path is missing and no defaultPath is provided', async () => {
+  it('Throws an error if path is missing and no defaultPath is provided.', async () => {
     const onError = jest.fn();
     const { result } = renderHook(() =>
       useSWRMutation({
@@ -193,7 +193,7 @@ describe('useSWRMutation', () => {
     });
   });
 
-  it('Handles error parsing when the response body is not JSON', async () => {
+  it('Handles error parsing when the response body is not JSON.', async () => {
     const onError = jest.fn();
     const { result } = renderHook(() =>
       useSWRMutation({
@@ -223,7 +223,7 @@ describe('useSWRMutation', () => {
     });
   });
 
-  it('Adds Authorization header when token is provided', async () => {
+  it('Adds Authorization header when token is provided.', async () => {
     const token = 'test-token';
     const { result } = renderHook(() =>
       useSWRMutation({
@@ -252,7 +252,7 @@ describe('useSWRMutation', () => {
     );
   });
 
-  it('Falls back to default "Unknown error" if no message in error response', async () => {
+  it('Falls back to default "Unknown error" if no message in error response.', async () => {
     const onError = jest.fn();
     const { result } = renderHook(() =>
       useSWRMutation({
@@ -279,7 +279,7 @@ describe('useSWRMutation', () => {
     );
   });
 
-  it('Handles thrown string errors in catch block', async () => {
+  it('Handles thrown string errors in catch block.', async () => {
     const onError = jest.fn();
     const { result } = renderHook(() =>
       useSWRMutation({
@@ -306,7 +306,7 @@ describe('useSWRMutation', () => {
     });
   });
 
-  it('uses default POST method when none is specified', async () => {
+  it('Uses default POST method when none is specified.', async () => {
     const { result } = renderHook(() =>
       useSWRMutation({
         path: '/default-method',
@@ -334,7 +334,7 @@ describe('useSWRMutation', () => {
     );
   });
 
-  it('calls mutate() with no arguments and triggers missing path error', async () => {
+  it('Calls mutate() with no arguments and triggers missing path error.', async () => {
     const onError = jest.fn();
 
     const { result } = renderHook(() =>
@@ -344,7 +344,7 @@ describe('useSWRMutation', () => {
     );
 
     await act(async () => {
-      await result.current.mutate(); // ✅ triggers default = {}
+      await result.current.mutate();
     });
 
     expect(result.current.error).toBe(
@@ -358,7 +358,7 @@ describe('useSWRMutation', () => {
     });
   });
 
-  it('falls back to generic error message if error has no message', async () => {
+  it('Falls back to generic error message if error has no message.', async () => {
     const onError = jest.fn();
 
     const { result } = renderHook(() =>
@@ -368,7 +368,6 @@ describe('useSWRMutation', () => {
       }),
     );
 
-    // Throw an object with no `message` field
     mockFetch.mockImplementationOnce(() => {
       throw {};
     });

@@ -60,15 +60,15 @@ jest.mock('@hooks/useForm', () => {
   };
 });
 
-describe('RecipientPage Component', () => {
-  it('Renders recipient page', async () => {
+describe('RecipientPage', () => {
+  it('Renders recipient page.', async () => {
     await act(async () => {
       render(<RecipientPage />);
     });
     expect(screen.getByText('Recipient Form')).toBeInTheDocument();
   });
 
-  it('Has no accessibility violations', async () => {
+  it('Has no accessibility violations.', async () => {
     let container: HTMLElement;
     await act(async () => {
       const rendered = render(<RecipientPage />);

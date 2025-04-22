@@ -1,6 +1,6 @@
-import { toast } from 'react-hot-toast';
-import { X, OctagonAlert, CircleCheckBig } from 'lucide-react';
 import React from 'react';
+import { X, OctagonAlert, CircleCheckBig } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 type ToastType = 'success' | 'error';
 

@@ -1,9 +1,10 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useAuth } from '@contexts/AuthProvider';
-import { useSWRQuery } from '@hooks/useSWRQuery';
-import { useSWRMutation } from '@hooks/useSWRMutation';
 import RecipientForm from './RecipientForm';
+import { axe } from 'jest-axe';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { useAuth } from '@contexts/AuthProvider';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useSWRMutation } from '@hooks/useSWRMutation';
+import { useSWRQuery } from '@hooks/useSWRQuery';
 
 jest.mock('@contexts/AuthProvider', () => ({
   useAuth: jest.fn(),
@@ -57,7 +58,7 @@ describe('RecipientForm', () => {
     jest.clearAllMocks();
   });
 
-  it('renders the form and calls useSWRQuery', () => {
+  it('Renders the form and calls useSWRQuery.', () => {
     render(<RecipientForm />);
 
     expect(screen.getByText(/Recipient Form/i)).toBeInTheDocument();
@@ -66,7 +67,7 @@ describe('RecipientForm', () => {
     expect(useSWRQuery).toHaveBeenCalledWith('/recipient/123', 'mockToken');
   });
 
-  it('handles form submission and calls onSuccess', async () => {
+  it('Handles form submission and calls onSuccess.', async () => {
     const backMock = jest.fn();
     (useRouter as jest.Mock).mockReturnValue({ back: backMock });
     (useSearchParams as jest.Mock).mockReturnValue(new URLSearchParams({}));
@@ -118,7 +119,7 @@ describe('RecipientForm', () => {
     });
   });
 
-  it('calls router.back when cancel is clicked', () => {
+  it('Calls router.back when cancel is clicked.', () => {
     render(<RecipientForm />);
 
     fireEvent.click(screen.getByText(/Cancel/i));
@@ -126,13 +127,13 @@ describe('RecipientForm', () => {
     expect(useRouter().back).toHaveBeenCalled();
   });
 
-  it('disables the submit button if the form is not dirty or has errors', () => {
+  it('Disables the submit button if the form is not dirty or has errors.', () => {
     (useSWRQuery as jest.Mock).mockReturnValueOnce({ isLoading: false });
     render(<RecipientForm />);
     expect(screen.getByDisplayValue(/Update/i)).toBeDisabled();
   });
 
-  it('renders the loading spinner when data is loading or authenticating', () => {
+  it('Renders the loading spinner when data is loading or authenticating.', () => {
     (useAuth as jest.Mock).mockReturnValueOnce({
       loading: true,
       token: 'mockToken',
@@ -147,9 +148,15 @@ describe('RecipientForm', () => {
     expect(screen.getByTestId('progress')).toBeInTheDocument();
   });
 
-  it('sets form values if recipient data is available', () => {
+  it('Sets form values if recipient data is available.', () => {
     render(<RecipientForm />);
 
     expect(screen.getByDisplayValue('John')).toBeInTheDocument();
+  });
+
+  it('Has no accessibility violations.', async () => {
+    const { container } = render(<RecipientForm />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

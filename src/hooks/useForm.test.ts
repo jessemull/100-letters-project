@@ -241,11 +241,11 @@ describe('useForm', () => {
     expect(result.current.errors.age).toContain('Must be 18+');
   });
 
-  it('Defaults to empty array of validators if path not in validators (updateField)', () => {
+  it('Defaults to empty array of validators if path not in validators (updateField).', () => {
     const { result } = renderHook(() =>
       useForm<TestForm>({
         initial,
-        validators: {}, // No validators at all
+        validators: {},
         validateOnInit: true,
       }),
     );
@@ -254,14 +254,14 @@ describe('useForm', () => {
       result.current.updateField('email', 'some@email.com');
     });
 
-    expect(result.current.errors.email).toBeUndefined(); // should not crash or error
+    expect(result.current.errors.email).toBeUndefined();
   });
 
   it('Skips validation silently when validateField is called on a field with no rules.', () => {
     const { result } = renderHook(() =>
       useForm<TestForm>({
         initial,
-        validators: { email: [required] }, // `age` has no validators
+        validators: { email: [required] },
         validateOnInit: false,
       }),
     );
@@ -270,6 +270,6 @@ describe('useForm', () => {
       result.current.updateField('age', 42); // no validators for 'age'
     });
 
-    expect(result.current.errors.age).toBeUndefined(); // should not crash or update errors
+    expect(result.current.errors.age).toBeUndefined();
   });
 });
