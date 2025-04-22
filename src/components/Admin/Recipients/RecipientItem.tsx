@@ -3,7 +3,6 @@
 import React from 'react';
 import { Recipient } from '@ts-types/recipients';
 import { PenSquare, Trash2 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 
 interface Props {
   data: Recipient;
@@ -34,6 +33,7 @@ const RecipientItem = ({ data, onDelete, onEdit }: Props) => {
             <PenSquare className="w-6 h-6" />
           </button>
           <button
+            data-testid="delete-button"
             onClick={() => onDelete(data?.recipientId)}
             className="text-white hover:text-gray-400"
             aria-label="Delete"

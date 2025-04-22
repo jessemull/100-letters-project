@@ -30,7 +30,7 @@ Amplify.configure({
 const COOKIE_KEY = '100_letters_cognito_id_token';
 const DEFAULT_ERROR_MESSAGE = 'Error signing in. Please try again.';
 
-interface AuthContextType {
+export interface AuthContextType {
   token: string | null;
   loading: boolean;
   isLoggedIn: boolean;

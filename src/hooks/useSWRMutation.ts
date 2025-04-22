@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { mutate as globalMutate } from 'swr';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -51,79 +51,86 @@ export function useSWRMutation<
     onError,
     key,
     onUpdate,
-    path: defaultPath, // <- grab from options
+    path: defaultPath,
   } = options;
 
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [response, setResponse] = useState<Response | null>(null);
 
-  const mutate = async ({
-    path,
-    body,
-    params,
-    headers,
-  }: MutateArgs<Body, Params> = {}): Promise<Response | undefined> => {
-    const finalPath = path || defaultPath;
+  const mutate = useCallback(
+    async ({
+      path,
+      body,
+      params,
+      headers,
+    }: MutateArgs<Body, Params> = {}): Promise<Response | undefined> => {
+      const finalPath = path || defaultPath;
 
-    if (!finalPath) {
-      const message = 'Path must be provided either in mutate() or options.';
-      setError(message);
-      onError?.({ error: message, path: '', body, params });
-      return;
-    }
-
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const res = await fetch(`${API_BASE_URL}${finalPath}`, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { Authorization: `Bearer ${token}` }),
-          ...headers,
-        },
-        ...(body ? { body: JSON.stringify(body) } : {}),
-      });
-
-      if (!res.ok) {
-        const str = await res.text();
-        const error = JSON.parse(str) as { error: string; message: string };
-        setError(error.message);
-        onError?.({ error: error.message, path: finalPath, body, params });
+      if (!finalPath) {
+        const message = 'Path must be provided either in mutate() or options.';
+        setError(message);
+        onError?.({ error: message, path: '', body, params });
         return;
       }
 
-      const data = (await res.json()) as Response;
+      setIsLoading(true);
+      setError(null);
 
-      setResponse(data);
-      onSuccess?.({ response: data, path: finalPath, body, params });
+      try {
+        const res = await fetch(`${API_BASE_URL}${finalPath}`, {
+          method,
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token && { Authorization: `Bearer ${token}` }),
+            ...headers,
+          },
+          ...(body ? { body: JSON.stringify(body) } : {}),
+        });
 
-      if (key && onUpdate) {
-        globalMutate(
-          `${API_BASE_URL}${key}`,
-          (current: CacheType | undefined) =>
-            onUpdate({ prev: current, body, params }),
-          false,
-        );
+        if (!res.ok) {
+          let errorMsg = 'Unknown error';
+          try {
+            const errorData = await res.json();
+            errorMsg = errorData.message || errorMsg;
+          } catch {
+            errorMsg = await res.text();
+          }
+
+          setError(errorMsg);
+          onError?.({ error: errorMsg, path: finalPath, body, params });
+          return;
+        }
+
+        const data: Response = await res.json();
+        setResponse(data);
+        onSuccess?.({ response: data, path: finalPath, body, params });
+
+        if (key && onUpdate) {
+          globalMutate(
+            `${API_BASE_URL}${key}`,
+            (current: CacheType | undefined) =>
+              onUpdate({ prev: current, body, params }),
+            false,
+          );
+        }
+
+        return data;
+      } catch (err: unknown) {
+        const message =
+          err instanceof Error
+            ? err.message
+            : typeof err === 'string'
+              ? err
+              : 'An error occurred!';
+        setError(message);
+        onError?.({ error: message, path: finalPath, body, params });
+      } finally {
+        setIsLoading(false);
       }
-
-      return data;
-    } catch (err: unknown) {
-      let message = 'An error occurred!';
-      if (err instanceof Error) {
-        message = err.message;
-      } else if (typeof err === 'string') {
-        message = err;
-      }
-
-      setError(message);
-      onError?.({ error: message, path: finalPath, body, params });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    },
+    [defaultPath, key, method, onError, onSuccess, onUpdate, token],
+  );
 
   return { error, isLoading, mutate, response };
 }

@@ -6,6 +6,8 @@ import {
   FormData,
   UseFormOptions,
   NestedValidatorObject,
+  PathValidator,
+  Validator,
 } from '@ts-types/form';
 
 export function useForm<T extends FormData>({
@@ -41,8 +43,9 @@ export function useForm<T extends FormData>({
     value?: DeepValue<T, K>,
   ) => {
     const val = value ?? get(values, path);
-    const rules = validators[path] || [];
-    const errs = rules
+    const rules = validators[path];
+
+    const errs = (rules as Validator[])
       .map((v) => v(val))
       .filter((e): e is string => e !== null);
 
@@ -60,7 +63,8 @@ export function useForm<T extends FormData>({
 
     for (const path in validators) {
       const val = get(values, path as DeepKeys<T>);
-      const errs = (validators[path as DeepKeys<T>] || [])
+
+      const errs = (validators[path as DeepKeys<T>] as Validator[])
         .map((v) => v(val))
         .filter((e): e is string => e !== null);
 
@@ -71,6 +75,7 @@ export function useForm<T extends FormData>({
     }
 
     setErrors(newErrors);
+
     return isValid;
   };
 

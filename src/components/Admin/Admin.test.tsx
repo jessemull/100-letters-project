@@ -5,13 +5,18 @@ import { LetterFactory } from '@factories/letter';
 import { axe } from 'jest-axe';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { useAuth } from '@contexts/AuthProvider';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
 jest.mock('@contexts/AuthProvider');
-jest.mock('next/navigation');
+jest.mock('next/navigation', () => ({
+  usePathname: jest.fn(),
+  useSearchParams: jest.fn(),
+  useRouter: jest.fn(),
+}));
 jest.mock('@hooks/useSWRQuery');
 
 const mockPush = jest.fn();
+const mockReplace = jest.fn();
 
 const renderWithAuth = (overrides = {}) => {
   (useAuth as jest.Mock).mockReturnValue({
@@ -23,10 +28,15 @@ const renderWithAuth = (overrides = {}) => {
 
   (useRouter as jest.Mock).mockReturnValue({
     push: mockPush,
+    replace: mockReplace,
   });
-};
 
-const mockuseSWRQuery = useDataHook.useSWRQuery as jest.Mock;
+  (useSearchParams as jest.Mock).mockReturnValue({
+    get: () => null, // Simulates no "tab" param by default
+  });
+
+  (usePathname as jest.Mock).mockReturnValue('/admin');
+};
 
 describe('Admin', () => {
   beforeEach(() => {
@@ -36,7 +46,10 @@ describe('Admin', () => {
   it('Redirects to /403 if user is not logged in and not authenticating.', async () => {
     renderWithAuth({ isLoggedIn: false, loading: false });
 
-    mockuseSWRQuery.mockReturnValue({ data: [], isLoading: true });
+    (useDataHook.useSWRQuery as jest.Mock).mockReturnValue({
+      data: [],
+      isLoading: true,
+    });
 
     render(<Admin />);
 
@@ -48,7 +61,10 @@ describe('Admin', () => {
   it('Has no accessibility violations.', async () => {
     renderWithAuth();
 
-    mockuseSWRQuery.mockReturnValue({ data: { data: [] }, isLoading: false });
+    (useDataHook.useSWRQuery as jest.Mock).mockReturnValue({
+      data: { data: [] },
+      isLoading: false,
+    });
 
     const { container } = render(<Admin />);
     const results = await axe(container);
@@ -58,19 +74,12 @@ describe('Admin', () => {
   it('Renders correspondence tab with mock data.', async () => {
     renderWithAuth();
 
-    mockuseSWRQuery
+    (useDataHook.useSWRQuery as jest.Mock)
       .mockReturnValueOnce({
         data: { data: [{ id: 1, title: 'Test Correspondence' }] },
         isLoading: false,
       })
-      .mockReturnValueOnce({
-        data: { data: [] },
-        isLoading: false,
-      })
-      .mockReturnValueOnce({
-        data: { data: [] },
-        isLoading: false,
-      });
+      .mockReturnValue({ data: { data: [] }, isLoading: false });
 
     render(<Admin />);
 
@@ -82,15 +91,18 @@ describe('Admin', () => {
 
     const letterData = LetterFactory.build();
 
-    mockuseSWRQuery.mockReturnValue({
+    (useDataHook.useSWRQuery as jest.Mock).mockReturnValue({
       data: { data: [letterData] },
       isLoading: false,
     });
 
     render(<Admin />);
 
-    const lettersTab = screen.getByRole('tab', { name: 'Letters' });
-    fireEvent.click(lettersTab);
+    fireEvent.click(screen.getByRole('tab', { name: 'Letters' }));
+
+    await waitFor(() => {
+      expect(mockReplace).toHaveBeenCalledWith('/admin?tab=letters');
+    });
 
     expect(await screen.findByText(letterData.title)).toBeInTheDocument();
   });
@@ -98,7 +110,10 @@ describe('Admin', () => {
   it('Renders empty state if no data in tab.', async () => {
     renderWithAuth();
 
-    mockuseSWRQuery.mockReturnValue({ data: { data: [] }, isLoading: false });
+    (useDataHook.useSWRQuery as jest.Mock).mockReturnValue({
+      data: { data: [] },
+      isLoading: false,
+    });
 
     render(<Admin />);
 
@@ -108,7 +123,7 @@ describe('Admin', () => {
   it('Filters list when search input is used.', async () => {
     renderWithAuth();
 
-    mockuseSWRQuery.mockReturnValue({
+    (useDataHook.useSWRQuery as jest.Mock).mockReturnValue({
       data: {
         data: [
           { id: 1, title: 'Alpha Correspondence' },
@@ -120,8 +135,7 @@ describe('Admin', () => {
 
     render(<Admin />);
 
-    const input = screen.getByTestId('admin-search');
-
+    const input = screen.getByTestId('text-input');
     fireEvent.change(input, { target: { value: 'Alpha' } });
 
     await waitFor(() => {
@@ -132,7 +146,10 @@ describe('Admin', () => {
   it('Shows loading spinner when fetching data.', () => {
     renderWithAuth();
 
-    mockuseSWRQuery.mockReturnValue({ data: null, isLoading: true });
+    (useDataHook.useSWRQuery as jest.Mock).mockReturnValue({
+      data: null,
+      isLoading: true,
+    });
 
     render(<Admin />);
     expect(screen.getByTestId('progress')).toBeInTheDocument();
@@ -143,7 +160,7 @@ describe('Admin', () => {
 
     const letterData = LetterFactory.build({ title: 'Mobile Test Letter' });
 
-    mockuseSWRQuery.mockReturnValue({
+    (useDataHook.useSWRQuery as jest.Mock).mockReturnValue({
       data: { data: [letterData] },
       isLoading: false,
     });
@@ -156,12 +173,43 @@ describe('Admin', () => {
 
     render(<Admin />);
 
-    expect(await screen.getByLabelText('Select a section')).toBeInTheDocument();
-
     const select = screen.getByLabelText('Select a section');
-
     fireEvent.change(select, { target: { value: '1' } });
 
+    await waitFor(() => {
+      expect(mockReplace).toHaveBeenCalledWith('/admin?tab=letters');
+    });
+
     expect(await screen.findByText('Mobile Test Letter')).toBeInTheDocument();
+  });
+
+  it('navigates to correct create route when "Create New" is clicked', async () => {
+    renderWithAuth();
+
+    (useDataHook.useSWRQuery as jest.Mock).mockReturnValue({
+      data: { data: [] },
+      isLoading: false,
+    });
+
+    render(<Admin />);
+
+    const createButton = screen.getByRole('button', { name: 'Create New' });
+    fireEvent.click(createButton);
+
+    await waitFor(() => {
+      expect(mockPush).toHaveBeenCalledWith('/admin/correspondence');
+    });
+
+    // Change tab and assert route changes accordingly
+    fireEvent.click(screen.getByRole('tab', { name: 'Recipients' }));
+    await waitFor(() => {
+      expect(mockReplace).toHaveBeenCalledWith('/admin?tab=recipients');
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Create New' }));
+
+    await waitFor(() => {
+      expect(mockPush).toHaveBeenCalledWith('/admin/recipient');
+    });
   });
 });

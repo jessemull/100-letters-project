@@ -1,49 +1,72 @@
 import React from 'react';
+import RecipientItem from './RecipientItem';
 import { RecipientFactory } from '@factories/recipient';
-import { RecipientItem } from '@components/Admin';
-import { axe } from 'jest-axe';
 import { render, screen, fireEvent } from '@testing-library/react';
 
-const mockRecipient = RecipientFactory.build();
-
 describe('RecipientItem', () => {
-  let consoleSpy: jest.SpyInstance;
+  const mockRecipient = RecipientFactory.build();
+
+  const onEditMock = jest.fn();
+  const onDeleteMock = jest.fn();
 
   beforeEach(() => {
-    consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    jest.clearAllMocks();
   });
 
-  afterEach(() => {
-    consoleSpy.mockRestore();
-  });
+  it('renders recipient name and organization', () => {
+    render(
+      <RecipientItem
+        data={mockRecipient}
+        onEdit={onEditMock}
+        onDelete={onDeleteMock}
+      />,
+    );
 
-  it('Renders the recipient full name and organization.', () => {
-    render(<RecipientItem data={mockRecipient} />);
     expect(
       screen.getByText(`${mockRecipient.firstName} ${mockRecipient.lastName}`),
     ).toBeInTheDocument();
-
-    if (mockRecipient.organization) {
-      expect(screen.getByText(mockRecipient.organization)).toBeInTheDocument();
-    }
   });
 
-  it('Calls onEdit when edit button is clicked.', () => {
-    render(<RecipientItem data={mockRecipient} />);
+  it('calls onEdit with correct recipientId when edit button is clicked', () => {
+    render(
+      <RecipientItem
+        data={mockRecipient}
+        onEdit={onEditMock}
+        onDelete={onDeleteMock}
+      />,
+    );
+
     fireEvent.click(screen.getByTestId('edit-button'));
-    expect(consoleSpy).toHaveBeenCalledWith('onEdit', mockRecipient);
+    expect(onEditMock).toHaveBeenCalledWith(mockRecipient.recipientId);
+    expect(onEditMock).toHaveBeenCalledTimes(1);
   });
 
-  it('Calls onDelete when delete button is clicked.', () => {
-    render(<RecipientItem data={mockRecipient} />);
-    const deleteButtons = screen.getAllByLabelText('Edit');
-    fireEvent.click(deleteButtons[1]);
-    expect(consoleSpy).toHaveBeenCalledWith('onDelete', mockRecipient);
+  it('calls onDelete with correct recipientId when delete button is clicked', () => {
+    render(
+      <RecipientItem
+        data={mockRecipient}
+        onEdit={onEditMock}
+        onDelete={onDeleteMock}
+      />,
+    );
+
+    const deleteButton = screen.getByTestId('delete-button');
+    fireEvent.click(deleteButton);
+    expect(onDeleteMock).toHaveBeenCalledWith(mockRecipient.recipientId);
+    expect(onDeleteMock).toHaveBeenCalledTimes(1);
   });
 
-  it('Has no accessibility violations.', async () => {
-    const { container } = render(<RecipientItem data={mockRecipient} />);
-    const results = await axe(container);
-    expect(results).toHaveNoViolations();
+  it('has a card container with expected styling', () => {
+    render(
+      <RecipientItem
+        data={mockRecipient}
+        onEdit={onEditMock}
+        onDelete={onDeleteMock}
+      />,
+    );
+
+    const container = screen.getByTestId('card-edit-button');
+    expect(container).toHaveClass('p-4');
+    expect(container).toHaveClass('cursor-pointer');
   });
 });

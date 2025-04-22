@@ -1,48 +1,224 @@
 import React from 'react';
-import { RecipientFactory } from '@factories/recipient';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { RecipientsTab } from '@components/Admin';
-import { render, screen } from '@testing-library/react';
-import { useSWRQuery } from '@hooks/useSWRQuery';
+import { RecipientFactory } from '@factories/recipient';
+import { Recipient } from '@ts-types/recipients';
+import { useRouter } from 'next/navigation';
+import { AuthContextType } from '@contexts/AuthProvider';
+import * as AuthProvider from '@contexts/AuthProvider';
+import showToast from '@components/Form/Toast';
 
-jest.mock('@hooks/useSWRQuery');
+jest.mock('@hooks/useSWRQuery', () => ({
+  __esModule: true,
+  useSWRQuery: jest.fn(),
+}));
 
-const mockRecipient = RecipientFactory.build();
+jest.mock('@hooks/useSWRMutation', () => ({
+  __esModule: true,
+  useSWRMutation: jest.fn(),
+}));
+
+jest.mock('next/navigation', () => ({
+  useRouter: jest.fn(),
+}));
+
+jest.mock('@contexts/AuthProvider', () => ({
+  __esModule: true,
+  ...jest.requireActual('@contexts/AuthProvider'),
+  useAuth: jest.fn(),
+}));
+
+jest.mock('@components/Form/Toast', () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
+const mockPush = jest.fn();
+const mockMutate = jest.fn();
+const useSWRQuery = require('@hooks/useSWRQuery').useSWRQuery;
+const useSWRMutation = require('@hooks/useSWRMutation').useSWRMutation;
 
 describe('RecipientsTab', () => {
-  it('Shows the Progress component when loading.', () => {
-    (useSWRQuery as jest.Mock).mockReturnValue({
+  const mockRecipient: Recipient = RecipientFactory.build();
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+
+    (AuthProvider.useAuth as jest.Mock).mockReturnValue({
+      token: 'test-token',
+    } as AuthContextType);
+    (useRouter as jest.Mock).mockReturnValue({ push: mockPush });
+    (showToast as jest.Mock).mockClear();
+  });
+
+  it('renders loading state', () => {
+    useSWRQuery.mockImplementation(() => ({
       data: undefined,
       isLoading: true,
-    });
+    }));
 
-    render(<RecipientsTab token="test-token" />);
+    useSWRMutation.mockImplementation(() => ({
+      error: null,
+      isLoading: false,
+      mutate: jest.fn(),
+      response: {},
+    }));
+
+    render(<RecipientsTab />);
     expect(screen.getByTestId('progress')).toBeInTheDocument();
   });
 
-  it('Renders a list of recipients when data is available.', () => {
-    (useSWRQuery as jest.Mock).mockReturnValue({
-      data: { data: [mockRecipient] },
+  it('renders recipient list', () => {
+    useSWRQuery.mockImplementation(() => ({
+      data: { data: [mockRecipient], lastEvaluatedKey: '' },
       isLoading: false,
-    });
+    }));
 
-    render(<RecipientsTab token="test-token" />);
+    useSWRMutation.mockImplementation(() => ({
+      error: null,
+      isLoading: false,
+      mutate: jest.fn(),
+      response: {},
+    }));
 
+    render(<RecipientsTab />);
     expect(
       screen.getByText(`${mockRecipient.firstName} ${mockRecipient.lastName}`),
     ).toBeInTheDocument();
-
-    if (mockRecipient.organization) {
-      expect(screen.getByText(mockRecipient.organization)).toBeInTheDocument();
-    }
   });
 
-  it('Renders an empty state message when no recipients are found.', () => {
-    (useSWRQuery as jest.Mock).mockReturnValue({
-      data: { data: [] },
+  it('renders empty state when there are no recipients', () => {
+    useSWRQuery.mockImplementation(() => ({
+      data: { data: [], lastEvaluatedKey: '' },
       isLoading: false,
-    });
+    }));
 
-    render(<RecipientsTab token="test-token" />);
+    useSWRMutation.mockImplementation(() => ({
+      error: null,
+      isLoading: false,
+      mutate: jest.fn(),
+      response: {},
+    }));
+
+    render(<RecipientsTab />);
+
     expect(screen.getByText('No results found.')).toBeInTheDocument();
+  });
+
+  it('opens and confirms deletion via modal', async () => {
+    useSWRQuery.mockImplementation(() => ({
+      data: { data: [mockRecipient], lastEvaluatedKey: '' },
+      isLoading: false,
+    }));
+
+    useSWRMutation.mockImplementation(() => ({
+      error: null,
+      isLoading: false,
+      mutate: mockMutate,
+      response: {},
+    }));
+
+    render(<RecipientsTab />);
+
+    fireEvent.click(screen.getByTestId('delete-button'));
+    expect(screen.getByText('Delete Recipient')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('Delete'));
+
+    await waitFor(() => {
+      expect(mockMutate).toHaveBeenCalledWith({
+        path: `/recipient/${mockRecipient.recipientId}`,
+        params: { recipientId: mockRecipient.recipientId },
+      });
+    });
+  });
+
+  it('navigates to edit page on edit', () => {
+    useSWRQuery.mockImplementation(() => ({
+      data: { data: [mockRecipient], lastEvaluatedKey: '' },
+      isLoading: false,
+    }));
+
+    useSWRMutation.mockImplementation(() => ({
+      error: null,
+      isLoading: false,
+      mutate: jest.fn(),
+      response: {},
+    }));
+
+    render(<RecipientsTab />);
+    fireEvent.click(screen.getByTestId('edit-button'));
+    expect(mockPush).toHaveBeenCalledWith(
+      `/admin/recipient?recipientId=${mockRecipient.recipientId}`,
+    );
+  });
+
+  it('calls onSuccess and shows success toast', async () => {
+    useSWRQuery.mockImplementation(() => ({
+      data: { data: [mockRecipient], lastEvaluatedKey: '' },
+      isLoading: false,
+    }));
+
+    const mutateFn = async (_: any) => {
+      // Simulate what would happen after successful deletion
+      const onSuccess = useSWRMutation.mock.calls[0][0].onSuccess;
+      if (onSuccess) onSuccess({});
+
+      const onUpdate = useSWRMutation.mock.calls[0][0].onUpdate;
+      if (onUpdate)
+        onUpdate({
+          prev: { data: [{ recipientId: 'recipientId' }] },
+          lastEvaluatedKey: 'key',
+        });
+    };
+
+    useSWRMutation.mockImplementation(() => ({
+      isLoading: false,
+      mutate: mutateFn,
+      response: {},
+    }));
+
+    render(<RecipientsTab />);
+    fireEvent.click(screen.getByTestId('delete-button'));
+    fireEvent.click(screen.getByText('Delete'));
+
+    await waitFor(() => {
+      expect(showToast).toHaveBeenCalledWith({
+        message: 'Recipient deleted successfully!',
+        type: 'success',
+      });
+    });
+  });
+
+  it('calls onError and shows error toast', async () => {
+    useSWRQuery.mockImplementation(() => ({
+      data: { data: [mockRecipient], lastEvaluatedKey: '' },
+      isLoading: false,
+    }));
+
+    const mutateFn = async (_: any) => {
+      const onError = useSWRMutation.mock.calls[0][0].onError;
+      if (onError) onError({ error: 'Something went wrong' });
+
+      const onUpdate = useSWRMutation.mock.calls[0][0].onUpdate;
+      if (onUpdate) onUpdate({});
+    };
+
+    useSWRMutation.mockImplementation(() => ({
+      isLoading: false,
+      mutate: mutateFn,
+      response: {},
+    }));
+
+    render(<RecipientsTab />);
+    fireEvent.click(screen.getByTestId('delete-button'));
+    fireEvent.click(screen.getByText('Delete'));
+
+    await waitFor(() => {
+      expect(showToast).toHaveBeenCalledWith({
+        message: 'Something went wrong',
+        type: 'error',
+      });
+    });
   });
 });

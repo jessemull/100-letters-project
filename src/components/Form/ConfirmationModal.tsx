@@ -25,6 +25,7 @@ const ConfirmationModal = ({
 }: ConfirmationModalProps) => {
   return (
     <Dialog
+      data-testid="confirmation-modal"
       open={isOpen}
       onClose={onClose}
       className="fixed inset-0 z-50 flex items-center justify-center p-8"

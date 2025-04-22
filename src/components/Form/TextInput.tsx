@@ -62,6 +62,7 @@ const TextInput: React.FC<TextInputProps> = ({
       <input
         autoComplete={autocomplete}
         className={`w-full h-12 rounded-full bg-white/25 border border-white text-white text-base placeholder-white/70 focus:outline-none ${paddingClasses}`}
+        data-testid="text-input"
         id={id}
         onChange={onChange}
         placeholder={placeholder}
