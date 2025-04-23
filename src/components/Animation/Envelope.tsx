@@ -2,8 +2,7 @@
 
 import { AnimatePresence, motion } from 'framer-motion';
 import { Heart } from '@components/Animation';
-import { useResizeDetector } from 'react-resize-detector';
-import { useState, useEffect, MutableRefObject, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 
 interface EnvelopeProps {
   containerWidth: number;
@@ -17,58 +16,68 @@ const heartsConfig = [
 ];
 
 const Envelope: React.FC<EnvelopeProps> = ({ containerWidth: width }) => {
+  const [hydrated, setHydrated] = useState(false);
+  const [startAnimation, setStartAnimation] = useState(false);
   const [flapZIndex, setFlapZIndex] = useState(30);
   const [showLetter, setShowLetter] = useState(false);
   const [showText, setShowText] = useState(false);
+
   const [size, setSize] = useState({ width: 320, height: 224, flap: 120 });
-  const [startAnimation, setStartAnimation] = useState(false);
   const [textSize, setTextSize] = useState('text-4xl');
 
+  // Set "hydrated" after first render
   useEffect(() => {
-    if (width) {
-      let newWidth = Math.max(width * 0.2, 110);
+    setHydrated(true);
+  }, []);
 
-      if (width < 768) {
-        newWidth = width * 0.6;
-      }
+  // Calculate size based on width
+  useEffect(() => {
+    if (!width) return;
 
-      const height = newWidth * (224 / 320);
-      const flap = newWidth * (120 / 320);
+    let newWidth = Math.max(width * 0.2, 110);
+    if (width < 768) newWidth = width * 0.6;
 
-      setSize({ width: newWidth, height, flap });
+    const height = newWidth * (224 / 320);
+    const flap = newWidth * (120 / 320);
+    setSize({ width: newWidth, height, flap });
 
-      let newTextSize: string;
+    let newTextSize = 'text-4xl';
+    if (newWidth < 320 * 0.25) newTextSize = 'text-xs';
+    else if (newWidth < 480 * 0.25) newTextSize = 'text-sm';
+    else if (newWidth < 640 * 0.25) newTextSize = 'text-lg';
+    else if (newWidth < 768 * 0.25) newTextSize = 'text-xl';
+    else if (newWidth < 1024 * 0.25) newTextSize = 'text-2xl';
+    else if (newWidth < 1280 * 0.25) newTextSize = 'text-3xl';
 
-      if (newWidth < 320 * 0.25) {
-        newTextSize = 'text-xs';
-      } else if (newWidth < 480 * 0.25) {
-        newTextSize = 'text-sm';
-      } else if (newWidth < 640 * 0.25) {
-        newTextSize = 'text-lg';
-      } else if (newWidth < 768 * 0.25) {
-        newTextSize = 'text-xl';
-      } else if (newWidth < 1024 * 0.25) {
-        newTextSize = 'text-2xl';
-      } else if (newWidth < 1280 * 0.25) {
-        newTextSize = 'text-3xl';
-      } else {
-        newTextSize = 'text-4xl';
-      }
+    setTextSize(newTextSize);
+  }, [width]);
 
-      if (newTextSize !== textSize) {
-        setTextSize(newTextSize);
-      }
-
-      setTimeout(() => setStartAnimation(true), 500);
-      setTimeout(() => setShowLetter(true), 800);
-      setTimeout(() => {
-        setFlapZIndex(5);
-      }, 1000);
-      setTimeout(() => setShowText(true), 1200);
-    }
-  }, [width, textSize]);
+  // Start animation after idle
+  useEffect(() => {
+    if (!hydrated) return;
+    requestIdleCallback(() => {
+      setStartAnimation(true);
+      setShowLetter(true);
+      setTimeout(() => setFlapZIndex(5), 300);
+      setTimeout(() => setShowText(true), 500);
+    });
+  }, [hydrated]);
 
   const scaleFactor = useMemo(() => size.width / 287.8, [size.width]);
+
+  // Show static content immediately for Lighthouse
+  if (!hydrated) {
+    return (
+      <div
+        className={`flex flex-col items-center justify-center font-merriweather ${textSize} font-bold text-midnight min-h-[400px]`}
+        data-testid="envelope"
+      >
+        <div>100</div>
+        <div>Letters</div>
+        <div>Project</div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -81,8 +90,10 @@ const Envelope: React.FC<EnvelopeProps> = ({ containerWidth: width }) => {
         style={{ width: size.width, height: size.height }}
         transition={{ duration: 0.8 }}
       >
+        {/* Envelope base */}
         <div className="absolute top-0 left-0 w-full h-full shadow-lg rounded-b-md z-20 bg-gradient-to-b from-yellow-400 to-yellow-500" />
 
+        {/* Letter + hearts */}
         {showLetter && (
           <motion.div
             className="absolute bg-white border shadow-lg rounded-md flex items-center justify-center z-10"
@@ -113,8 +124,10 @@ const Envelope: React.FC<EnvelopeProps> = ({ containerWidth: width }) => {
             </div>
           </motion.div>
         )}
+
+        {/* Flap */}
         <motion.div
-          className="absolute top-0 left-0 w-0 h-0 border-l-transparent border-r-transparent  border-t-yellow-500 origin-top"
+          className="absolute top-0 left-0 w-0 h-0 border-l-transparent border-r-transparent border-t-yellow-500 origin-top"
           style={{
             borderLeftWidth: `${size.width * 0.5}px`,
             borderRightWidth: `${size.width * 0.5}px`,
@@ -126,6 +139,8 @@ const Envelope: React.FC<EnvelopeProps> = ({ containerWidth: width }) => {
           animate={startAnimation ? { rotateX: 180 } : {}}
           transition={{ duration: 0.8 }}
         />
+
+        {/* Text */}
         {showText && (
           <motion.div
             className={`absolute flex flex-col items-center justify-center ${textSize} font-bold z-40 font-merriweather text-midnight`}
