@@ -11,8 +11,6 @@ import { useRouter } from 'next/navigation';
 
 const DEFAULT_ERROR_MESSAGE = 'Error signing in. Please try again.';
 
-const background = `linear-gradient( rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75) ), url('/signin.webp')`;
-
 const initial = {
   password: '',
   username: '',
@@ -85,14 +83,7 @@ const Login = () => {
   };
 
   return (
-    <div
-      className="p-8 flex items-center justify-center items-center w-full h-full min-h-[calc(100vh-110px)]"
-      style={{
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundImage: background,
-      }}
-    >
+    <div className="p-8 flex items-center justify-center items-center w-full h-full">
       <div className="w-full sm:w-full md:w-1/2 lg:w-1/3 xl:w-1/5 flex flex-col justify-center items-center space-y-6">
         <TextInput
           IconStart={Lock}

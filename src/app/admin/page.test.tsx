@@ -3,9 +3,13 @@ import { axe } from 'jest-axe';
 import { render, screen, act } from '@testing-library/react';
 
 jest.mock('next/navigation', () => ({
+  useSearchParams: jest.fn().mockReturnValue({
+    get: jest.fn(),
+  }),
   useRouter: jest.fn().mockReturnValue({
     push: jest.fn(),
   }),
+  usePathname: jest.fn(),
 }));
 
 describe('AdminPage Component', () => {

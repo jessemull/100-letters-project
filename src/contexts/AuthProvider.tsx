@@ -20,8 +20,9 @@ import {
 Amplify.configure({
   Auth: {
     Cognito: {
-      userPoolId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID!,
-      userPoolClientId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID!,
+      userPoolId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID as string,
+      userPoolClientId: process.env
+        .NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID as string,
     },
   },
 });
@@ -29,7 +30,7 @@ Amplify.configure({
 const COOKIE_KEY = '100_letters_cognito_id_token';
 const DEFAULT_ERROR_MESSAGE = 'Error signing in. Please try again.';
 
-interface AuthContextType {
+export interface AuthContextType {
   token: string | null;
   loading: boolean;
   isLoggedIn: boolean;

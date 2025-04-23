@@ -87,7 +87,7 @@ const Envelope: React.FC<EnvelopeProps> = ({ containerRef }) => {
 
   return (
     <div
-      className="relative flex flex-col items-center justify-end bg-gray-100"
+      className="relative flex flex-col items-center justify-end"
       data-testid="envelope"
       style={{ height: size.height + size.flap }}
     >

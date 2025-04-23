@@ -1,26 +1,32 @@
 'use client';
 
-import CorrespondencesTab from './CorrespondencesTab';
-import LettersTab from './LettersTab';
 import React, { useEffect, useState } from 'react';
-import RecipientsTab from './RecipientsTab';
-import { Search } from 'lucide-react';
+import { Button, TextInput } from '@components/Form';
+import {
+  CorrespondencesTab,
+  LettersTab,
+  RecipientsTab,
+} from '@components/Admin';
+import { Search, ChevronDown } from 'lucide-react';
 import { Tab, TabList, TabPanel, TabPanels, TabGroup } from '@headlessui/react';
 import { useAuth } from '@contexts/AuthProvider';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 
 const tabs = [
   {
+    createRoute: '/admin/correspondence',
     key: 'correspondences',
     label: 'Correspondences',
     placeholder: 'Search by title or recipient…',
   },
   {
+    createRoute: '/admin/letter',
     key: 'letters',
     label: 'Letters',
     placeholder: 'Search letter text or title…',
   },
   {
+    createRoute: '/admin/recipient',
     key: 'recipients',
     label: 'Recipients',
     placeholder: 'Search by name or organization…',
@@ -28,14 +34,22 @@ const tabs = [
 ];
 
 const Admin = () => {
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const tabParam = searchParams.get('tab');
+  const initialTabIndex = Math.max(
+    tabs.findIndex((t) => t.key === tabParam),
+    0,
+  );
+
+  const [selectedIndex, setSelectedIndex] = useState(initialTabIndex);
   const [search, setSearch] = useState('');
 
-  const { isLoggedIn, loading: authenticating, token } = useAuth();
+  const { isLoggedIn, loading: authenticating } = useAuth();
 
   const activeTab = tabs[selectedIndex];
-
-  const router = useRouter();
 
   useEffect(() => {
     if (!isLoggedIn && !authenticating) {
@@ -43,71 +57,94 @@ const Admin = () => {
     }
   }, [authenticating, isLoggedIn, router]);
 
+  const handleTabChange = (index: number) => {
+    setSelectedIndex(index);
+    const newTab = tabs[index].key;
+    const newUrl = `${pathname}?tab=${newTab}`;
+    router.replace(newUrl);
+  };
+
+  const handleCreateClick = () => {
+    router.push(activeTab.createRoute);
+  };
+
   return (
-    <div className="p-4 bg-fixed bg-center bg-[repeating-linear-gradient(45deg,_blue_0,_blue_16px,_red_16px,_red_32px,_white_32px,_white_48px)] min-h-screen w-full">
-      <div className="flex w-full bg-white text-gray-800 font-merriweather min-h-[calc(100vh-16px)]">
-        <div className="w-full py-4 px-4">
-          <div className="sm:hidden mb-6 sm:mb-4">
-            <label htmlFor="tab-select" className="sr-only">
-              Select a section
-            </label>
+    <div className="flex-1 flex w-full h-full text-white font-merriweather min-h-screen">
+      <div className="w-full py-4 px-4 flex flex-col h-full">
+        <div className="sm:hidden mb-6 sm:mb-4">
+          <label htmlFor="tab-select" className="sr-only">
+            Select a section
+          </label>
+          <div className="relative w-full">
             <select
-              className="w-full pl-3 pr-3 py-3 rounded-xl border border-black shadow-sm bg-white font-bold appearance-none"
               id="tab-select"
-              onChange={(e) => setSelectedIndex(Number(e.target.value))}
               value={selectedIndex}
+              onChange={(e) => handleTabChange(Number(e.target.value))}
+              className="w-full h-12 rounded-full bg-white/25 border border-white text-white text-base placeholder-white/70 px-4 pr-10 focus:outline-none appearance-none"
             >
               {tabs.map((tab, idx) => (
-                <option key={tab.key} value={idx}>
+                <option key={tab.key} value={idx} className="text-black">
                   {tab.label}
                 </option>
               ))}
             </select>
+            <div className="pointer-events-none absolute right-4 top-3.5 text-white">
+              <ChevronDown className="w-5 h-5" />
+            </div>
           </div>
-          <TabGroup selectedIndex={selectedIndex} onChange={setSelectedIndex}>
-            <TabList className="hidden sm:flex space-x-2 mb-6 border-b border-black">
+        </div>
+        <TabGroup selectedIndex={selectedIndex} onChange={handleTabChange}>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4 sm:gap-0">
+            <TabList className="hidden sm:flex space-x-2 border-b border-white">
               {tabs.map((tab) => (
                 <Tab
-                  className={`px-4 py-2 font-semibold text-lg transition ${
-                    tab.key === tabs[selectedIndex].key
-                      ? 'font-bold'
-                      : 'text-gray-500 hover:text-gray-800'
-                  }`}
+                  className={`px-4 py-2 font-semibold text-lg rounded-t-md transition
+                    ${
+                      tab.key === tabs[selectedIndex].key
+                        ? 'text-white border-b-2 border-white'
+                        : 'text-white/70 hover:text-white'
+                    }`}
                   key={tab.key}
                 >
                   {tab.label}
                 </Tab>
               ))}
             </TabList>
-            <div className="mb-6">
-              <div className="relative w-full">
-                <Search
-                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700 w-5 h-5"
-                  strokeWidth={3}
-                />
-                <input
-                  data-testid="admin-search"
-                  className="w-full pl-10 pr-3 py-3 rounded-xl border border-black shadow-lg bg-white placeholder-gray-500 text-md"
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder={activeTab.placeholder}
-                  type="text"
-                  value={search}
-                />
-              </div>
+            <div className="w-full sm:w-1/4 md:w-1/6 lg:w-1/8 xl:w-1/12">
+              <Button
+                value="Create New"
+                id="admin-create-new-button"
+                onClick={handleCreateClick}
+              />
             </div>
-            <TabPanels>
-              <TabPanel>
-                <CorrespondencesTab token={token} />
+          </div>
+          <div className="mb-6">
+            <div className="relative w-full">
+              <TextInput
+                data-testid="admin-search"
+                IconStart={Search}
+                id="admin-search-input"
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder={activeTab.placeholder}
+                type="text"
+                value={search}
+              />
+            </div>
+          </div>
+          <div className="flex-1 min-h-0">
+            <TabPanels className="h-full">
+              <TabPanel className="h-full">
+                <CorrespondencesTab />
               </TabPanel>
-              <TabPanel>
-                <LettersTab token={token} />
+              <TabPanel className="h-full">
+                <LettersTab />
               </TabPanel>
-              <TabPanel>
-                <RecipientsTab token={token} />
+              <TabPanel className="h-full">
+                <RecipientsTab />
               </TabPanel>
             </TabPanels>
-          </TabGroup>
-        </div>
+          </div>
+        </TabGroup>
       </div>
     </div>
   );

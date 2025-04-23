@@ -2,15 +2,15 @@
 
 import PageLayout from '@pages/page.layout';
 import React, { Suspense } from 'react';
-import { Admin } from '@components/Admin';
 import { Progress } from '@components/Form';
+import { RecipientForm } from '@components/Admin';
 
-const AdminPage = () => (
+const RecipientPage = () => (
   <PageLayout>
     <Suspense fallback={<Progress size={16} color="white" />}>
-      <Admin />
+      <RecipientForm />
     </Suspense>
   </PageLayout>
 );
 
-export default AdminPage;
+export default RecipientPage;

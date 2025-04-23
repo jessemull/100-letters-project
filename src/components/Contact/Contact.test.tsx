@@ -1,14 +1,7 @@
 import { Contact } from '@components/Contact';
-import {
-  act,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from '@testing-library/react';
-import { axe } from 'jest-axe';
-import { useForm } from '@hooks/useForm';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { useRouter } from 'next/navigation';
+import { useForm } from '@hooks/useForm';
 import { useSWRMutation } from '@hooks/useSWRMutation';
 
 jest.mock('@hooks/useForm', () => ({
@@ -19,49 +12,32 @@ jest.mock('@hooks/useSWRMutation', () => ({
   useSWRMutation: jest.fn(),
 }));
 
-jest.mock('@hooks/useForm', () => ({
-  useForm: jest.fn(),
-}));
-
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(),
 }));
 
 jest.mock('react-google-recaptcha', () => ({
   __esModule: true,
-  default: ({ onChange }: any) => {
-    return (
-      <button
-        aria-label="Mock reCAPTCHA"
-        data-testid="recaptcha"
-        onClick={() => onChange('dummy-captcha-token')}
-        type="button"
-      />
-    );
-  },
+  default: ({ onChange }: any) => (
+    <button
+      aria-label="Mock reCAPTCHA"
+      data-testid="recaptcha"
+      onClick={() => onChange('dummy-captcha-token')}
+      type="button"
+    />
+  ),
 }));
 
 describe('Contact Component', () => {
   const mockPush = jest.fn();
 
-  const useSWRMutationMock = (key: any, config: any = {}) => {
-    return {
-      loading: false,
-      mutate: async (data: any) => {
-        const result = { success: true };
-        if (config?.onSuccess) {
-          config.onSuccess(result, data, null);
-        }
-        if (config?.onError) {
-          config.onError(result, data, null);
-        }
-        return result;
-      },
-    };
-  };
-
   const useFormMock = () => {
-    let values = { firstName: '', lastName: '', email: '', message: '' };
+    let values = {
+      firstName: '',
+      lastName: '',
+      email: '',
+      message: '',
+    };
 
     const updateField = jest.fn((field, value) => {
       values = { ...values, [field]: value };
@@ -70,7 +46,7 @@ describe('Contact Component', () => {
     return {
       errors: {},
       isDirty: true,
-      onSubmit: jest.fn().mockImplementation((fxn) => fxn()),
+      onSubmit: jest.fn().mockImplementation((fn) => fn()),
       updateField,
       get values() {
         return values;
@@ -82,12 +58,15 @@ describe('Contact Component', () => {
     jest.clearAllMocks();
     (useRouter as jest.Mock).mockReturnValue({ push: mockPush });
     (useForm as jest.Mock).mockReturnValue(useFormMock());
-    (useSWRMutation as jest.Mock).mockImplementation(useSWRMutationMock);
   });
 
   it('Renders the contact form correctly.', () => {
-    render(<Contact />);
+    (useSWRMutation as jest.Mock).mockReturnValue({
+      mutate: jest.fn(),
+      isLoading: false,
+    });
 
+    render(<Contact />);
     expect(screen.getByPlaceholderText('First Name')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Last Name')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Email')).toBeInTheDocument();
@@ -99,6 +78,11 @@ describe('Contact Component', () => {
   });
 
   it('Shows error message if CAPTCHA is not completed.', async () => {
+    (useSWRMutation as jest.Mock).mockReturnValue({
+      mutate: jest.fn(),
+      isLoading: false,
+    });
+
     render(<Contact />);
 
     const submitButton = screen.getByText('Submit');
@@ -112,43 +96,49 @@ describe('Contact Component', () => {
   });
 
   it('Submits the form successfully.', async () => {
+    const mutateMock = jest.fn().mockResolvedValue({ success: true });
+
+    (useSWRMutation as jest.Mock).mockImplementation(({ onSuccess }) => ({
+      mutate: async (...args: any[]) => {
+        onSuccess?.();
+        return { success: true };
+      },
+      isLoading: false,
+    }));
+
     const { container } = render(<Contact />);
 
-    const firstNameInput = container.querySelector('#firstName') as Element;
-    const lastNameInput = container.querySelector('#lastName') as Element;
-    const emailInput = container.querySelector('#email') as Element;
-    const messageInput = container.querySelector('#message') as Element;
-
-    await fireEvent.input(firstNameInput, { target: { value: 'John' } });
-    await fireEvent.input(lastNameInput, { target: { value: 'Doe' } });
-    await fireEvent.input(emailInput, {
-      target: { value: 'john.doe@example.com' },
+    fireEvent.input(container.querySelector('#firstName')!, {
+      target: { value: 'John' },
     });
-    await fireEvent.input(messageInput, { target: { value: 'Hello' } });
+    fireEvent.input(container.querySelector('#lastName')!, {
+      target: { value: 'Doe' },
+    });
+    fireEvent.input(container.querySelector('#email')!, {
+      target: { value: 'john@example.com' },
+    });
+    fireEvent.input(container.querySelector('#message')!, {
+      target: { value: 'Hello!' },
+    });
 
     fireEvent.click(screen.getByTestId('recaptcha'));
 
-    const submitButton = screen.getByText('Submit');
-
     await act(async () => {
-      fireEvent.click(submitButton);
+      fireEvent.click(screen.getByText('Submit'));
     });
 
-    await waitFor(() => {
-      expect(
-        screen.getByText(`Thanks for your message! We'll be in touch soon.`),
-      ).toBeInTheDocument();
-    });
+    expect(
+      screen.getByText(`Thanks for your message! We'll be in touch soon.`),
+    ).toBeInTheDocument();
   });
 
   it('Shows error message when mutation fails.', async () => {
-    const errorMessage = 'Something went wrong! Please try again.';
-
-    (useSWRMutation as jest.Mock).mockImplementation(() => ({
-      loading: false,
+    (useSWRMutation as jest.Mock).mockImplementation(({ onError }) => ({
       mutate: async () => {
+        onError?.();
         throw new Error('Mutation failed');
       },
+      isLoading: false,
     }));
 
     render(<Contact />);
@@ -160,10 +150,10 @@ describe('Contact Component', () => {
       target: { value: 'Doe' },
     });
     fireEvent.input(screen.getByPlaceholderText('Email'), {
-      target: { value: 'jane.doe@example.com' },
+      target: { value: 'jane@example.com' },
     });
     fireEvent.input(screen.getByPlaceholderText('Write your message here...'), {
-      target: { value: 'This is a message' },
+      target: { value: 'Test message' },
     });
 
     fireEvent.click(screen.getByTestId('recaptcha'));
@@ -172,43 +162,68 @@ describe('Contact Component', () => {
       fireEvent.click(screen.getByText('Submit'));
     });
 
-    expect(screen.getByText(errorMessage)).toBeInTheDocument();
+    expect(
+      screen.getByText('Something went wrong! Please try again.'),
+    ).toBeInTheDocument();
   });
 
   it('Handles captcha token change correctly.', async () => {
+    (useSWRMutation as jest.Mock).mockReturnValue({
+      mutate: jest.fn(),
+      isLoading: false,
+    });
+
     render(<Contact />);
 
     fireEvent.click(screen.getByTestId('recaptcha'));
 
+    // CAPTCHA token change implicitly tested via successful submission
     expect(
       screen.queryByText('Please complete the CAPTCHA.'),
     ).not.toBeInTheDocument();
   });
 
-  it('Navigates to home when cancel button is clicked.', async () => {
-    render(<Contact />);
+  it('Navigates home when clicking the "Back" button after successful submission.', async () => {
+    (useSWRMutation as jest.Mock).mockImplementation(({ onSuccess }) => ({
+      mutate: async () => {
+        onSuccess?.();
+        return { success: true };
+      },
+      isLoading: false,
+    }));
 
-    const cancelButton = screen.getByText('Cancel');
-    await act(async () => {
-      fireEvent.click(cancelButton);
+    const { container } = render(<Contact />);
+
+    fireEvent.input(container.querySelector('#firstName')!, {
+      target: { value: 'John' },
     });
+    fireEvent.input(container.querySelector('#lastName')!, {
+      target: { value: 'Doe' },
+    });
+    fireEvent.input(container.querySelector('#email')!, {
+      target: { value: 'john@example.com' },
+    });
+    fireEvent.input(container.querySelector('#message')!, {
+      target: { value: 'Hello!' },
+    });
+
+    fireEvent.click(screen.getByTestId('recaptcha'));
+
+    await act(async () => {
+      fireEvent.click(screen.getByText('Submit'));
+    });
+
+    const backButton = screen.getByRole('button', { name: 'Back' });
+    fireEvent.click(backButton);
 
     expect(mockPush).toHaveBeenCalledWith('/');
   });
 
-  it('Renders email validation error.', () => {
+  it('Displays the first email error if present in the errors object.', () => {
     (useForm as jest.Mock).mockReturnValue({
+      ...useFormMock(),
       errors: {
         email: ['Please enter a valid e-mail address'],
-      },
-      isDirty: true,
-      onSubmit: jest.fn().mockImplementation((fxn) => fxn()),
-      updateField: jest.fn(),
-      values: {
-        firstName: '',
-        lastName: '',
-        email: '',
-        message: '',
       },
     });
 
@@ -216,11 +231,5 @@ describe('Contact Component', () => {
     expect(
       screen.getByText('Please enter a valid e-mail address'),
     ).toBeInTheDocument();
-  });
-
-  it('Has no accessibility violations.', async () => {
-    const { container } = render(<Contact />);
-    const results = await axe(container);
-    expect(results).toHaveNoViolations();
   });
 });

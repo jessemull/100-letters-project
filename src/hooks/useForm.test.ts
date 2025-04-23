@@ -60,7 +60,7 @@ describe('useForm', () => {
       result.current.updateField('email', '');
     });
 
-    expect(result.current.dirty.email).toBeUndefined();
+    expect(result.current.dirty.email).toBe(false);
     expect(result.current.isDirty).toBe(false);
   });
 
@@ -105,6 +105,7 @@ describe('useForm', () => {
     });
 
     expect(result.current.errors).toEqual({});
+    expect(result.current.isValid).toBe(true);
     expect(onSubmit).toHaveBeenCalledWith({
       email: 'test@example.com',
       age: 25,
@@ -121,6 +122,9 @@ describe('useForm', () => {
     act(() => {
       result.current.updateField('email', 'bad');
       result.current.updateField('age', 10);
+    });
+
+    act(() => {
       result.current.onSubmit(onSubmit);
     });
 
@@ -147,5 +151,125 @@ describe('useForm', () => {
 
     expect(result.current.errors.email).toBeUndefined();
     expect(result.current.isValid).toBe(true);
+  });
+
+  it('Falls back to get(values, path) when value is undefined in validateField.', () => {
+    const { result } = renderHook(() =>
+      useForm<TestForm>({ initial, validators, validateOnInit: true }),
+    );
+
+    act(() => {
+      result.current.updateField('email', 'invalid');
+    });
+
+    // validateField uses the value provided above, but this will call it without value
+    act(() => {
+      // @ts-expect-error - testing internal behavior
+      result.current.updateField('email');
+    });
+
+    expect(result.current.errors.email).toContain('Invalid email');
+  });
+
+  it('Skips validation silently when no validators are defined for a field.', () => {
+    const { result } = renderHook(() =>
+      useForm<TestForm>({
+        initial,
+        // intentionally omitting validators for `age`
+        validators: { email: [required] },
+        validateOnInit: true,
+      }),
+    );
+
+    // `age` has no validators, so this should skip without error
+    act(() => {
+      result.current.updateField('age', 42);
+    });
+
+    expect(result.current.errors.age).toBeUndefined();
+  });
+
+  it('Falls back to empty array when validating fields with no rules in validate.', () => {
+    const { result } = renderHook(() =>
+      useForm<TestForm>({
+        initial,
+        // empty validator list for email
+        validators: { email: [] },
+        validateOnInit: true,
+      }),
+    );
+
+    act(() => {
+      result.current.updateField('email', 'whatever@example.com');
+    });
+
+    act(() => {
+      result.current.onSubmit(jest.fn());
+    });
+
+    expect(result.current.errors.email).toBeUndefined();
+    expect(result.current.isValid).toBe(true);
+  });
+
+  it('Triggers validation when setValues is called after submit.', () => {
+    const { result } = renderHook(() =>
+      useForm<TestForm>({ initial, validators }),
+    );
+
+    act(() => {
+      result.current.onSubmit(jest.fn()); // marks hasSubmitted = true
+    });
+
+    act(() => {
+      result.current.setValues({ email: 'bad', age: 2 });
+    });
+
+    expect(result.current.errors.email).toContain('Invalid email');
+    expect(result.current.errors.age).toContain('Must be 18+');
+  });
+
+  it('Triggers validation when setValues is called with validateOnInit.', () => {
+    const { result } = renderHook(() =>
+      useForm<TestForm>({ initial, validators, validateOnInit: true }),
+    );
+
+    act(() => {
+      result.current.setValues({ email: 'not-an-email', age: 5 });
+    });
+
+    expect(result.current.errors.email).toContain('Invalid email');
+    expect(result.current.errors.age).toContain('Must be 18+');
+  });
+
+  it('Defaults to empty array of validators if path not in validators (updateField).', () => {
+    const { result } = renderHook(() =>
+      useForm<TestForm>({
+        initial,
+        validators: {},
+        validateOnInit: true,
+      }),
+    );
+
+    act(() => {
+      result.current.updateField('email', 'some@email.com');
+    });
+
+    expect(result.current.errors.email).toBeUndefined();
+  });
+
+  it('Skips validation silently when validateField is called on a field with no rules.', () => {
+    const { result } = renderHook(() =>
+      useForm<TestForm>({
+        initial,
+        validators: { email: [required] },
+        validateOnInit: false,
+      }),
+    );
+
+    act(() => {
+      result.current.updateField('age', 42); // no validators for 'age'
+    });
+
+    expect(result.current.errors.age).toBeUndefined();
   });
 });

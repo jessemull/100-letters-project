@@ -15,14 +15,12 @@ import { useSWRMutation } from '@hooks/useSWRMutation';
 
 const CAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_CAPTCHA_SITE_KEY as string;
 
-const background = `linear-gradient( rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75) ), url('/signin.webp')`;
-
 const defaultErrorMessage = 'Something went wrong! Please try again.';
 
 const initial = {
+  email: '',
   firstName: '',
   lastName: '',
-  email: '',
   message: '',
 };
 
@@ -49,11 +47,12 @@ const Contact = () => {
   const { errors, isDirty, onSubmit, updateField, values } =
     useForm<ContactForm>({ initial, validators });
 
-  const { mutate, loading } = useSWRMutation<
+  const { mutate, isLoading } = useSWRMutation<
     ContactFormBody,
     ContactFormResponse
-  >('/contact', {
+  >({
     method: 'POST',
+    path: '/contact',
     onError: () => {
       setError(defaultErrorMessage);
     },
@@ -71,12 +70,12 @@ const Contact = () => {
 
     onSubmit(async () => {
       try {
-        await mutate(
-          { ...values },
-          {
+        await mutate({
+          body: { ...values },
+          headers: {
             'g-recaptcha-response': captchaToken,
           },
-        );
+        });
       } catch (e) {
         setError(defaultErrorMessage);
       }
@@ -93,14 +92,7 @@ const Contact = () => {
   };
 
   return (
-    <div
-      className="p-8 flex items-center justify-center items-center w-full h-full min-h-[calc(100vh-110px)]"
-      style={{
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundImage: background,
-      }}
-    >
+    <div className="p-8 flex items-center justify-center items-center w-full h-full">
       {success ? (
         <div className="w-3/4 flex flex-col items-center justify-center space-y-4 md:space-y-6">
           <p className="w-full text-white text-xl text-center">
@@ -156,16 +148,18 @@ const Contact = () => {
           <div className="flex flex-col xl:flex-row xl:flex-row-reverse gap-4 xl:justify-between">
             <div className="w-full">
               <Button
-                disabled={!isDirty || loading || Object.keys(errors).length > 0}
+                disabled={
+                  !isDirty || isLoading || Object.keys(errors).length > 0
+                }
                 id="contact-submit"
-                loading={loading}
+                loading={isLoading}
                 onClick={handleSubmit}
                 value="Submit"
               />
             </div>
             <div className="w-full">
               <Button
-                disabled={loading}
+                disabled={isLoading}
                 id="contact-cancel"
                 onClick={goHome}
                 value="Cancel"

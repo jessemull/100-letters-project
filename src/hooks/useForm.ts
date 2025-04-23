@@ -1,135 +1,114 @@
-import { FormData, Validator } from '@ts-types/form';
 import { useState, useMemo } from 'react';
-
-type UseForm<T> = {
-  initial: T;
-  validators: Record<keyof T, Validator[] | undefined>;
-  validateOnInit?: boolean;
-};
+import { get, set, flattenValidators } from '@util/form';
+import {
+  DeepKeys,
+  DeepValue,
+  FormData,
+  UseFormOptions,
+  NestedValidatorObject,
+  PathValidator,
+  Validator,
+} from '@ts-types/form';
 
 export function useForm<T extends FormData>({
   initial,
-  validators,
+  validators: nestedValidators,
   validateOnInit = false,
-}: UseForm<T>) {
-  // Keeps track of dirty fields.
-
-  const [dirty, setDirty] = useState<Partial<Record<keyof T, boolean>>>({});
-
-  // Keeps track of errors as an array for each field.
-
-  const [errors, setErrors] = useState<Partial<Record<keyof T, string[]>>>({});
-
-  // The form values.
-
-  const [values, setValues] = useState<T>(initial);
-
-  // Has the form been submitted at least once?
-
+}: UseFormOptions<T>) {
+  const [values, _setValues] = useState<T>(initial);
+  const [errors, setErrors] = useState<Partial<Record<DeepKeys<T>, string[]>>>(
+    {},
+  );
+  const [dirty, setDirty] = useState<Partial<Record<DeepKeys<T>, boolean>>>({});
   const [hasSubmitted, setHasSubmitted] = useState(false);
 
-  const updateField = (field: keyof T, value: T[keyof T]) => {
-    // Set the new value.
+  const validators = useMemo(() => {
+    return flattenValidators(nestedValidators as NestedValidatorObject<T>);
+  }, [nestedValidators]);
 
-    setValues((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+  const updateField = <K extends DeepKeys<T>>(
+    path: K,
+    value: DeepValue<T, K>,
+  ) => {
+    _setValues((prev) => set(prev, path, value));
+    setDirty((prev) => ({ ...prev, [path]: get(initial, path) !== value }));
 
-    // Mark it as dirty if it changed. Check against the initial values. Remove key if the field is equal to the initial state.
-
-    setDirty((prev) => {
-      const updated = { ...prev };
-      if (value !== initial[field]) {
-        updated[field] = true;
-      } else {
-        delete updated[field]; // Remove key if not dirty
-      }
-      return updated;
-    });
-
-    // Validate the field if a validator exists for it.
-
-    if (validators[field]) {
-      if (validateOnInit || hasSubmitted) {
-        validateField(field, value);
-      }
+    if (validators[path] && (validateOnInit || hasSubmitted)) {
+      validateField(path, value);
     }
   };
 
-  const validateField = (field: keyof T, value: T[keyof T]) => {
-    // Fire all the validators and return all error messages.
+  const validateField = <K extends DeepKeys<T>>(
+    path: K,
+    value?: DeepValue<T, K>,
+  ) => {
+    const val = value ?? get(values, path);
+    const rules = validators[path];
 
-    const fieldErrors = validators[field]!.map((validator) =>
-      validator(value),
-    ).filter((error) => error !== null) as string[];
-
-    // Remove any keys without errors.
+    const errs = (rules as Validator[])
+      .map((v) => v(val))
+      .filter((e): e is string => e !== null);
 
     setErrors((prev) => {
       const updated = { ...prev };
-      if (fieldErrors.length > 0) {
-        updated[field] = fieldErrors;
-      } else {
-        delete updated[field];
-      }
+      if (errs.length > 0) updated[path] = errs;
+      else delete updated[path];
       return updated;
     });
   };
 
-  // Validates all fields.
-
-  const validate = () => {
+  const validate = (): boolean => {
     let isValid = true;
-    Object.keys(values).forEach((field) => {
-      const key = field as keyof T;
-      const value = values[key];
-      if (validators[key]) {
-        const fieldErrors = validators[key]!.map((validator) =>
-          validator(value),
-        ).filter((error) => error !== null) as string[];
-        if (fieldErrors.length > 0) {
-          setErrors((prev) => {
-            const updated = { ...prev };
-            updated[key] = fieldErrors;
-            return updated;
-          });
-          isValid = false;
-        } else {
-          setErrors((prev) => {
-            const updated = { ...prev };
-            delete updated[key];
-            return updated;
-          });
-        }
+    const newErrors: Partial<Record<DeepKeys<T>, string[]>> = {};
+
+    for (const path in validators) {
+      const val = get(values, path as DeepKeys<T>);
+
+      const errs = (validators[path as DeepKeys<T>] as Validator[])
+        .map((v) => v(val))
+        .filter((e): e is string => e !== null);
+
+      if (errs.length > 0) {
+        newErrors[path as DeepKeys<T>] = errs;
+        isValid = false;
       }
-    });
+    }
+
+    setErrors(newErrors);
+
     return isValid;
   };
 
-  // Submit handler takes a callback and fires it if the form is in a valid state.
-
   const onSubmit = (callback: (values: T) => void) => {
     setHasSubmitted(true);
-    if (validate()) {
-      callback(values);
+    if (validate()) callback(values);
+  };
+
+  const setValues = (newValues: T) => {
+    _setValues(newValues);
+    setDirty({});
+    if (validateOnInit || hasSubmitted) {
+      Object.keys(validators).forEach((path) => {
+        const val = get(newValues, path as DeepKeys<T>);
+        validateField(path as DeepKeys<T>, val);
+      });
     }
   };
 
-  const isDirty = useMemo(() => Object.values(dirty).includes(true), [dirty]);
-
+  const isDirty = useMemo(() => Object.values(dirty).some(Boolean), [dirty]);
   const isValid = useMemo(
-    () => !Object.values(errors).some((err) => err && err.length > 0),
+    () => Object.values(errors).every((err) => (err as string[]).length === 0),
     [errors],
   );
 
   return {
-    dirty,
+    values,
+    setValues,
     errors,
+    dirty,
     isDirty,
     isValid,
-    onSubmit,
     updateField,
-    values,
+    onSubmit,
   };
 }

@@ -35,8 +35,8 @@ describe('CorrespondenceItem', () => {
 
   it('Calls onDelete when delete button is clicked.', () => {
     render(<CorrespondenceItem data={mockCorrespondence} />);
-    const deleteButtons = screen.getAllByLabelText('Edit');
-    fireEvent.click(deleteButtons[1]);
+    const deleteButton = screen.getByLabelText('Delete');
+    fireEvent.click(deleteButton);
     expect(consoleSpy).toHaveBeenCalledWith('onDelete', mockCorrespondence);
   });
 
