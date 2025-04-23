@@ -6,7 +6,7 @@ import { useResizeDetector } from 'react-resize-detector';
 import { useState, useEffect, MutableRefObject, useMemo } from 'react';
 
 interface EnvelopeProps {
-  containerRef: MutableRefObject<HTMLElement>;
+  containerWidth: number;
 }
 
 const heartsConfig = [
@@ -16,18 +16,13 @@ const heartsConfig = [
   { delay: 1, baseOffsetY: 0.25, baseSize: 24 },
 ];
 
-const Envelope: React.FC<EnvelopeProps> = ({ containerRef }) => {
+const Envelope: React.FC<EnvelopeProps> = ({ containerWidth: width }) => {
   const [flapZIndex, setFlapZIndex] = useState(30);
-  const [isReady, setIsReady] = useState(false);
   const [showLetter, setShowLetter] = useState(false);
   const [showText, setShowText] = useState(false);
   const [size, setSize] = useState({ width: 320, height: 224, flap: 120 });
   const [startAnimation, setStartAnimation] = useState(false);
   const [textSize, setTextSize] = useState('text-4xl');
-
-  const { width } = useResizeDetector({
-    targetRef: containerRef,
-  });
 
   useEffect(() => {
     if (width) {
@@ -64,12 +59,6 @@ const Envelope: React.FC<EnvelopeProps> = ({ containerRef }) => {
         setTextSize(newTextSize);
       }
 
-      setIsReady(true);
-    }
-  }, [width, textSize]);
-
-  useEffect(() => {
-    if (isReady) {
       setTimeout(() => setStartAnimation(true), 500);
       setTimeout(() => setShowLetter(true), 800);
       setTimeout(() => {
@@ -77,13 +66,9 @@ const Envelope: React.FC<EnvelopeProps> = ({ containerRef }) => {
       }, 1000);
       setTimeout(() => setShowText(true), 1200);
     }
-  }, [isReady]);
+  }, [width, textSize]);
 
   const scaleFactor = useMemo(() => size.width / 287.8, [size.width]);
-
-  if (!isReady) {
-    return null;
-  }
 
   return (
     <div
@@ -150,7 +135,7 @@ const Envelope: React.FC<EnvelopeProps> = ({ containerRef }) => {
           >
             <div data-testid="msg-100">100</div>
             <div data-testid="msg-letters">Letters</div>
-            <div data-testid="msg-letters">Project</div>
+            <div data-testid="msg-project">Project</div>
           </motion.div>
         )}
       </motion.div>

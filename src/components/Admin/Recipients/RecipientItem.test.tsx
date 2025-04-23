@@ -13,7 +13,7 @@ describe('RecipientItem', () => {
     jest.clearAllMocks();
   });
 
-  it('renders recipient name and organization', () => {
+  it('Renders recipient name and organization.', () => {
     render(
       <RecipientItem
         data={mockRecipient}
@@ -27,7 +27,7 @@ describe('RecipientItem', () => {
     ).toBeInTheDocument();
   });
 
-  it('calls onEdit with correct recipientId when edit button is clicked', () => {
+  it('Calls onEdit with correct recipientId when edit button is clicked.', () => {
     render(
       <RecipientItem
         data={mockRecipient}
@@ -41,7 +41,7 @@ describe('RecipientItem', () => {
     expect(onEditMock).toHaveBeenCalledTimes(1);
   });
 
-  it('calls onDelete with correct recipientId when delete button is clicked', () => {
+  it('Calls onDelete with correct recipientId when delete button is clicked.', () => {
     render(
       <RecipientItem
         data={mockRecipient}
@@ -56,7 +56,7 @@ describe('RecipientItem', () => {
     expect(onDeleteMock).toHaveBeenCalledTimes(1);
   });
 
-  it('has a card container with expected styling', () => {
+  it('Has a card container with expected styling.', () => {
     render(
       <RecipientItem
         data={mockRecipient}

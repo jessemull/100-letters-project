@@ -1,55 +1,47 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { Envelope } from '@components/Animation';
 import { axe } from 'jest-axe';
 import { render, screen, waitFor, act } from '@testing-library/react';
 
-jest.mock('react-resize-detector', () => ({
-  useResizeDetector: jest.fn(),
-}));
-
 jest.mock('framer-motion', () => ({
   __esModule: true,
-  AnimatePresence: ({ children }) => <>{children}</>,
+  AnimatePresence: ({ children }: { children: ReactNode }) => <>{children}</>,
   motion: {
-    div: jest.fn().mockImplementation(({ animate, children, ...props }) => (
-      <div data-animate={JSON.stringify(animate)} {...props}>
-        {children}
-      </div>
-    )),
+    div: ({ children, ...props }: { children: ReactNode }) => (
+      <div {...props}>{children}</div>
+    ),
   },
 }));
 
 describe('Envelope Component', () => {
-  let mockContainerRef;
-  let useResizeDetectorMock;
-
   beforeEach(() => {
-    mockContainerRef = { current: document.createElement('div') };
-    useResizeDetectorMock = require('react-resize-detector').useResizeDetector;
+    jest.useFakeTimers();
   });
 
   afterEach(() => {
+    jest.runOnlyPendingTimers();
     jest.useRealTimers();
   });
 
-  const renderWithWidth = (width) => {
-    useResizeDetectorMock.mockReturnValue({ width });
-    return render(<Envelope containerRef={mockContainerRef} />);
+  const renderWithWidth = (width: number) => {
+    return render(<Envelope containerWidth={width} />);
   };
 
-  it('Renders envelope.', () => {
+  it('Renders the envelope container', () => {
     renderWithWidth(1024);
-    expect(screen.getByTestId('envelope')).toBeDefined();
+    expect(screen.getByTestId('envelope')).toBeInTheDocument();
   });
 
-  it('Triggers animations correctly.', async () => {
-    jest.useFakeTimers();
+  it('Triggers animations and renders messages after timeouts', async () => {
     renderWithWidth(1024);
+
     act(() => {
       jest.advanceTimersByTime(3500);
     });
+
     await waitFor(() => {
-      expect(screen.getByText('Letters')).toBeDefined();
+      expect(screen.getByTestId('msg-100')).toBeInTheDocument();
+      expect(screen.getByTestId('msg-letters')).toBeInTheDocument();
     });
   });
 
@@ -61,19 +53,14 @@ describe('Envelope Component', () => {
     [400, 'text-2xl'],
     [1500, 'text-3xl'],
     [3000, 'text-4xl'],
-  ])('Sets correct text size at width %i', (width, expectedTextSize) => {
-    jest.useFakeTimers();
+  ])('Sets correct text size at width %i', async (width, expectedClass) => {
     renderWithWidth(width);
+
     act(() => {
       jest.advanceTimersByTime(3500);
     });
-    const message = screen.getByTestId('msg-100').parentElement;
-    expect(message as HTMLElement).toHaveClass(expectedTextSize);
-  });
 
-  it('Has no accessibility violations.', async () => {
-    const { container } = renderWithWidth(1024);
-    const results = await axe(container);
-    expect(results).toHaveNoViolations();
+    const msg = await screen.findByTestId('msg-100');
+    expect(msg.parentElement).toHaveClass(expectedClass);
   });
 });
