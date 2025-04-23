@@ -6,7 +6,7 @@ import { useResizeDetector } from 'react-resize-detector';
 import { useState, useEffect, MutableRefObject, useMemo } from 'react';
 
 interface EnvelopeProps {
-  containerRef: MutableRefObject<HTMLElement>;
+  width?: number;
 }
 
 const heartsConfig = [
@@ -16,7 +16,7 @@ const heartsConfig = [
   { delay: 1, baseOffsetY: 0.25, baseSize: 24 },
 ];
 
-const Envelope: React.FC<EnvelopeProps> = ({ containerRef }) => {
+const Envelope: React.FC<EnvelopeProps> = ({ width }) => {
   const [flapZIndex, setFlapZIndex] = useState(30);
   const [isReady, setIsReady] = useState(false);
   const [showLetter, setShowLetter] = useState(false);
@@ -24,10 +24,6 @@ const Envelope: React.FC<EnvelopeProps> = ({ containerRef }) => {
   const [size, setSize] = useState({ width: 320, height: 224, flap: 120 });
   const [startAnimation, setStartAnimation] = useState(false);
   const [textSize, setTextSize] = useState('text-4xl');
-
-  const { width } = useResizeDetector({
-    targetRef: containerRef,
-  });
 
   useEffect(() => {
     if (width) {
@@ -150,7 +146,7 @@ const Envelope: React.FC<EnvelopeProps> = ({ containerRef }) => {
           >
             <div data-testid="msg-100">100</div>
             <div data-testid="msg-letters">Letters</div>
-            <div data-testid="msg-letters">Project</div>
+            <div data-testid="msg-project">Project</div>
           </motion.div>
         )}
       </motion.div>
