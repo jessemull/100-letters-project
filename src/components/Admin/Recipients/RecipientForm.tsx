@@ -5,13 +5,20 @@ import {
   Recipient,
   RecipientFormResponse,
 } from '@ts-types/recipients';
-import { TextInput, Button, TextArea, Progress } from '@components/Form';
+import {
+  TextInput,
+  Button,
+  TextArea,
+  Progress,
+  showToast,
+} from '@components/Form';
 import { required } from '@util/validators';
 import { useAuth } from '@contexts/AuthProvider';
 import { useForm } from '@hooks/useForm';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSWRMutation } from '@hooks/useSWRMutation';
 import { useSWRQuery } from '@hooks/useSWRQuery';
+import { useEffect } from 'react';
 
 const initial: Recipient = {
   address: {
@@ -51,11 +58,17 @@ const RecipientForm = () => {
 
   const { loading: authenticating, token } = useAuth();
 
-  const { data: { data } = {}, isLoading } =
-    useSWRQuery<GetRecipientByIdResponse>({
-      path: recipientId ? `/recipient/${recipientId}` : null,
-      token,
-    });
+  const {
+    data: { data } = {},
+    error,
+    isLoading,
+  } = useSWRQuery<GetRecipientByIdResponse>({
+    config: {
+      shouldRetryOnError: false,
+    },
+    path: recipientId ? `/recipient/${recipientId}` : null,
+    token,
+  });
 
   const { errors, isDirty, onSubmit, updateField, values, setValues } =
     useForm<Recipient>({
@@ -70,7 +83,17 @@ const RecipientForm = () => {
     method: recipientId ? 'PUT' : 'POST',
     path: recipientId ? `/recipient/${recipientId}` : `/recipient`,
     token,
-    onSuccess: () => router.back(),
+    onError: ({ error, status = '0' }) => {
+      showToast({
+        message: error
+          ? `Error ${status}: ${error}`
+          : 'An error occurred during data update.',
+        type: 'error',
+      });
+    },
+    onSuccess: () => {
+      router.back();
+    },
   });
 
   const handleSubmit = () => {
@@ -83,14 +106,21 @@ const RecipientForm = () => {
     router.back();
   };
 
-  if (
-    !isLoading &&
-    recipientId &&
-    data?.recipientId &&
-    values.recipientId === ''
-  ) {
-    setValues(data);
-  }
+  useEffect(() => {
+    if (error) {
+      showToast({
+        message:
+          error.info?.message || 'An error occurred while fetching data.',
+        type: 'error',
+      });
+    }
+  }, [error]);
+
+  useEffect(() => {
+    if (recipientId && data?.recipientId && values.recipientId === '') {
+      setValues(data);
+    }
+  }, [recipientId, data, values.recipientId, setValues]);
 
   return isLoading || authenticating ? (
     <Progress color="white" size={16} />

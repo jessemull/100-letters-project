@@ -32,12 +32,10 @@ const AutoSelect: React.FC<AutoSelectProps> = ({
   const [inputValue, setInputValue] = useState(value);
   const [isFocused, setIsFocused] = useState(false);
 
-  // Find the label for the current value
   const selectedOption = useMemo(() => {
     return options.find((option) => option.value === value);
   }, [value, options]);
 
-  // Update input value to show the selected label
   useEffect(() => {
     if (selectedOption) {
       setInputValue(selectedOption.label);
@@ -45,17 +43,17 @@ const AutoSelect: React.FC<AutoSelectProps> = ({
   }, [selectedOption]);
 
   const filteredOptions = useMemo(() => {
-    if (!inputValue) return options;
+    if (!inputValue || inputValue === selectedOption?.label) return options;
     return options.filter((option) =>
       option.label.toLowerCase().startsWith(inputValue.toLowerCase()),
     );
-  }, [inputValue, options]);
+  }, [inputValue, options, selectedOption]);
 
   const handleSelect = (val: string) => {
     const selected = options.find((option) => option.value === val);
     if (selected) {
-      setInputValue(selected.label); // Set input field to display the selected label
-      onChange(val); // Pass the value to the parent
+      setInputValue(selected.label);
+      onChange(val);
     }
     setIsFocused(false);
   };
@@ -90,12 +88,14 @@ const AutoSelect: React.FC<AutoSelectProps> = ({
               <Progress color="black" size={6} />
             </div>
           ) : (
-            filteredOptions.map((option) => (
-              <li key={option.value} className="px-4 py-2">
+            filteredOptions.map((option, idx) => (
+              <li key={option.value}>
                 <button
                   type="button"
                   onMouseDown={() => handleSelect(option.value)}
-                  className="w-full text-left hover:bg-white/70 cursor-pointer"
+                  className={`w-full text-left px-4 py-2 hover:bg-black/10 ${
+                    idx % 2 === 0 ? 'bg-white' : 'bg-white/60'
+                  }`}
                 >
                   {option.label}
                 </button>

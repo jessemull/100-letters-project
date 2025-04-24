@@ -6,7 +6,6 @@ import {
   FormData,
   UseFormOptions,
   NestedValidatorObject,
-  PathValidator,
   Validator,
 } from '@ts-types/form';
 
@@ -31,7 +30,11 @@ export function useForm<T extends FormData>({
     value: DeepValue<T, K>,
   ) => {
     _setValues((prev) => set(prev, path, value));
-    setDirty((prev) => ({ ...prev, [path]: get(initial, path) !== value }));
+
+    setDirty((prev) => ({
+      ...prev,
+      [path]: get(values, path) !== value,
+    }));
 
     if (validators[path] && (validateOnInit || hasSubmitted)) {
       validateField(path, value);
@@ -102,13 +105,13 @@ export function useForm<T extends FormData>({
   );
 
   return {
-    values,
-    setValues,
-    errors,
     dirty,
+    errors,
     isDirty,
     isValid,
-    updateField,
     onSubmit,
+    setValues,
+    updateField,
+    values,
   };
 }

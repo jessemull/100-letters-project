@@ -7,7 +7,12 @@ import {
   LetterType,
   LetterMethod,
 } from '@ts-types/letter';
-import { GetCorrespondencesResponse, Status } from '@ts-types/correspondence';
+import {
+  Correspondence,
+  GetCorrespondenceByIdResponse,
+  GetCorrespondencesResponse,
+  Status,
+} from '@ts-types/correspondence';
 import {
   TextInput,
   Button,
@@ -15,6 +20,7 @@ import {
   Select,
   Progress,
   AutoSelect,
+  showToast,
 } from '@components/Form';
 import { required } from '@util/validators';
 import { useAuth } from '@contexts/AuthProvider';
@@ -23,10 +29,10 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useSWRMutation } from '@hooks/useSWRMutation';
 import { useSWRQuery } from '@hooks/useSWRQuery';
 import { toDateTimeLocal, toUTCTime } from '@util/date-time';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 
 const methodOptions = [
-  { label: 'Email', value: LetterMethod.DIGITAL },
+  { label: 'Digital', value: LetterMethod.DIGITAL },
   { label: 'Handwritten', value: LetterMethod.HANDWRITTEN },
   { label: 'Typed', value: LetterMethod.TYPED },
   { label: 'Other', value: LetterMethod.OTHER },
@@ -73,28 +79,57 @@ const LetterForm = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const letterId = searchParams.get('letterId');
-
   const { loading: authenticating, token } = useAuth();
 
-  const { data: { data } = {}, isLoading } = useSWRQuery<GetLetterByIdResponse>(
-    {
-      path: letterId ? `/letter/${letterId}` : null,
-      token,
-    },
-  );
+  const {
+    data: { data } = {},
+    error,
+    isLoading,
+  } = useSWRQuery<GetLetterByIdResponse>({
+    config: { shouldRetryOnError: false },
+    path: letterId ? `/letter/${letterId}` : null,
+    token,
+  });
 
-  const { data: correspondencesData, isLoading: correspondencesLoading } =
-    useSWRQuery<GetCorrespondencesResponse>({
-      path: '/correspondence?limit=100',
-      skip: Boolean(letterId),
-      token,
-    });
+  const {
+    data: correspondencesData,
+    error: correspondencesError,
+    isLoading: correspondencesLoading,
+  } = useSWRQuery<GetCorrespondencesResponse>({
+    config: { shouldRetryOnError: false },
+    path: '/correspondence?limit=500',
+    skip: Boolean(letterId),
+    token,
+  });
+
+  const {
+    data: singleCorrespondence,
+    error: singleCorrespondenceError,
+    isLoading: singleCorrespondenceIsLoading,
+  } = useSWRQuery<GetCorrespondenceByIdResponse>({
+    config: { shouldRetryOnError: false },
+    path: `/correspondence/${data?.correspondenceId}`,
+    skip: !data?.correspondenceId,
+    token,
+  });
+
+  const correspondenceMap = useMemo(() => {
+    if (!correspondencesData?.data) return {};
+    return Object.fromEntries(
+      correspondencesData.data.map((correspondence) => [
+        correspondence.correspondenceId,
+        correspondence,
+      ]),
+    );
+  }, [correspondencesData]);
 
   const correspondenceOptions = useMemo(() => {
     if (!correspondencesData?.data) return [];
     return correspondencesData.data
-      .map(({ correspondenceId, recipient = {} }) => ({
-        label: `${recipient?.lastName}, ${recipient?.firstName}`,
+      .map(({ correspondenceId, recipient = {}, title = 'No Title' }) => ({
+        label:
+          `${recipient?.lastName || ''}, ${recipient?.firstName || ''} - ${title.length > 20 ? `${title.slice(0, 20)}...` : title}`.trim() ||
+          'Unknown Recipient',
         value: correspondenceId,
       }))
       .sort((a, b) => a.label.localeCompare(b.label));
@@ -113,6 +148,14 @@ const LetterForm = () => {
     method: letterId ? 'PUT' : 'POST',
     path: letterId ? `/letter/${letterId}` : `/letter`,
     token,
+    onError: ({ error, status = '0' }) => {
+      showToast({
+        message: error
+          ? `Error ${status}: ${error}`
+          : 'An error occurred during data update.',
+        type: 'error',
+      });
+    },
     onSuccess: () => router.back(),
   });
 
@@ -140,25 +183,53 @@ const LetterForm = () => {
     router.back();
   };
 
-  if (!isLoading && letterId && data?.letterId && values.letterId === '') {
-    const formatted = { ...data };
+  useEffect(() => {
+    if (letterId && data?.letterId && values.letterId === '') {
+      const formatted = { ...data };
 
-    if (formatted.sentAt) {
-      formatted.sentAt = toDateTimeLocal(formatted.sentAt);
+      if (formatted.sentAt) {
+        formatted.sentAt = toDateTimeLocal(formatted.sentAt);
+      }
+
+      if (formatted.receivedAt) {
+        formatted.receivedAt = toDateTimeLocal(formatted.receivedAt);
+      }
+
+      setValues(formatted);
     }
+  }, [letterId, data, values.letterId, setValues]);
 
-    if (formatted.receivedAt) {
-      formatted.receivedAt = toDateTimeLocal(formatted.receivedAt);
+  useEffect(() => {
+    if (error || correspondencesError || singleCorrespondenceError) {
+      showToast({
+        message:
+          (error || correspondencesError || singleCorrespondenceError).info
+            ?.message || 'An error occurred while fetching data.',
+        type: 'error',
+      });
     }
+  }, [error, correspondencesError, singleCorrespondenceError]);
 
-    setValues(formatted);
-  }
-
-  return isLoading || authenticating ? (
+  return isLoading || authenticating || singleCorrespondenceIsLoading ? (
     <Progress color="white" size={16} />
   ) : (
     <div className="p-6 md:p-12 w-full max-w-3xl mx-auto space-y-6">
-      <h1 className="text-3xl font-semibold text-white">Letter Form</h1>
+      <div>
+        <h1 className="text-3xl font-semibold text-white">Letter Form</h1>
+        {values.correspondenceId && (
+          <h3 className="text-white text-lg">
+            {(() => {
+              const { recipient, title } = !letterId
+                ? correspondenceMap[values.correspondenceId]
+                : (singleCorrespondence?.data as Correspondence);
+              return (
+                `${recipient?.lastName || ''}, ${recipient?.firstName || ''} - ${title || 'No Title'}`.trim() ||
+                'No Recipient - No Title'
+              );
+            })()}
+          </h3>
+        )}
+      </div>
       {!letterId && (
         <AutoSelect
           errors={errors.correspondenceId}

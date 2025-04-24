@@ -14,6 +14,8 @@ interface UseAuthorizedMutationOptions<Body, Response, CacheType, Params> {
   path?: string;
   onError?: (args: {
     error: string;
+    status?: number;
+    info?: any;
     path: string;
     body?: Body;
     params?: Params;
@@ -89,16 +91,28 @@ export function useSWRMutation<
         });
 
         if (!res.ok) {
-          let errorMsg = 'Unknown error';
+          let errorBody: any = null;
+          let errorMessage = res.statusText || 'Unknown error';
+
           try {
-            const errorData = await res.json();
-            errorMsg = errorData.message || errorMsg;
+            errorBody = await res.json();
+            errorMessage = errorBody?.message || errorMessage;
           } catch {
-            errorMsg = await res.text();
+            errorBody = await res.text();
+            errorMessage =
+              typeof errorBody === 'string' ? errorBody : errorMessage;
           }
 
-          setError(errorMsg);
-          onError?.({ error: errorMsg, path: finalPath, body, params });
+          setError(errorMessage);
+          onError?.({
+            error: errorMessage,
+            status: res.status,
+            info: errorBody,
+            path: finalPath,
+            body,
+            params,
+          });
+
           return;
         }
 
@@ -117,14 +131,21 @@ export function useSWRMutation<
 
         return data;
       } catch (err: unknown) {
+        console.log('ERROR', err);
         const message =
           err instanceof Error
             ? err.message
             : typeof err === 'string'
               ? err
-              : 'An error occurred!';
+              : 'An unexpected error occurred';
+
         setError(message);
-        onError?.({ error: message, path: finalPath, body, params });
+        onError?.({
+          error: message,
+          path: finalPath,
+          body,
+          params,
+        });
       } finally {
         setIsLoading(false);
       }

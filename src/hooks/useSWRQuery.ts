@@ -25,7 +25,24 @@ export function useSWRQuery<T = any>({
         });
 
         if (!res.ok) {
-          throw new Error(`Error ${res.status}: ${res.statusText}`);
+          let errorBody;
+          try {
+            errorBody = await res.json();
+          } catch {
+            errorBody = { message: res.statusText };
+          }
+
+          const error = new Error(
+            errorBody?.message || `Error ${res.status}: ${res.statusText}`,
+          ) as Error & {
+            status?: number;
+            info?: any;
+          };
+
+          error.status = res.status;
+          error.info = errorBody;
+
+          throw error;
         }
 
         return res.json();
