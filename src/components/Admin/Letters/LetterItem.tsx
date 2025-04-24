@@ -6,17 +6,11 @@ import { PenSquare, Trash2 } from 'lucide-react';
 
 interface Props {
   data: Letter;
+  onEdit: (letterId: string) => void;
+  onDelete: (letterId: string) => void;
 }
 
-const LetterItem = ({ data }: Props) => {
-  const onEdit = () => {
-    console.log('onEdit', data);
-  };
-
-  const onDelete = () => {
-    console.log('onDelete', data);
-  };
-
+const LetterItem = ({ data, onEdit, onDelete }: Props) => {
   return (
     <div
       data-testid="card-edit-button"
@@ -30,14 +24,15 @@ const LetterItem = ({ data }: Props) => {
         <div className="space-x-2 flex items-center justify-center">
           <button
             data-testid="edit-button"
-            onClick={onEdit}
+            onClick={() => onEdit(data.letterId)}
             className="text-white hover:text-gray-400"
             aria-label="Edit"
           >
             <PenSquare className="w-6 h-6" />
           </button>
           <button
-            onClick={onDelete}
+            data-testid="delete-button"
+            onClick={() => onDelete(data.letterId)}
             className="text-white hover:text-gray-400"
             aria-label="Delete"
           >

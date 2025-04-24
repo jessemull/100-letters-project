@@ -52,10 +52,10 @@ const RecipientForm = () => {
   const { loading: authenticating, token } = useAuth();
 
   const { data: { data } = {}, isLoading } =
-    useSWRQuery<GetRecipientByIdResponse>(
-      recipientId ? `/recipient/${recipientId}` : null,
+    useSWRQuery<GetRecipientByIdResponse>({
+      path: recipientId ? `/recipient/${recipientId}` : null,
       token,
-    );
+    });
 
   const { errors, isDirty, onSubmit, updateField, values, setValues } =
     useForm<Recipient>({

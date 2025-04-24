@@ -2,11 +2,19 @@ import useSWR, { SWRConfiguration } from 'swr';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export function useSWRQuery<T = any>(
-  path: string | null,
-  token: string | null,
-  config?: SWRConfiguration,
-) {
+interface UseSWRQueryOptions {
+  path: string | null;
+  token: string | null;
+  config?: SWRConfiguration;
+  skip?: boolean;
+}
+
+export function useSWRQuery<T = any>({
+  path,
+  token,
+  config,
+  skip = false,
+}: UseSWRQueryOptions) {
   const fetcher = token
     ? async (url: string) => {
         const res = await fetch(url, {
@@ -24,7 +32,7 @@ export function useSWRQuery<T = any>(
       }
     : null;
 
-  const fullUrl = token && path ? `${API_BASE_URL}${path}` : null;
+  const fullUrl = !skip && token && path ? `${API_BASE_URL}${path}` : null;
 
   return useSWR<T>(fullUrl, fetcher, config);
 }
