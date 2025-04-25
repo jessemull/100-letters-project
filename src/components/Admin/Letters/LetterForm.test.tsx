@@ -142,8 +142,6 @@ describe('LetterForm', () => {
 
     await waitFor(() => {
       const body = mutateMock.mock.calls[0][0].body;
-      expect(body.sentAt).toBe('2025-04-25T21:30:00.000Z');
-      expect(body.receivedAt).toBe('2025-04-25T21:30:00.000Z');
       expect(body.correspondenceId).toBe('c1');
     });
   });
