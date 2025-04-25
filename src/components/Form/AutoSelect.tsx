@@ -72,6 +72,7 @@ const AutoSelect: React.FC<AutoSelectProps> = ({
       )}
 
       <input
+        data-testid={id}
         id={id}
         value={inputValue}
         placeholder={placeholder}

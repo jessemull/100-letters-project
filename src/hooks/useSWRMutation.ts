@@ -131,7 +131,6 @@ export function useSWRMutation<
 
         return data;
       } catch (err: unknown) {
-        console.log('ERROR', err);
         const message =
           err instanceof Error
             ? err.message

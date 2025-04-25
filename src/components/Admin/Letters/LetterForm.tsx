@@ -14,22 +14,22 @@ import {
   Status,
 } from '@ts-types/correspondence';
 import {
-  TextInput,
-  Button,
-  TextArea,
-  Select,
-  Progress,
   AutoSelect,
+  Button,
+  Progress,
+  Select,
+  TextArea,
+  TextInput,
   showToast,
 } from '@components/Form';
 import { required } from '@util/validators';
+import { toDateTimeLocal, toUTCTime } from '@util/date-time';
 import { useAuth } from '@contexts/AuthProvider';
+import { useEffect, useMemo } from 'react';
 import { useForm } from '@hooks/useForm';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSWRMutation } from '@hooks/useSWRMutation';
 import { useSWRQuery } from '@hooks/useSWRQuery';
-import { toDateTimeLocal, toUTCTime } from '@util/date-time';
-import { useEffect, useMemo } from 'react';
 
 const methodOptions = [
   { label: 'Digital', value: LetterMethod.DIGITAL },
@@ -126,12 +126,17 @@ const LetterForm = () => {
   const correspondenceOptions = useMemo(() => {
     if (!correspondencesData?.data) return [];
     return correspondencesData.data
-      .map(({ correspondenceId, recipient = {}, title = 'No Title' }) => ({
-        label:
-          `${recipient?.lastName || ''}, ${recipient?.firstName || ''} - ${title.length > 20 ? `${title.slice(0, 20)}...` : title}`.trim() ||
-          'Unknown Recipient',
-        value: correspondenceId,
-      }))
+      .map(
+        ({
+          correspondenceId,
+          recipient = { lastName: 'No Last Name', firstName: 'No First Name' },
+          title = 'No Title',
+        }) => ({
+          label:
+            `${recipient.lastName}, ${recipient.firstName} - ${title && title.length > 20 ? `${title.slice(0, 20)}...` : title}`.trim(),
+          value: correspondenceId,
+        }),
+      )
       .sort((a, b) => a.label.localeCompare(b.label));
   }, [correspondencesData]);
 
@@ -219,13 +224,16 @@ const LetterForm = () => {
         {values.correspondenceId && (
           <h3 className="text-white text-lg">
             {(() => {
-              const { recipient, title } = !letterId
+              const {
+                recipient = {
+                  lastName: 'No Last Name',
+                  firstName: 'No First Name',
+                },
+                title = 'No Title',
+              } = !letterId
                 ? correspondenceMap[values.correspondenceId]
                 : (singleCorrespondence?.data as Correspondence);
-              return (
-                `${recipient?.lastName || ''}, ${recipient?.firstName || ''} - ${title || 'No Title'}`.trim() ||
-                'No Recipient - No Title'
-              );
+              return `${recipient.lastName}, ${recipient.firstName} - ${title}`.trim();
             })()}
           </h3>
         )}
@@ -236,7 +244,7 @@ const LetterForm = () => {
           id="correspondenceId"
           label="Correspondence ID"
           loading={correspondencesLoading}
-          options={correspondenceOptions || []}
+          options={correspondenceOptions}
           onChange={(value) => updateField('correspondenceId', value)}
           placeholder="Correspondence ID"
           value={values.correspondenceId}

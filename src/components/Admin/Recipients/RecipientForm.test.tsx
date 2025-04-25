@@ -5,6 +5,7 @@ import { useAuth } from '@contexts/AuthProvider';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSWRMutation } from '@hooks/useSWRMutation';
 import { useSWRQuery } from '@hooks/useSWRQuery';
+import showToast from '../../Form/Toast';
 
 jest.mock('@contexts/AuthProvider', () => ({
   useAuth: jest.fn(),
@@ -23,6 +24,11 @@ jest.mock('next/navigation', () => ({
   useSearchParams: jest.fn(),
 }));
 
+jest.mock('../../Form/Toast', () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
 describe('RecipientForm', () => {
   const mockMutate = jest.fn();
 
@@ -34,10 +40,19 @@ describe('RecipientForm', () => {
       jest.fn().mockReturnValue({
         data: {
           data: {
-            address: {},
-            recipientId: '123',
+            address: {
+              city: 'Corvallis',
+              country: 'USA',
+              postalCode: '97333',
+              state: 'OR',
+              street: 'Sunset Drive',
+            },
+            description: 'Example description...',
             firstName: 'John',
             lastName: 'Doe',
+            occupation: 'Parks Director',
+            organization: 'Pawnee Parks & Rec',
+            recipientId: '123',
           },
         },
         isLoading: false,
@@ -60,11 +75,14 @@ describe('RecipientForm', () => {
 
   it('Renders the form and calls useSWRQuery.', () => {
     render(<RecipientForm />);
-
     expect(screen.getByText(/Recipient Form/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/First Name/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Last Name/i)).toBeInTheDocument();
-    expect(useSWRQuery).toHaveBeenCalledWith('/recipient/123', 'mockToken');
+    expect(useSWRQuery).toHaveBeenCalledWith({
+      config: { shouldRetryOnError: false },
+      path: '/recipient/123',
+      token: 'mockToken',
+    });
   });
 
   it('Handles form submission and calls onSuccess.', async () => {
@@ -152,6 +170,122 @@ describe('RecipientForm', () => {
     render(<RecipientForm />);
 
     expect(screen.getByDisplayValue('John')).toBeInTheDocument();
+  });
+
+  it('Handles form errors on submission and calls onError with default message.', async () => {
+    const backMock = jest.fn();
+    (useRouter as jest.Mock).mockReturnValue({ back: backMock });
+    (useSearchParams as jest.Mock).mockReturnValue(new URLSearchParams({}));
+
+    (useSWRMutation as jest.Mock).mockImplementation(({ onError }) => ({
+      isLoading: false,
+      mutate: async ({ body }: any) => {
+        onError?.({});
+      },
+    }));
+
+    render(<RecipientForm />);
+
+    fireEvent.change(screen.getByLabelText(/First Name/i), {
+      target: { value: 'John' },
+    });
+    fireEvent.change(screen.getByLabelText(/Last Name/i), {
+      target: { value: 'Doe' },
+    });
+    fireEvent.change(screen.getByLabelText(/Organization/i), {
+      target: { value: 'OpenAI' },
+    });
+    fireEvent.change(screen.getByLabelText(/Occupation/i), {
+      target: { value: 'Engineer' },
+    });
+    fireEvent.change(screen.getByLabelText(/Description/i), {
+      target: { value: 'A test recipient' },
+    });
+    fireEvent.change(screen.getByLabelText(/Street/i), {
+      target: { value: '123 Main St' },
+    });
+    fireEvent.change(screen.getByLabelText(/City/i), {
+      target: { value: 'Portland' },
+    });
+    fireEvent.change(screen.getByLabelText(/State/i), {
+      target: { value: 'OR' },
+    });
+    fireEvent.change(screen.getByLabelText(/Postal Code/i), {
+      target: { value: '97201' },
+    });
+    fireEvent.change(screen.getByLabelText(/Country/i), {
+      target: { value: 'USA' },
+    });
+
+    fireEvent.click(screen.getByDisplayValue(/Create/i));
+
+    // Need to mock showToast and assert that it was called.
+  });
+
+  it('Handles form errors on submission and calls onError with error message.', async () => {
+    const backMock = jest.fn();
+    (useRouter as jest.Mock).mockReturnValue({ back: backMock });
+    (useSearchParams as jest.Mock).mockReturnValue(new URLSearchParams({}));
+
+    (useSWRMutation as jest.Mock).mockImplementation(({ onError }) => ({
+      isLoading: false,
+      mutate: async ({ body }: any) => {
+        onError?.({ error: 'Mock error!', status: 400 });
+      },
+    }));
+
+    render(<RecipientForm />);
+
+    fireEvent.change(screen.getByLabelText(/First Name/i), {
+      target: { value: 'John' },
+    });
+    fireEvent.change(screen.getByLabelText(/Last Name/i), {
+      target: { value: 'Doe' },
+    });
+    fireEvent.change(screen.getByLabelText(/Organization/i), {
+      target: { value: 'OpenAI' },
+    });
+    fireEvent.change(screen.getByLabelText(/Occupation/i), {
+      target: { value: 'Engineer' },
+    });
+    fireEvent.change(screen.getByLabelText(/Description/i), {
+      target: { value: 'A test recipient' },
+    });
+    fireEvent.change(screen.getByLabelText(/Street/i), {
+      target: { value: '123 Main St' },
+    });
+    fireEvent.change(screen.getByLabelText(/City/i), {
+      target: { value: 'Portland' },
+    });
+    fireEvent.change(screen.getByLabelText(/State/i), {
+      target: { value: 'OR' },
+    });
+    fireEvent.change(screen.getByLabelText(/Postal Code/i), {
+      target: { value: '97201' },
+    });
+    fireEvent.change(screen.getByLabelText(/Country/i), {
+      target: { value: 'USA' },
+    });
+
+    fireEvent.click(screen.getByDisplayValue(/Create/i));
+
+    expect(showToast).toHaveBeenCalledWith({
+      message: 'Error 400: Mock error!',
+      type: 'error',
+    });
+  });
+
+  it('Handles errors from data fetch.', () => {
+    (useSWRQuery as jest.Mock).mockReturnValue({
+      error: 'Mock error!',
+      isLoading: false,
+    });
+    render(<RecipientForm />);
+
+    expect(showToast).toHaveBeenCalledWith({
+      message: 'An error occurred while fetching data.',
+      type: 'error',
+    });
   });
 
   it('Has no accessibility violations.', async () => {

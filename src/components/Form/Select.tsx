@@ -51,7 +51,6 @@ const Select: React.FC<SelectProps> = ({
           {label}
         </label>
       )}
-
       {IconStart && (
         <div className="absolute left-5 top-3.5 text-white">
           <IconStart
@@ -61,8 +60,8 @@ const Select: React.FC<SelectProps> = ({
           />
         </div>
       )}
-
       <select
+        aria-label={label || placeholder || 'Select input'}
         className={`w-full h-12 rounded-full bg-white/25 border border-white text-white text-base placeholder-white/70 focus:outline-none appearance-none ${paddingClasses}`}
         id={id}
         onChange={onChange}
@@ -80,7 +79,6 @@ const Select: React.FC<SelectProps> = ({
           </option>
         ))}
       </select>
-
       {IconEnd && (
         <div className="absolute right-5 top-3.5 text-white">
           <IconEnd
@@ -90,7 +88,6 @@ const Select: React.FC<SelectProps> = ({
           />
         </div>
       )}
-
       {errorsArray.length > 0 && (
         <ul className="pl-4 mt-2 list-none text-red-400 text-base">
           {errorsArray.map((error) => (
