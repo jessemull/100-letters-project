@@ -10,10 +10,10 @@ import { useAuth } from '@contexts/AuthProvider';
 const CorrespondencesTab: React.FC = () => {
   const { token } = useAuth();
 
-  const { data, isLoading } = useSWRQuery<GetCorrespondencesResponse>(
-    '/correspondence',
+  const { data, isLoading } = useSWRQuery<GetCorrespondencesResponse>({
+    path: '/correspondence',
     token,
-  );
+  });
 
   return isLoading ? (
     <div className="w-full flex-grow flex items-center justify-center py-24 min-h-[calc(100vh-475px)]">

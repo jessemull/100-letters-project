@@ -1,45 +1,52 @@
 import React from 'react';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { axe } from 'jest-axe';
 import { LetterFactory } from '@factories/letter';
 import { LetterItem } from '@components/Admin';
-import { axe } from 'jest-axe';
-import { render, screen, fireEvent } from '@testing-library/react';
 
 const mockLetter = LetterFactory.build();
 
 describe('LetterItem', () => {
-  let consoleSpy: jest.SpyInstance;
-
-  beforeEach(() => {
-    consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
-  });
-
-  afterEach(() => {
-    consoleSpy.mockRestore();
-  });
-
   it('Renders the title and a truncated version of the letter text.', () => {
-    render(<LetterItem data={mockLetter} />);
+    render(
+      <LetterItem data={mockLetter} onEdit={jest.fn()} onDelete={jest.fn()} />,
+    );
+
     expect(screen.getByText(mockLetter.title)).toBeInTheDocument();
     expect(
       screen.getByText(`${mockLetter.text.slice(0, 25)}...`),
     ).toBeInTheDocument();
   });
 
-  it('Calls onEdit when edit button is clicked.', () => {
-    render(<LetterItem data={mockLetter} />);
+  it('Calls onEdit with the letterId when the edit button is clicked.', () => {
+    const onEditMock = jest.fn();
+    render(
+      <LetterItem data={mockLetter} onEdit={onEditMock} onDelete={jest.fn()} />,
+    );
+
     fireEvent.click(screen.getByTestId('edit-button'));
-    expect(consoleSpy).toHaveBeenCalledWith('onEdit', mockLetter);
+    expect(onEditMock).toHaveBeenCalledWith(mockLetter.letterId);
   });
 
-  it('Calls onDelete when delete button is clicked.', () => {
-    render(<LetterItem data={mockLetter} />);
-    const deleteButton = screen.getByLabelText('Delete');
-    fireEvent.click(deleteButton);
-    expect(consoleSpy).toHaveBeenCalledWith('onDelete', mockLetter);
+  it('Calls onDelete with the letterId when the delete button is clicked.', () => {
+    const onDeleteMock = jest.fn();
+    render(
+      <LetterItem
+        data={mockLetter}
+        onEdit={jest.fn()}
+        onDelete={onDeleteMock}
+      />,
+    );
+
+    fireEvent.click(screen.getByTestId('delete-button'));
+    expect(onDeleteMock).toHaveBeenCalledWith(mockLetter.letterId);
   });
 
   it('Has no accessibility violations.', async () => {
-    const { container } = render(<LetterItem data={mockLetter} />);
+    const { container } = render(
+      <LetterItem data={mockLetter} onEdit={jest.fn()} onDelete={jest.fn()} />,
+    );
+
     const results = await axe(container);
     expect(results).toHaveNoViolations();
   });

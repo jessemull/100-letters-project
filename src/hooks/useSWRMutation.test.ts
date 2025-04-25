@@ -76,10 +76,16 @@ describe('useSWRMutation', () => {
     await Promise.resolve();
     expect(result.current.error).toBe(errorResponse.message);
     expect(onError).toHaveBeenCalledWith({
-      error: errorResponse.message,
-      path: '/mock-path',
-      body: { key: 'value' },
+      body: {
+        key: 'value',
+      },
+      error: 'Some error occurred',
+      info: {
+        message: 'Some error occurred',
+      },
       params: undefined,
+      path: '/mock-path',
+      status: undefined,
     });
   });
 
@@ -216,10 +222,14 @@ describe('useSWRMutation', () => {
 
     expect(result.current.error).toBe('Non-JSON error message');
     expect(onError).toHaveBeenCalledWith({
+      body: {
+        key: 'value',
+      },
       error: 'Non-JSON error message',
-      path: '/mock-path',
-      body: { key: 'value' },
+      info: 'Non-JSON error message',
       params: undefined,
+      path: '/mock-path',
+      status: undefined,
     });
   });
 
@@ -264,7 +274,7 @@ describe('useSWRMutation', () => {
 
     mockFetch.mockResolvedValueOnce({
       ok: false,
-      json: async () => ({}), // No "message"
+      json: async () => ({}),
     });
 
     await act(async () => {
@@ -328,7 +338,7 @@ describe('useSWRMutation', () => {
     expect(mockFetch).toHaveBeenCalledWith(
       `${API_BASE_URL}/default-method`,
       expect.objectContaining({
-        method: 'POST', // ✅ this is the default you're covering
+        method: 'POST',
         body: JSON.stringify({ hello: 'world' }),
       }),
     );
@@ -376,12 +386,49 @@ describe('useSWRMutation', () => {
       await result.current.mutate();
     });
 
-    expect(result.current.error).toBe('An error occurred!');
+    expect(result.current.error).toBe('An unexpected error occurred');
     expect(onError).toHaveBeenCalledWith({
-      error: 'An error occurred!',
+      error: 'An unexpected error occurred',
       path: '/trigger-error',
       body: undefined,
       params: undefined,
+    });
+  });
+
+  it('Falls back to statusText when response.text() returns non-string.', async () => {
+    const onError = jest.fn();
+    const { result } = renderHook(() =>
+      useSWRMutation({
+        method: 'POST',
+        path: '/mock-path',
+        onError,
+      }),
+    );
+
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      json: async () => {
+        throw new Error('Invalid JSON');
+      },
+      text: async () => ({ unexpected: 'object' }),
+      statusText: 'Internal Server Error',
+      status: 500,
+    });
+
+    await act(async () => {
+      result.current.mutate({ path: '/mock-path', body: { key: 'value' } });
+    });
+
+    await Promise.resolve();
+
+    expect(result.current.error).toBe('Internal Server Error');
+    expect(onError).toHaveBeenCalledWith({
+      body: { key: 'value' },
+      error: 'Internal Server Error',
+      info: { unexpected: 'object' },
+      params: undefined,
+      path: '/mock-path',
+      status: 500,
     });
   });
 });

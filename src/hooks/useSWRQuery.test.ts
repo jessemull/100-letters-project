@@ -14,13 +14,13 @@ describe('useSWRQuery', () => {
   });
 
   it('Returns null URL and fetcher if token is null.', () => {
-    useSWRQuery('/some-path', null);
+    useSWRQuery({ path: '/some-path', token: null });
 
     expect(mockUseSWR).toHaveBeenCalledWith(null, null, undefined);
   });
 
   it('Returns null URL and a defined fetcher if path is null but token is present.', () => {
-    useSWRQuery(null, 'fake-token');
+    useSWRQuery({ path: null, token: 'fake-token' });
 
     expect(mockUseSWR).toHaveBeenCalledWith(
       null,
@@ -44,7 +44,9 @@ describe('useSWRQuery', () => {
       return { data: null, isLoading: true };
     });
 
-    const { result } = renderHook(() => useSWRQuery('/test', 'abc123'));
+    const { result } = renderHook(() =>
+      useSWRQuery({ path: '/test', token: 'abc123' }),
+    );
 
     const expectedUrl = `${API_BASE_URL}/test`;
     expect(mockUseSWR).toHaveBeenCalledWith(
@@ -79,23 +81,47 @@ describe('useSWRQuery', () => {
       return { data: null, isLoading: true };
     });
 
-    renderHook(() => useSWRQuery('/unauthorized', 'abc123'));
+    renderHook(() => useSWRQuery({ path: '/unauthorized', token: 'abc123' }));
 
     if (capturedFetcher) {
       await expect(
         (capturedFetcher as jest.Mock)(`${API_BASE_URL}/unauthorized`),
-      ).rejects.toThrow('Error 403: Forbidden');
+      ).rejects.toThrow('Forbidden');
     }
   });
 
   it('Passes through custom SWR configuration.', () => {
     const config = { revalidateOnFocus: false };
-    useSWRQuery('/custom', 'abc123', config);
+    useSWRQuery({ path: '/custom', token: 'abc123', config });
 
     expect(mockUseSWR).toHaveBeenCalledWith(
       `${API_BASE_URL}/custom`,
       expect.any(Function),
       config,
     );
+  });
+
+  it('Throws default error message when response is not ok and errorBody.message is missing.', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: false,
+      status: 500,
+      statusText: 'Internal Server Error',
+      json: jest.fn().mockResolvedValue({}),
+    });
+
+    let capturedFetcher: ((url: string) => Promise<any>) | null = null;
+
+    mockUseSWR.mockImplementation((url, fetcher) => {
+      capturedFetcher = fetcher;
+      return { data: null, isLoading: true };
+    });
+
+    renderHook(() => useSWRQuery({ path: '/error', token: 'abc123' }));
+
+    if (capturedFetcher) {
+      await expect(
+        (capturedFetcher as jest.Mock)(`${API_BASE_URL}/error`),
+      ).rejects.toThrow('Error 500: Internal Server Error');
+    }
   });
 });

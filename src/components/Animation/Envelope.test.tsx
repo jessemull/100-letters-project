@@ -26,8 +26,15 @@ describe('Envelope Component', () => {
     return render(<Envelope width={width} />);
   };
 
-  it('Renders the envelope container', () => {
-    renderWithWidth(1024);
+  it('Renders the envelope container', async () => {
+    await act(async () => {
+      renderWithWidth(1024);
+    });
+
+    await act(async () => {
+      jest.runOnlyPendingTimers();
+    });
+
     expect(screen.getByTestId('envelope')).toBeInTheDocument();
   });
 

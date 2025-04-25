@@ -63,3 +63,7 @@ export type GetCorrespondencesResponse = {
   data: Correspondence[];
   lastEvaluatedKey: string;
 };
+
+export type GetCorrespondenceByIdResponse = {
+  data: Correspondence;
+};

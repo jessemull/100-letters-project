@@ -25,10 +25,10 @@ const RecipientsTab: React.FC = () => {
 
   const { token } = useAuth();
 
-  const { data, isLoading } = useSWRQuery<GetRecipientsResponse>(
-    '/recipient',
+  const { data, isLoading } = useSWRQuery<GetRecipientsResponse>({
+    path: '/recipient',
     token,
-  );
+  });
 
   const { isLoading: isDeleting, mutate } = useSWRMutation<
     {},

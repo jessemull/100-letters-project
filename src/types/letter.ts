@@ -55,7 +55,19 @@ export type LetterUpdateInput = {
   type: LetterType;
 };
 
-export interface GetLettersResponse {
+export type GetLettersResponse = {
   data: Letter[];
   lastEvaluatedKey: string;
-}
+};
+
+export type GetLetterByIdResponse = {
+  data: Letter;
+};
+
+export type LetterFormResponse = {
+  message: string;
+};
+
+export type DeleteLetterResponse = {
+  message: string;
+};
