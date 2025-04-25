@@ -6,11 +6,11 @@ interface Option {
 }
 
 interface SelectProps {
-  label?: string;
   IconEnd?: ElementType;
   IconStart?: ElementType;
   errors?: string | string[];
   id: string;
+  label?: string;
   onChange: (event: ChangeEvent<HTMLSelectElement>) => void;
   onIconEndClick?: () => void;
   onIconStartClick?: () => void;
@@ -20,11 +20,11 @@ interface SelectProps {
 }
 
 const Select: React.FC<SelectProps> = ({
-  label,
   IconEnd,
   IconStart,
   errors,
   id,
+  label,
   onChange,
   onIconEndClick,
   onIconStartClick,
@@ -63,10 +63,10 @@ const Select: React.FC<SelectProps> = ({
       <select
         aria-label={label || placeholder || 'Select input'}
         className={`w-full h-12 rounded-full bg-white/25 border border-white text-white text-base placeholder-white/70 focus:outline-none appearance-none ${paddingClasses}`}
+        data-testid="select-input"
         id={id}
         onChange={onChange}
         value={value}
-        data-testid="select-input"
       >
         {placeholder && (
           <option value="" disabled hidden>

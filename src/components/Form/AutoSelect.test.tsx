@@ -16,7 +16,7 @@ describe('AutoSelect', () => {
     jest.clearAllMocks();
   });
 
-  it('renders with required props only', () => {
+  it('Renders with required props only.', () => {
     render(
       <AutoSelect
         id="test"
@@ -28,7 +28,7 @@ describe('AutoSelect', () => {
     expect(screen.getByDisplayValue('Banana')).toBeInTheDocument();
   });
 
-  it('renders a placeholder if provided', () => {
+  it('Renders a placeholder if provided.', () => {
     render(
       <AutoSelect
         id="test"
@@ -41,7 +41,7 @@ describe('AutoSelect', () => {
     expect(screen.getByPlaceholderText('Select a fruit')).toBeInTheDocument();
   });
 
-  it('renders a label if provided', () => {
+  it('Renders a label if provided.', () => {
     render(
       <AutoSelect
         id="test"
@@ -54,7 +54,7 @@ describe('AutoSelect', () => {
     expect(screen.getByText('Choose a fruit')).toBeInTheDocument();
   });
 
-  it('renders single string error', () => {
+  it('Renders single string error.', () => {
     render(
       <AutoSelect
         id="test"
@@ -67,7 +67,7 @@ describe('AutoSelect', () => {
     expect(screen.getByText('Something went wrong')).toBeInTheDocument();
   });
 
-  it('renders multiple error strings', () => {
+  it('Renders multiple error strings.', () => {
     const errors = ['Error one', 'Error two'];
     render(
       <AutoSelect
@@ -83,7 +83,7 @@ describe('AutoSelect', () => {
     );
   });
 
-  it('does not render error list when errors is undefined', () => {
+  it('Does not render error list when errors is undefined.', () => {
     render(
       <AutoSelect
         id="test"
@@ -95,7 +95,7 @@ describe('AutoSelect', () => {
     expect(screen.queryByRole('list')).not.toBeInTheDocument();
   });
 
-  it('shows options on focus and hides them on blur', async () => {
+  it('Shows options on focus and hides them on blur.', async () => {
     render(
       <AutoSelect
         id="test"
@@ -115,7 +115,7 @@ describe('AutoSelect', () => {
     await waitFor(() => expect(screen.queryByText('Apple')).toEqual(null));
   });
 
-  it('filters options based on input value', () => {
+  it('Filters options based on input value.', () => {
     render(
       <AutoSelect
         id="test"
@@ -132,7 +132,7 @@ describe('AutoSelect', () => {
     expect(screen.queryByText('Banana')).not.toBeInTheDocument();
   });
 
-  it('selects an option when clicked', () => {
+  it('Selects an option when clicked.', () => {
     render(
       <AutoSelect
         id="test"
@@ -149,7 +149,7 @@ describe('AutoSelect', () => {
     expect(input).toHaveValue('Cherry');
   });
 
-  it('shows loading spinner when loading is true', () => {
+  it('Shows loading spinner when loading is true.', () => {
     render(
       <AutoSelect
         id="test"
@@ -164,17 +164,17 @@ describe('AutoSelect', () => {
     expect(screen.getByTestId('progress')).toBeInTheDocument();
   });
 
-  it('does not call onChange if clicked option is not found', () => {
+  it('Does not call onChange if clicked option is not found.', () => {
     render(
       <AutoSelect id="test" value="" onChange={onChangeMock} options={[]} />,
     );
     const input = screen.getByRole('textbox');
     fireEvent.focus(input);
-    fireEvent.mouseDown(input); // should not trigger onChange
+    fireEvent.mouseDown(input);
     expect(onChangeMock).not.toHaveBeenCalled();
   });
 
-  it('has no accessibility violations', async () => {
+  it('Has no accessibility violations.', async () => {
     const { container } = render(
       <AutoSelect
         id="test"

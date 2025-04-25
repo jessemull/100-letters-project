@@ -7,7 +7,7 @@ import { LetterItem } from '@components/Admin';
 const mockLetter = LetterFactory.build();
 
 describe('LetterItem', () => {
-  it('renders the title and a truncated version of the letter text', () => {
+  it('Renders the title and a truncated version of the letter text.', () => {
     render(
       <LetterItem data={mockLetter} onEdit={jest.fn()} onDelete={jest.fn()} />,
     );
@@ -18,7 +18,7 @@ describe('LetterItem', () => {
     ).toBeInTheDocument();
   });
 
-  it('calls onEdit with the letterId when the edit button is clicked', () => {
+  it('Calls onEdit with the letterId when the edit button is clicked.', () => {
     const onEditMock = jest.fn();
     render(
       <LetterItem data={mockLetter} onEdit={onEditMock} onDelete={jest.fn()} />,
@@ -28,7 +28,7 @@ describe('LetterItem', () => {
     expect(onEditMock).toHaveBeenCalledWith(mockLetter.letterId);
   });
 
-  it('calls onDelete with the letterId when the delete button is clicked', () => {
+  it('Calls onDelete with the letterId when the delete button is clicked.', () => {
     const onDeleteMock = jest.fn();
     render(
       <LetterItem
@@ -42,7 +42,7 @@ describe('LetterItem', () => {
     expect(onDeleteMock).toHaveBeenCalledWith(mockLetter.letterId);
   });
 
-  it('has no accessibility violations', async () => {
+  it('Has no accessibility violations.', async () => {
     const { container } = render(
       <LetterItem data={mockLetter} onEdit={jest.fn()} onDelete={jest.fn()} />,
     );

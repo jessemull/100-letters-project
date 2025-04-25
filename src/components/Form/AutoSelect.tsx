@@ -9,25 +9,25 @@ interface Option {
 }
 
 interface AutoSelectProps {
+  errors?: string | string[];
   id: string;
   label?: string;
+  loading?: boolean;
+  onChange: (value: string) => void;
   options: Option[];
   placeholder?: string;
   value: string;
-  onChange: (value: string) => void;
-  errors?: string | string[];
-  loading?: boolean;
 }
 
 const AutoSelect: React.FC<AutoSelectProps> = ({
+  errors,
   id,
   label,
+  loading = false,
+  onChange,
   options,
   placeholder = '',
   value,
-  onChange,
-  errors,
-  loading = false,
 }) => {
   const [inputValue, setInputValue] = useState(value);
   const [isFocused, setIsFocused] = useState(false);
@@ -72,14 +72,14 @@ const AutoSelect: React.FC<AutoSelectProps> = ({
       )}
 
       <input
+        className="w-full h-12 rounded-full bg-white/25 border border-white text-white text-base placeholder-white/70 focus:outline-none px-4"
         data-testid={id}
         id={id}
-        value={inputValue}
-        placeholder={placeholder}
-        onFocus={() => setIsFocused(true)}
         onBlur={() => setTimeout(() => setIsFocused(false), 100)}
         onChange={(e) => setInputValue(e.target.value)}
-        className="w-full h-12 rounded-full bg-white/25 border border-white text-white text-base placeholder-white/70 focus:outline-none px-4"
+        onFocus={() => setIsFocused(true)}
+        placeholder={placeholder}
+        value={inputValue}
       />
 
       {isFocused && (

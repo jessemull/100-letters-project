@@ -219,7 +219,10 @@ describe('RecipientForm', () => {
 
     fireEvent.click(screen.getByDisplayValue(/Create/i));
 
-    // Need to mock showToast and assert that it was called.
+    expect(showToast).toHaveBeenCalledWith({
+      message: 'An error occurred during data update.',
+      type: 'error',
+    });
   });
 
   it('Handles form errors on submission and calls onError with error message.', async () => {

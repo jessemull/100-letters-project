@@ -395,7 +395,7 @@ describe('useSWRMutation', () => {
     });
   });
 
-  it('Falls back to statusText when response.text() returns non-string', async () => {
+  it('Falls back to statusText when response.text() returns non-string.', async () => {
     const onError = jest.fn();
     const { result } = renderHook(() =>
       useSWRMutation({
@@ -408,9 +408,9 @@ describe('useSWRMutation', () => {
     mockFetch.mockResolvedValueOnce({
       ok: false,
       json: async () => {
-        throw new Error('Invalid JSON'); // simulate bad JSON
+        throw new Error('Invalid JSON');
       },
-      text: async () => ({ unexpected: 'object' }), // not a string!
+      text: async () => ({ unexpected: 'object' }),
       statusText: 'Internal Server Error',
       status: 500,
     });

@@ -70,7 +70,7 @@ describe('LetterForm', () => {
     });
   });
 
-  it('seeds empty form and allows user to create letter', async () => {
+  it('Seeds empty form and allows user to create letter.', async () => {
     (useSearchParams as jest.Mock).mockReturnValue({ get: () => null });
 
     (useSWRQuery as jest.Mock).mockImplementation(({ path }) => {
@@ -148,7 +148,7 @@ describe('LetterForm', () => {
     });
   });
 
-  it('loads letter for edit mode using letterId', async () => {
+  it('Loads letter for edit mode using letterId.', async () => {
     (useSearchParams as jest.Mock).mockReturnValue({
       get: () => 'abc123',
     });
@@ -180,7 +180,7 @@ describe('LetterForm', () => {
     expect(screen.getByDisplayValue('text here')).toBeInTheDocument();
   });
 
-  it('uses default names and title for edit', async () => {
+  it('Uses default names and title for edit.', async () => {
     (useSearchParams as jest.Mock).mockReturnValue({
       get: () => 'abc123',
     });
@@ -212,13 +212,13 @@ describe('LetterForm', () => {
     expect(screen.getByDisplayValue('text here')).toBeInTheDocument();
   });
 
-  it('shows loading state if still fetching', () => {
+  it('Shows loading state if still fetching.', () => {
     (useAuth as jest.Mock).mockReturnValue({ loading: true });
     render(<LetterForm />);
     expect(screen.getByTestId('progress')).toBeInTheDocument();
   });
 
-  it('calls router.back on cancel click', () => {
+  it('Calls router.back on cancel click.', () => {
     (useSearchParams as jest.Mock).mockReturnValue({ get: () => null });
     (useSWRQuery as jest.Mock).mockReturnValue({});
     (useSWRMutation as jest.Mock).mockReturnValue({
@@ -231,7 +231,7 @@ describe('LetterForm', () => {
     expect(backMock).toHaveBeenCalled();
   });
 
-  it('shows toast if fetch error occurs', () => {
+  it('Shows toast if fetch error occurs.', () => {
     (useSearchParams as jest.Mock).mockReturnValue({ get: () => 'abc123' });
 
     (useSWRQuery as jest.Mock).mockImplementation(({ path }) => {
@@ -254,7 +254,7 @@ describe('LetterForm', () => {
     );
   });
 
-  it('removes sentAt/receivedAt if empty', async () => {
+  it('Removes sentAt/receivedAt if empty.', async () => {
     (useSearchParams as jest.Mock).mockReturnValue({ get: () => null });
 
     (useSWRQuery as jest.Mock).mockImplementation(({ path }) => {
@@ -366,7 +366,7 @@ describe('LetterForm', () => {
     ).toBeInTheDocument();
   });
 
-  it('shows toast if fetch error occurs and shows default message', () => {
+  it('Shows toast if fetch error occurs and shows default message.', () => {
     (useSearchParams as jest.Mock).mockReturnValue({ get: () => 'abc123' });
 
     (useSWRQuery as jest.Mock).mockImplementation(({ path }) => {

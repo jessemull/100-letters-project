@@ -101,12 +101,12 @@ describe('useSWRQuery', () => {
     );
   });
 
-  it('Throws default error message when response is not ok and errorBody.message is missing', async () => {
+  it('Throws default error message when response is not ok and errorBody.message is missing.', async () => {
     global.fetch = jest.fn().mockResolvedValue({
       ok: false,
       status: 500,
       statusText: 'Internal Server Error',
-      json: jest.fn().mockResolvedValue({}), // simulate no "message" key
+      json: jest.fn().mockResolvedValue({}),
     });
 
     let capturedFetcher: ((url: string) => Promise<any>) | null = null;

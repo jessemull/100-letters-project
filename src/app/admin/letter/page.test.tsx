@@ -27,12 +27,12 @@ jest.mock('@components/Form', () => {
 });
 
 describe('LetterPage', () => {
-  it('renders the page layout', () => {
+  it('Renders the page layout.', () => {
     render(<LetterPage />);
     expect(screen.getByTestId('page-layout')).toBeInTheDocument();
   });
 
-  it('renders the letter form', async () => {
+  it('Renders the letter form.', async () => {
     render(<LetterPage />);
     expect(screen.getByTestId('letter-form')).toBeInTheDocument();
   });
