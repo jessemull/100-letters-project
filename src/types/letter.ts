@@ -68,6 +68,10 @@ export type LetterFormResponse = {
   message: string;
 };
 
+export type LetterParams = {
+  letterId: string;
+};
+
 export type DeleteLetterResponse = {
   message: string;
 };

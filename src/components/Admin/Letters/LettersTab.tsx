@@ -2,16 +2,16 @@
 
 import React, { useState } from 'react';
 import { ConfirmationModal, Progress, showToast } from '@components/Form';
-import { DeleteLetterResponse, GetLettersResponse } from '@ts-types/letter';
+import {
+  DeleteLetterResponse,
+  GetLettersResponse,
+  LetterParams,
+} from '@ts-types/letter';
 import { LetterItem } from '@components/Admin';
 import { useAuth } from '@contexts/AuthProvider';
 import { useRouter } from 'next/navigation';
 import { useSWRMutation } from '@hooks/useSWRMutation';
 import { useSWRQuery } from '@hooks/useSWRQuery';
-
-export type LetterParams = {
-  letterId: string;
-};
 
 const LettersTab: React.FC = () => {
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);

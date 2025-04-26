@@ -28,14 +28,14 @@ export enum Status {
 
 export type Correspondence = {
   correspondenceId: string;
-  createdAt: string;
+  createdAt?: string;
   letters: Letter[];
   recipient: Recipient;
   recipientId: string;
   reason: Reason;
   status: Status;
   title: string;
-  updatedAt: string;
+  updatedAt?: string;
 };
 
 export type CorrespondenceCreateInput = {
@@ -65,5 +65,32 @@ export type GetCorrespondencesResponse = {
 };
 
 export type GetCorrespondenceByIdResponse = {
-  data: Correspondence;
+  data: {
+    correspondence: Correspondence;
+    recipient: Recipient;
+    letters: Letter[];
+  };
+};
+
+export type CorrespondenceFormResponse = {
+  message: string;
+};
+
+export type CorrespondenceParams = {
+  correspondenceId: string;
+};
+
+export type DeleteCorrespondenceResponse = {
+  message: string;
+};
+
+export type CreateOrUpdateCorrespondenceInput = {
+  correspondence: {
+    correspondenceId?: string;
+    reason: Reason;
+    status: Status;
+    title: string;
+  };
+  recipient: RecipientUpdateInput;
+  letters: LetterUpdateInput[];
 };
