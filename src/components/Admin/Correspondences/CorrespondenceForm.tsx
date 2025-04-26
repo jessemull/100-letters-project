@@ -3,6 +3,7 @@
 import {
   Correspondence,
   CorrespondenceFormResponse,
+  CorrespondenceUpdate,
   CreateOrUpdateCorrespondenceInput,
   GetCorrespondenceByIdResponse,
   Impact,
@@ -37,7 +38,7 @@ const statusOptions = [
   { label: 'Unsent', value: Status.UNSENT },
 ];
 
-const initial: Correspondence = {
+const initial: CorrespondenceUpdate = {
   correspondenceId: '',
   letters: [],
   recipient: {
@@ -106,7 +107,7 @@ const CorrespondenceForm = () => {
   });
 
   const { errors, isDirty, onSubmit, updateField, values, setValues } =
-    useForm<Correspondence>({
+    useForm<CorrespondenceUpdate>({
       initial,
       validators,
     });
@@ -133,7 +134,14 @@ const CorrespondenceForm = () => {
 
   const handleSubmit = () => {
     onSubmit(async () => {
-      const { letters, recipient, ...correspondence } = values;
+      const { letters, recipient, ...correspondence } = { ...values };
+
+      if (!correspondence?.correspondenceId) {
+        delete correspondence['correspondenceId'];
+        delete correspondence['recipientId'];
+        delete recipient['recipientId'];
+      }
+
       await mutate({ body: { correspondence, letters, recipient } });
     });
   };
@@ -328,18 +336,18 @@ const CorrespondenceForm = () => {
               value={values.recipient.address.postalCode}
               type="text"
             />
+            <TextInput
+              errors={errors['recipient.address.country']}
+              id="country"
+              label="Country"
+              onChange={({ target: { value } }) =>
+                updateField('recipient.address.country', value)
+              }
+              placeholder="Country"
+              value={values.recipient.address.country}
+              type="text"
+            />
           </div>
-          <TextInput
-            errors={errors['recipient.address.country']}
-            id="country"
-            label="Country"
-            onChange={({ target: { value } }) =>
-              updateField('recipient.address.country', value)
-            }
-            placeholder="Country"
-            value={values.recipient.address.country}
-            type="text"
-          />
         </div>
       </div>
       <div className="flex flex-col-reverse md:flex-row justify-between gap-4 pt-6">

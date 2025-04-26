@@ -1,5 +1,6 @@
 import { Letter, LetterCreateInput, LetterUpdateInput } from './letter';
 import {
+  Address,
   Recipient,
   RecipientCreateInput,
   RecipientUpdateInput,
@@ -31,7 +32,27 @@ export type Correspondence = {
   createdAt?: string;
   letters: Letter[];
   recipient: Recipient;
-  recipientId: string;
+  recipientId?: string;
+  reason: Reason;
+  status: Status;
+  title: string;
+  updatedAt?: string;
+};
+
+export type CorrespondenceUpdate = {
+  correspondenceId?: string;
+  createdAt?: string;
+  letters: Letter[];
+  recipient: {
+    address: Address;
+    description?: string;
+    firstName: string;
+    lastName: string;
+    occupation?: string;
+    organization?: string;
+    recipientId?: string;
+  };
+  recipientId?: string;
   reason: Reason;
   status: Status;
   title: string;
@@ -91,6 +112,14 @@ export type CreateOrUpdateCorrespondenceInput = {
     status: Status;
     title: string;
   };
-  recipient: RecipientUpdateInput;
+  recipient: {
+    address: Address;
+    description?: string;
+    firstName: string;
+    lastName: string;
+    occupation?: string;
+    organization?: string;
+    recipientId?: string;
+  };
   letters: LetterUpdateInput[];
 };
