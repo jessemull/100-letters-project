@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  Correspondence,
   CorrespondenceFormResponse,
   CorrespondenceUpdate,
   CreateOrUpdateCorrespondenceInput,
@@ -11,6 +10,7 @@ import {
 } from '@ts-types/correspondence';
 import {
   Button,
+  ConfirmationModal,
   Progress,
   Select,
   TextArea,
@@ -19,11 +19,17 @@ import {
 } from '@components/Form';
 import { required } from '@util/validators';
 import { useAuth } from '@contexts/AuthProvider';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from '@hooks/useForm';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSWRMutation } from '@hooks/useSWRMutation';
 import { useSWRQuery } from '@hooks/useSWRQuery';
+import { LetterItem } from '../Letters';
+import {
+  DeleteLetterResponse,
+  GetLettersResponse,
+  LetterParams,
+} from '@ts-types/letter';
 
 const impactOptions = [
   { label: 'Low', value: Impact.LOW },
@@ -91,6 +97,9 @@ const validators = {
 };
 
 const CorrespondenceForm = () => {
+  const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
+  const [letterId, setLetterId] = useState('');
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const correspondenceId = searchParams.get('correspondenceId');
@@ -112,6 +121,39 @@ const CorrespondenceForm = () => {
       validators,
     });
 
+  const { isLoading: isDeleting, mutate: deleteLetter } = useSWRMutation<
+    {},
+    DeleteLetterResponse,
+    GetLettersResponse,
+    LetterParams
+  >({
+    method: 'DELETE',
+    key: '/letter',
+    token,
+    onSuccess: () => {
+      showToast({
+        message: 'Letter deleted successfully!',
+        type: 'success',
+      });
+    },
+    onError: ({ error }) => {
+      showToast({
+        message: error,
+        type: 'error',
+      });
+    },
+    onUpdate: ({ prev, params }) => {
+      const lastEvaluatedKey = prev ? prev.lastEvaluatedKey : '';
+      const data = prev
+        ? prev.data.filter((letter) => letter.letterId !== params?.letterId)
+        : [];
+      return {
+        data,
+        lastEvaluatedKey,
+      };
+    },
+  });
+
   const { mutate, isLoading: isUpdating } = useSWRMutation<
     Partial<CreateOrUpdateCorrespondenceInput>,
     CorrespondenceFormResponse
@@ -131,6 +173,28 @@ const CorrespondenceForm = () => {
     },
     onSuccess: () => router.back(),
   });
+
+  const onAddLetter = () => {
+    router.push(`/admin/letter?correspondenceId=${correspondenceId}`);
+  };
+
+  const onEdit = (id: string) => {
+    router.push(`/admin/letter?letterId=${id}`);
+  };
+
+  const onDelete = (id: string) => {
+    setLetterId(id);
+    setIsConfirmationModalOpen(true);
+  };
+
+  const closeConfirmationModal = () => {
+    setIsConfirmationModalOpen(false);
+  };
+
+  const onConfirmDelete = () => {
+    closeConfirmationModal();
+    deleteLetter({ path: `/letter/${letterId}`, params: { letterId } });
+  };
 
   const handleSubmit = () => {
     onSubmit(async () => {
@@ -349,17 +413,56 @@ const CorrespondenceForm = () => {
             />
           </div>
         </div>
+        {correspondenceId && (
+          <div className="space-y-4 pt-6">
+            <h2 className="text-xl font-semibold text-white">Letters</h2>
+            <div className="flex justify-center flex-col space-y-4">
+              {isDeleting ? (
+                <div className="w-full flex justify-center items-center min-h-[200px]">
+                  <Progress color="white" size={16} />
+                </div>
+              ) : (
+                values.letters.map((letter) => (
+                  <LetterItem
+                    key={letter?.letterId}
+                    data={letter}
+                    onEdit={onEdit}
+                    onDelete={onDelete}
+                  />
+                ))
+              )}
+              <div className="lg:self-center pt-1 lg:w-1/2">
+                <Button
+                  id="add-letter"
+                  onClick={onAddLetter}
+                  value="Add Letter +"
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
       <div className="flex flex-col-reverse md:flex-row justify-between gap-4 pt-6">
         <Button id="cancel" onClick={handleCancel} value="Cancel" />
         <Button
-          disabled={!isDirty || Object.keys(errors).length > 0}
+          disabled={
+            !isDirty ||
+            Object.keys(errors).length > 0 ||
+            isLoading ||
+            isDeleting
+          }
           id="submit"
           loading={isUpdating}
           onClick={handleSubmit}
           value={correspondenceId ? 'Update' : 'Create'}
         />
       </div>
+      <ConfirmationModal
+        isOpen={isConfirmationModalOpen}
+        onClose={closeConfirmationModal}
+        onConfirm={onConfirmDelete}
+        title="Delete Letter"
+      />
     </div>
   );
 };

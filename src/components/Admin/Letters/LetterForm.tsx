@@ -78,6 +78,7 @@ const validators = {
 const LetterForm = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const correspondenceId = searchParams.get('correspondenceId');
   const letterId = searchParams.get('letterId');
   const { loading: authenticating, token } = useAuth();
 
@@ -98,18 +99,20 @@ const LetterForm = () => {
   } = useSWRQuery<GetCorrespondencesResponse>({
     config: { shouldRetryOnError: false },
     path: '/correspondence?limit=500',
-    skip: Boolean(letterId),
+    skip: letterId === null && correspondenceId !== null,
     token,
   });
 
   const {
-    data: singleCorrespondence,
+    data: singleCorrespondence = {
+      data: { correspondence: { correspondenceId: '' } },
+    },
     error: singleCorrespondenceError,
     isLoading: singleCorrespondenceIsLoading,
   } = useSWRQuery<GetCorrespondenceByIdResponse>({
     config: { shouldRetryOnError: false },
-    path: `/correspondence/${data?.correspondenceId}`,
-    skip: !data?.correspondenceId,
+    path: `/correspondence/${data?.correspondenceId || correspondenceId}`,
+    skip: !data?.correspondenceId && !correspondenceId,
     token,
   });
 
@@ -132,8 +135,9 @@ const LetterForm = () => {
           recipient = { lastName: 'No Last Name', firstName: 'No First Name' },
           title = 'No Title',
         }) => ({
-          label:
-            `${recipient.lastName}, ${recipient.firstName} - ${title && title.length > 20 ? `${title.slice(0, 20)}...` : title}`.trim(),
+          label: `${recipient.lastName}, ${recipient.firstName} - ${
+            title && title.length > 20 ? `${title.slice(0, 20)}...` : title
+          }`.trim(),
           value: correspondenceId,
         }),
       )
@@ -215,6 +219,40 @@ const LetterForm = () => {
     }
   }, [error, correspondencesError, singleCorrespondenceError]);
 
+  useEffect(() => {
+    if (
+      !letterId &&
+      singleCorrespondence?.data?.correspondence?.correspondenceId &&
+      values.correspondenceId === ''
+    ) {
+      updateField(
+        'correspondenceId',
+        singleCorrespondence?.data?.correspondence?.correspondenceId,
+      );
+    }
+  }, [letterId, singleCorrespondence, values.correspondenceId, updateField]);
+
+  const correspondenceLabel = useMemo(() => {
+    const correspondence =
+      !letterId && !correspondenceId
+        ? correspondenceMap[values.correspondenceId]
+        : (singleCorrespondence?.data as unknown as Correspondence);
+
+    const recipient = correspondence?.recipient || {
+      lastName: 'No Last Name',
+      firstName: 'No First Name',
+    };
+    const title = correspondence?.title || 'No Title';
+
+    return `${recipient.lastName}, ${recipient.firstName} - ${title}`.trim();
+  }, [
+    correspondenceMap,
+    letterId,
+    correspondenceId,
+    singleCorrespondence,
+    values.correspondenceId,
+  ]);
+
   return isLoading || authenticating || singleCorrespondenceIsLoading ? (
     <Progress color="white" size={16} />
   ) : (
@@ -222,34 +260,22 @@ const LetterForm = () => {
       <div>
         <h1 className="text-3xl font-semibold text-white">Letter Form</h1>
         {values.correspondenceId && (
-          <h3 className="text-white text-lg">
-            {(() => {
-              const {
-                recipient = {
-                  lastName: 'No Last Name',
-                  firstName: 'No First Name',
-                },
-                title = 'No Title',
-              } = !letterId
-                ? correspondenceMap[values.correspondenceId]
-                : (singleCorrespondence?.data as Correspondence);
-              return `${recipient.lastName}, ${recipient.firstName} - ${title}`.trim();
-            })()}
-          </h3>
+          <h3 className="text-white text-lg">{correspondenceLabel}</h3>
         )}
       </div>
-      {!letterId && (
-        <AutoSelect
-          errors={errors.correspondenceId}
-          id="correspondenceId"
-          label="Correspondence ID"
-          loading={correspondencesLoading}
-          options={correspondenceOptions}
-          onChange={(value) => updateField('correspondenceId', value)}
-          placeholder="Correspondence ID"
-          value={values.correspondenceId}
-        />
-      )}
+      {!letterId &&
+        (!values.correspondenceId || correspondenceOptions.length > 1) && (
+          <AutoSelect
+            errors={errors.correspondenceId}
+            id="correspondenceId"
+            label="Correspondence ID"
+            loading={correspondencesLoading}
+            options={correspondenceOptions}
+            onChange={(value) => updateField('correspondenceId', value)}
+            placeholder="Correspondence ID"
+            value={values.correspondenceId}
+          />
+        )}
       <TextInput
         errors={errors.title}
         id="title"
