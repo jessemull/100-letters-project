@@ -33,6 +33,7 @@ const CorrespondenceItem = ({ data, onEdit, onDelete }: Props) => {
             <PenSquare className="w-6 h-6" />
           </button>
           <button
+            data-testid="delete-button"
             onClick={() => onDelete(data.correspondenceId)}
             className="text-white hover:text-gray-400"
             aria-label="Delete"

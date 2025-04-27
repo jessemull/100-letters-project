@@ -122,8 +122,7 @@ describe('useSWRMutation', () => {
       useSWRMutation({
         method: 'POST',
         path: '/mock-path',
-        key: '/mock-key',
-        onUpdate,
+        cache: [{ key: '/mock-key', onUpdate }],
       }),
     );
 
@@ -140,6 +139,7 @@ describe('useSWRMutation', () => {
     await Promise.resolve();
 
     expect(onUpdate).toHaveBeenCalledWith({
+      key: '/mock-key',
       prev: undefined,
       body: undefined,
       params: undefined,

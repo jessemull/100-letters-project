@@ -1,11 +1,5 @@
-import {
-  render,
-  screen,
-  fireEvent,
-  waitFor,
-  prettyDOM,
-} from '@testing-library/react';
-import LetterForm from './LetterForm';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { LetterForm } from '@components/Admin';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@contexts/AuthProvider';
 import { useSWRQuery } from '@hooks/useSWRQuery';
@@ -520,6 +514,41 @@ describe('LetterForm', () => {
     await waitFor(() => {
       const body = mutateMock.mock.calls[0][0].body;
       expect(body.correspondenceId).toBe('c1');
+    });
+  });
+
+  it('updates correspondenceId if letterId is missing and correspondenceId is available', async () => {
+    (useSearchParams as jest.Mock).mockReturnValue({
+      get: (key: string) => {
+        if (key === 'letterId') return null;
+        if (key === 'correspondenceId') return null;
+        return null;
+      },
+    });
+
+    (useSWRQuery as jest.Mock).mockImplementation(({ path }) => {
+      if (path?.startsWith('/correspondence/')) {
+        return {
+          data: {
+            data: {
+              correspondence: {
+                correspondenceId: 'mock-correspondence-id',
+              },
+            },
+          },
+          error: null,
+          isLoading: false,
+        };
+      }
+      return { data: {}, error: null, isLoading: false };
+    });
+
+    (useRouter as jest.Mock).mockReturnValue({ back: jest.fn() });
+
+    render(<LetterForm />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Letter Form')).toBeInTheDocument();
     });
   });
 });

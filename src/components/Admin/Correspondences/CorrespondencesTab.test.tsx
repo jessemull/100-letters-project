@@ -1,0 +1,167 @@
+import * as AuthProvider from '@contexts/AuthProvider';
+import React from 'react';
+import showToast from '@components/Form/Toast';
+import { CorrespondencesTab } from '@components/Admin';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { useRouter } from 'next/navigation';
+
+jest.mock('@hooks/useSWRQuery', () => ({
+  __esModule: true,
+  useSWRQuery: jest.fn(),
+}));
+
+jest.mock('@hooks/useSWRMutation', () => ({
+  __esModule: true,
+  useSWRMutation: jest.fn(),
+}));
+
+jest.mock('next/navigation', () => ({
+  useRouter: jest.fn(),
+}));
+
+jest.mock('@contexts/AuthProvider', () => ({
+  __esModule: true,
+  ...jest.requireActual('@contexts/AuthProvider'),
+  useAuth: jest.fn(),
+}));
+
+jest.mock('@components/Form/Toast', () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
+const useSWRQuery = require('@hooks/useSWRQuery').useSWRQuery;
+const useSWRMutation = require('@hooks/useSWRMutation').useSWRMutation;
+const mockPush = jest.fn();
+const mockMutate = jest.fn();
+const testCorrespondence = {
+  correspondenceId: '1',
+  title: 'Test Correspondence',
+};
+
+describe('CorrespondencesTab', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    (AuthProvider.useAuth as jest.Mock).mockReturnValue({
+      token: 'token',
+    } as AuthProvider.AuthContextType);
+    (useRouter as jest.Mock).mockReturnValue({ push: mockPush });
+    (showToast as jest.Mock).mockClear();
+  });
+
+  it('Displays loading state.', () => {
+    useSWRQuery.mockReturnValue({ data: undefined, isLoading: true });
+    useSWRMutation.mockReturnValue({ isLoading: false, mutate: jest.fn() });
+    render(<CorrespondencesTab />);
+    expect(screen.getByTestId('progress')).toBeInTheDocument();
+  });
+
+  it('Renders correspondence list.', () => {
+    useSWRQuery.mockReturnValue({
+      data: { data: [testCorrespondence], lastEvaluatedKey: '' },
+      isLoading: false,
+    });
+    useSWRMutation.mockReturnValue({ isLoading: false, mutate: jest.fn() });
+    render(<CorrespondencesTab />);
+    expect(screen.getByText('Test Correspondence')).toBeInTheDocument();
+  });
+
+  it('Renders empty state.', () => {
+    useSWRQuery.mockReturnValue({
+      data: { data: [], lastEvaluatedKey: '' },
+      isLoading: false,
+    });
+    useSWRMutation.mockReturnValue({ isLoading: false, mutate: jest.fn() });
+    render(<CorrespondencesTab />);
+    expect(screen.getByText('No results found.')).toBeInTheDocument();
+  });
+
+  it('Opens and confirms delete modal.', async () => {
+    useSWRQuery.mockReturnValue({
+      data: { data: [testCorrespondence], lastEvaluatedKey: '' },
+      isLoading: false,
+    });
+    useSWRMutation.mockReturnValue({ isLoading: false, mutate: mockMutate });
+    render(<CorrespondencesTab />);
+    fireEvent.click(screen.getByTestId('delete-button'));
+    fireEvent.click(screen.getByText('Delete'));
+    await waitFor(() => {
+      expect(mockMutate).toHaveBeenCalledWith({
+        path: `/correspondence/1`,
+        params: { correspondenceId: '1' },
+      });
+    });
+  });
+
+  it('Navigates to edit correspondence.', () => {
+    useSWRQuery.mockReturnValue({
+      data: { data: [testCorrespondence], lastEvaluatedKey: '' },
+      isLoading: false,
+    });
+    useSWRMutation.mockReturnValue({ isLoading: false, mutate: jest.fn() });
+    render(<CorrespondencesTab />);
+    fireEvent.click(screen.getByTestId('edit-button'));
+    expect(mockPush).toHaveBeenCalledWith(
+      '/admin/correspondence?correspondenceId=1',
+    );
+  });
+
+  it('Calls onSuccess and shows success toast.', async () => {
+    useSWRQuery.mockReturnValue({
+      data: { data: [testCorrespondence], lastEvaluatedKey: '' },
+      isLoading: false,
+    });
+    const mutateFn = async (_: any) => {
+      const onSuccess = useSWRMutation.mock.calls[0][0].onSuccess;
+      if (onSuccess) onSuccess({});
+      const onUpdate = useSWRMutation.mock.calls[0][0].onUpdate;
+      if (onUpdate)
+        onUpdate({
+          prev: { data: [testCorrespondence], lastEvaluatedKey: '' },
+          params: { correspondenceId: '1' },
+        });
+    };
+    useSWRMutation.mockReturnValue({ isLoading: false, mutate: mutateFn });
+    render(<CorrespondencesTab />);
+    fireEvent.click(screen.getByTestId('delete-button'));
+    fireEvent.click(screen.getByText('Delete'));
+    await waitFor(() => {
+      expect(showToast).toHaveBeenCalledWith({
+        message: 'Correspondence deleted successfully!',
+        type: 'success',
+      });
+    });
+  });
+
+  it('Calls onError and shows error toast.', async () => {
+    useSWRQuery.mockReturnValue({
+      data: { data: [testCorrespondence], lastEvaluatedKey: '' },
+      isLoading: false,
+    });
+    const mutateFn = async (_: any) => {
+      const onError = useSWRMutation.mock.calls[0][0].onError;
+      if (onError) onError({ error: 'Something went wrong' });
+      const onUpdate = useSWRMutation.mock.calls[0][0].onUpdate;
+      if (onUpdate) onUpdate({});
+    };
+    useSWRMutation.mockReturnValue({ isLoading: false, mutate: mutateFn });
+    render(<CorrespondencesTab />);
+    fireEvent.click(screen.getByTestId('delete-button'));
+    fireEvent.click(screen.getByText('Delete'));
+    await waitFor(() => {
+      expect(showToast).toHaveBeenCalledWith({
+        message: 'Something went wrong',
+        type: 'error',
+      });
+    });
+  });
+
+  it('Calls closeConfirmationModal when modal is closed.', async () => {
+    render(<CorrespondencesTab />);
+    fireEvent.click(screen.getByTestId('delete-button'));
+    fireEvent.click(screen.getByText('Cancel'));
+    await waitFor(() => {
+      expect(screen.queryAllByText('Cancel')).toHaveLength(0);
+    });
+  });
+});
