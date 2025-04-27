@@ -1,14 +1,6 @@
 'use client';
 
 import {
-  CorrespondenceFormResponse,
-  CorrespondenceUpdate,
-  CreateOrUpdateCorrespondenceInput,
-  GetCorrespondenceByIdResponse,
-  Impact,
-  Status,
-} from '@ts-types/correspondence';
-import {
   Button,
   ConfirmationModal,
   Progress,
@@ -17,6 +9,18 @@ import {
   TextInput,
   showToast,
 } from '@components/Form';
+import {
+  CorrespondenceFormResponse,
+  CorrespondenceLetterParams,
+  CorrespondenceUpdate,
+  CreateOrUpdateCorrespondenceInput,
+  GetCorrespondenceByIdResponse,
+  Impact,
+  Status,
+} from '@ts-types/correspondence';
+import { DeleteLetterResponse } from '@ts-types/letter';
+import { LetterItem } from '../Letters';
+import { onCorrespondenceLetterUpdate, onLetterUpdate } from '@util/cache';
 import { required } from '@util/validators';
 import { useAuth } from '@contexts/AuthProvider';
 import { useEffect, useState } from 'react';
@@ -24,12 +28,6 @@ import { useForm } from '@hooks/useForm';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSWRMutation } from '@hooks/useSWRMutation';
 import { useSWRQuery } from '@hooks/useSWRQuery';
-import { LetterItem } from '../Letters';
-import {
-  DeleteLetterResponse,
-  GetLettersResponse,
-  LetterParams,
-} from '@ts-types/letter';
 
 const impactOptions = [
   { label: 'Low', value: Impact.LOW },
@@ -124,11 +122,19 @@ const CorrespondenceForm = () => {
   const { isLoading: isDeleting, mutate: deleteLetter } = useSWRMutation<
     {},
     DeleteLetterResponse,
-    GetLettersResponse,
-    LetterParams
+    CorrespondenceLetterParams
   >({
+    cache: [
+      {
+        key: '/letter',
+        onUpdate: onLetterUpdate,
+      },
+      {
+        key: `/correspondence/${correspondenceId}`,
+        onUpdate: onCorrespondenceLetterUpdate,
+      },
+    ],
     method: 'DELETE',
-    key: '/letter',
     token,
     onSuccess: () => {
       showToast({
@@ -141,16 +147,6 @@ const CorrespondenceForm = () => {
         message: error,
         type: 'error',
       });
-    },
-    onUpdate: ({ prev, params }) => {
-      const lastEvaluatedKey = prev ? prev.lastEvaluatedKey : '';
-      const data = prev
-        ? prev.data.filter((letter) => letter.letterId !== params?.letterId)
-        : [];
-      return {
-        data,
-        lastEvaluatedKey,
-      };
     },
   });
 
@@ -193,7 +189,10 @@ const CorrespondenceForm = () => {
 
   const onConfirmDelete = () => {
     closeConfirmationModal();
-    deleteLetter({ path: `/letter/${letterId}`, params: { letterId } });
+    deleteLetter({
+      path: `/letter/${letterId}`,
+      params: { correspondenceId: correspondenceId as string, letterId },
+    });
   };
 
   const handleSubmit = () => {
@@ -214,6 +213,8 @@ const CorrespondenceForm = () => {
     router.back();
   };
 
+  // Set values on initial render after fetching the corresondence data.
+
   useEffect(() => {
     if (
       correspondenceId &&
@@ -224,6 +225,15 @@ const CorrespondenceForm = () => {
       setValues({ ...correspondence, recipient, letters });
     }
   }, [correspondenceId, data, values.correspondenceId, setValues]);
+
+  // Set values on SWR cache update when adding or removing letters so the letters are added and removed in the form.
+
+  useEffect(() => {
+    if (data && data.letters.length !== values.letters.length) {
+      const { correspondence, recipient, letters } = data;
+      setValues({ ...correspondence, recipient, letters });
+    }
+  }, [data, setValues]);
 
   useEffect(() => {
     if (error) {

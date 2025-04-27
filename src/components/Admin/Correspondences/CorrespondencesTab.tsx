@@ -12,6 +12,7 @@ import {
   DeleteCorrespondenceResponse,
   CorrespondenceParams,
 } from '@ts-types/correspondence';
+import { onCorrespondenceUpdate } from '@util/cache';
 
 const CorrespondencesTab: React.FC = () => {
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
@@ -28,11 +29,10 @@ const CorrespondencesTab: React.FC = () => {
   const { isLoading: isDeleting, mutate } = useSWRMutation<
     {},
     DeleteCorrespondenceResponse,
-    GetCorrespondencesResponse,
     CorrespondenceParams
   >({
+    cache: [{ key: '/correspondence', onUpdate: onCorrespondenceUpdate }],
     method: 'DELETE',
-    key: '/correspondence',
     token,
     onSuccess: () => {
       showToast({
@@ -45,18 +45,6 @@ const CorrespondencesTab: React.FC = () => {
         message: error,
         type: 'error',
       });
-    },
-    onUpdate: ({ prev, params }) => {
-      const lastEvaluatedKey = prev ? prev.lastEvaluatedKey : '';
-      const data = prev
-        ? prev.data.filter(
-            (c) => c.correspondenceId !== params?.correspondenceId,
-          )
-        : [];
-      return {
-        data,
-        lastEvaluatedKey,
-      };
     },
   });
 

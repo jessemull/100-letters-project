@@ -51,3 +51,7 @@ export type RecipientFormResponse = {
 export type DeleteRecipientResponse = {
   message: string;
 };
+
+export type RecipientParams = {
+  recipientId: string;
+};

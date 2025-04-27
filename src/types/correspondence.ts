@@ -123,3 +123,8 @@ export type CreateOrUpdateCorrespondenceInput = {
   };
   letters: LetterUpdateInput[];
 };
+
+export type CorrespondenceLetterParams = {
+  correspondenceId?: string;
+  letterId: string;
+};

@@ -34,6 +34,7 @@ import { useSWRQuery } from '@hooks/useSWRQuery';
 const methodOptions = [
   { label: 'Digital', value: LetterMethod.DIGITAL },
   { label: 'Handwritten', value: LetterMethod.HANDWRITTEN },
+  { label: 'Printed', value: LetterMethod.PRINTED },
   { label: 'Typed', value: LetterMethod.TYPED },
   { label: 'Other', value: LetterMethod.OTHER },
 ];
@@ -49,7 +50,7 @@ const statusOptions = [
   { label: 'Pending', value: Status.PENDING },
   { label: 'Responded', value: Status.RESPONDED },
   { label: 'Sent', value: Status.SENT },
-  { label: 'Unsent', value: Status.UNSENT },
+  { label: 'Received', value: Status.RECEIVED },
 ];
 
 const initial: Letter = {
