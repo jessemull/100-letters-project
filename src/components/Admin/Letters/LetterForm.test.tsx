@@ -517,7 +517,7 @@ describe('LetterForm', () => {
     });
   });
 
-  it('updates correspondenceId if letterId is missing and correspondenceId is available', async () => {
+  it('Updates correspondenceId if letterId is missing and correspondenceId is available.', async () => {
     (useSearchParams as jest.Mock).mockReturnValue({
       get: (key: string) => {
         if (key === 'letterId') return null;

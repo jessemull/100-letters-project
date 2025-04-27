@@ -12,13 +12,13 @@ import {
 import { GetRecipientsResponse } from '@ts-types/recipients';
 
 describe('onLetterUpdate', () => {
-  it('Returns prev if next is falsy', () => {
+  it('Returns prev if next is falsy.', () => {
     expect(
       onLetterUpdate({ prev: null, params: { letterId: '123' } }),
     ).toBeNull();
   });
 
-  it('Removes the letter with matching letterId', () => {
+  it('Removes the letter with matching letterId.', () => {
     const prev = {
       data: [{ letterId: '1' }, { letterId: '2' }],
       lastEvaluatedKey: null,
@@ -31,7 +31,7 @@ describe('onLetterUpdate', () => {
     expect(result.lastEvaluatedKey).toBeNull();
   });
 
-  it('Handles missing params gracefully', () => {
+  it('Handles missing params gracefully.', () => {
     const prev = {
       data: [{ letterId: '1' }, { letterId: '2' }],
       lastEvaluatedKey: null,
@@ -42,7 +42,7 @@ describe('onLetterUpdate', () => {
 });
 
 describe('onCorrespondenceUpdate', () => {
-  it('Returns prev if next is falsy', () => {
+  it('Returns prev if next is falsy.', () => {
     expect(
       onCorrespondenceUpdate({
         prev: null,
@@ -51,7 +51,7 @@ describe('onCorrespondenceUpdate', () => {
     ).toBeNull();
   });
 
-  it('Removes the correspondence with matching correspondenceId', () => {
+  it('Removes the correspondence with matching correspondenceId.', () => {
     const prev = {
       data: [{ correspondenceId: 'abc' }, { correspondenceId: 'def' }],
       lastEvaluatedKey: null,
@@ -64,7 +64,7 @@ describe('onCorrespondenceUpdate', () => {
     expect(result.lastEvaluatedKey).toBeNull();
   });
 
-  it('Handles missing params gracefully', () => {
+  it('Handles missing params gracefully.', () => {
     const prev = {
       data: [{ correspondenceId: 'abc' }, { correspondenceId: 'def' }],
       lastEvaluatedKey: null,
@@ -77,13 +77,13 @@ describe('onCorrespondenceUpdate', () => {
 });
 
 describe('onCorrespondenceLetterUpdate', () => {
-  it('Returns prev if next is falsy', () => {
+  it('Returns prev if next is falsy.', () => {
     expect(
       onCorrespondenceLetterUpdate({ prev: null, params: { letterId: '123' } }),
     ).toBeNull();
   });
 
-  it('Removes the letter with matching letterId from correspondence', () => {
+  it('Removes the letter with matching letterId from correspondence.', () => {
     const prev = {
       data: {
         letters: [{ letterId: '1' }, { letterId: '2' }],
@@ -96,7 +96,7 @@ describe('onCorrespondenceLetterUpdate', () => {
     expect(result.data.letters).toEqual([{ letterId: '2' }]);
   });
 
-  it('Handles missing params gracefully', () => {
+  it('Handles missing params gracefully.', () => {
     const prev = {
       data: {
         letters: [{ letterId: '1' }, { letterId: '2' }],
@@ -110,13 +110,13 @@ describe('onCorrespondenceLetterUpdate', () => {
 });
 
 describe('onRecipientUpdate', () => {
-  it('Returns prev if next is falsy', () => {
+  it('Returns prev if next is falsy.', () => {
     expect(
       onRecipientUpdate({ prev: null, params: { recipientId: 'xyz' } }),
     ).toBeNull();
   });
 
-  it('Removes the recipient with matching recipientId', () => {
+  it('Removes the recipient with matching recipientId.', () => {
     const prev = {
       data: [{ recipientId: 'xyz' }, { recipientId: 'uvw' }],
       lastEvaluatedKey: null,
@@ -129,7 +129,7 @@ describe('onRecipientUpdate', () => {
     expect(result.lastEvaluatedKey).toBeNull();
   });
 
-  it('Handles missing params gracefully', () => {
+  it('Handles missing params gracefully.', () => {
     const prev = {
       data: [{ recipientId: 'xyz' }, { recipientId: 'uvw' }],
       lastEvaluatedKey: null,
