@@ -233,7 +233,7 @@ const CorrespondenceForm = () => {
       const { correspondence, recipient, letters } = data;
       setValues({ ...correspondence, recipient, letters });
     }
-  }, [data, setValues]);
+  }, [data, setValues, values.letters.length]);
 
   useEffect(() => {
     if (error) {

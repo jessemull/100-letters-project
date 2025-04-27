@@ -6,6 +6,13 @@ import { LettersTab } from '@components/Admin';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { useRouter } from 'next/navigation';
 
+jest.mock('react-intersection-observer', () => ({
+  useInView: jest.fn(() => ({
+    inView: true,
+    ref: jest.fn(),
+  })),
+}));
+
 jest.mock('@hooks/useSWRQuery', () => ({
   __esModule: true,
   useSWRQuery: jest.fn(),
@@ -56,7 +63,14 @@ describe('LettersTab', () => {
 
   it('Renders letter list.', () => {
     useSWRQuery.mockReturnValue({
-      data: { data: [testLetter], lastEvaluatedKey: '' },
+      data: {
+        data: [
+          testLetter,
+          ,
+          { ...testLetter, letterId: 'id2', title: 'Test Letter 2' },
+        ],
+        lastEvaluatedKey: '',
+      },
       isLoading: false,
     });
     useSWRMutation.mockReturnValue({ isLoading: false, mutate: jest.fn() });
@@ -149,6 +163,25 @@ describe('LettersTab', () => {
         message: 'Something went wrong',
         type: 'error',
       });
+    });
+  });
+
+  it('Triggers fetchMore when inView is true, loadingMore is false, and lastEvaluatedKey is not null', async () => {
+    const fetchMore = jest.fn();
+
+    useSWRQuery.mockReturnValue({
+      data: { data: [testLetter], lastEvaluatedKey: '123' },
+      fetchMore,
+      isLoading: false,
+    });
+    useSWRMutation.mockReturnValue({ isLoading: false, mutate: jest.fn() });
+
+    render(<LettersTab />);
+
+    fireEvent.scroll(window);
+
+    await waitFor(() => {
+      expect(fetchMore).toHaveBeenCalledWith('/letter?lastEvaluatedKey=123');
     });
   });
 });
