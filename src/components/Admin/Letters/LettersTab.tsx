@@ -2,16 +2,18 @@
 
 import React, { useState } from 'react';
 import { ConfirmationModal, Progress, showToast } from '@components/Form';
-import { DeleteLetterResponse, GetLettersResponse } from '@ts-types/letter';
+import {
+  DeleteLetterResponse,
+  GetLettersResponse,
+  LetterParams,
+} from '@ts-types/letter';
 import { LetterItem } from '@components/Admin';
 import { useAuth } from '@contexts/AuthProvider';
 import { useRouter } from 'next/navigation';
 import { useSWRMutation } from '@hooks/useSWRMutation';
 import { useSWRQuery } from '@hooks/useSWRQuery';
-
-export type LetterParams = {
-  letterId: string;
-};
+import { onLetterUpdate } from '@util/cache';
+import { CorrespondenceLetterParams } from '@ts-types/correspondence';
 
 const LettersTab: React.FC = () => {
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
@@ -28,11 +30,10 @@ const LettersTab: React.FC = () => {
   const { isLoading: isDeleting, mutate } = useSWRMutation<
     {},
     DeleteLetterResponse,
-    GetLettersResponse,
-    LetterParams
+    CorrespondenceLetterParams
   >({
+    cache: [{ key: '/letter', onUpdate: onLetterUpdate }],
     method: 'DELETE',
-    key: '/letter',
     token,
     onSuccess: () => {
       showToast({
@@ -45,16 +46,6 @@ const LettersTab: React.FC = () => {
         message: error,
         type: 'error',
       });
-    },
-    onUpdate: ({ prev, params }) => {
-      const lastEvaluatedKey = prev ? prev.lastEvaluatedKey : '';
-      const data = prev
-        ? prev.data.filter((letter) => letter.letterId !== params?.letterId)
-        : [];
-      return {
-        data,
-        lastEvaluatedKey,
-      };
     },
   });
 

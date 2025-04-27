@@ -1,4 +1,5 @@
+import LetterForm from './LetterForm';
 import LetterItem from './LetterItem';
 import LettersTab from './LettersTab';
 
-export { LetterItem, LettersTab };
+export { LetterForm, LetterItem, LettersTab };

@@ -7,8 +7,18 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 type Method = 'POST' | 'PUT' | 'DELETE';
 
-interface UseAuthorizedMutationOptions<Body, Response, CacheType, Params> {
-  key?: string;
+interface Cache<Body, Params> {
+  key: string;
+  onUpdate?: (args: {
+    key: string;
+    prev: unknown;
+    body?: Body;
+    params?: Params;
+  }) => unknown;
+}
+
+interface UseAuthorizedMutationOptions<Body, Response, Params> {
+  cache?: Cache<Body, Params>[];
   method?: Method;
   token?: string | null;
   path?: string;
@@ -26,11 +36,6 @@ interface UseAuthorizedMutationOptions<Body, Response, CacheType, Params> {
     body?: Body;
     params?: Params;
   }) => void;
-  onUpdate?: (args: {
-    prev: CacheType | undefined;
-    body?: Body;
-    params?: Params;
-  }) => CacheType;
 }
 
 interface MutateArgs<Body, Params> {
@@ -40,19 +45,15 @@ interface MutateArgs<Body, Params> {
   headers?: HeadersInit;
 }
 
-export function useSWRMutation<
-  Body,
-  Response = unknown,
-  CacheType = unknown,
-  Params = unknown,
->(options: UseAuthorizedMutationOptions<Body, Response, CacheType, Params>) {
+export function useSWRMutation<Body, Response = unknown, Params = unknown>(
+  options: UseAuthorizedMutationOptions<Body, Response, Params>,
+) {
   const {
+    cache,
     method = 'POST',
     token = null,
     onSuccess,
     onError,
-    key,
-    onUpdate,
     path: defaultPath,
   } = options;
 
@@ -120,13 +121,17 @@ export function useSWRMutation<
         setResponse(data);
         onSuccess?.({ response: data, path: finalPath, body, params });
 
-        if (key && onUpdate) {
-          globalMutate(
-            `${API_BASE_URL}${key}`,
-            (current: CacheType | undefined) =>
-              onUpdate({ prev: current, body, params }),
-            false,
-          );
+        if (cache && cache.length > 0) {
+          cache.forEach(({ key, onUpdate }) => {
+            if (onUpdate) {
+              globalMutate(
+                `${API_BASE_URL}${key}`,
+                (current: unknown | undefined) =>
+                  onUpdate({ key, prev: current, body, params }),
+                false,
+              );
+            }
+          });
         }
 
         return data;
@@ -149,7 +154,7 @@ export function useSWRMutation<
         setIsLoading(false);
       }
     },
-    [defaultPath, key, method, onError, onSuccess, onUpdate, token],
+    [defaultPath, cache, method, onError, onSuccess, token],
   );
 
   return { error, isLoading, mutate, response };

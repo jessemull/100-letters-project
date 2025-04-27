@@ -1,5 +1,6 @@
 import { Letter, LetterCreateInput, LetterUpdateInput } from './letter';
 import {
+  Address,
   Recipient,
   RecipientCreateInput,
   RecipientUpdateInput,
@@ -28,14 +29,34 @@ export enum Status {
 
 export type Correspondence = {
   correspondenceId: string;
-  createdAt: string;
+  createdAt?: string;
   letters: Letter[];
   recipient: Recipient;
-  recipientId: string;
+  recipientId?: string;
   reason: Reason;
   status: Status;
   title: string;
-  updatedAt: string;
+  updatedAt?: string;
+};
+
+export type CorrespondenceUpdate = {
+  correspondenceId?: string;
+  createdAt?: string;
+  letters: Letter[];
+  recipient: {
+    address: Address;
+    description?: string;
+    firstName: string;
+    lastName: string;
+    occupation?: string;
+    organization?: string;
+    recipientId?: string;
+  };
+  recipientId?: string;
+  reason: Reason;
+  status: Status;
+  title: string;
+  updatedAt?: string;
 };
 
 export type CorrespondenceCreateInput = {
@@ -65,5 +86,45 @@ export type GetCorrespondencesResponse = {
 };
 
 export type GetCorrespondenceByIdResponse = {
-  data: Correspondence;
+  data: {
+    correspondence: Correspondence;
+    recipient: Recipient;
+    letters: Letter[];
+  };
+};
+
+export type CorrespondenceFormResponse = {
+  message: string;
+};
+
+export type CorrespondenceParams = {
+  correspondenceId: string;
+};
+
+export type DeleteCorrespondenceResponse = {
+  message: string;
+};
+
+export type CreateOrUpdateCorrespondenceInput = {
+  correspondence: {
+    correspondenceId?: string;
+    reason: Reason;
+    status: Status;
+    title: string;
+  };
+  recipient: {
+    address: Address;
+    description?: string;
+    firstName: string;
+    lastName: string;
+    occupation?: string;
+    organization?: string;
+    recipientId?: string;
+  };
+  letters: LetterUpdateInput[];
+};
+
+export type CorrespondenceLetterParams = {
+  correspondenceId?: string;
+  letterId: string;
 };

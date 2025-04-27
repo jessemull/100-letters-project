@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import {
   DeleteRecipientResponse,
   GetRecipientsResponse,
+  RecipientParams,
 } from '@ts-types/recipients';
 import { ConfirmationModal, showToast } from '@components/Form';
 import { Progress } from '@components/Form';
@@ -12,10 +13,7 @@ import { useAuth } from '@contexts/AuthProvider';
 import { useRouter } from 'next/navigation';
 import { useSWRMutation } from '@hooks/useSWRMutation';
 import { useSWRQuery } from '@hooks/useSWRQuery';
-
-export type RecipientParams = {
-  recipientId: string;
-};
+import { onRecipientUpdate } from '@util/cache';
 
 const RecipientsTab: React.FC = () => {
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
@@ -33,11 +31,10 @@ const RecipientsTab: React.FC = () => {
   const { isLoading: isDeleting, mutate } = useSWRMutation<
     {},
     DeleteRecipientResponse,
-    GetRecipientsResponse,
     RecipientParams
   >({
+    cache: [{ key: '/recipient', onUpdate: onRecipientUpdate }],
     method: 'DELETE',
-    key: '/recipient',
     token,
     onSuccess: () => {
       showToast({
@@ -50,18 +47,6 @@ const RecipientsTab: React.FC = () => {
         message: error,
         type: 'error',
       });
-    },
-    onUpdate: ({ prev, params }) => {
-      const lastEvaluatedKey = prev ? prev.lastEvaluatedKey : '';
-      const data = prev
-        ? prev.data.filter(
-            (recipient) => recipient.recipientId !== params?.recipientId,
-          )
-        : [];
-      return {
-        data,
-        lastEvaluatedKey,
-      };
     },
   });
 

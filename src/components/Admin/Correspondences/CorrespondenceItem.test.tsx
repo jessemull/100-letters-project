@@ -18,7 +18,13 @@ describe('CorrespondenceItem', () => {
   });
 
   it('Renders the title and recipient name.', () => {
-    render(<CorrespondenceItem data={mockCorrespondence} />);
+    render(
+      <CorrespondenceItem
+        data={mockCorrespondence}
+        onEdit={() => {}}
+        onDelete={() => {}}
+      />,
+    );
     expect(screen.getByText(mockCorrespondence.title)).toBeInTheDocument();
     expect(
       screen.getByText(
@@ -28,21 +34,39 @@ describe('CorrespondenceItem', () => {
   });
 
   it('Calls onEdit when edit button is clicked.', () => {
-    render(<CorrespondenceItem data={mockCorrespondence} />);
+    const onEdit = jest.fn();
+    render(
+      <CorrespondenceItem
+        data={mockCorrespondence}
+        onDelete={() => {}}
+        onEdit={onEdit}
+      />,
+    );
     fireEvent.click(screen.getByTestId('edit-button'));
-    expect(consoleSpy).toHaveBeenCalledWith('onEdit', mockCorrespondence);
+    expect(onEdit).toHaveBeenCalled();
   });
 
   it('Calls onDelete when delete button is clicked.', () => {
-    render(<CorrespondenceItem data={mockCorrespondence} />);
-    const deleteButton = screen.getByLabelText('Delete');
+    const onDelete = jest.fn();
+    render(
+      <CorrespondenceItem
+        data={mockCorrespondence}
+        onDelete={onDelete}
+        onEdit={() => {}}
+      />,
+    );
+    const deleteButton = screen.getByTestId('delete-button');
     fireEvent.click(deleteButton);
-    expect(consoleSpy).toHaveBeenCalledWith('onDelete', mockCorrespondence);
+    expect(onDelete).toHaveBeenCalled();
   });
 
   it('Has no accessibility violations.', async () => {
     const { container } = render(
-      <CorrespondenceItem data={mockCorrespondence} />,
+      <CorrespondenceItem
+        data={mockCorrespondence}
+        onEdit={() => {}}
+        onDelete={() => {}}
+      />,
     );
     const results = await axe(container);
     expect(results).toHaveNoViolations();
