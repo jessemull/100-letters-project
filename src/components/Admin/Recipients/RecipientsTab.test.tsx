@@ -8,6 +8,13 @@ import { RecipientsTab } from '@components/Admin';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { useRouter } from 'next/navigation';
 
+jest.mock('react-intersection-observer', () => ({
+  useInView: jest.fn(() => ({
+    inView: true,
+    ref: jest.fn(),
+  })),
+}));
+
 jest.mock('@hooks/useSWRQuery', () => ({
   __esModule: true,
   useSWRQuery: jest.fn(),
@@ -70,7 +77,13 @@ describe('RecipientsTab', () => {
 
   it('Renders recipient list.', () => {
     useSWRQuery.mockImplementation(() => ({
-      data: { data: [mockRecipient], lastEvaluatedKey: '' },
+      data: {
+        data: [
+          mockRecipient,
+          { ...mockRecipient, recipientId: 'id2', firstName: 'Johnny' },
+        ],
+        lastEvaluatedKey: '',
+      },
       isLoading: false,
     }));
 
@@ -218,6 +231,25 @@ describe('RecipientsTab', () => {
         message: 'Something went wrong',
         type: 'error',
       });
+    });
+  });
+
+  it('Triggers fetchMore when inView is true, loadingMore is false, and lastEvaluatedKey is not null', async () => {
+    const fetchMore = jest.fn();
+
+    useSWRQuery.mockReturnValue({
+      data: { data: [mockRecipient], lastEvaluatedKey: '123' },
+      fetchMore,
+      isLoading: false,
+    });
+    useSWRMutation.mockReturnValue({ isLoading: false, mutate: jest.fn() });
+
+    render(<RecipientsTab />);
+
+    fireEvent.scroll(window);
+
+    await waitFor(() => {
+      expect(fetchMore).toHaveBeenCalledWith('/recipient?lastEvaluatedKey=123');
     });
   });
 });
