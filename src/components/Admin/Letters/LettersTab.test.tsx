@@ -64,7 +64,10 @@ describe('LettersTab', () => {
 
   it('Renders letter list.', () => {
     useSWRQuery.mockReturnValue({
-      data: { data: [testLetter, LetterImageFactory.build()], lastEvaluatedKey: '' },
+      data: {
+        data: [testLetter, LetterImageFactory.build()],
+        lastEvaluatedKey: '',
+      },
       isLoading: false,
     });
     useSWRMutation.mockReturnValue({ isLoading: false, mutate: jest.fn() });
