@@ -2,6 +2,7 @@ import * as AuthProvider from '@contexts/AuthProvider';
 import React from 'react';
 import showToast from '@components/Form/Toast';
 import { AuthContextType } from '@contexts/AuthProvider';
+import { LetterImageFactory } from '@factories/letter';
 import { LettersTab } from '@components/Admin';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { useRouter } from 'next/navigation';
@@ -56,7 +57,7 @@ describe('LettersTab', () => {
 
   it('Renders letter list.', () => {
     useSWRQuery.mockReturnValue({
-      data: { data: [testLetter], lastEvaluatedKey: '' },
+      data: { data: [testLetter, LetterImageFactory.build()], lastEvaluatedKey: '' },
       isLoading: false,
     });
     useSWRMutation.mockReturnValue({ isLoading: false, mutate: jest.fn() });
