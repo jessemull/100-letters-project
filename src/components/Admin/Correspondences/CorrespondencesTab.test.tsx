@@ -5,6 +5,13 @@ import { CorrespondencesTab } from '@components/Admin';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { useRouter } from 'next/navigation';
 
+jest.mock('react-intersection-observer', () => ({
+  useInView: jest.fn(() => ({
+    inView: true,
+    ref: jest.fn(),
+  })),
+}));
+
 jest.mock('@hooks/useSWRQuery', () => ({
   __esModule: true,
   useSWRQuery: jest.fn(),
@@ -58,7 +65,17 @@ describe('CorrespondencesTab', () => {
 
   it('Renders correspondence list.', () => {
     useSWRQuery.mockReturnValue({
-      data: { data: [testCorrespondence], lastEvaluatedKey: '' },
+      data: {
+        data: [
+          testCorrespondence,
+          {
+            ...testCorrespondence,
+            correspondenceId: 'id2',
+            title: 'Test Correspondence 2',
+          },
+        ],
+        lastEvaluatedKey: '',
+      },
       isLoading: false,
     });
     useSWRMutation.mockReturnValue({ isLoading: false, mutate: jest.fn() });
@@ -162,6 +179,27 @@ describe('CorrespondencesTab', () => {
     fireEvent.click(screen.getByText('Cancel'));
     await waitFor(() => {
       expect(screen.queryAllByText('Cancel')).toHaveLength(0);
+    });
+  });
+
+  it('Triggers fetchMore when inView is true, loadingMore is false, and lastEvaluatedKey is not null', async () => {
+    const fetchMore = jest.fn();
+
+    useSWRQuery.mockReturnValue({
+      data: { data: [testCorrespondence], lastEvaluatedKey: '123' },
+      fetchMore,
+      isLoading: false,
+    });
+    useSWRMutation.mockReturnValue({ isLoading: false, mutate: jest.fn() });
+
+    render(<CorrespondencesTab />);
+
+    fireEvent.scroll(window);
+
+    await waitFor(() => {
+      expect(fetchMore).toHaveBeenCalledWith(
+        '/correspondence?lastEvaluatedKey=123',
+      );
     });
   });
 });

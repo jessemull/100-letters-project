@@ -2,9 +2,17 @@ import * as AuthProvider from '@contexts/AuthProvider';
 import React from 'react';
 import showToast from '@components/Form/Toast';
 import { AuthContextType } from '@contexts/AuthProvider';
+import { LetterImageFactory } from '@factories/letter';
 import { LettersTab } from '@components/Admin';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { useRouter } from 'next/navigation';
+
+jest.mock('react-intersection-observer', () => ({
+  useInView: jest.fn(() => ({
+    inView: true,
+    ref: jest.fn(),
+  })),
+}));
 
 jest.mock('@hooks/useSWRQuery', () => ({
   __esModule: true,
@@ -56,14 +64,7 @@ describe('LettersTab', () => {
 
   it('Renders letter list.', () => {
     useSWRQuery.mockReturnValue({
-<<<<<<< HEAD
       data: { data: [testLetter], lastEvaluatedKey: '' },
-=======
-      data: {
-        data: [testLetter, LetterImageFactory.build()],
-        lastEvaluatedKey: '',
-      },
->>>>>>> d58de2a (fix: fix linting error)
       isLoading: false,
     });
     useSWRMutation.mockReturnValue({ isLoading: false, mutate: jest.fn() });
@@ -156,6 +157,25 @@ describe('LettersTab', () => {
         message: 'Something went wrong',
         type: 'error',
       });
+    });
+  });
+
+  it('Triggers fetchMore when inView is true, loadingMore is false, and lastEvaluatedKey is not null', async () => {
+    const fetchMore = jest.fn();
+
+    useSWRQuery.mockReturnValue({
+      data: { data: [testLetter], lastEvaluatedKey: '123' },
+      fetchMore,
+      isLoading: false,
+    });
+    useSWRMutation.mockReturnValue({ isLoading: false, mutate: jest.fn() });
+
+    render(<LettersTab />);
+
+    fireEvent.scroll(window);
+
+    await waitFor(() => {
+      expect(fetchMore).toHaveBeenCalledWith('/letter?lastEvaluatedKey=123');
     });
   });
 });

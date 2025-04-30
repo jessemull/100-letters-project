@@ -76,12 +76,10 @@ describe('Admin', () => {
   it('Renders correspondence tab with mock data.', async () => {
     renderWithAuth();
 
-    (useDataHook.useSWRQuery as jest.Mock)
-      .mockReturnValueOnce({
-        data: { data: [{ id: 1, title: 'Test Correspondence' }] },
-        isLoading: false,
-      })
-      .mockReturnValue({ data: { data: [] }, isLoading: false });
+    (useDataHook.useSWRQuery as jest.Mock).mockReturnValue({
+      data: { data: [{ correspondenceId: 1, title: 'Test Correspondence' }] },
+      isLoading: false,
+    });
 
     render(<Admin />);
 

@@ -138,7 +138,7 @@ const LetterForm = () => {
           recipient = { lastName: 'No Last Name', firstName: 'No First Name' },
           title = 'No Title',
         }) => ({
-          label: `${recipient.lastName}, ${recipient.firstName} - ${
+          label: `${recipient?.lastName}, ${recipient?.firstName} - ${
             title && title.length > 20 ? `${title.slice(0, 20)}...` : title
           }`.trim(),
           value: correspondenceId,

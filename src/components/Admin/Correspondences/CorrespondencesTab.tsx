@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ConfirmationModal, Progress, showToast } from '@components/Form';
 import { useAuth } from '@contexts/AuthProvider';
+import { useInView } from 'react-intersection-observer';
 import { useRouter } from 'next/navigation';
 import { useSWRMutation } from '@hooks/useSWRMutation';
 import { useSWRQuery } from '@hooks/useSWRQuery';
@@ -15,16 +16,28 @@ import {
 import { onCorrespondenceUpdate } from '@util/cache';
 
 const CorrespondencesTab: React.FC = () => {
-  const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [correspondenceId, setCorrespondenceId] = useState('');
+  const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
+  const [lastEvaluatedKey, setLastEvaluatedKey] = useState<string | null>(null);
 
   const router = useRouter();
   const { token } = useAuth();
 
-  const { data, isLoading } = useSWRQuery<GetCorrespondencesResponse>({
-    path: '/correspondence',
-    token,
+  const { data, fetchMore, isLoading, loadingMore } =
+    useSWRQuery<GetCorrespondencesResponse>({
+      path: '/correspondence',
+      token,
+    });
+
+  const { ref, inView } = useInView({
+    threshold: 0,
   });
+
+  useEffect(() => {
+    if (inView && !loadingMore && lastEvaluatedKey !== null) {
+      fetchMore(`/correspondence?lastEvaluatedKey=${lastEvaluatedKey}`);
+    }
+  }, [inView, lastEvaluatedKey, loadingMore, fetchMore]);
 
   const { isLoading: isDeleting, mutate } = useSWRMutation<
     {},
@@ -69,6 +82,10 @@ const CorrespondencesTab: React.FC = () => {
     });
   };
 
+  useEffect(() => {
+    setLastEvaluatedKey(data?.lastEvaluatedKey || null);
+  }, [data]);
+
   return (
     <>
       {isLoading || isDeleting ? (
@@ -78,7 +95,7 @@ const CorrespondencesTab: React.FC = () => {
       ) : (
         <ul className="grid gap-4">
           {data?.data.map((item, idx) => (
-            <li key={idx}>
+            <li key={idx} ref={idx === data?.data.length - 1 ? ref : undefined}>
               <CorrespondenceItem
                 data={item}
                 onEdit={onEdit}
@@ -86,6 +103,11 @@ const CorrespondencesTab: React.FC = () => {
               />
             </li>
           ))}
+          {loadingMore && (
+            <div className="w-full flex justify-center items-center">
+              <Progress color="white" size={16} />
+            </div>
+          )}
           {data?.data.length === 0 && (
             <li className="text-center text-gray-500">No results found.</li>
           )}
