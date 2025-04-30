@@ -1,5 +1,7 @@
 'use client';
 
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import {
   GetLetterByIdResponse,
   Letter,
@@ -30,8 +32,6 @@ import { useForm } from '@hooks/useForm';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSWRMutation } from '@hooks/useSWRMutation';
 import { useSWRQuery } from '@hooks/useSWRQuery';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
 
 const methodOptions = [
   { label: 'Digital', value: LetterMethod.DIGITAL },
