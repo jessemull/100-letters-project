@@ -30,6 +30,8 @@ import { useForm } from '@hooks/useForm';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSWRMutation } from '@hooks/useSWRMutation';
 import { useSWRQuery } from '@hooks/useSWRQuery';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 const methodOptions = [
   { label: 'Digital', value: LetterMethod.DIGITAL },
@@ -335,21 +337,43 @@ const LetterForm = () => {
           placeholder="Status"
           value={values.status}
         />
-        <TextInput
-          id="sentAt"
-          label="Sent At"
-          onChange={({ target: { value } }) => updateField('sentAt', value)}
-          placeholder="Sent At"
-          type="datetime-local"
-          value={values.sentAt || ''}
+        <DatePicker
+          customInput={
+            <TextInput
+              id="sentAt"
+              label="Sent At"
+              placeholder="Sent At"
+              type="text"
+              value={values.sentAt as string}
+            />
+          }
+          name="sentAt"
+          dateFormat="Pp"
+          onChange={(date) => updateField('sentAt', date?.toISOString())}
+          placeholderText="Sent At"
+          selected={values.sentAt ? new Date(values.sentAt) : null}
+          showTimeSelect
+          timeCaption="Time"
+          timeIntervals={15}
         />
-        <TextInput
-          id="receivedAt"
-          label="Received At"
-          onChange={({ target: { value } }) => updateField('receivedAt', value)}
-          placeholder="Received At"
-          type="datetime-local"
-          value={values.receivedAt || ''}
+        <DatePicker
+          customInput={
+            <TextInput
+              id="receivedAt"
+              label="Received At"
+              placeholder="Received At"
+              type="text"
+              value={values.receivedAt as string}
+            />
+          }
+          name="receivedAt"
+          dateFormat="Pp"
+          onChange={(date) => updateField('receivedAt', date?.toISOString())}
+          selected={values.receivedAt ? new Date(values.receivedAt) : null}
+          showTimeSelect
+          placeholderText="Received At"
+          timeCaption="Time"
+          timeIntervals={15}
         />
       </div>
       <div className="flex flex-col-reverse md:flex-row justify-between gap-4 pt-6">

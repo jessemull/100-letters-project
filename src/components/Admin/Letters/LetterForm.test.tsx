@@ -119,11 +119,11 @@ describe('LetterForm', () => {
     fireEvent.change(screen.getByLabelText('Status'), {
       target: { value: 'SENT' },
     });
-    fireEvent.change(screen.getByLabelText('Sent At'), {
-      target: { value: '2025-04-25T14:30' },
+    fireEvent.change(screen.getByPlaceholderText('Sent At'), {
+      target: { value: '04/25/2025, 2:30 PM' },
     });
-    fireEvent.change(screen.getByLabelText('Received At'), {
-      target: { value: '2025-04-25T14:30' },
+    fireEvent.change(screen.getByPlaceholderText('Received At'), {
+      target: { value: '04/25/2025, 2:30 PM' },
     });
 
     const input = screen.getByTestId('correspondenceId');
