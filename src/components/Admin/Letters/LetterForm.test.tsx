@@ -5,6 +5,7 @@ import { useAuth } from '@contexts/AuthProvider';
 import { useSWRQuery } from '@hooks/useSWRQuery';
 import { useSWRMutation } from '@hooks/useSWRMutation';
 import { showToast } from '@components/Form';
+import { LetterImageFactory } from '@factories/letter';
 
 jest.mock('@contexts/AuthProvider', () => ({
   useAuth: jest.fn(),
@@ -36,7 +37,7 @@ describe('LetterForm', () => {
     letterId: 'abc123',
     correspondenceId: 'c1',
     description: 'description',
-    imageURLs: [],
+    imageURLs: [LetterImageFactory.build()],
     method: 'HANDWRITTEN',
     receivedAt: '2023-12-01T08:00:00.000Z',
     sentAt: '2023-12-01T10:00:00.000Z',
@@ -119,11 +120,11 @@ describe('LetterForm', () => {
     fireEvent.change(screen.getByLabelText('Status'), {
       target: { value: 'SENT' },
     });
-    fireEvent.change(screen.getByLabelText('Sent At'), {
-      target: { value: '2025-04-25T14:30' },
+    fireEvent.change(screen.getByPlaceholderText('Sent At'), {
+      target: { value: '04/25/2025, 2:30 PM' },
     });
-    fireEvent.change(screen.getByLabelText('Received At'), {
-      target: { value: '2025-04-25T14:30' },
+    fireEvent.change(screen.getByPlaceholderText('Received At'), {
+      target: { value: '04/25/2025, 2:30 PM' },
     });
 
     const input = screen.getByTestId('correspondenceId');

@@ -64,10 +64,7 @@ describe('LettersTab', () => {
 
   it('Renders letter list.', () => {
     useSWRQuery.mockReturnValue({
-      data: {
-        data: [testLetter, LetterImageFactory.build()],
-        lastEvaluatedKey: '',
-      },
+      data: { data: [testLetter], lastEvaluatedKey: '' },
       isLoading: false,
     });
     useSWRMutation.mockReturnValue({ isLoading: false, mutate: jest.fn() });
@@ -180,5 +177,34 @@ describe('LettersTab', () => {
     await waitFor(() => {
       expect(fetchMore).toHaveBeenCalledWith('/letter?lastEvaluatedKey=123');
     });
+  });
+
+  it('Does not assign ref to non-last list items.', () => {
+    const letters = [
+      { letterId: '1', title: 'Letter One' },
+      { letterId: '2', title: 'Letter Two' },
+      { letterId: '3', title: 'Letter Three' },
+    ];
+
+    const mockRef = jest.fn();
+
+    const useInViewMock = require('react-intersection-observer').useInView;
+    useInViewMock.mockReturnValue({
+      inView: false,
+      ref: mockRef,
+    });
+
+    useSWRQuery.mockReturnValue({
+      data: { data: letters, lastEvaluatedKey: '' },
+      isLoading: false,
+    });
+
+    useSWRMutation.mockReturnValue({ isLoading: false, mutate: jest.fn() });
+
+    const { container } = render(<LettersTab />);
+    const listItems = container.querySelectorAll('li');
+
+    expect(mockRef).toHaveBeenCalledTimes(1);
+    expect(listItems.length).toBe(3);
   });
 });
