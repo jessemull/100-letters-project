@@ -5,6 +5,7 @@ import { useAuth } from '@contexts/AuthProvider';
 import { useSWRQuery } from '@hooks/useSWRQuery';
 import { useSWRMutation } from '@hooks/useSWRMutation';
 import { showToast } from '@components/Form';
+import { LetterImageFactory } from '@factories/letter';
 
 jest.mock('@contexts/AuthProvider', () => ({
   useAuth: jest.fn(),
@@ -36,7 +37,7 @@ describe('LetterForm', () => {
     letterId: 'abc123',
     correspondenceId: 'c1',
     description: 'description',
-    imageURLs: [],
+    imageURLs: [LetterImageFactory.build()],
     method: 'HANDWRITTEN',
     receivedAt: '2023-12-01T08:00:00.000Z',
     sentAt: '2023-12-01T10:00:00.000Z',
