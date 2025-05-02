@@ -97,12 +97,15 @@ describe('AutoSelect', () => {
 
   it('Shows options on focus and hides them on blur.', async () => {
     render(
-      <AutoSelect
-        id="test"
-        value=""
-        onChange={onChangeMock}
-        options={options}
-      />,
+      <>
+        <AutoSelect
+          id="test"
+          value=""
+          onChange={onChangeMock}
+          options={options}
+        />
+        <div data-testid="outside" />
+      </>,
     );
 
     const input = screen.getByRole('textbox');
@@ -111,7 +114,8 @@ describe('AutoSelect', () => {
     expect(screen.getByText('Apple')).toBeInTheDocument();
     expect(screen.getByText('Banana')).toBeInTheDocument();
 
-    fireEvent.blur(input);
+    fireEvent.mouseDown(screen.getByTestId('outside'));
+
     await waitFor(() => expect(screen.queryByText('Apple')).toEqual(null));
   });
 
@@ -143,7 +147,7 @@ describe('AutoSelect', () => {
     );
     const input = screen.getByRole('textbox');
     fireEvent.focus(input);
-    fireEvent.mouseDown(screen.getByText('Cherry'));
+    fireEvent.click(screen.getByText('Cherry'));
 
     expect(onChangeMock).toHaveBeenCalledWith('cherry');
     expect(input).toHaveValue('Cherry');
@@ -170,7 +174,7 @@ describe('AutoSelect', () => {
     );
     const input = screen.getByRole('textbox');
     fireEvent.focus(input);
-    fireEvent.mouseDown(input);
+    fireEvent.click(input);
     expect(onChangeMock).not.toHaveBeenCalled();
   });
 
