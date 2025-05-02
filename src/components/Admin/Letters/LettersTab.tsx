@@ -12,7 +12,6 @@ import { useAuth } from '@contexts/AuthProvider';
 import { useRouter } from 'next/navigation';
 import { useSWRMutation } from '@hooks/useSWRMutation';
 import { useSWRQuery } from '@hooks/useSWRQuery';
-import { CorrespondenceLetterParams } from '@ts-types/correspondence';
 import { useInView } from 'react-intersection-observer';
 import {
   correspondenceByIdDeleteUpdate,

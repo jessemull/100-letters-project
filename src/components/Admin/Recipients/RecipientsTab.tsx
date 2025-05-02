@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import {
   DeleteRecipientResponse,
   GetRecipientsResponse,
-  RecipientParams,
 } from '@ts-types/recipients';
 import { ConfirmationModal, showToast } from '@components/Form';
 import { Progress } from '@components/Form';
@@ -36,8 +35,7 @@ const RecipientsTab: React.FC = () => {
 
   const { isLoading: isDeleting, mutate } = useSWRMutation<
     {},
-    DeleteRecipientResponse,
-    RecipientParams
+    DeleteRecipientResponse
   >({
     cache: [{ key: '/recipient', onUpdate: deleteRecipientUpdate }],
     method: 'DELETE',

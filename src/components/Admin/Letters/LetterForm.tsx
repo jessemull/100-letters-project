@@ -8,7 +8,6 @@ import {
   LetterFormResponse,
   LetterType,
   LetterMethod,
-  LetterParams,
 } from '@ts-types/letter';
 import {
   Correspondence,
@@ -162,8 +161,7 @@ const LetterForm = () => {
 
   const { mutate, isLoading: isUpdating } = useSWRMutation<
     Partial<Letter>,
-    LetterFormResponse,
-    LetterParams
+    LetterFormResponse
   >({
     cache: [
       { key: '/correspondence', onUpdate: correspondencesLetterUpdate },
