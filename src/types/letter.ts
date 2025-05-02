@@ -94,11 +94,6 @@ export type LetterFormResponse = {
   message: string;
 };
 
-export type LetterParams = {
-  letterId: string;
-  correspondenceId?: string;
-};
-
 export type DeleteLetterParams = {
   letterId: string;
   correspondenceId?: string;

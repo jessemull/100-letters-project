@@ -53,7 +53,3 @@ export type DeleteRecipientResponse = {
   data: Recipient;
   message: string;
 };
-
-export type RecipientParams = {
-  recipientId: string;
-};
