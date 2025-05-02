@@ -39,7 +39,10 @@ describe('LetterItem', () => {
     );
 
     fireEvent.click(screen.getByTestId('delete-button'));
-    expect(onDeleteMock).toHaveBeenCalledWith(mockLetter.letterId);
+    expect(onDeleteMock).toHaveBeenCalledWith(
+      mockLetter.letterId,
+      mockLetter.correspondenceId,
+    );
   });
 
   it('Has no accessibility violations.', async () => {

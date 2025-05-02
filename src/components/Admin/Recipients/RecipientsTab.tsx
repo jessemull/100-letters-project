@@ -13,8 +13,8 @@ import { useAuth } from '@contexts/AuthProvider';
 import { useRouter } from 'next/navigation';
 import { useSWRMutation } from '@hooks/useSWRMutation';
 import { useSWRQuery } from '@hooks/useSWRQuery';
-import { onRecipientUpdate } from '@util/cache';
 import { useInView } from 'react-intersection-observer';
+import { deleteRecipientUpdate } from '@util/cache';
 
 const RecipientsTab: React.FC = () => {
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
@@ -39,7 +39,7 @@ const RecipientsTab: React.FC = () => {
     DeleteRecipientResponse,
     RecipientParams
   >({
-    cache: [{ key: '/recipient', onUpdate: onRecipientUpdate }],
+    cache: [{ key: '/recipient', onUpdate: deleteRecipientUpdate }],
     method: 'DELETE',
     token,
     onSuccess: () => {

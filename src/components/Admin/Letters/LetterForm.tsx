@@ -8,6 +8,7 @@ import {
   LetterFormResponse,
   LetterType,
   LetterMethod,
+  LetterParams,
 } from '@ts-types/letter';
 import {
   Correspondence,
@@ -32,6 +33,12 @@ import { useForm } from '@hooks/useForm';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSWRMutation } from '@hooks/useSWRMutation';
 import { useSWRQuery } from '@hooks/useSWRQuery';
+import {
+  correspondenceByIdLetterUpdate,
+  correspondencesLetterUpdate,
+  letterByIdUpdate,
+  lettersUpdate,
+} from '@util/cache';
 
 const methodOptions = [
   { label: 'Digital', value: LetterMethod.DIGITAL },
@@ -155,8 +162,18 @@ const LetterForm = () => {
 
   const { mutate, isLoading: isUpdating } = useSWRMutation<
     Partial<Letter>,
-    LetterFormResponse
+    LetterFormResponse,
+    LetterParams
   >({
+    cache: [
+      { key: '/correspondence', onUpdate: correspondencesLetterUpdate },
+      {
+        key: `/correspondence/${values.correspondenceId}`,
+        onUpdate: correspondenceByIdLetterUpdate,
+      },
+      { key: '/letter', onUpdate: lettersUpdate },
+      { key: `/letter/${letterId}`, onUpdate: letterByIdUpdate },
+    ],
     method: letterId ? 'PUT' : 'POST',
     path: letterId ? `/letter/${letterId}` : `/letter`,
     token,
@@ -187,7 +204,13 @@ const LetterForm = () => {
         delete formatted.receivedAt;
       }
 
-      await mutate({ body: formatted });
+      await mutate({
+        body: formatted,
+        params: {
+          correspondenceId: correspondenceId as string,
+          letterId: formatted.letterId,
+        },
+      });
     });
   };
 

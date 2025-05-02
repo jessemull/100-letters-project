@@ -90,13 +90,23 @@ export type GetLetterByIdResponse = {
 };
 
 export type LetterFormResponse = {
+  data: Letter;
   message: string;
 };
 
 export type LetterParams = {
   letterId: string;
+  correspondenceId?: string;
+};
+
+export type DeleteLetterParams = {
+  letterId: string;
+  correspondenceId?: string;
 };
 
 export type DeleteLetterResponse = {
+  data: {
+    letterId: string;
+  };
   message: string;
 };

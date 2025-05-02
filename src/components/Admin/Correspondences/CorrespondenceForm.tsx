@@ -11,16 +11,14 @@ import {
 } from '@components/Form';
 import {
   CorrespondenceFormResponse,
-  CorrespondenceLetterParams,
   CorrespondenceUpdate,
   CreateOrUpdateCorrespondenceInput,
   GetCorrespondenceByIdResponse,
   Impact,
   Status,
 } from '@ts-types/correspondence';
-import { DeleteLetterResponse } from '@ts-types/letter';
+import { DeleteLetterParams, DeleteLetterResponse } from '@ts-types/letter';
 import { LetterItem } from '../Letters';
-import { onCorrespondenceLetterUpdate, onLetterUpdate } from '@util/cache';
 import { required } from '@util/validators';
 import { useAuth } from '@contexts/AuthProvider';
 import { useEffect, useState } from 'react';
@@ -28,6 +26,16 @@ import { useForm } from '@hooks/useForm';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSWRMutation } from '@hooks/useSWRMutation';
 import { useSWRQuery } from '@hooks/useSWRQuery';
+import {
+  correspondenceByIdDeleteUpdate,
+  correspondenceByIdUpdate,
+  correspondencesDeleteUpdate,
+  correspondencesUpdate,
+  letterByIdDeleteUpdate,
+  lettersDeleteUpdate,
+  recipientByIdCorrespondenceUpdate,
+  recipientsCorrespondenceUpdate,
+} from '@util/cache';
 
 const impactOptions = [
   { label: 'Low', value: Impact.LOW },
@@ -122,17 +130,16 @@ const CorrespondenceForm = () => {
   const { isLoading: isDeleting, mutate: deleteLetter } = useSWRMutation<
     {},
     DeleteLetterResponse,
-    CorrespondenceLetterParams
+    DeleteLetterParams
   >({
     cache: [
-      {
-        key: '/letter',
-        onUpdate: onLetterUpdate,
-      },
+      { key: '/correspondence', onUpdate: correspondencesDeleteUpdate },
       {
         key: `/correspondence/${correspondenceId}`,
-        onUpdate: onCorrespondenceLetterUpdate,
+        onUpdate: correspondenceByIdDeleteUpdate,
       },
+      { key: '/letter', onUpdate: lettersDeleteUpdate },
+      { key: `/letter/${letterId}`, onUpdate: letterByIdDeleteUpdate },
     ],
     method: 'DELETE',
     token,
@@ -154,6 +161,18 @@ const CorrespondenceForm = () => {
     Partial<CreateOrUpdateCorrespondenceInput>,
     CorrespondenceFormResponse
   >({
+    cache: [
+      { key: '/correspondence', onUpdate: correspondencesUpdate },
+      {
+        key: `/correspondence/${correspondenceId}`,
+        onUpdate: correspondenceByIdUpdate,
+      },
+      { key: '/recipient', onUpdate: recipientsCorrespondenceUpdate },
+      {
+        key: `/recipient/${values.recipientId}`,
+        onUpdate: recipientByIdCorrespondenceUpdate,
+      },
+    ],
     method: correspondenceId ? 'PUT' : 'POST',
     path: correspondenceId
       ? `/correspondence/${correspondenceId}`

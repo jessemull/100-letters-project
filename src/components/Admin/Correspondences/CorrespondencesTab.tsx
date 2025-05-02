@@ -11,9 +11,12 @@ import { CorrespondenceItem } from '@components/Admin';
 import {
   GetCorrespondencesResponse,
   DeleteCorrespondenceResponse,
-  CorrespondenceParams,
 } from '@ts-types/correspondence';
-import { onCorrespondenceUpdate } from '@util/cache';
+import {
+  deleteCorrespondenceLetterUpdate,
+  deleteCorrespondenceRecipientUpdate,
+  deleteCorrespondenceUpdate,
+} from '@util/cache';
 
 const CorrespondencesTab: React.FC = () => {
   const [correspondenceId, setCorrespondenceId] = useState('');
@@ -41,10 +44,13 @@ const CorrespondencesTab: React.FC = () => {
 
   const { isLoading: isDeleting, mutate } = useSWRMutation<
     {},
-    DeleteCorrespondenceResponse,
-    CorrespondenceParams
+    DeleteCorrespondenceResponse
   >({
-    cache: [{ key: '/correspondence', onUpdate: onCorrespondenceUpdate }],
+    cache: [
+      { key: '/correspondence', onUpdate: deleteCorrespondenceUpdate },
+      { key: '/letter', onUpdate: deleteCorrespondenceLetterUpdate },
+      { key: '/recipient', onUpdate: deleteCorrespondenceRecipientUpdate },
+    ],
     method: 'DELETE',
     token,
     onSuccess: () => {

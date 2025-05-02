@@ -7,18 +7,19 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 type Method = 'POST' | 'PUT' | 'DELETE';
 
-interface Cache<Body, Params> {
+interface Cache<Body, Params, Response = unknown> {
   key: string;
   onUpdate?: (args: {
     key: string;
     prev: unknown;
     body?: Body;
     params?: Params;
+    response?: Response;
   }) => unknown;
 }
 
 interface UseAuthorizedMutationOptions<Body, Response, Params> {
-  cache?: Cache<Body, Params>[];
+  cache?: Cache<Body, Params, Response>[];
   method?: Method;
   token?: string | null;
   path?: string;
@@ -127,7 +128,13 @@ export function useSWRMutation<Body, Response = unknown, Params = unknown>(
               globalMutate(
                 `${API_BASE_URL}${key}`,
                 (current: unknown | undefined) =>
-                  onUpdate({ key, prev: current, body, params }),
+                  onUpdate({
+                    key,
+                    prev: current,
+                    body,
+                    params,
+                    response: data,
+                  }),
                 false,
               );
             }
