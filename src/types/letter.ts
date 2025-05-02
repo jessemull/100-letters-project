@@ -27,6 +27,7 @@ export enum View {
   ENVELOPE_BACK = 'ENVELOPE_BACK',
   LETTER_FRONT = 'LETTER_FRONT',
   LETTER_BACK = 'LETTER_BACK',
+  OTHER = 'OTHER',
 }
 
 export type LetterImage = {

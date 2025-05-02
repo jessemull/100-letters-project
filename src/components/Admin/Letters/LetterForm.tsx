@@ -8,6 +8,7 @@ import {
   LetterFormResponse,
   LetterType,
   LetterMethod,
+  View,
 } from '@ts-types/letter';
 import {
   Correspondence,
@@ -27,7 +28,7 @@ import {
 import { required } from '@util/validators';
 import { toDateTimeLocal, toUTCTime } from '@util/date-time';
 import { useAuth } from '@contexts/AuthProvider';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm } from '@hooks/useForm';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSWRMutation } from '@hooks/useSWRMutation';
@@ -61,6 +62,14 @@ const statusOptions = [
   { label: 'Received', value: Status.RECEIVED },
 ];
 
+const viewOptions = [
+  { label: 'Letter Front', value: View.LETTER_FRONT },
+  { label: 'Letter Back', value: View.LETTER_BACK },
+  { label: 'Envelope Front', value: View.ENVELOPE_FRONT },
+  { label: 'Envelope Back', value: View.ENVELOPE_BACK },
+  { label: 'Other', value: View.OTHER },
+];
+
 const initial: Letter = {
   correspondenceId: '',
   description: '',
@@ -85,6 +94,7 @@ const validators = {
 };
 
 const LetterForm = () => {
+  const [view, setView] = useState(View.LETTER_FRONT);
   const router = useRouter();
   const searchParams = useSearchParams();
   const correspondenceId = searchParams.get('correspondenceId');
@@ -185,6 +195,10 @@ const LetterForm = () => {
     },
     onSuccess: () => router.back(),
   });
+
+  const uploadImage = () => {
+    console.log('Uploading...');
+  };
 
   const handleSubmit = () => {
     onSubmit(async () => {
@@ -288,6 +302,7 @@ const LetterForm = () => {
           <h3 className="text-white text-lg">{correspondenceLabel}</h3>
         )}
       </div>
+      <h2 className="text-xl font-semibold text-white">Letter Info</h2>
       {!letterId &&
         (!values.correspondenceId || correspondenceOptions.length > 1) && (
           <AutoSelect
@@ -398,6 +413,39 @@ const LetterForm = () => {
           timeIntervals={15}
         />
       </div>
+      {letterId && (
+        <div className="space-y-6">
+          <h2 className="text-xl font-semibold text-white">Images</h2>
+          <div className="flex flex-col md:items-end md:flex-row md:space-x-4">
+            <div className="w-full md:w-1/2 order-2 md:order-1">
+              <label
+                htmlFor="imageUpload"
+                className="w-full h-12 text-base leading-[30px] rounded-[25px] border bg-[#111827] text-white border-white hover:bg-[#293E6A] cursor-pointer flex items-center justify-center"
+              >
+                Add Image +
+              </label>
+              <input
+                id="imageUpload"
+                type="file"
+                accept="image/*"
+                onChange={uploadImage}
+                className="hidden"
+              />
+            </div>
+            <div className="w-full mb-4 md:w-1/2 order-1 md:order-2 md:mb-0">
+              <Select
+                id="viewSelect"
+                label="View"
+                options={viewOptions}
+                value={view}
+                onChange={({ target: { value } }) => setView(value as View)}
+                placeholder="Choose a view"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col-reverse md:flex-row justify-between gap-4 pt-6">
         <Button id="cancel" onClick={handleCancel} value="Cancel" />
         <Button
