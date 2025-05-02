@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import {
   DeleteRecipientResponse,
   GetRecipientsResponse,
-  RecipientParams,
 } from '@ts-types/recipients';
 import { ConfirmationModal, showToast } from '@components/Form';
 import { Progress } from '@components/Form';
@@ -13,8 +12,8 @@ import { useAuth } from '@contexts/AuthProvider';
 import { useRouter } from 'next/navigation';
 import { useSWRMutation } from '@hooks/useSWRMutation';
 import { useSWRQuery } from '@hooks/useSWRQuery';
-import { onRecipientUpdate } from '@util/cache';
 import { useInView } from 'react-intersection-observer';
+import { deleteRecipientUpdate } from '@util/cache';
 
 const RecipientsTab: React.FC = () => {
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
@@ -36,10 +35,9 @@ const RecipientsTab: React.FC = () => {
 
   const { isLoading: isDeleting, mutate } = useSWRMutation<
     {},
-    DeleteRecipientResponse,
-    RecipientParams
+    DeleteRecipientResponse
   >({
-    cache: [{ key: '/recipient', onUpdate: onRecipientUpdate }],
+    cache: [{ key: '/recipient', onUpdate: deleteRecipientUpdate }],
     method: 'DELETE',
     token,
     onSuccess: () => {

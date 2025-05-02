@@ -2,19 +2,28 @@
 
 import React, { useEffect, useState } from 'react';
 import { ConfirmationModal, Progress, showToast } from '@components/Form';
-import { DeleteLetterResponse, GetLettersResponse } from '@ts-types/letter';
+import {
+  DeleteLetterParams,
+  DeleteLetterResponse,
+  GetLettersResponse,
+} from '@ts-types/letter';
 import { LetterItem } from '@components/Admin';
 import { useAuth } from '@contexts/AuthProvider';
 import { useRouter } from 'next/navigation';
 import { useSWRMutation } from '@hooks/useSWRMutation';
 import { useSWRQuery } from '@hooks/useSWRQuery';
-import { onLetterUpdate } from '@util/cache';
-import { CorrespondenceLetterParams } from '@ts-types/correspondence';
 import { useInView } from 'react-intersection-observer';
+import {
+  correspondenceByIdDeleteUpdate,
+  correspondencesDeleteUpdate,
+  letterByIdDeleteUpdate,
+  lettersDeleteUpdate,
+} from '@util/cache';
 
 const LettersTab: React.FC = () => {
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [letterId, setLetterId] = useState('');
+  const [correspondenceId, setCorrespondenceId] = useState('');
   const [lastEvaluatedKey, setLastEvaluatedKey] = useState<string | null>(null);
 
   const router = useRouter();
@@ -29,9 +38,17 @@ const LettersTab: React.FC = () => {
   const { isLoading: isDeleting, mutate } = useSWRMutation<
     {},
     DeleteLetterResponse,
-    CorrespondenceLetterParams
+    DeleteLetterParams
   >({
-    cache: [{ key: '/letter', onUpdate: onLetterUpdate }],
+    cache: [
+      { key: '/correspondence', onUpdate: correspondencesDeleteUpdate },
+      {
+        key: `/correspondence/${correspondenceId}`,
+        onUpdate: correspondenceByIdDeleteUpdate,
+      },
+      { key: '/letter', onUpdate: lettersDeleteUpdate },
+      { key: `/letter/${letterId}`, onUpdate: letterByIdDeleteUpdate },
+    ],
     method: 'DELETE',
     token,
     onSuccess: () => {
@@ -66,8 +83,9 @@ const LettersTab: React.FC = () => {
     router.push(`/admin/letter?letterId=${id}`);
   };
 
-  const onDelete = (id: string) => {
-    setLetterId(id);
+  const onDelete = (letterId: string, corresondenceId: string) => {
+    setCorrespondenceId(corresondenceId);
+    setLetterId(letterId);
     setIsConfirmationModalOpen(true);
   };
 

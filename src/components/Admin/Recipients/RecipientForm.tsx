@@ -19,6 +19,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useSWRMutation } from '@hooks/useSWRMutation';
 import { useSWRQuery } from '@hooks/useSWRQuery';
 import { useEffect } from 'react';
+import { recipientByIdUpdate, recipientsUpdate } from '@util/cache';
 
 const initial: Recipient = {
   address: {
@@ -80,6 +81,10 @@ const RecipientForm = () => {
     Partial<Recipient>,
     RecipientFormResponse
   >({
+    cache: [
+      { key: '/recipient', onUpdate: recipientsUpdate },
+      { key: `/recipient/${recipientId}`, onUpdate: recipientByIdUpdate },
+    ],
     method: recipientId ? 'PUT' : 'POST',
     path: recipientId ? `/recipient/${recipientId}` : `/recipient`,
     token,

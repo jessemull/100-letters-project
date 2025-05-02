@@ -100,14 +100,16 @@ export type GetCorrespondenceByIdResponse = {
 };
 
 export type CorrespondenceFormResponse = {
+  data: Correspondence;
   message: string;
 };
 
-export type CorrespondenceParams = {
-  correspondenceId: string;
-};
-
 export type DeleteCorrespondenceResponse = {
+  data: {
+    correspondenceId: string;
+    letterIds: string[];
+    recipientId: string;
+  };
   message: string;
 };
 
@@ -128,9 +130,4 @@ export type CreateOrUpdateCorrespondenceInput = {
     recipientId?: string;
   };
   letters: LetterUpdateInput[];
-};
-
-export type CorrespondenceLetterParams = {
-  correspondenceId?: string;
-  letterId: string;
 };

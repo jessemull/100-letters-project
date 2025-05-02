@@ -45,13 +45,11 @@ export type GetRecipientByIdResponse = {
 };
 
 export type RecipientFormResponse = {
+  data: Recipient;
   message: string;
 };
 
 export type DeleteRecipientResponse = {
+  data: Recipient;
   message: string;
-};
-
-export type RecipientParams = {
-  recipientId: string;
 };

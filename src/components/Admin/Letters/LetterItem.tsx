@@ -7,7 +7,7 @@ import { PenSquare, Trash2 } from 'lucide-react';
 interface Props {
   data: Letter;
   onEdit: (letterId: string) => void;
-  onDelete: (letterId: string) => void;
+  onDelete: (letterId: string, corresondenceId: string) => void;
 }
 
 const LetterItem = ({ data, onEdit, onDelete }: Props) => {
@@ -32,7 +32,7 @@ const LetterItem = ({ data, onEdit, onDelete }: Props) => {
           </button>
           <button
             data-testid="delete-button"
-            onClick={() => onDelete(data.letterId)}
+            onClick={() => onDelete(data.letterId, data.correspondenceId)}
             className="text-white hover:text-gray-400"
             aria-label="Delete"
           >

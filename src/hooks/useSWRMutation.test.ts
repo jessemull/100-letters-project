@@ -143,6 +143,9 @@ describe('useSWRMutation', () => {
       prev: undefined,
       body: undefined,
       params: undefined,
+      response: {
+        data: 'updated data',
+      },
     });
   });
 
