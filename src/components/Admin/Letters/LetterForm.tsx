@@ -260,7 +260,8 @@ const LetterForm = () => {
     const correspondence =
       !letterId && !correspondenceId
         ? correspondenceMap[values.correspondenceId]
-        : (singleCorrespondence?.data as unknown as Correspondence);
+        : (singleCorrespondence?.data
+            ?.correspondence as unknown as Correspondence);
 
     const recipient = correspondence?.recipient || {
       lastName: 'No Last Name',

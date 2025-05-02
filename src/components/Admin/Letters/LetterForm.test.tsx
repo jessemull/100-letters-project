@@ -131,7 +131,7 @@ describe('LetterForm', () => {
     fireEvent.focus(input);
 
     const option = await screen.getByText('User, Test - Test Correspondence');
-    fireEvent.mouseDown(option);
+    fireEvent.click(option);
 
     fireEvent.click(screen.getByDisplayValue('Create'));
 
@@ -296,7 +296,7 @@ describe('LetterForm', () => {
     fireEvent.focus(input);
 
     const option = await screen.getByText('User, Test - Test Correspondence');
-    fireEvent.mouseDown(option);
+    fireEvent.click(option);
 
     fireEvent.click(screen.getByDisplayValue('Create'));
 
@@ -446,7 +446,7 @@ describe('LetterForm', () => {
     fireEvent.focus(input);
 
     const option = await screen.getByText('User, Test - Test Correspondence');
-    fireEvent.mouseDown(option);
+    fireEvent.click(option);
 
     fireEvent.click(screen.getByDisplayValue('Create'));
 
@@ -508,7 +508,7 @@ describe('LetterForm', () => {
     fireEvent.focus(input);
 
     const option = await screen.getByText('User, Test - Test Correspondence');
-    fireEvent.mouseDown(option);
+    fireEvent.click(option);
 
     fireEvent.click(screen.getByDisplayValue('Create'));
 

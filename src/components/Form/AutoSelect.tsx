@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import Progress from './Progress';
 
 interface Option {
@@ -29,18 +29,19 @@ const AutoSelect: React.FC<AutoSelectProps> = ({
   placeholder = '',
   value,
 }) => {
-  const [inputValue, setInputValue] = useState(value);
+  const [inputValue, setInputValue] = useState('');
   const [isFocused, setIsFocused] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
 
   const selectedOption = useMemo(() => {
     return options.find((option) => option.value === value);
   }, [value, options]);
 
   useEffect(() => {
-    if (selectedOption) {
+    if (!isFocused && selectedOption) {
       setInputValue(selectedOption.label);
     }
-  }, [selectedOption]);
+  }, [selectedOption, isFocused]);
 
   const filteredOptions = useMemo(() => {
     if (!inputValue || inputValue === selectedOption?.label) return options;
@@ -58,13 +59,31 @@ const AutoSelect: React.FC<AutoSelectProps> = ({
     setIsFocused(false);
   };
 
+  const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+    if (
+      wrapperRef.current &&
+      !wrapperRef.current.contains(event.target as Node)
+    ) {
+      setIsFocused(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, []);
+
   const errorsArray = useMemo(
     () => (Array.isArray(errors) ? errors : errors ? [errors] : []),
     [errors],
   );
 
   return (
-    <div className="relative w-full">
+    <div className="relative w-full" ref={wrapperRef}>
       {label && (
         <label htmlFor={id} className="block text-white text-base mb-2">
           {label}
@@ -75,7 +94,6 @@ const AutoSelect: React.FC<AutoSelectProps> = ({
         className="w-full h-12 rounded-full bg-white/25 border border-white text-white text-base placeholder-white/70 focus:outline-none px-4"
         data-testid={id}
         id={id}
-        onBlur={() => setTimeout(() => setIsFocused(false), 100)}
         onChange={(e) => setInputValue(e.target.value)}
         onFocus={() => setIsFocused(true)}
         placeholder={placeholder}
@@ -93,7 +111,7 @@ const AutoSelect: React.FC<AutoSelectProps> = ({
               <li key={option.value}>
                 <button
                   type="button"
-                  onMouseDown={() => handleSelect(option.value)}
+                  onClick={() => handleSelect(option.value)}
                   className={`w-full text-left px-4 py-2 hover:bg-black/10 ${
                     idx % 2 === 0 ? 'bg-white' : 'bg-white/60'
                   }`}
