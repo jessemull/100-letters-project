@@ -96,7 +96,14 @@ export function useSWRMutation<Body, Response = unknown, Params = unknown>(
               ...(token && { Authorization: `Bearer ${token}` }),
               ...headers,
             },
-            ...(body ? { body: JSON.stringify(body) } : {}),
+            body:
+              typeof body === 'string' ||
+              body instanceof Blob ||
+              body instanceof ArrayBuffer
+                ? body
+                : body
+                  ? JSON.stringify(body)
+                  : undefined,
           },
         );
 
@@ -177,7 +184,7 @@ export function useSWRMutation<Body, Response = unknown, Params = unknown>(
         setIsLoading(false);
       }
     },
-    [defaultPath, cache, method, onError, onSuccess, token],
+    [defaultPath, defaultUrl, cache, method, onError, onSuccess, token],
   );
 
   return { error, isLoading, mutate, response };

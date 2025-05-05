@@ -28,13 +28,7 @@ import {
 import { required } from '@util/validators';
 import { toDateTimeLocal, toUTCTime } from '@util/date-time';
 import { useAuth } from '@contexts/AuthProvider';
-import {
-  ChangeEvent,
-  ChangeEventHandler,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import { useForm } from '@hooks/useForm';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSWRMutation } from '@hooks/useSWRMutation';
@@ -46,7 +40,8 @@ import {
   lettersUpdate,
 } from '@util/cache';
 import useFileUpload from '@hooks/useFileUpload';
-import { X } from 'lucide-react';
+import { PenSquare, Trash2, X } from 'lucide-react';
+import ImageItem from './ImageItem';
 
 const methodOptions = [
   { label: 'Digital', value: LetterMethod.DIGITAL },
@@ -187,6 +182,7 @@ const LetterForm = () => {
     uploadFile,
     isUploading,
   } = useFileUpload({
+    caption,
     letter: values,
     token,
     view,
@@ -236,9 +232,12 @@ const LetterForm = () => {
 
   const uploadImage = async () => {
     if (file && view) {
-      const message = await uploadFile({ file });
-      if (message) {
-        showToast({ message, type: 'success' });
+      const response = await uploadFile({ file });
+      if (response?.message) {
+        showToast({ message: response?.message, type: 'success' });
+      }
+      if (response?.imageURL) {
+        updateField('imageURLs', [...values.imageURLs, response.imageURL]);
       }
       resetAddNewImage();
     }
@@ -470,6 +469,9 @@ const LetterForm = () => {
       {letterId && (
         <div className="space-y-6">
           <h2 className="text-xl font-semibold text-white">Images</h2>
+          {values.imageURLs.map((image) => (
+            <ImageItem data={image} key={image?.id} />
+          ))}
           {isUploading ? (
             <div className="w-full flex items-center justify-center">
               <Progress color="white" size={12} />
@@ -498,12 +500,12 @@ const LetterForm = () => {
                         <Select
                           id="viewSelect"
                           label="View"
-                          options={viewOptions}
-                          value={view}
                           onChange={({ target: { value } }) =>
                             setView(value as View)
                           }
+                          options={viewOptions}
                           placeholder="Choose a view"
+                          value={view}
                         />
                       </div>
                     </div>
@@ -544,7 +546,6 @@ const LetterForm = () => {
           )}
         </div>
       )}
-
       <div className="flex flex-col-reverse md:flex-row justify-between gap-4 pt-6">
         <Button id="cancel" onClick={handleCancel} value="Cancel" />
         <Button

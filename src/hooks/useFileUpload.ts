@@ -21,12 +21,13 @@ import { useSWRMutation } from './useSWRMutation';
 import { useState } from 'react';
 
 export interface UseFileUpload {
+  caption?: string;
   letter: Letter;
   token: string | null;
   view: View;
 }
 
-export function useFileUpload({ letter, token, view }: UseFileUpload) {
+export function useFileUpload({ caption, letter, token, view }: UseFileUpload) {
   const [error, setError] = useState<string>('');
   const [isUploading, setIsUploading] = useState(false);
 
@@ -92,6 +93,8 @@ export function useFileUpload({ letter, token, view }: UseFileUpload) {
         data: { imageURL, signedUrl, uuid },
       } = signedUrlResponse as SignedURLResponse;
 
+      console.log(typeof file, file);
+
       await fileUpload({
         body: file,
         headers: {
@@ -100,25 +103,28 @@ export function useFileUpload({ letter, token, view }: UseFileUpload) {
         url: signedUrl,
       });
 
+      const newImageURL = {
+        caption,
+        id: uuid,
+        mimeType: file.type as LetterMimeType,
+        sizeInBytes: file.size,
+        url: imageURL,
+        view,
+      };
+
       const { message } = (await updateLetter({
         body: {
           ...letter,
-          imageURLs: [
-            ...letter.imageURLs,
-            {
-              id: uuid,
-              mimeType: file.type as LetterMimeType,
-              sizeInBytes: file.size,
-              url: imageURL,
-              view,
-            },
-          ],
+          imageURLs: [...letter.imageURLs, newImageURL],
         },
       })) as LetterFormResponse;
 
       setIsUploading(false);
 
-      return message;
+      return {
+        message,
+        imageURL: newImageURL,
+      };
     } catch (error) {
       let message = 'File upload error!';
 
