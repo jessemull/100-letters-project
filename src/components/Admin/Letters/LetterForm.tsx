@@ -28,7 +28,13 @@ import {
 import { required } from '@util/validators';
 import { toDateTimeLocal, toUTCTime } from '@util/date-time';
 import { useAuth } from '@contexts/AuthProvider';
-import { useEffect, useMemo, useState } from 'react';
+import {
+  ChangeEvent,
+  ChangeEventHandler,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { useForm } from '@hooks/useForm';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSWRMutation } from '@hooks/useSWRMutation';
@@ -39,6 +45,8 @@ import {
   letterByIdUpdate,
   lettersUpdate,
 } from '@util/cache';
+import useFileUpload from '@hooks/useFileUpload';
+import { X } from 'lucide-react';
 
 const methodOptions = [
   { label: 'Digital', value: LetterMethod.DIGITAL },
@@ -94,11 +102,16 @@ const validators = {
 };
 
 const LetterForm = () => {
+  const [caption, setCaption] = useState<string>('');
+  const [file, setFile] = useState<File | null>(null);
+  const [isAddingImage, setIsAddingImage] = useState<boolean>(false);
   const [view, setView] = useState(View.LETTER_FRONT);
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const correspondenceId = searchParams.get('correspondenceId');
   const letterId = searchParams.get('letterId');
+
   const { loading: authenticating, token } = useAuth();
 
   const {
@@ -169,6 +182,16 @@ const LetterForm = () => {
       validators,
     });
 
+  const {
+    error: fileUploadError,
+    uploadFile,
+    isUploading,
+  } = useFileUpload({
+    letter: values,
+    token,
+    view,
+  });
+
   const { mutate, isLoading: isUpdating } = useSWRMutation<
     Partial<Letter>,
     LetterFormResponse
@@ -196,8 +219,25 @@ const LetterForm = () => {
     onSuccess: () => router.back(),
   });
 
+  const resetAddNewImage = () => {
+    setCaption('');
+    setFile(null);
+    setIsAddingImage(false);
+    setView(View.LETTER_FRONT);
+  };
+
+  const onSelectImage = ({
+    target: { files },
+  }: ChangeEvent<HTMLInputElement>) => {
+    if (files && files.length > 0) {
+      setFile(files[0]);
+    }
+  };
+
   const uploadImage = () => {
-    console.log('Uploading...');
+    if (file && view) {
+      uploadFile({ file });
+    }
   };
 
   const handleSubmit = () => {
@@ -291,6 +331,10 @@ const LetterForm = () => {
     singleCorrespondence,
     values.correspondenceId,
   ]);
+
+  const disableUploadButton = useMemo(() => {
+    return !Boolean(file) || !Boolean(view);
+  }, [file, view]);
 
   return isLoading || authenticating || singleCorrespondenceIsLoading ? (
     <Progress color="white" size={16} />
@@ -416,33 +460,70 @@ const LetterForm = () => {
       {letterId && (
         <div className="space-y-6">
           <h2 className="text-xl font-semibold text-white">Images</h2>
-          <div className="flex flex-col md:items-end md:flex-row md:space-x-4">
-            <div className="w-full md:w-1/2 order-2 md:order-1">
-              <label
-                htmlFor="imageUpload"
-                className="w-full h-12 text-base leading-[30px] rounded-[25px] border bg-[#111827] text-white border-white hover:bg-[#293E6A] cursor-pointer flex items-center justify-center"
-              >
-                Add Image +
-              </label>
-              <input
-                id="imageUpload"
-                type="file"
-                accept="image/*"
-                onChange={uploadImage}
-                className="hidden"
+          {isAddingImage ? (
+            <div className="p-4 bg-white/10 border border-white rounded-xl transition-transform transform hover:scale-[1.01] cursor-pointer space-y-6">
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-semibold text-white">
+                  Add New Image
+                </h2>
+                <X color="white" onClick={resetAddNewImage} />
+              </div>
+              <div className="flex flex-col">
+                <div className="flex flex-col space-y-4 md:flex-row md:space-x-4 md:space-y-0">
+                  <TextInput
+                    id="caption"
+                    label="Caption"
+                    onChange={({ target: { value } }) => setCaption(value)}
+                    placeholder="Caption"
+                    type="text"
+                    value={caption}
+                  />
+                  <div className="w-full md:w-1/2">
+                    <Select
+                      id="viewSelect"
+                      label="View"
+                      options={viewOptions}
+                      value={view}
+                      onChange={({ target: { value } }) =>
+                        setView(value as View)
+                      }
+                      placeholder="Choose a view"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="w-full flex flex-col space-y-4 md:flex-row md:space-x-4 md:space-y-0 items-center">
+                <div className="w-full md:w-1/3">
+                  <label
+                    htmlFor="imageUpload"
+                    className="w-full h-12 text-base leading-[30px] rounded-[25px] border bg-[#111827] text-white border-white hover:bg-[#293E6A] cursor-pointer flex items-center justify-center"
+                  >
+                    Select Image +
+                  </label>
+                  <input
+                    id="imageUpload"
+                    type="file"
+                    accept="image/*"
+                    onChange={onSelectImage}
+                    className="hidden"
+                  />
+                </div>
+                <div className="w-full truncate text-sm break-words text-white">{`${file ? file.name : 'Select an image file...'}`}</div>
+              </div>
+              <Button
+                disabled={disableUploadButton}
+                id="upload-image"
+                onClick={uploadImage}
+                value="Upload Image +"
               />
             </div>
-            <div className="w-full mb-4 md:w-1/2 order-1 md:order-2 md:mb-0">
-              <Select
-                id="viewSelect"
-                label="View"
-                options={viewOptions}
-                value={view}
-                onChange={({ target: { value } }) => setView(value as View)}
-                placeholder="Choose a view"
-              />
-            </div>
-          </div>
+          ) : (
+            <Button
+              id="add-image"
+              onClick={() => setIsAddingImage(true)}
+              value="Add Image +"
+            />
+          )}
         </div>
       )}
 
