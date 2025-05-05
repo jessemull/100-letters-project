@@ -234,9 +234,13 @@ const LetterForm = () => {
     }
   };
 
-  const uploadImage = () => {
+  const uploadImage = async () => {
     if (file && view) {
-      uploadFile({ file });
+      const message = await uploadFile({ file });
+      if (message) {
+        showToast({ message, type: 'success' });
+      }
+      resetAddNewImage();
     }
   };
 
@@ -309,6 +313,12 @@ const LetterForm = () => {
       );
     }
   }, [letterId, singleCorrespondence, values.correspondenceId, updateField]);
+
+  useEffect(() => {
+    if (fileUploadError) {
+      showToast({ type: 'error', message: fileUploadError });
+    }
+  }, [fileUploadError]);
 
   const correspondenceLabel = useMemo(() => {
     const correspondence =
