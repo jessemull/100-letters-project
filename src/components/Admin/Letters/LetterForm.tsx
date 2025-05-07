@@ -250,9 +250,12 @@ const LetterForm = () => {
     setIsConfirmationModalOpen(true);
   };
 
-  const onConfirmDelete = () => {
+  const onConfirmDelete = async () => {
     setIsConfirmationModalOpen(false);
-    deleteFile({ imageId });
+    const response = await deleteFile({ imageId });
+    if (response?.imageURLs) {
+      updateField('imageURLs', response.imageURLs);
+    }
     setImageId('');
   };
 
@@ -305,12 +308,6 @@ const LetterForm = () => {
       setValues(formatted);
     }
   }, [letterId, data, values.letterId, setValues]);
-
-  useEffect(() => {
-    if (data?.imageURLs) {
-      updateField('imageURLs', data?.imageURLs);
-    }
-  }, [data?.imageURLs, updateField]);
 
   useEffect(() => {
     if (error || correspondencesError || singleCorrespondenceError) {
