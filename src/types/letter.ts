@@ -33,11 +33,13 @@ export enum View {
 export type LetterImage = {
   caption?: string;
   dateUploaded?: string;
+  fileKey: string;
   id: string;
   mimeType?: LetterMimeType;
   sizeInBytes?: number;
   uploadedBy?: string;
   url: string;
+  urlThumbnail: string;
   view: View;
 };
 

@@ -19,6 +19,8 @@ import {
 } from '@util/cache';
 import { useSWRMutation } from './useSWRMutation';
 import { useState } from 'react';
+import { toUTCTime } from '@util/date-time';
+import { formatLetterDates } from '@util/letter';
 
 export interface UseFileUpload {
   caption?: string;
@@ -90,10 +92,16 @@ export function useFileUpload({ caption, letter, token, view }: UseFileUpload) {
       });
 
       const {
-        data: { imageURL, signedUrl, uuid },
+        data: {
+          dateUploaded,
+          fileKey,
+          imageURL,
+          signedUrl,
+          uuid,
+          thumbnailURL,
+          uploadedBy,
+        },
       } = signedUrlResponse as SignedURLResponse;
-
-      console.log(typeof file, file);
 
       await fileUpload({
         body: file,
@@ -104,17 +112,23 @@ export function useFileUpload({ caption, letter, token, view }: UseFileUpload) {
       });
 
       const newImageURL = {
-        caption,
+        caption: caption || undefined,
+        dateUploaded,
+        fileKey,
         id: uuid,
         mimeType: file.type as LetterMimeType,
         sizeInBytes: file.size,
+        uploadedBy,
         url: imageURL,
+        urlThumbnail: thumbnailURL,
         view,
       };
 
+      const formatted = formatLetterDates(letter);
+
       const { message } = (await updateLetter({
         body: {
-          ...letter,
+          ...formatted,
           imageURLs: [...letter.imageURLs, newImageURL],
         },
       })) as LetterFormResponse;

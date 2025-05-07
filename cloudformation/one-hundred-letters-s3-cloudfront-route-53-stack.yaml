@@ -85,6 +85,16 @@ Resources:
                 - "http://localhost:3000"
                 - "https://www.dev.onehundredletters.com"
                 - "https://dev.onehundredletters.com"
+      NotificationConfiguration:
+        LambdaConfigurations:
+          - Event: s3:ObjectCreated:Put
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: unprocessed/
+            Function: !ImportValue 
+              Fn::Sub: "image-processor-lambda-arn-${Environment}"
 
   BackupBucket:
     Type: AWS::S3::Bucket

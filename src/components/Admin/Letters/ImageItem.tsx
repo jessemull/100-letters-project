@@ -1,12 +1,13 @@
 'use client';
 
-import Image from 'next/image';
+import Image from './Image';
 import React from 'react';
 import { LetterImage, View } from '@ts-types/letter';
 import { PenSquare, Trash2 } from 'lucide-react';
 
 interface Props {
   data: LetterImage;
+  deleteImage: (imageId: string) => void;
 }
 
 const viewToLabel = {
@@ -17,7 +18,7 @@ const viewToLabel = {
   [View.OTHER]: 'Other',
 };
 
-const ImageItem = ({ data }: Props) => {
+const ImageItem = ({ data, deleteImage }: Props) => {
   return (
     <div
       data-testid="card-edit-button"
@@ -30,10 +31,10 @@ const ImageItem = ({ data }: Props) => {
             className="object-cover"
             fill
             sizes="80px"
-            src={data?.url}
+            src={data?.urlThumbnail}
           />
         </div>
-        <div className="flex-1 flex justify-between items-start">
+        <div className="flex-1 flex justify-between items-start h-full">
           <div>
             <h3 className="font-semibold text-lg text-white">
               {viewToLabel[data?.view]}
@@ -42,7 +43,7 @@ const ImageItem = ({ data }: Props) => {
               {data?.caption ? `${data.caption.slice(0, 25)}...` : 'No Caption'}
             </p>
           </div>
-          <div className="space-x-2 flex items-center justify-center">
+          <div className="self-stretch space-x-2 flex items-center justify-center">
             <button
               data-testid="edit-button"
               className="text-white hover:text-gray-400"
@@ -54,6 +55,7 @@ const ImageItem = ({ data }: Props) => {
               data-testid="delete-button"
               className="text-white hover:text-gray-400"
               aria-label="Delete"
+              onClick={() => deleteImage(data.id)}
             >
               <Trash2 className="w-6 h-6" />
             </button>

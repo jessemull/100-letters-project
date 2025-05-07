@@ -19,6 +19,7 @@ import {
 import {
   AutoSelect,
   Button,
+  ConfirmationModal,
   Progress,
   Select,
   TextArea,
@@ -26,7 +27,7 @@ import {
   showToast,
 } from '@components/Form';
 import { required } from '@util/validators';
-import { toDateTimeLocal, toUTCTime } from '@util/date-time';
+import { toDateTimeLocal } from '@util/date-time';
 import { useAuth } from '@contexts/AuthProvider';
 import { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import { useForm } from '@hooks/useForm';
@@ -40,8 +41,10 @@ import {
   lettersUpdate,
 } from '@util/cache';
 import useFileUpload from '@hooks/useFileUpload';
-import { PenSquare, Trash2, X } from 'lucide-react';
 import ImageItem from './ImageItem';
+import AddImageItem from './AddImageItem';
+import { useDeleteUpload } from '@hooks/useDeleteUpload';
+import { formatLetterDates } from '@util/letter';
 
 const methodOptions = [
   { label: 'Digital', value: LetterMethod.DIGITAL },
@@ -99,7 +102,10 @@ const validators = {
 const LetterForm = () => {
   const [caption, setCaption] = useState<string>('');
   const [file, setFile] = useState<File | null>(null);
+  const [imageId, setImageId] = useState<string>('');
   const [isAddingImage, setIsAddingImage] = useState<boolean>(false);
+  const [isConfirmationModalOpen, setIsConfirmationModalOpen] =
+    useState<boolean>(false);
   const [view, setView] = useState(View.LETTER_FRONT);
 
   const router = useRouter();
@@ -188,6 +194,15 @@ const LetterForm = () => {
     view,
   });
 
+  const {
+    error: deleteUploadError,
+    deleteFile,
+    isDeleting,
+  } = useDeleteUpload({
+    letter: values,
+    token,
+  });
+
   const { mutate, isLoading: isUpdating } = useSWRMutation<
     Partial<Letter>,
     LetterFormResponse
@@ -230,6 +245,21 @@ const LetterForm = () => {
     }
   };
 
+  const onDeleteImage = (imageId: string) => {
+    setImageId(imageId);
+    setIsConfirmationModalOpen(true);
+  };
+
+  const onConfirmDelete = () => {
+    setIsConfirmationModalOpen(false);
+    deleteFile({ imageId });
+    setImageId('');
+  };
+
+  const closeConfirmationModal = () => {
+    setIsConfirmationModalOpen(false);
+  };
+
   const uploadImage = async () => {
     if (file && view) {
       const response = await uploadFile({ file });
@@ -245,20 +275,7 @@ const LetterForm = () => {
 
   const handleSubmit = () => {
     onSubmit(async () => {
-      const formatted = { ...values };
-
-      if (formatted.sentAt) {
-        formatted.sentAt = toUTCTime(formatted.sentAt);
-      } else {
-        delete formatted.sentAt;
-      }
-
-      if (formatted.receivedAt) {
-        formatted.receivedAt = toUTCTime(formatted.receivedAt);
-      } else {
-        delete formatted.receivedAt;
-      }
-
+      const formatted = formatLetterDates(values);
       await mutate({
         body: formatted,
         params: {
@@ -288,6 +305,12 @@ const LetterForm = () => {
       setValues(formatted);
     }
   }, [letterId, data, values.letterId, setValues]);
+
+  useEffect(() => {
+    if (data?.imageURLs) {
+      updateField('imageURLs', data?.imageURLs);
+    }
+  }, [data?.imageURLs, updateField]);
 
   useEffect(() => {
     if (error || correspondencesError || singleCorrespondenceError) {
@@ -348,215 +371,187 @@ const LetterForm = () => {
   return isLoading || authenticating || singleCorrespondenceIsLoading ? (
     <Progress color="white" size={16} />
   ) : (
-    <div className="p-6 md:p-12 w-full max-w-3xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-3xl font-semibold text-white">Letter Form</h1>
-        {values.correspondenceId && (
-          <h3 className="text-white text-lg">{correspondenceLabel}</h3>
-        )}
-      </div>
-      <h2 className="text-xl font-semibold text-white">Letter Info</h2>
-      {!letterId &&
-        (!values.correspondenceId || correspondenceOptions.length > 1) && (
-          <AutoSelect
-            errors={errors.correspondenceId}
-            id="correspondenceId"
-            label="Correspondence ID"
-            loading={correspondencesLoading}
-            options={correspondenceOptions}
-            onChange={(value) => updateField('correspondenceId', value)}
-            placeholder="Correspondence ID"
-            value={values.correspondenceId}
-          />
-        )}
-      <TextInput
-        errors={errors.title}
-        id="title"
-        label="Title"
-        onChange={({ target: { value } }) => updateField('title', value)}
-        placeholder="Title"
-        type="text"
-        value={values.title}
-      />
-      <TextArea
-        id="description"
-        label="Description"
-        onChange={({ target: { value } }) => updateField('description', value)}
-        placeholder="Short description"
-        value={values.description || ''}
-      />
-      <TextArea
-        errors={errors.text}
-        id="text"
-        label="Letter Text"
-        onChange={({ target: { value } }) => updateField('text', value)}
-        placeholder="Letter text..."
-        value={values.text || ''}
-      />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Select
-          errors={errors.type}
-          id="type"
-          label="Type"
-          onChange={({ target: { value } }) =>
-            updateField('type', value as LetterType)
-          }
-          options={typeOptions}
-          placeholder="Type"
-          value={values.type}
-        />
-        <Select
-          errors={errors.method}
-          id="method"
-          label="Method"
-          onChange={({ target: { value } }) =>
-            updateField('method', value as LetterMethod)
-          }
-          options={methodOptions}
-          placeholder="Method"
-          value={values.method}
-        />
-        <Select
-          errors={errors.status}
-          id="status"
-          label="Status"
-          onChange={({ target: { value } }) =>
-            updateField('status', value as Status)
-          }
-          options={statusOptions}
-          placeholder="Status"
-          value={values.status}
-        />
-        <DatePicker
-          customInput={
-            <TextInput
-              id="sentAt"
-              label="Sent At"
-              placeholder="Sent At"
-              type="text"
-              value={values.sentAt as string}
-            />
-          }
-          name="sentAt"
-          dateFormat="Pp"
-          onChange={(date) => updateField('sentAt', date?.toISOString())}
-          placeholderText="Sent At"
-          selected={values.sentAt ? new Date(values.sentAt) : null}
-          showTimeSelect
-          timeCaption="Time"
-          timeIntervals={15}
-        />
-        <DatePicker
-          customInput={
-            <TextInput
-              id="receivedAt"
-              label="Received At"
-              placeholder="Received At"
-              type="text"
-              value={values.receivedAt as string}
-            />
-          }
-          name="receivedAt"
-          dateFormat="Pp"
-          onChange={(date) => updateField('receivedAt', date?.toISOString())}
-          selected={values.receivedAt ? new Date(values.receivedAt) : null}
-          showTimeSelect
-          placeholderText="Received At"
-          timeCaption="Time"
-          timeIntervals={15}
-        />
-      </div>
-      {letterId && (
-        <div className="space-y-6">
-          <h2 className="text-xl font-semibold text-white">Images</h2>
-          {values.imageURLs.map((image) => (
-            <ImageItem data={image} key={image?.id} />
-          ))}
-          {isUploading ? (
-            <div className="w-full flex items-center justify-center">
-              <Progress color="white" size={12} />
-            </div>
-          ) : (
-            <div>
-              {isAddingImage ? (
-                <div className="p-4 bg-white/10 border border-white rounded-xl transition-transform transform hover:scale-[1.01] cursor-pointer space-y-6">
-                  <div className="flex justify-between items-center">
-                    <h2 className="text-xl font-semibold text-white">
-                      Add New Image
-                    </h2>
-                    <X color="white" onClick={resetAddNewImage} />
-                  </div>
-                  <div className="flex flex-col">
-                    <div className="flex flex-col space-y-4 md:flex-row md:space-x-4 md:space-y-0">
-                      <TextInput
-                        id="caption"
-                        label="Caption"
-                        onChange={({ target: { value } }) => setCaption(value)}
-                        placeholder="Caption"
-                        type="text"
-                        value={caption}
-                      />
-                      <div className="w-full md:w-1/2">
-                        <Select
-                          id="viewSelect"
-                          label="View"
-                          onChange={({ target: { value } }) =>
-                            setView(value as View)
-                          }
-                          options={viewOptions}
-                          placeholder="Choose a view"
-                          value={view}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="w-full flex flex-col space-y-4 md:flex-row md:space-x-4 md:space-y-0 items-center">
-                    <div className="w-full md:w-1/3">
-                      <label
-                        htmlFor="imageUpload"
-                        className="w-full h-12 text-base leading-[30px] rounded-[25px] border bg-[#111827] text-white border-white hover:bg-[#293E6A] cursor-pointer flex items-center justify-center"
-                      >
-                        Select Image +
-                      </label>
-                      <input
-                        id="imageUpload"
-                        type="file"
-                        accept="image/*"
-                        onChange={onSelectImage}
-                        className="hidden"
-                      />
-                    </div>
-                    <div className="w-full truncate text-sm break-words text-white">{`${file ? file.name : 'Select an image file...'}`}</div>
-                  </div>
-                  <Button
-                    disabled={disableUploadButton}
-                    id="upload-image"
-                    onClick={uploadImage}
-                    value="Upload Image +"
-                  />
-                </div>
-              ) : (
-                <Button
-                  id="add-image"
-                  onClick={() => setIsAddingImage(true)}
-                  value="Add Image +"
-                />
-              )}
-            </div>
+    <>
+      <div className="p-6 md:p-12 w-full max-w-3xl mx-auto space-y-6">
+        <div>
+          <h1 className="text-3xl font-semibold text-white">Letter Form</h1>
+          {values.correspondenceId && (
+            <h3 className="text-white text-lg">{correspondenceLabel}</h3>
           )}
         </div>
-      )}
-      <div className="flex flex-col-reverse md:flex-row justify-between gap-4 pt-6">
-        <Button id="cancel" onClick={handleCancel} value="Cancel" />
-        <Button
-          disabled={!isDirty || Object.keys(errors).length > 0}
-          id="submit"
-          loading={isUpdating}
-          onClick={handleSubmit}
-          value={letterId ? 'Update' : 'Create'}
+        <h2 className="text-xl font-semibold text-white">Letter Info</h2>
+        {!letterId &&
+          (!values.correspondenceId || correspondenceOptions.length > 1) && (
+            <AutoSelect
+              errors={errors.correspondenceId}
+              id="correspondenceId"
+              label="Correspondence ID"
+              loading={correspondencesLoading}
+              options={correspondenceOptions}
+              onChange={(value) => updateField('correspondenceId', value)}
+              placeholder="Correspondence ID"
+              value={values.correspondenceId}
+            />
+          )}
+        <TextInput
+          errors={errors.title}
+          id="title"
+          label="Title"
+          onChange={({ target: { value } }) => updateField('title', value)}
+          placeholder="Title"
+          type="text"
+          value={values.title}
         />
+        <TextArea
+          id="description"
+          label="Description"
+          onChange={({ target: { value } }) =>
+            updateField('description', value)
+          }
+          placeholder="Short description"
+          value={values.description || ''}
+        />
+        <TextArea
+          errors={errors.text}
+          id="text"
+          label="Letter Text"
+          onChange={({ target: { value } }) => updateField('text', value)}
+          placeholder="Letter text..."
+          value={values.text || ''}
+        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Select
+            errors={errors.type}
+            id="type"
+            label="Type"
+            onChange={({ target: { value } }) =>
+              updateField('type', value as LetterType)
+            }
+            options={typeOptions}
+            placeholder="Type"
+            value={values.type}
+          />
+          <Select
+            errors={errors.method}
+            id="method"
+            label="Method"
+            onChange={({ target: { value } }) =>
+              updateField('method', value as LetterMethod)
+            }
+            options={methodOptions}
+            placeholder="Method"
+            value={values.method}
+          />
+          <Select
+            errors={errors.status}
+            id="status"
+            label="Status"
+            onChange={({ target: { value } }) =>
+              updateField('status', value as Status)
+            }
+            options={statusOptions}
+            placeholder="Status"
+            value={values.status}
+          />
+          <DatePicker
+            customInput={
+              <TextInput
+                id="sentAt"
+                label="Sent At"
+                placeholder="Sent At"
+                type="text"
+                value={values.sentAt as string}
+              />
+            }
+            name="sentAt"
+            dateFormat="Pp"
+            onChange={(date) => updateField('sentAt', date?.toISOString())}
+            placeholderText="Sent At"
+            selected={values.sentAt ? new Date(values.sentAt) : null}
+            showTimeSelect
+            timeCaption="Time"
+            timeIntervals={15}
+          />
+          <DatePicker
+            customInput={
+              <TextInput
+                id="receivedAt"
+                label="Received At"
+                placeholder="Received At"
+                type="text"
+                value={values.receivedAt as string}
+              />
+            }
+            name="receivedAt"
+            dateFormat="Pp"
+            onChange={(date) => updateField('receivedAt', date?.toISOString())}
+            selected={values.receivedAt ? new Date(values.receivedAt) : null}
+            showTimeSelect
+            placeholderText="Received At"
+            timeCaption="Time"
+            timeIntervals={15}
+          />
+        </div>
+        {letterId && (
+          <div className="space-y-6">
+            <h2 className="text-xl font-semibold text-white">Images</h2>
+            {!isUploading &&
+              !isDeleting &&
+              values.imageURLs.map((image) => (
+                <ImageItem
+                  data={image}
+                  key={image?.id}
+                  deleteImage={onDeleteImage}
+                />
+              ))}
+            {isUploading || isDeleting ? (
+              <div className="w-full flex items-center justify-center">
+                <Progress color="white" size={12} />
+              </div>
+            ) : (
+              <div>
+                {isAddingImage ? (
+                  <AddImageItem
+                    caption={caption}
+                    disableUploadButton={disableUploadButton}
+                    file={file}
+                    onSelectImage={onSelectImage}
+                    resetAddNewImage={resetAddNewImage}
+                    setCaption={setCaption}
+                    setView={setView}
+                    uploadImage={uploadImage}
+                    view={view}
+                    viewOptions={viewOptions}
+                  />
+                ) : (
+                  <Button
+                    id="add-image"
+                    onClick={() => setIsAddingImage(true)}
+                    value="Add Image +"
+                  />
+                )}
+              </div>
+            )}
+          </div>
+        )}
+        <div className="flex flex-col-reverse md:flex-row justify-between gap-4 pt-6">
+          <Button id="cancel" onClick={handleCancel} value="Cancel" />
+          <Button
+            disabled={!isDirty || Object.keys(errors).length > 0}
+            id="submit"
+            loading={isUpdating}
+            onClick={handleSubmit}
+            value={letterId ? 'Update' : 'Create'}
+          />
+        </div>
       </div>
-    </div>
+      <ConfirmationModal
+        isOpen={isConfirmationModalOpen}
+        onClose={closeConfirmationModal}
+        onConfirm={onConfirmDelete}
+        title="Delete Letter"
+      />
+    </>
   );
 };
 

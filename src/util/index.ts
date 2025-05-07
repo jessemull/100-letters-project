@@ -21,6 +21,7 @@ import {
   recipientsCorrespondenceUpdate,
   recipientsUpdate,
 } from './cache';
+import { formatLetterDates } from './letter';
 
 export {
   correspondenceByIdDeleteUpdate,
@@ -35,6 +36,7 @@ export {
   deleteRecipientUpdate,
   flattenValidators,
   get,
+  formatLetterDates,
   isEmail,
   letterByIdDeleteUpdate,
   letterByIdUpdate,

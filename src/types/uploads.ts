@@ -10,10 +10,14 @@ export type SignedURL = {
 export type SignedURLResponse = {
   data: {
     correspondenceId: string;
+    dateUploaded: string;
+    fileKey: string;
     imageURL: string;
     letterId: string;
     mimeType: LetterMimeType;
     signedUrl: string;
+    thumbnailURL: string;
+    uploadedBy: string;
     uuid: string;
     view: View;
   };
