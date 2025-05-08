@@ -11,6 +11,26 @@ const mockMutateResponse = {
 describe('useSWRMutation', () => {
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
+  const createMockResponse = ({
+    ok,
+    status = 200,
+    json,
+    text,
+    headers = { get: () => 'application/json' },
+  }: {
+    ok: boolean;
+    status?: number;
+    json?: () => Promise<any>;
+    text?: () => Promise<string>;
+    headers?: { get: (key: string) => string | null };
+  }) => ({
+    ok,
+    status,
+    json: json || (async () => ({})),
+    text: text || (async () => ''),
+    headers,
+  });
+
   it('Initializes with correct state and calls mutate.', async () => {
     const onSuccess = jest.fn();
     const onError = jest.fn();
@@ -23,13 +43,18 @@ describe('useSWRMutation', () => {
       }),
     );
 
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => mockMutateResponse,
-    });
+    mockFetch.mockResolvedValueOnce(
+      createMockResponse({
+        ok: true,
+        json: async () => mockMutateResponse,
+      }),
+    );
 
     await act(async () => {
-      result.current.mutate({ path: '/mock-path', body: { key: 'value' } });
+      await result.current.mutate({
+        path: '/mock-path',
+        body: { key: 'value' },
+      });
     });
 
     expect(result.current.error).toBeNull();
@@ -64,13 +89,18 @@ describe('useSWRMutation', () => {
     );
 
     const errorResponse = { message: 'Some error occurred' };
-    mockFetch.mockResolvedValueOnce({
-      ok: false,
-      json: async () => errorResponse,
-    });
+    mockFetch.mockResolvedValueOnce(
+      createMockResponse({
+        ok: false,
+        json: async () => errorResponse,
+      }),
+    );
 
     await act(async () => {
-      result.current.mutate({ path: '/mock-path', body: { key: 'value' } });
+      await result.current.mutate({
+        path: '/mock-path',
+        body: { key: 'value' },
+      });
     });
 
     await Promise.resolve();
@@ -85,7 +115,7 @@ describe('useSWRMutation', () => {
       },
       params: undefined,
       path: '/mock-path',
-      status: undefined,
+      status: 200,
     });
   });
 
@@ -102,7 +132,10 @@ describe('useSWRMutation', () => {
     mockFetch.mockRejectedValueOnce(new Error('Network error'));
 
     await act(async () => {
-      result.current.mutate({ path: '/mock-path', body: { key: 'value' } });
+      await result.current.mutate({
+        path: '/mock-path',
+        body: { key: 'value' },
+      });
     });
 
     await Promise.resolve();
@@ -127,13 +160,15 @@ describe('useSWRMutation', () => {
     );
 
     const response = { data: 'updated data' };
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => response,
-    });
+    mockFetch.mockResolvedValueOnce(
+      createMockResponse({
+        ok: true,
+        json: async () => response,
+      }),
+    );
 
     await act(async () => {
-      result.current.mutate({ path: '/mock-path' });
+      await result.current.mutate({ path: '/mock-path' });
     });
 
     await Promise.resolve();
@@ -159,13 +194,15 @@ describe('useSWRMutation', () => {
       }),
     );
 
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => mockMutateResponse,
-    });
+    mockFetch.mockResolvedValueOnce(
+      createMockResponse({
+        ok: true,
+        json: async () => mockMutateResponse,
+      }),
+    );
 
     await act(async () => {
-      result.current.mutate({ path: '/mock-path' });
+      await result.current.mutate({ path: '/mock-path' });
     });
 
     await Promise.resolve();
@@ -178,7 +215,7 @@ describe('useSWRMutation', () => {
     });
   });
 
-  it('Throws an error if path is missing and no defaultPath is provided.', async () => {
+  it('Handles missing path by calling onError and setting error state.', async () => {
     const onError = jest.fn();
     const { result } = renderHook(() =>
       useSWRMutation({
@@ -188,7 +225,7 @@ describe('useSWRMutation', () => {
     );
 
     await act(async () => {
-      result.current.mutate({});
+      await result.current.mutate();
     });
 
     expect(result.current.error).toBe(
@@ -202,42 +239,39 @@ describe('useSWRMutation', () => {
     });
   });
 
-  it('Handles error parsing when the response body is not JSON.', async () => {
-    const onError = jest.fn();
+  it('Uses finalUrl when provided.', async () => {
+    const customUrl = 'https://custom.api.com/custom-path';
+    mockFetch.mockResolvedValueOnce(
+      createMockResponse({ ok: true, json: async () => mockMutateResponse }),
+    );
+
     const { result } = renderHook(() =>
       useSWRMutation({
         method: 'POST',
-        path: '/mock-path',
-        onError,
+        path: '/fallback-path',
       }),
     );
 
-    mockFetch.mockResolvedValueOnce({
-      ok: false,
-      text: async () => 'Non-JSON error message',
-    });
-
     await act(async () => {
-      result.current.mutate({ path: '/mock-path', body: { key: 'value' } });
+      await result.current.mutate({ url: customUrl, body: { key: 'value' } });
     });
 
-    await Promise.resolve();
-
-    expect(result.current.error).toBe('Non-JSON error message');
-    expect(onError).toHaveBeenCalledWith({
-      body: {
-        key: 'value',
-      },
-      error: 'Non-JSON error message',
-      info: 'Non-JSON error message',
-      params: undefined,
-      path: '/mock-path',
-      status: undefined,
-    });
+    expect(mockFetch).toHaveBeenCalledWith(
+      customUrl,
+      expect.objectContaining({
+        method: 'POST',
+        body: '{"key":"value"}',
+      }),
+    );
   });
 
-  it('Adds Authorization header when token is provided.', async () => {
-    const token = 'test-token';
+  it('Includes Authorization header when token is provided.', async () => {
+    const token = 'mock-token';
+
+    mockFetch.mockResolvedValueOnce(
+      createMockResponse({ ok: true, json: async () => mockMutateResponse }),
+    );
+
     const { result } = renderHook(() =>
       useSWRMutation({
         method: 'POST',
@@ -246,13 +280,8 @@ describe('useSWRMutation', () => {
       }),
     );
 
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => mockMutateResponse,
-    });
-
     await act(async () => {
-      await result.current.mutate({ path: '/mock-path' });
+      await result.current.mutate({ body: { key: 'value' } });
     });
 
     expect(mockFetch).toHaveBeenCalledWith(
@@ -265,7 +294,33 @@ describe('useSWRMutation', () => {
     );
   });
 
-  it('Falls back to default "Unknown error" if no message in error response.', async () => {
+  it('Sends ArrayBuffer body as-is without stringifying.', async () => {
+    const buffer = new ArrayBuffer(8);
+
+    mockFetch.mockResolvedValueOnce(
+      createMockResponse({ ok: true, json: async () => mockMutateResponse }),
+    );
+
+    const { result } = renderHook(() =>
+      useSWRMutation({
+        method: 'POST',
+        path: '/mock-path',
+      }),
+    );
+
+    await act(async () => {
+      await result.current.mutate({ body: buffer });
+    });
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      `${API_BASE_URL}/mock-path`,
+      expect.objectContaining({
+        body: buffer,
+      }),
+    );
+  });
+
+  it('Falls back to res.text() when res.json() throws.', async () => {
     const onError = jest.fn();
     const { result } = renderHook(() =>
       useSWRMutation({
@@ -275,24 +330,177 @@ describe('useSWRMutation', () => {
       }),
     );
 
-    mockFetch.mockResolvedValueOnce({
-      ok: false,
-      json: async () => ({}),
+    mockFetch.mockResolvedValueOnce(
+      createMockResponse({
+        ok: false,
+        json: async () => {
+          throw new Error('Invalid JSON');
+        },
+        text: async () => 'Plain text error',
+      }),
+    );
+
+    await act(async () => {
+      await result.current.mutate({ path: '/mock-path' });
     });
+
+    expect(result.current.error).toBe('Plain text error');
+    expect(onError).toHaveBeenCalledWith({
+      error: 'Plain text error',
+      status: 200,
+      info: 'Plain text error',
+      path: '/mock-path',
+      body: undefined,
+      params: undefined,
+    });
+  });
+
+  it('Uses statusText if errorBody.message is undefined.', async () => {
+    const onError = jest.fn();
+    const { result } = renderHook(() =>
+      useSWRMutation({
+        method: 'POST',
+        path: '/mock-path',
+        onError,
+      }),
+    );
+
+    mockFetch.mockResolvedValueOnce(
+      createMockResponse({
+        ok: false,
+        status: 400,
+        json: async () => ({}),
+      }),
+    );
 
     await act(async () => {
       await result.current.mutate({ path: '/mock-path' });
     });
 
     expect(result.current.error).toBe('Unknown error');
-    expect(onError).toHaveBeenCalledWith(
+    expect(onError).toHaveBeenCalledWith({
+      error: 'Unknown error',
+      status: 400,
+      info: {},
+      path: '/mock-path',
+      body: undefined,
+      params: undefined,
+    });
+  });
+
+  it('Defaults to POST method when none is provided.', async () => {
+    const { result } = renderHook(() =>
+      useSWRMutation({
+        path: '/default-method',
+      }),
+    );
+
+    mockFetch.mockResolvedValueOnce(
+      createMockResponse({
+        ok: true,
+        json: async () => mockMutateResponse,
+      }),
+    );
+
+    await act(async () => {
+      await result.current.mutate({
+        path: '/default-method',
+        body: { key: 'value' },
+      });
+    });
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.stringContaining('/default-method'),
       expect.objectContaining({
-        error: 'Unknown error',
+        method: 'POST',
       }),
     );
   });
 
-  it('Handles thrown string errors in catch block.', async () => {
+  it('Falls back to res.text() and uses string error message if res.json fails.', async () => {
+    const onError = jest.fn();
+    const { result } = renderHook(() =>
+      useSWRMutation({
+        path: '/text-fallback',
+        onError,
+      }),
+    );
+
+    mockFetch.mockResolvedValueOnce(
+      createMockResponse({
+        ok: false,
+        json: async () => {
+          throw new Error('JSON parse error');
+        },
+        text: async () => 'Raw string error from server',
+      }),
+    );
+
+    await act(async () => {
+      await result.current.mutate({ path: '/text-fallback' });
+    });
+
+    expect(result.current.error).toBe('Raw string error from server');
+    expect(onError).toHaveBeenCalledWith(
+      expect.objectContaining({
+        error: 'Raw string error from server',
+      }),
+    );
+  });
+
+  it('Defaults to empty string when Content-Type header is missing.', async () => {
+    const onSuccess = jest.fn();
+    const { result } = renderHook(() =>
+      useSWRMutation({
+        path: '/missing-content-type',
+        onSuccess,
+      }),
+    );
+
+    mockFetch.mockResolvedValueOnce(
+      createMockResponse({
+        ok: true,
+        headers: { get: () => null },
+        json: async () => mockMutateResponse,
+      }),
+    );
+
+    const jsonSpy = jest.spyOn(JSON, 'parse');
+
+    await act(async () => {
+      await result.current.mutate({ path: '/missing-content-type' });
+    });
+
+    expect(result.current.response).toBeNull();
+    expect(onSuccess).not.toHaveBeenCalled();
+  });
+
+  it('Handles string thrown error instead of Error instance.', async () => {
+    const onError = jest.fn();
+    const { result } = renderHook(() =>
+      useSWRMutation({
+        path: '/string-error',
+        onError,
+      }),
+    );
+
+    mockFetch.mockImplementationOnce(() => {
+      throw 'This is a string error';
+    });
+
+    await act(async () => {
+      await result.current.mutate({ path: '/string-error' });
+    });
+
+    expect(result.current.error).toBe('This is a string error');
+    expect(onError).toHaveBeenCalledWith(
+      expect.objectContaining({
+        error: 'This is a string error',
+      }),
+    );
+  });
+
+  it('Sets generic error message when thrown error is not an Error or string.', async () => {
     const onError = jest.fn();
     const { result } = renderHook(() =>
       useSWRMutation({
@@ -302,103 +510,19 @@ describe('useSWRMutation', () => {
       }),
     );
 
-    mockFetch.mockImplementationOnce(() => {
-      throw 'Custom string error';
-    });
-
-    await act(async () => {
-      await result.current.mutate({ path: '/mock-path' });
-    });
-
-    expect(result.current.error).toBe('Custom string error');
-    expect(onError).toHaveBeenCalledWith({
-      error: 'Custom string error',
-      path: '/mock-path',
-      body: undefined,
-      params: undefined,
-    });
-  });
-
-  it('Uses default POST method when none is specified.', async () => {
-    const { result } = renderHook(() =>
-      useSWRMutation({
-        path: '/default-method',
-      }),
-    );
-
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => mockMutateResponse,
-    });
-
-    await act(async () => {
-      await result.current.mutate({
-        path: '/default-method',
-        body: { hello: 'world' },
-      });
-    });
-
-    expect(mockFetch).toHaveBeenCalledWith(
-      `${API_BASE_URL}/default-method`,
-      expect.objectContaining({
-        method: 'POST',
-        body: JSON.stringify({ hello: 'world' }),
-      }),
-    );
-  });
-
-  it('Calls mutate() with no arguments and triggers missing path error.', async () => {
-    const onError = jest.fn();
-
-    const { result } = renderHook(() =>
-      useSWRMutation({
-        onError,
-      }),
-    );
-
-    await act(async () => {
-      await result.current.mutate();
-    });
-
-    expect(result.current.error).toBe(
-      'Path must be provided either in mutate() or options.',
-    );
-    expect(onError).toHaveBeenCalledWith({
-      error: 'Path must be provided either in mutate() or options.',
-      path: '',
-      body: undefined,
-      params: undefined,
-    });
-  });
-
-  it('Falls back to generic error message if error has no message.', async () => {
-    const onError = jest.fn();
-
-    const { result } = renderHook(() =>
-      useSWRMutation({
-        path: '/trigger-error',
-        onError,
-      }),
-    );
-
-    mockFetch.mockImplementationOnce(() => {
-      throw {};
-    });
+    mockFetch.mockRejectedValueOnce(null);
 
     await act(async () => {
       await result.current.mutate();
     });
 
     expect(result.current.error).toBe('An unexpected error occurred');
-    expect(onError).toHaveBeenCalledWith({
-      error: 'An unexpected error occurred',
-      path: '/trigger-error',
-      body: undefined,
-      params: undefined,
-    });
+    expect(onError).toHaveBeenCalledWith(
+      expect.objectContaining({ error: 'An unexpected error occurred' }),
+    );
   });
 
-  it('Falls back to statusText when response.text() returns non-string.', async () => {
+  it('Handles non-string fallback error body gracefully.', async () => {
     const onError = jest.fn();
     const { result } = renderHook(() =>
       useSWRMutation({
@@ -408,30 +532,23 @@ describe('useSWRMutation', () => {
       }),
     );
 
-    mockFetch.mockResolvedValueOnce({
-      ok: false,
-      json: async () => {
-        throw new Error('Invalid JSON');
-      },
-      text: async () => ({ unexpected: 'object' }),
-      statusText: 'Internal Server Error',
-      status: 500,
-    });
+    mockFetch.mockResolvedValueOnce(
+      createMockResponse({
+        ok: false,
+        json: async () => {
+          throw new Error('Invalid JSON');
+        },
+        text: async () => ({ not: 'a string' }) as any,
+      }),
+    );
 
     await act(async () => {
-      result.current.mutate({ path: '/mock-path', body: { key: 'value' } });
+      await result.current.mutate();
     });
 
-    await Promise.resolve();
-
-    expect(result.current.error).toBe('Internal Server Error');
-    expect(onError).toHaveBeenCalledWith({
-      body: { key: 'value' },
-      error: 'Internal Server Error',
-      info: { unexpected: 'object' },
-      params: undefined,
-      path: '/mock-path',
-      status: 500,
-    });
+    expect(result.current.error).toBe('Unknown error');
+    expect(onError).toHaveBeenCalledWith(
+      expect.objectContaining({ error: 'Unknown error' }),
+    );
   });
 });

@@ -6,7 +6,7 @@ describe('ConfirmationModal Component', () => {
   const onCloseMock = jest.fn();
   const onConfirmMock = jest.fn();
 
-  it('Renders with default title when no title is provided', async () => {
+  it('Renders with default title when no title is provided.', async () => {
     await act(() => {
       render(
         <ConfirmationModal
@@ -22,7 +22,7 @@ describe('ConfirmationModal Component', () => {
     });
   });
 
-  it('Has no accessibility violations', async () => {
+  it('Has no accessibility violations.', async () => {
     await act(async () => {
       const { container } = render(
         <ConfirmationModal

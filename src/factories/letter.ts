@@ -14,12 +14,14 @@ import { v4 as uuidv4 } from 'uuid';
 export const LetterImageFactory = Factory.define<LetterImage>(() => ({
   id: uuidv4(),
   url: faker.image.url(),
+  urlThumbnail: faker.image.url(),
   view: faker.helpers.arrayElement([
     View.ENVELOPE_FRONT,
     View.ENVELOPE_BACK,
     View.LETTER_FRONT,
     View.LETTER_BACK,
   ]),
+  fileKey: faker.image.url(),
   caption: faker.lorem.sentence(),
   dateUploaded: faker.date.past().toISOString(),
   mimeType: faker.helpers.arrayElement([
@@ -28,7 +30,7 @@ export const LetterImageFactory = Factory.define<LetterImage>(() => ({
     LetterMimeType.WEBP,
     LetterMimeType.GIF,
   ]),
-  sizeInBytes: faker.number.int({ min: 50000, max: 5000000 }), // ~50KB–5MB
+  sizeInBytes: faker.number.int({ min: 50000, max: 5000000 }),
   uploadedBy: faker.internet.email(),
 }));
 

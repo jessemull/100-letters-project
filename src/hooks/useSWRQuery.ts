@@ -34,7 +34,6 @@ export function useSWRQuery<T = any>({
   const [loadingMore, setLoadingMore] = useState(false);
   const [mergedData, setMergedData] = useState<T>();
 
-  // Memoize the fetcher function based on token
   const fetcher = useMemo(
     () =>
       token

@@ -23,6 +23,7 @@ interface UseAuthorizedMutationOptions<Body, Response, Params> {
   method?: Method;
   token?: string | null;
   path?: string;
+  url?: string;
   onError?: (args: {
     error: string;
     status?: number;
@@ -44,6 +45,7 @@ interface MutateArgs<Body, Params> {
   body?: Body;
   params?: Params;
   headers?: HeadersInit;
+  url?: string;
 }
 
 export function useSWRMutation<Body, Response = unknown, Params = unknown>(
@@ -56,6 +58,7 @@ export function useSWRMutation<Body, Response = unknown, Params = unknown>(
     onSuccess,
     onError,
     path: defaultPath,
+    url: defaultUrl,
   } = options;
 
   const [error, setError] = useState<string | null>(null);
@@ -68,8 +71,10 @@ export function useSWRMutation<Body, Response = unknown, Params = unknown>(
       body,
       params,
       headers,
+      url,
     }: MutateArgs<Body, Params> = {}): Promise<Response | undefined> => {
       const finalPath = path || defaultPath;
+      const finalUrl = url || defaultUrl;
 
       if (!finalPath) {
         const message = 'Path must be provided either in mutate() or options.';
@@ -82,15 +87,25 @@ export function useSWRMutation<Body, Response = unknown, Params = unknown>(
       setError(null);
 
       try {
-        const res = await fetch(`${API_BASE_URL}${finalPath}`, {
-          method,
-          headers: {
-            'Content-Type': 'application/json',
-            ...(token && { Authorization: `Bearer ${token}` }),
-            ...headers,
+        const res = await fetch(
+          finalUrl ? finalUrl : `${API_BASE_URL}${finalPath}`,
+          {
+            method,
+            headers: {
+              'Content-Type': 'application/json',
+              ...(token && { Authorization: `Bearer ${token}` }),
+              ...headers,
+            },
+            body:
+              typeof body === 'string' ||
+              body instanceof Blob ||
+              body instanceof ArrayBuffer
+                ? body
+                : body
+                  ? JSON.stringify(body)
+                  : undefined,
           },
-          ...(body ? { body: JSON.stringify(body) } : {}),
-        });
+        );
 
         if (!res.ok) {
           let errorBody: any = null;
@@ -118,27 +133,35 @@ export function useSWRMutation<Body, Response = unknown, Params = unknown>(
           return;
         }
 
-        const data: Response = await res.json();
-        setResponse(data);
-        onSuccess?.({ response: data, path: finalPath, body, params });
+        let data: Response | undefined = undefined;
 
-        if (cache && cache.length > 0) {
-          cache.forEach(({ key, onUpdate }) => {
-            if (onUpdate) {
-              globalMutate(
-                `${API_BASE_URL}${key}`,
-                (current: unknown | undefined) =>
-                  onUpdate({
-                    key,
-                    prev: current,
-                    body,
-                    params,
-                    response: data,
-                  }),
-                false,
-              );
-            }
-          });
+        const contentType = res.headers.get('Content-Type') || '';
+
+        if (contentType.includes('application/json')) {
+          data = await res.json();
+        }
+
+        if (data) {
+          setResponse(data);
+          onSuccess?.({ response: data, path: finalPath, body, params });
+          if (cache && cache.length > 0) {
+            cache.forEach(({ key, onUpdate }) => {
+              if (onUpdate) {
+                globalMutate(
+                  `${API_BASE_URL}${key}`,
+                  (current: unknown | undefined) =>
+                    onUpdate({
+                      key,
+                      prev: current,
+                      body,
+                      params,
+                      response: data!,
+                    }),
+                  false,
+                );
+              }
+            });
+          }
         }
 
         return data;
@@ -161,7 +184,7 @@ export function useSWRMutation<Body, Response = unknown, Params = unknown>(
         setIsLoading(false);
       }
     },
-    [defaultPath, cache, method, onError, onSuccess, token],
+    [defaultPath, defaultUrl, cache, method, onError, onSuccess, token],
   );
 
   return { error, isLoading, mutate, response };

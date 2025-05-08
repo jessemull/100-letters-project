@@ -6,7 +6,7 @@ import { Skull } from 'lucide-react';
 
 const Forbidden = () => {
   return (
-    <div className="flex items-center justify-center bg-gray-100 px-4 text-center font-merriweather">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 text-center font-merriweather">
       <div className="max-w-xl w-full">
         <div className="text-black mb-6 flex justify-center">
           <Skull className="w-[20vw] h-[20vw] max-w-[160px] max-h-[160px]" />

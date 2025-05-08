@@ -165,7 +165,7 @@ describe('Select', () => {
     expect(results).toHaveNoViolations();
   });
 
-  it('Applies correct padding when only IconStart is provided', () => {
+  it('Applies correct padding when only IconStart is provided.', () => {
     render(
       <Select
         id="start-only"

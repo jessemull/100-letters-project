@@ -177,7 +177,6 @@ describe('Contact Component', () => {
 
     fireEvent.click(screen.getByTestId('recaptcha'));
 
-    // CAPTCHA token change implicitly tested via successful submission
     expect(
       screen.queryByText('Please complete the CAPTCHA.'),
     ).not.toBeInTheDocument();

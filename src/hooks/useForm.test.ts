@@ -162,10 +162,8 @@ describe('useForm', () => {
       result.current.updateField('email', 'invalid');
     });
 
-    // validateField uses the value provided above, but this will call it without value
     act(() => {
-      // @ts-expect-error - testing internal behavior
-      result.current.updateField('email');
+      result.current.updateField('email', undefined as unknown as string);
     });
 
     expect(result.current.errors.email).toContain('Invalid email');
@@ -175,13 +173,11 @@ describe('useForm', () => {
     const { result } = renderHook(() =>
       useForm<TestForm>({
         initial,
-        // intentionally omitting validators for `age`
         validators: { email: [required] },
         validateOnInit: true,
       }),
     );
 
-    // `age` has no validators, so this should skip without error
     act(() => {
       result.current.updateField('age', 42);
     });
@@ -193,7 +189,6 @@ describe('useForm', () => {
     const { result } = renderHook(() =>
       useForm<TestForm>({
         initial,
-        // empty validator list for email
         validators: { email: [] },
         validateOnInit: true,
       }),
@@ -217,7 +212,7 @@ describe('useForm', () => {
     );
 
     act(() => {
-      result.current.onSubmit(jest.fn()); // marks hasSubmitted = true
+      result.current.onSubmit(jest.fn());
     });
 
     act(() => {
@@ -267,7 +262,7 @@ describe('useForm', () => {
     );
 
     act(() => {
-      result.current.updateField('age', 42); // no validators for 'age'
+      result.current.updateField('age', 42);
     });
 
     expect(result.current.errors.age).toBeUndefined();

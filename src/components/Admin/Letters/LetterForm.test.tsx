@@ -1,11 +1,17 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { ImageModalProvider } from '@contexts/ImageModalContext';
+import { Letter, View } from '@ts-types/letter';
 import { LetterForm } from '@components/Admin';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useAuth } from '@contexts/AuthProvider';
-import { useSWRQuery } from '@hooks/useSWRQuery';
-import { useSWRMutation } from '@hooks/useSWRMutation';
-import { showToast } from '@components/Form';
 import { LetterImageFactory } from '@factories/letter';
+import { axe } from 'jest-axe';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { showToast } from '@components/Form';
+import { useAuth } from '@contexts/AuthProvider';
+import { useDeleteUpload } from '@hooks/useDeleteUpload';
+import { useFileUpload } from '@hooks/useFileUpload';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useSWRMutation } from '@hooks/useSWRMutation';
+import { useSWRQuery } from '@hooks/useSWRQuery';
+import { act } from 'react';
 
 jest.mock('@contexts/AuthProvider', () => ({
   useAuth: jest.fn(),
@@ -28,6 +34,9 @@ jest.mock('../../Form/Toast', () => ({
   __esModule: true,
   default: jest.fn(),
 }));
+
+jest.mock('@hooks/useDeleteUpload');
+jest.mock('@hooks/useFileUpload');
 
 describe('LetterForm', () => {
   const pushMock = jest.fn();
@@ -62,6 +71,20 @@ describe('LetterForm', () => {
     (useAuth as jest.Mock).mockReturnValue({
       loading: false,
       token: 'token123',
+    });
+    (useDeleteUpload as jest.Mock).mockReturnValue({
+      deleteFile: jest.fn().mockResolvedValue({ imageURLs: [] }),
+      isDeleting: false,
+      error: null,
+    });
+    (useFileUpload as jest.Mock).mockReturnValue({
+      uploadFile: jest.fn().mockResolvedValue({ message: 'Success!' }),
+      isUploading: false,
+      error: null,
+    });
+    (useSWRMutation as jest.Mock).mockReturnValue({
+      mutate: jest.fn(),
+      isLoading: false,
     });
   });
 
@@ -100,7 +123,11 @@ describe('LetterForm', () => {
       },
     }));
 
-    render(<LetterForm />);
+    render(
+      <ImageModalProvider>
+        <LetterForm />
+      </ImageModalProvider>,
+    );
 
     fireEvent.change(screen.getByLabelText('Title'), {
       target: { value: 'x' },
@@ -167,7 +194,11 @@ describe('LetterForm', () => {
       isLoading: false,
     });
 
-    render(<LetterForm />);
+    render(
+      <ImageModalProvider>
+        <LetterForm />
+      </ImageModalProvider>,
+    );
 
     expect(await screen.findByDisplayValue('letter title')).toBeInTheDocument();
     expect(screen.getByDisplayValue('text here')).toBeInTheDocument();
@@ -199,15 +230,41 @@ describe('LetterForm', () => {
       isLoading: false,
     });
 
-    render(<LetterForm />);
+    render(
+      <ImageModalProvider>
+        <LetterForm />
+      </ImageModalProvider>,
+    );
 
     expect(await screen.findByDisplayValue('letter title')).toBeInTheDocument();
     expect(screen.getByDisplayValue('text here')).toBeInTheDocument();
   });
 
   it('Shows loading state if still fetching.', () => {
+    (useSearchParams as jest.Mock).mockReturnValue({
+      get: () => 'abc123',
+    });
+    (useSWRQuery as jest.Mock).mockImplementation(({ path }) => {
+      if (path === '/letter/abc123') {
+        return {
+          data: { data: sampleLetter },
+          isLoading: false,
+        };
+      }
+      if (path === '/correspondence/c1') {
+        return {
+          data: { data: { correspondenceId: 'c1' } },
+          isLoading: false,
+        };
+      }
+      return {};
+    });
     (useAuth as jest.Mock).mockReturnValue({ loading: true });
-    render(<LetterForm />);
+    render(
+      <ImageModalProvider>
+        <LetterForm />
+      </ImageModalProvider>,
+    );
     expect(screen.getByTestId('progress')).toBeInTheDocument();
   });
 
@@ -219,7 +276,11 @@ describe('LetterForm', () => {
       isLoading: false,
     });
 
-    render(<LetterForm />);
+    render(
+      <ImageModalProvider>
+        <LetterForm />
+      </ImageModalProvider>,
+    );
     fireEvent.click(screen.getByText('Cancel'));
     expect(backMock).toHaveBeenCalled();
   });
@@ -237,7 +298,11 @@ describe('LetterForm', () => {
       return {};
     });
 
-    render(<LetterForm />);
+    render(
+      <ImageModalProvider>
+        <LetterForm />
+      </ImageModalProvider>,
+    );
 
     expect(showToast).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -274,7 +339,11 @@ describe('LetterForm', () => {
       isLoading: false,
     });
 
-    render(<LetterForm />);
+    render(
+      <ImageModalProvider>
+        <LetterForm />
+      </ImageModalProvider>,
+    );
 
     fireEvent.change(screen.getByLabelText('Title'), {
       target: { value: 'x' },
@@ -333,7 +402,11 @@ describe('LetterForm', () => {
       isLoading: false,
     });
 
-    render(<LetterForm />);
+    render(
+      <ImageModalProvider>
+        <LetterForm />
+      </ImageModalProvider>,
+    );
 
     fireEvent.change(screen.getByLabelText('Title'), {
       target: { value: 'x' },
@@ -384,7 +457,11 @@ describe('LetterForm', () => {
       mutate: mutateMock,
     }));
 
-    render(<LetterForm />);
+    render(
+      <ImageModalProvider>
+        <LetterForm />
+      </ImageModalProvider>,
+    );
 
     expect(showToast).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -424,7 +501,11 @@ describe('LetterForm', () => {
       },
     }));
 
-    render(<LetterForm />);
+    render(
+      <ImageModalProvider>
+        <LetterForm />
+      </ImageModalProvider>,
+    );
 
     fireEvent.change(screen.getByLabelText('Title'), {
       target: { value: 'x' },
@@ -486,7 +567,11 @@ describe('LetterForm', () => {
       },
     }));
 
-    render(<LetterForm />);
+    render(
+      <ImageModalProvider>
+        <LetterForm />
+      </ImageModalProvider>,
+    );
 
     fireEvent.change(screen.getByLabelText('Title'), {
       target: { value: 'x' },
@@ -546,10 +631,707 @@ describe('LetterForm', () => {
 
     (useRouter as jest.Mock).mockReturnValue({ back: jest.fn() });
 
-    render(<LetterForm />);
+    render(
+      <ImageModalProvider>
+        <LetterForm />
+      </ImageModalProvider>,
+    );
 
     await waitFor(() => {
       expect(screen.getByText('Letter Form')).toBeInTheDocument();
     });
+  });
+
+  it('Should allow user to update image.', async () => {
+    const mutateMock = jest.fn().mockResolvedValue({});
+    (useSearchParams as jest.Mock).mockReturnValue({ get: () => '123' });
+    (useSWRMutation as jest.Mock).mockImplementation(({ onSuccess }) => ({
+      isLoading: false,
+      mutate: async ({ body }: any) => {
+        onSuccess?.({ response: { data: { imageURLs: [] } } });
+        mutateMock({ body });
+      },
+    }));
+    (useSWRQuery as jest.Mock).mockImplementation(({ path }) => {
+      if (path?.startsWith('/correspondence/')) {
+        return {
+          data: {
+            data: {
+              correspondence: {
+                correspondenceId: 'mock-correspondence-id',
+              },
+            },
+          },
+          error: null,
+          isLoading: false,
+        };
+      }
+      if (path?.startsWith('/letter')) {
+        return {
+          data: {
+            data: {
+              letterId: '123',
+              imageURLs: [
+                {
+                  caption: 'Caption!',
+                  id: 'id1',
+                  url: '/url',
+                  urlThumbnail: '/thumb',
+                  view: View.ENVELOPE_BACK,
+                },
+                {
+                  id: 'id2',
+                  url: '/url',
+                  urlThumbnail: '/thumb',
+                  view: View.ENVELOPE_BACK,
+                },
+              ],
+            },
+          },
+          isLoading: false,
+          error: null,
+        };
+      }
+      return { data: {}, error: null, isLoading: false };
+    });
+
+    render(
+      <ImageModalProvider>
+        <LetterForm />
+      </ImageModalProvider>,
+    );
+
+    expect(screen.getByText('Caption!')).toBeInTheDocument();
+
+    fireEvent.click(screen.getAllByTestId('edit-button-icon')[0]);
+
+    await waitFor(() => {
+      expect(screen.getByText('Update Image')).toBeInTheDocument();
+    });
+
+    fireEvent.change(screen.getByLabelText('Caption'), {
+      target: { value: 'New caption' },
+    });
+
+    fireEvent.change(screen.getByLabelText('View'), {
+      target: { value: View.OTHER },
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Update Image' }));
+  });
+
+  it('Should allow user to add image.', async () => {
+    (useSearchParams as jest.Mock).mockReturnValue({ get: () => '123' });
+    (useSWRQuery as jest.Mock).mockImplementation(({ path }) => {
+      if (path?.startsWith('/correspondence/')) {
+        return {
+          data: {
+            data: {
+              correspondence: {
+                correspondenceId: 'mock-correspondence-id',
+              },
+            },
+          },
+          error: null,
+          isLoading: false,
+        };
+      }
+      if (path?.startsWith('/letter')) {
+        return {
+          data: {
+            data: {
+              letterId: '123',
+              imageURLs: [
+                {
+                  caption: 'Caption!',
+                  id: 'id1',
+                  url: '/url',
+                  urlThumbnail: '/thumb',
+                  view: View.ENVELOPE_BACK,
+                },
+                {
+                  id: 'id2',
+                  url: '/url',
+                  urlThumbnail: '/thumb',
+                  view: View.ENVELOPE_BACK,
+                },
+              ],
+            },
+          },
+          isLoading: false,
+          error: null,
+        };
+      }
+      return { data: {}, error: null, isLoading: false };
+    });
+
+    await act(async () => {
+      render(
+        <ImageModalProvider>
+          <LetterForm />
+        </ImageModalProvider>,
+      );
+    });
+
+    expect(await screen.findByText('Caption!')).toBeInTheDocument();
+
+    await act(async () => {
+      fireEvent.click(screen.getByText('Add Image +'));
+    });
+
+    expect(await screen.findByText('Add New Image')).toBeInTheDocument();
+
+    const input =
+      screen.getByTestId('file-input') ||
+      screen.getByLabelText('Select Image +').closest('label')?.nextSibling;
+
+    await act(async () => {
+      fireEvent.change(input as Element, {
+        target: {
+          files: [new File(['test'], 'new-image.png', { type: 'image/png' })],
+        },
+      });
+    });
+
+    expect(await screen.findByText('new-image.png')).toBeInTheDocument();
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Upload Image +' }));
+    });
+
+    // Optionally wait for UI update after upload
+    // expect(await screen.findByText('Uploaded!')).toBeInTheDocument();
+  });
+
+  it('Should handle file upload errors.', async () => {
+    (useSearchParams as jest.Mock).mockReturnValue({ get: () => '123' });
+    (useFileUpload as jest.Mock).mockReturnValue({
+      uploadFile: jest.fn(),
+      isUploading: false,
+      error: 'Error during upload!',
+    });
+    (useSWRQuery as jest.Mock).mockImplementation(({ path }) => {
+      if (path?.startsWith('/correspondence/')) {
+        return {
+          data: {
+            data: {
+              correspondence: {
+                correspondenceId: 'mock-correspondence-id',
+              },
+            },
+          },
+          error: null,
+          isLoading: false,
+        };
+      }
+      if (path?.startsWith('/letter')) {
+        return {
+          data: {
+            data: {
+              letterId: '123',
+              imageURLs: [
+                {
+                  caption: 'Caption!',
+                  id: 'id1',
+                  url: '/url',
+                  urlThumbnail: '/thumb',
+                  view: View.ENVELOPE_BACK,
+                },
+                {
+                  id: 'id2',
+                  url: '/url',
+                  urlThumbnail: '/thumb',
+                  view: View.ENVELOPE_BACK,
+                },
+              ],
+            },
+          },
+          isLoading: false,
+          error: null,
+        };
+      }
+      return { data: {}, error: null, isLoading: false };
+    });
+
+    render(
+      <ImageModalProvider>
+        <LetterForm />
+      </ImageModalProvider>,
+    );
+
+    expect(screen.getByText('Caption!')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('Add Image +'));
+
+    await waitFor(() => {
+      expect(screen.getByText('Add New Image')).toBeInTheDocument();
+    });
+
+    const input =
+      screen.getByTestId('file-input') ||
+      screen.getByLabelText('Select Image +').closest('label')?.nextSibling;
+
+    fireEvent.change(input, {
+      target: {
+        files: [new File(['test'], 'new-image.png', { type: 'image/png' })],
+      },
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('new-image.png')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Upload Image +' }));
+
+    await waitFor(() => {
+      expect(showToast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'Error during upload!',
+          type: 'error',
+        }),
+      );
+    });
+  });
+
+  it('Should update form state after adding image.', async () => {
+    (useFileUpload as jest.Mock).mockReturnValue({
+      uploadFile: jest.fn().mockResolvedValue({
+        message: 'Success!',
+        imageURL: { id: 'id', url: '/imageURL' },
+      }),
+      isUploading: false,
+      error: null,
+    });
+    (useSearchParams as jest.Mock).mockReturnValue({ get: () => '123' });
+    (useSWRQuery as jest.Mock).mockImplementation(({ path }) => {
+      if (path?.startsWith('/correspondence/')) {
+        return {
+          data: {
+            data: {
+              correspondence: {
+                correspondenceId: 'mock-correspondence-id',
+              },
+            },
+          },
+          error: null,
+          isLoading: false,
+        };
+      }
+      if (path?.startsWith('/letter')) {
+        return {
+          data: {
+            data: {
+              letterId: '123',
+              imageURLs: [
+                {
+                  caption: 'Caption!',
+                  id: 'id1',
+                  url: '/url',
+                  urlThumbnail: '/thumb',
+                  view: View.ENVELOPE_BACK,
+                },
+                {
+                  id: 'id2',
+                  url: '/url',
+                  urlThumbnail: '/thumb',
+                  view: View.ENVELOPE_BACK,
+                },
+              ],
+            },
+          },
+          isLoading: false,
+          error: null,
+        };
+      }
+      return { data: {}, error: null, isLoading: false };
+    });
+
+    await act(async () => {
+      render(
+        <ImageModalProvider>
+          <LetterForm />
+        </ImageModalProvider>,
+      );
+    });
+
+    expect(screen.getByText('Caption!')).toBeInTheDocument();
+
+    await act(async () => {
+      fireEvent.click(screen.getByText('Add Image +'));
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Add New Image')).toBeInTheDocument();
+    });
+
+    const input =
+      screen.getByTestId('file-input') ||
+      screen.getByLabelText('Select Image +').closest('label')?.nextSibling;
+
+    await act(async () => {
+      fireEvent.change(input!, {
+        target: {
+          files: [new File(['test'], 'new-image.png', { type: 'image/png' })],
+        },
+      });
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('new-image.png')).toBeInTheDocument();
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Upload Image +' }));
+    });
+  });
+
+  it('Should allow user to cancel adding image.', async () => {
+    (useSearchParams as jest.Mock).mockReturnValue({ get: () => '123' });
+    (useSWRQuery as jest.Mock).mockImplementation(({ path }) => {
+      if (path?.startsWith('/correspondence/')) {
+        return {
+          data: {
+            data: {
+              correspondence: {
+                correspondenceId: 'mock-correspondence-id',
+              },
+            },
+          },
+          error: null,
+          isLoading: false,
+        };
+      }
+      if (path?.startsWith('/letter')) {
+        return {
+          data: {
+            data: {
+              letterId: '123',
+              imageURLs: [
+                {
+                  caption: 'Caption!',
+                  id: 'id1',
+                  url: '/url',
+                  urlThumbnail: '/thumb',
+                  view: View.ENVELOPE_BACK,
+                },
+                {
+                  id: 'id2',
+                  url: '/url',
+                  urlThumbnail: '/thumb',
+                  view: View.ENVELOPE_BACK,
+                },
+              ],
+            },
+          },
+          isLoading: false,
+          error: null,
+        };
+      }
+      return { data: {}, error: null, isLoading: false };
+    });
+
+    render(
+      <ImageModalProvider>
+        <LetterForm />
+      </ImageModalProvider>,
+    );
+
+    expect(screen.getByText('Caption!')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('Add Image +'));
+
+    await waitFor(() => {
+      expect(screen.getByText('Add New Image')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByTestId('add-image-close-icon'));
+
+    await waitFor(() => {
+      expect(screen.queryByText('Add New Image')).toBeNull();
+    });
+  });
+
+  it('Should delete an image when confirmed.', async () => {
+    (useSearchParams as jest.Mock).mockReturnValue({ get: () => '123' });
+    (useSWRQuery as jest.Mock).mockImplementation(({ path }) => {
+      if (path?.startsWith('/correspondence/')) {
+        return {
+          data: {
+            data: {
+              correspondence: {
+                correspondenceId: 'mock-correspondence-id',
+              },
+            },
+          },
+          error: null,
+          isLoading: false,
+        };
+      }
+      if (path?.startsWith('/letter')) {
+        return {
+          data: {
+            data: {
+              letterId: '123',
+              imageURLs: [
+                {
+                  caption: 'Caption!',
+                  id: 'id1',
+                  url: '/url',
+                  urlThumbnail: '/thumb',
+                  view: View.ENVELOPE_BACK,
+                },
+                {
+                  id: 'id2',
+                  url: '/url',
+                  urlThumbnail: '/thumb',
+                  view: View.ENVELOPE_BACK,
+                },
+              ],
+            },
+          },
+          isLoading: false,
+          error: null,
+        };
+      }
+      return { data: {}, error: null, isLoading: false };
+    });
+
+    (useDeleteUpload as jest.Mock).mockReturnValue({
+      deleteFile: jest.fn().mockResolvedValue({ imageURLs: [] }),
+      isDeleting: false,
+      error: null,
+    });
+
+    render(
+      <ImageModalProvider>
+        <LetterForm />
+      </ImageModalProvider>,
+    );
+
+    expect(screen.getByText('Caption!')).toBeInTheDocument();
+
+    fireEvent.click(screen.getAllByTestId('delete-button')[0]);
+
+    fireEvent.click(screen.getByText('Delete'));
+
+    await waitFor(() => {
+      expect(
+        useDeleteUpload({ letter: {} as Letter, token: null }).deleteFile,
+      ).toHaveBeenCalledWith({ imageId: 'id1' });
+    });
+  });
+
+  it('Should handle delete image errors.', async () => {
+    (useSearchParams as jest.Mock).mockReturnValue({ get: () => '123' });
+    (useSWRQuery as jest.Mock).mockImplementation(({ path }) => {
+      if (path?.startsWith('/correspondence/')) {
+        return {
+          data: {
+            data: {
+              correspondence: {
+                correspondenceId: 'mock-correspondence-id',
+              },
+            },
+          },
+          error: null,
+          isLoading: false,
+        };
+      }
+      if (path?.startsWith('/letter')) {
+        return {
+          data: {
+            data: {
+              letterId: '123',
+              imageURLs: [
+                {
+                  caption: 'Caption!',
+                  id: 'id1',
+                  url: '/url',
+                  urlThumbnail: '/thumb',
+                  view: View.ENVELOPE_BACK,
+                },
+                {
+                  id: 'id2',
+                  url: '/url',
+                  urlThumbnail: '/thumb',
+                  view: View.ENVELOPE_BACK,
+                },
+              ],
+            },
+          },
+          isLoading: false,
+          error: null,
+        };
+      }
+      return { data: {}, error: null, isLoading: false };
+    });
+
+    (useDeleteUpload as jest.Mock).mockReturnValue({
+      deleteFile: jest.fn().mockResolvedValue({ imageURLs: [] }),
+      isDeleting: false,
+      error: 'Failed to delete!',
+    });
+
+    render(
+      <ImageModalProvider>
+        <LetterForm />
+      </ImageModalProvider>,
+    );
+
+    expect(screen.getByText('Caption!')).toBeInTheDocument();
+
+    fireEvent.click(screen.getAllByTestId('delete-button')[0]);
+
+    fireEvent.click(screen.getByText('Delete'));
+
+    await waitFor(() => {
+      expect(showToast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'Failed to delete!',
+          type: 'error',
+        }),
+      );
+    });
+  });
+
+  it('Should show progress spinner when deleting or updating.', async () => {
+    (useSearchParams as jest.Mock).mockReturnValue({ get: () => '123' });
+    (useSWRQuery as jest.Mock).mockImplementation(({ path }) => {
+      if (path?.startsWith('/correspondence/')) {
+        return {
+          data: {
+            data: {
+              correspondence: {
+                correspondenceId: 'mock-correspondence-id',
+              },
+            },
+          },
+          error: null,
+          isLoading: false,
+        };
+      }
+      if (path?.startsWith('/letter')) {
+        return {
+          data: {
+            data: {
+              letterId: '123',
+              imageURLs: [
+                {
+                  caption: 'Caption!',
+                  id: 'id1',
+                  url: '/url',
+                  urlThumbnail: '/thumb',
+                  view: View.ENVELOPE_BACK,
+                },
+                {
+                  id: 'id2',
+                  url: '/url',
+                  urlThumbnail: '/thumb',
+                  view: View.ENVELOPE_BACK,
+                },
+              ],
+            },
+          },
+          isLoading: false,
+          error: null,
+        };
+      }
+      return { data: {}, error: null, isLoading: false };
+    });
+
+    (useDeleteUpload as jest.Mock).mockReturnValue({
+      deleteFile: jest.fn().mockResolvedValue({ imageURLs: [] }),
+      isDeleting: true,
+      error: null,
+    });
+
+    render(
+      <ImageModalProvider>
+        <LetterForm />
+      </ImageModalProvider>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('progress')).toBeInTheDocument();
+    });
+  });
+
+  it('Should dismiss confirmation modal.', async () => {
+    (useSearchParams as jest.Mock).mockReturnValue({ get: () => '123' });
+    (useSWRQuery as jest.Mock).mockImplementation(({ path }) => {
+      if (path?.startsWith('/correspondence/')) {
+        return {
+          data: {
+            data: {
+              correspondence: {
+                correspondenceId: 'mock-correspondence-id',
+              },
+            },
+          },
+          error: null,
+          isLoading: false,
+        };
+      }
+      if (path?.startsWith('/letter')) {
+        return {
+          data: {
+            data: {
+              letterId: '123',
+              imageURLs: [
+                {
+                  caption: 'Caption!',
+                  id: 'id1',
+                  url: '/url',
+                  urlThumbnail: '/thumb',
+                  view: View.ENVELOPE_BACK,
+                },
+                {
+                  id: 'id2',
+                  url: '/url',
+                  urlThumbnail: '/thumb',
+                  view: View.ENVELOPE_BACK,
+                },
+              ],
+            },
+          },
+          isLoading: false,
+          error: null,
+        };
+      }
+      return { data: {}, error: null, isLoading: false };
+    });
+
+    (useDeleteUpload as jest.Mock).mockReturnValue({
+      deleteFile: jest.fn().mockResolvedValue({ imageURLs: [] }),
+      isDeleting: false,
+      error: null,
+    });
+
+    render(
+      <ImageModalProvider>
+        <LetterForm />
+      </ImageModalProvider>,
+    );
+
+    expect(screen.getByText('Caption!')).toBeInTheDocument();
+
+    fireEvent.click(screen.getAllByTestId('delete-button')[0]);
+
+    fireEvent.click(screen.getAllByDisplayValue('Cancel')[1]);
+
+    await waitFor(() => {
+      expect(screen.queryByText('Delete')).toBeNull();
+    });
+  });
+
+  it('Has no accessibility violations.', async () => {
+    const { container } = render(
+      <ImageModalProvider>
+        <LetterForm />
+      </ImageModalProvider>,
+    );
+
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

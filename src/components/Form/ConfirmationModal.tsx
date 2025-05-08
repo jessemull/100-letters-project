@@ -45,6 +45,7 @@ const ConfirmationModal = ({
         </Description>
         <div className="font-merriweather flex justify-end space-x-8">
           <Button
+            data-testid="confirmation-modal-cancel-button"
             id="confirmation-modal-cancel"
             onClick={onClose}
             value={cancelText}

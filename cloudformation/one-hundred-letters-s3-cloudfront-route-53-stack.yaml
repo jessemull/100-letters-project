@@ -39,6 +39,10 @@ Parameters:
     AllowedValues:
       - "true"
       - "false"
+  CloudFrontKeyGroupId:
+    Type: String
+    Description: "The ID of an existing CloudFront Key Group to use for signed cookies."
+    Default: ""
 
 Resources:
   StaticWebsiteBucket:
@@ -60,6 +64,37 @@ Resources:
         IgnorePublicAcls: true
         BlockPublicPolicy: false
         RestrictPublicBuckets: true
+      CorsConfiguration:
+        CorsRules:
+          - AllowedMethods:
+              - GET
+              - PUT
+              - POST
+              - DELETE
+            AllowedHeaders:
+              - '*'
+            ExposedHeaders:
+              - ETag
+            MaxAge: 3000
+            AllowedOrigins: !If
+              - IsProd
+              - 
+                - "https://www.onehundredletters.com"
+                - "https://onehundredletters.com"
+              - 
+                - "http://localhost:3000"
+                - "https://www.dev.onehundredletters.com"
+                - "https://dev.onehundredletters.com"
+      NotificationConfiguration:
+        LambdaConfigurations:
+          - Event: s3:ObjectCreated:Put
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: unprocessed/
+            Function: !ImportValue 
+              Fn::Sub: "image-processor-lambda-arn-${Environment}"
 
   BackupBucket:
     Type: AWS::S3::Bucket
@@ -110,13 +145,21 @@ Resources:
             Resource: !Sub "arn:aws:s3:::${BucketName}-images-${Environment}/*"
 
   CloudFrontKeyGroup:
-    Condition: IsProdAndSignedCookies
     Type: AWS::CloudFront::KeyGroup
     Properties:
       KeyGroupConfig:
         Name: !Sub "KeyGroup-for-${Environment}"
         Items:
-          - !Ref CloudFrontKey
+          - !Ref CloudFrontPublicKey
+
+  CloudFrontPublicKey:
+    Type: AWS::CloudFront::PublicKey
+    Properties:
+      PublicKeyConfig:
+        CallerReference: !Sub "PublicKey-${Environment}"
+        Name: !Sub "PublicKey-${Environment}"
+        EncodedKey: !Ref CloudFrontKey
+        Comment: "Public key for signed cookies"
 
   StaticWebsiteCloudFront:
     Type: AWS::CloudFront::Distribution
@@ -141,7 +184,10 @@ Resources:
             Cookies:
               Forward: "none"
           TrustedKeyGroups:
-            !If [IsProdAndSignedCookies, !Ref "CloudFrontKeyGroup", !Ref "AWS::NoValue"]
+            Fn::If:
+              - EnableSignedCookiesCheckCondition
+              - [ !Ref CloudFrontKeyGroupId ]
+              - !Ref "AWS::NoValue"
           AllowedMethods:
             - GET
             - HEAD
@@ -202,7 +248,5 @@ Resources:
 
 Conditions:
   IsProd: !Equals [ !Ref Environment, "prod" ]
-  IsProdAndSignedCookies: !And
-    - !Equals [ !Ref Environment, "prod" ]
-    - !Equals [ !Ref EnableSignedCookiesCheck, "true" ]
+  EnableSignedCookiesCheckCondition: !Equals [ !Ref EnableSignedCookiesCheck, "true" ]
   CreateDNSRecordsCondition: !Equals [ !Ref CreateDNSRecords, "true" ]

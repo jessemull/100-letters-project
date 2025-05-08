@@ -179,7 +179,6 @@ describe('useSWRQuery', () => {
       },
     });
 
-    // The data should be merged (existing data + new data)
     expect(result.current.data).toEqual({
       data: ['existing data', 'mocked data'],
     });
@@ -202,7 +201,6 @@ describe('useSWRQuery', () => {
       await fetchMore('/next-page');
     });
 
-    // fetchMore should not be called, so no fetch should occur
     expect(global.fetch).not.toHaveBeenCalled();
   });
 
@@ -221,7 +219,6 @@ describe('useSWRQuery', () => {
       await fetchMore('/next-page');
     });
 
-    // The error should be logged, but no crash should happen
     expect(console.error).toHaveBeenCalledWith('Error fetching more: ', error);
   });
 
@@ -256,7 +253,6 @@ describe('useSWRQuery', () => {
       await fetchMore('/next-page');
     });
 
-    // After calling fetchMore, merged data should be updated
     expect(result.current.data).toEqual({
       data: ['existing data', 'mocked data'],
     });

@@ -6,6 +6,7 @@ import { LetterImageFactory } from '@factories/letter';
 import { LettersTab } from '@components/Admin';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { useRouter } from 'next/navigation';
+import { axe } from 'jest-axe';
 
 jest.mock('react-intersection-observer', () => ({
   useInView: jest.fn(() => ({
@@ -206,5 +207,12 @@ describe('LettersTab', () => {
 
     expect(mockRef).toHaveBeenCalledTimes(1);
     expect(listItems.length).toBe(3);
+  });
+
+  it('Has no accessibility violations.', async () => {
+    const { container } = render(<LettersTab />);
+
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

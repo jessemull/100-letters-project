@@ -6,6 +6,7 @@ import { Correspondence } from '@ts-types/correspondence';
 import { CorrespondenceProvider } from '@contexts/CorrespondenceProvider';
 import { Letter } from '@ts-types/letter';
 import { Recipient } from '@ts-types/recipients';
+import { ImageModalProvider } from '@contexts/ImageModalContext';
 
 const { correspondences, letters, recipients } = data;
 
@@ -66,13 +67,15 @@ export default function RootLayout({
       </head>
       <body className="antialiased">
         <AuthProvider>
-          <CorrespondenceProvider
-            correspondences={correspondences as Correspondence[]}
-            letters={letters as Letter[]}
-            recipients={recipients as Recipient[]}
-          >
-            {children}
-          </CorrespondenceProvider>
+          <ImageModalProvider>
+            <CorrespondenceProvider
+              correspondences={correspondences as Correspondence[]}
+              letters={letters as Letter[]}
+              recipients={recipients as Recipient[]}
+            >
+              {children}
+            </CorrespondenceProvider>
+          </ImageModalProvider>
         </AuthProvider>
         <>
           <Script
