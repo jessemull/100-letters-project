@@ -4,12 +4,20 @@ import {
   CorrespondenceProvider,
   useCorrespondence,
 } from './CorrespondenceProvider';
+import {
+  ImageModalContext,
+  ImageModalProvider,
+  useImageModal,
+} from './ImageModalContext';
 
 export {
   AuthContext,
   AuthProvider,
-  useAuth,
   CorrespondenceContext,
   CorrespondenceProvider,
+  ImageModalContext,
+  ImageModalProvider,
+  useAuth,
   useCorrespondence,
+  useImageModal,
 };

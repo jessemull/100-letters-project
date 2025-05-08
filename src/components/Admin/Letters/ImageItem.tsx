@@ -8,7 +8,7 @@ import {
   LetterImage,
   View,
 } from '@ts-types/letter';
-import { PenSquare, Trash2 } from 'lucide-react';
+import { Eye, Fullscreen, PenSquare, Trash2 } from 'lucide-react';
 import { useSWRMutation } from '@hooks/useSWRMutation';
 import {
   correspondenceByIdLetterUpdate,
@@ -26,6 +26,7 @@ import {
 } from '@components/Form';
 import { viewOptions } from './LetterForm';
 import { formatLetterDates } from '@util/letter';
+import { useImageModal } from '@contexts/ImageModalContext';
 
 interface Props {
   data: LetterImage;
@@ -43,10 +44,12 @@ const viewToLabel = {
 };
 
 const ImageItem = ({ data, deleteImage, letter, onUpdateImage }: Props) => {
-  const [caption, setCaption] = useState('');
-  const [isOpen, setIsOpen] = useState(false);
-  const [view, setView] = useState(View.LETTER_FRONT);
+  const [caption, setCaption] = useState<string>('');
+  const [isFullScreen, setIsFullScreen] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [view, setView] = useState<View>(View.LETTER_FRONT);
 
+  const { showImage } = useImageModal();
   const { token } = useAuth();
 
   const { mutate, isLoading } = useSWRMutation<
@@ -152,7 +155,17 @@ const ImageItem = ({ data, deleteImage, letter, onUpdateImage }: Props) => {
                     : 'No Caption'}
                 </p>
               </div>
-              <div className="space-x-2 flex items-center justify-center">
+              <div className="space-y-2 flex flex-col items-center justify-center">
+                <button
+                  data-testid="edit-button"
+                  className="text-white hover:text-gray-400"
+                  aria-label="Edit"
+                >
+                  <Fullscreen
+                    className="w-6 h-6"
+                    onClick={() => showImage(data.url, 'No Image')}
+                  />
+                </button>
                 <button
                   data-testid="edit-button"
                   className="text-white hover:text-gray-400"
