@@ -8,7 +8,7 @@ import {
   LetterImage,
   View,
 } from '@ts-types/letter';
-import { Eye, Fullscreen, PenSquare, Trash2 } from 'lucide-react';
+import { Fullscreen, PenSquare, Trash2 } from 'lucide-react';
 import { useSWRMutation } from '@hooks/useSWRMutation';
 import {
   correspondenceByIdLetterUpdate,
@@ -45,7 +45,6 @@ const viewToLabel = {
 
 const ImageItem = ({ data, deleteImage, letter, onUpdateImage }: Props) => {
   const [caption, setCaption] = useState<string>('');
-  const [isFullScreen, setIsFullScreen] = useState<boolean>(false);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [view, setView] = useState<View>(View.LETTER_FRONT);
 

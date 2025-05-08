@@ -13,12 +13,12 @@ interface Props {
 }
 
 const Image = ({
-  src,
-  fallbackSrc = '/missing.jpg',
   alt,
   className,
+  fallbackSrc = '/missing.jpg',
   fill,
   sizes,
+  src,
 }: Props) => {
   const [imgSrc, setImgSrc] = useState(src);
   return (
@@ -28,7 +28,7 @@ const Image = ({
       fill={fill}
       onError={() => setImgSrc(fallbackSrc)}
       sizes={sizes}
-      src={imgSrc}
+      src={imgSrc || fallbackSrc}
     />
   );
 };

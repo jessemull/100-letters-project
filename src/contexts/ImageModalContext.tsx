@@ -1,7 +1,14 @@
 'use client';
 
 import { X } from 'lucide-react';
-import { createContext, useContext, useState, ReactNode } from 'react';
+import Image from 'next/image';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from 'react';
 
 type ImageModalContextType = {
   showImage: (src: string, alt?: string) => void;
@@ -26,24 +33,42 @@ export const ImageModalProvider = ({ children }: { children: ReactNode }) => {
     setAltText('');
   };
 
+  useEffect(() => {
+    if (imageSrc) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [imageSrc]);
+
   return (
     <ImageModalContext.Provider value={{ showImage, hideImage }}>
       {children}
       {imageSrc && (
         <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-          <div className="relative max-w-[800px] w-full max-h-full overflow-auto border-4 border-white rounded-xl bg-black">
+          <div className="relative border-4 border-white rounded-xl bg-black max-w-full max-h-full overflow-auto">
             <button
               onClick={hideImage}
-              className="absolute top-2 right-2 text-white hover:text-gray-300 z-10"
+              className="absolute -top-4 -right-4 text-white p-1 hover:text-gray-300 shadow-lg p-4"
               aria-label="Close"
             >
-              <X className="w-6 h-6" />
+              <X className="border border-white rounded-full w-6 h-6" />
             </button>
-            <img
-              src={imageSrc}
-              alt={altText}
-              className="rounded-xl max-w-full max-h-[calc(100vh-4rem)] mx-auto"
-            />
+            <div className="w-[400px]">
+              <Image
+                alt={altText}
+                src={imageSrc}
+                width={800}
+                height={0}
+                style={{ height: 'auto' }}
+                className="w-full h-auto"
+                sizes="400px"
+              />
+            </div>
           </div>
         </div>
       )}
