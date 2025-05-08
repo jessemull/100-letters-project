@@ -78,6 +78,10 @@ export function useDeleteUpload({ letter, token }: UseDeleteUpload) {
           ...formatted,
           imageURLs,
         },
+        params: {
+          correspondenceId: formatted.correspondenceId as string,
+          letterId: formatted.letterId,
+        },
       })) as LetterFormResponse;
 
       setIsDeleting(false);

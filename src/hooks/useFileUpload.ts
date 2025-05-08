@@ -131,6 +131,10 @@ export function useFileUpload({ caption, letter, token, view }: UseFileUpload) {
           ...formatted,
           imageURLs: [...letter.imageURLs, newImageURL],
         },
+        params: {
+          correspondenceId: formatted.correspondenceId as string,
+          letterId: formatted.letterId,
+        },
       })) as LetterFormResponse;
 
       setIsUploading(false);

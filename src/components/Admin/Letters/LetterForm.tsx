@@ -9,6 +9,7 @@ import {
   LetterType,
   LetterMethod,
   View,
+  LetterImage,
 } from '@ts-types/letter';
 import {
   Correspondence,
@@ -68,7 +69,7 @@ const statusOptions = [
   { label: 'Received', value: Status.RECEIVED },
 ];
 
-const viewOptions = [
+export const viewOptions = [
   { label: 'Letter Front', value: View.LETTER_FRONT },
   { label: 'Letter Back', value: View.LETTER_BACK },
   { label: 'Envelope Front', value: View.ENVELOPE_FRONT },
@@ -293,6 +294,10 @@ const LetterForm = () => {
     router.back();
   };
 
+  const onUpdateImage = (imageURLs: LetterImage[]) => {
+    updateField('imageURLs', imageURLs);
+  };
+
   useEffect(() => {
     if (letterId && data?.letterId && values.letterId === '') {
       const formatted = { ...data };
@@ -499,6 +504,8 @@ const LetterForm = () => {
                   data={image}
                   key={image?.id}
                   deleteImage={onDeleteImage}
+                  letter={values}
+                  onUpdateImage={onUpdateImage}
                 />
               ))}
             {isUploading || isDeleting ? (
