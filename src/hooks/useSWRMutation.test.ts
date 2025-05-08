@@ -215,17 +215,17 @@ describe('useSWRMutation', () => {
     });
   });
 
-  it('Handles missing path by calling onError and setting error state', async () => {
+  it('Handles missing path by calling onError and setting error state.', async () => {
     const onError = jest.fn();
     const { result } = renderHook(() =>
       useSWRMutation({
         method: 'POST',
-        onError, // no default `path` provided
+        onError,
       }),
     );
 
     await act(async () => {
-      await result.current.mutate(); // no `path` provided here either
+      await result.current.mutate();
     });
 
     expect(result.current.error).toBe(
@@ -239,7 +239,7 @@ describe('useSWRMutation', () => {
     });
   });
 
-  it('uses finalUrl when provided', async () => {
+  it('Uses finalUrl when provided.', async () => {
     const customUrl = 'https://custom.api.com/custom-path';
     mockFetch.mockResolvedValueOnce(
       createMockResponse({ ok: true, json: async () => mockMutateResponse }),
@@ -265,7 +265,7 @@ describe('useSWRMutation', () => {
     );
   });
 
-  it('includes Authorization header when token is provided', async () => {
+  it('Includes Authorization header when token is provided.', async () => {
     const token = 'mock-token';
 
     mockFetch.mockResolvedValueOnce(
@@ -294,7 +294,7 @@ describe('useSWRMutation', () => {
     );
   });
 
-  it('sends ArrayBuffer body as-is without stringifying', async () => {
+  it('Sends ArrayBuffer body as-is without stringifying.', async () => {
     const buffer = new ArrayBuffer(8);
 
     mockFetch.mockResolvedValueOnce(
@@ -320,7 +320,7 @@ describe('useSWRMutation', () => {
     );
   });
 
-  it('Falls back to res.text() when res.json() throws', async () => {
+  it('Falls back to res.text() when res.json() throws.', async () => {
     const onError = jest.fn();
     const { result } = renderHook(() =>
       useSWRMutation({
@@ -355,7 +355,7 @@ describe('useSWRMutation', () => {
     });
   });
 
-  it('Uses statusText if errorBody.message is undefined', async () => {
+  it('Uses statusText if errorBody.message is undefined.', async () => {
     const onError = jest.fn();
     const { result } = renderHook(() =>
       useSWRMutation({
@@ -369,7 +369,7 @@ describe('useSWRMutation', () => {
       createMockResponse({
         ok: false,
         status: 400,
-        json: async () => ({}), // No `message` key
+        json: async () => ({}),
       }),
     );
 
@@ -377,7 +377,7 @@ describe('useSWRMutation', () => {
       await result.current.mutate({ path: '/mock-path' });
     });
 
-    expect(result.current.error).toBe('Unknown error'); // default res.statusText is '', could be mocked explicitly if needed
+    expect(result.current.error).toBe('Unknown error');
     expect(onError).toHaveBeenCalledWith({
       error: 'Unknown error',
       status: 400,
@@ -388,7 +388,7 @@ describe('useSWRMutation', () => {
     });
   });
 
-  it('Defaults to POST method when none is provided', async () => {
+  it('Defaults to POST method when none is provided.', async () => {
     const { result } = renderHook(() =>
       useSWRMutation({
         path: '/default-method',
@@ -412,12 +412,12 @@ describe('useSWRMutation', () => {
     expect(mockFetch).toHaveBeenCalledWith(
       expect.stringContaining('/default-method'),
       expect.objectContaining({
-        method: 'POST', // should default to POST
+        method: 'POST',
       }),
     );
   });
 
-  it('Falls back to res.text() and uses string error message if res.json fails', async () => {
+  it('Falls back to res.text() and uses string error message if res.json fails.', async () => {
     const onError = jest.fn();
     const { result } = renderHook(() =>
       useSWRMutation({
@@ -448,7 +448,7 @@ describe('useSWRMutation', () => {
     );
   });
 
-  it('Defaults to empty string when Content-Type header is missing', async () => {
+  it('Defaults to empty string when Content-Type header is missing.', async () => {
     const onSuccess = jest.fn();
     const { result } = renderHook(() =>
       useSWRMutation({
@@ -460,8 +460,8 @@ describe('useSWRMutation', () => {
     mockFetch.mockResolvedValueOnce(
       createMockResponse({
         ok: true,
-        headers: { get: () => null }, // Content-Type is missing
-        json: async () => mockMutateResponse, // Should NOT be called since contentType is ''
+        headers: { get: () => null },
+        json: async () => mockMutateResponse,
       }),
     );
 
@@ -471,11 +471,11 @@ describe('useSWRMutation', () => {
       await result.current.mutate({ path: '/missing-content-type' });
     });
 
-    expect(result.current.response).toBeNull(); // response should stay null
-    expect(onSuccess).not.toHaveBeenCalled(); // success handler should not fire
+    expect(result.current.response).toBeNull();
+    expect(onSuccess).not.toHaveBeenCalled();
   });
 
-  it('Handles string thrown error instead of Error instance', async () => {
+  it('Handles string thrown error instead of Error instance.', async () => {
     const onError = jest.fn();
     const { result } = renderHook(() =>
       useSWRMutation({
@@ -500,7 +500,7 @@ describe('useSWRMutation', () => {
     );
   });
 
-  it('sets generic error message when thrown error is not an Error or string', async () => {
+  it('Sets generic error message when thrown error is not an Error or string.', async () => {
     const onError = jest.fn();
     const { result } = renderHook(() =>
       useSWRMutation({
@@ -510,7 +510,7 @@ describe('useSWRMutation', () => {
       }),
     );
 
-    mockFetch.mockRejectedValueOnce(null); // or mockRejectedValueOnce({})
+    mockFetch.mockRejectedValueOnce(null);
 
     await act(async () => {
       await result.current.mutate();
@@ -522,7 +522,7 @@ describe('useSWRMutation', () => {
     );
   });
 
-  it('handles non-string fallback error body gracefully', async () => {
+  it('Handles non-string fallback error body gracefully.', async () => {
     const onError = jest.fn();
     const { result } = renderHook(() =>
       useSWRMutation({

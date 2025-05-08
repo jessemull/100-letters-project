@@ -1,15 +1,15 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { LetterForm } from '@components/Admin';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useAuth } from '@contexts/AuthProvider';
-import { useSWRQuery } from '@hooks/useSWRQuery';
-import { useSWRMutation } from '@hooks/useSWRMutation';
-import { showToast } from '@components/Form';
-import { LetterImageFactory } from '@factories/letter';
 import { ImageModalProvider } from '@contexts/ImageModalContext';
+import { Letter, View } from '@ts-types/letter';
+import { LetterForm } from '@components/Admin';
+import { LetterImageFactory } from '@factories/letter';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { showToast } from '@components/Form';
+import { useAuth } from '@contexts/AuthProvider';
 import { useDeleteUpload } from '@hooks/useDeleteUpload';
 import { useFileUpload } from '@hooks/useFileUpload';
-import { Letter, View } from '@ts-types/letter';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useSWRMutation } from '@hooks/useSWRMutation';
+import { useSWRQuery } from '@hooks/useSWRQuery';
 
 jest.mock('@contexts/AuthProvider', () => ({
   useAuth: jest.fn(),
@@ -700,7 +700,7 @@ describe('LetterForm', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Update Image' }));
   });
 
-  it('should allow user to add image', async () => {
+  it('Should allow user to add image.', async () => {
     (useSearchParams as jest.Mock).mockReturnValue({ get: () => '123' });
     (useSWRQuery as jest.Mock).mockImplementation(({ path }) => {
       if (path?.startsWith('/correspondence/')) {
@@ -751,11 +751,9 @@ describe('LetterForm', () => {
       </ImageModalProvider>,
     );
 
-    // Check that images are initially present
     expect(screen.getByText('Caption!')).toBeInTheDocument();
 
-    // Simulate the deletion process (find and click the delete button)
-    fireEvent.click(screen.getByText('Add Image +')); // Adjust according to your actual button text
+    fireEvent.click(screen.getByText('Add Image +'));
 
     await waitFor(() => {
       expect(screen.getByText('Add New Image')).toBeInTheDocument();
@@ -778,7 +776,7 @@ describe('LetterForm', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Upload Image +' }));
   });
 
-  it('should handle file upload errors', async () => {
+  it('Should handle file upload errors.', async () => {
     (useSearchParams as jest.Mock).mockReturnValue({ get: () => '123' });
     (useFileUpload as jest.Mock).mockReturnValue({
       uploadFile: jest.fn(),
@@ -834,11 +832,9 @@ describe('LetterForm', () => {
       </ImageModalProvider>,
     );
 
-    // Check that images are initially present
     expect(screen.getByText('Caption!')).toBeInTheDocument();
 
-    // Simulate the deletion process (find and click the delete button)
-    fireEvent.click(screen.getByText('Add Image +')); // Adjust according to your actual button text
+    fireEvent.click(screen.getByText('Add Image +'));
 
     await waitFor(() => {
       expect(screen.getByText('Add New Image')).toBeInTheDocument();
@@ -870,7 +866,7 @@ describe('LetterForm', () => {
     });
   });
 
-  it('should update form state after adding image', async () => {
+  it('Should update form state after adding image.', async () => {
     (useFileUpload as jest.Mock).mockReturnValue({
       uploadFile: jest.fn().mockResolvedValue({
         message: 'Success!',
@@ -929,11 +925,9 @@ describe('LetterForm', () => {
       </ImageModalProvider>,
     );
 
-    // Check that images are initially present
     expect(screen.getByText('Caption!')).toBeInTheDocument();
 
-    // Simulate the deletion process (find and click the delete button)
-    fireEvent.click(screen.getByText('Add Image +')); // Adjust according to your actual button text
+    fireEvent.click(screen.getByText('Add Image +'));
 
     await waitFor(() => {
       expect(screen.getByText('Add New Image')).toBeInTheDocument();
@@ -956,7 +950,7 @@ describe('LetterForm', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Upload Image +' }));
   });
 
-  it('should allow user to cancel adding image', async () => {
+  it('Should allow user to cancel adding image.', async () => {
     (useSearchParams as jest.Mock).mockReturnValue({ get: () => '123' });
     (useSWRQuery as jest.Mock).mockImplementation(({ path }) => {
       if (path?.startsWith('/correspondence/')) {
@@ -1007,11 +1001,9 @@ describe('LetterForm', () => {
       </ImageModalProvider>,
     );
 
-    // Check that images are initially present
     expect(screen.getByText('Caption!')).toBeInTheDocument();
 
-    // Simulate the deletion process (find and click the delete button)
-    fireEvent.click(screen.getByText('Add Image +')); // Adjust according to your actual button text
+    fireEvent.click(screen.getByText('Add Image +'));
 
     await waitFor(() => {
       expect(screen.getByText('Add New Image')).toBeInTheDocument();
@@ -1024,7 +1016,7 @@ describe('LetterForm', () => {
     });
   });
 
-  it('should delete an image when confirmed', async () => {
+  it('Should delete an image when confirmed.', async () => {
     (useSearchParams as jest.Mock).mockReturnValue({ get: () => '123' });
     (useSWRQuery as jest.Mock).mockImplementation(({ path }) => {
       if (path?.startsWith('/correspondence/')) {
@@ -1069,7 +1061,6 @@ describe('LetterForm', () => {
       return { data: {}, error: null, isLoading: false };
     });
 
-    // Mock the delete function hook
     (useDeleteUpload as jest.Mock).mockReturnValue({
       deleteFile: jest.fn().mockResolvedValue({ imageURLs: [] }),
       isDeleting: false,
@@ -1082,16 +1073,12 @@ describe('LetterForm', () => {
       </ImageModalProvider>,
     );
 
-    // Check that images are initially present
     expect(screen.getByText('Caption!')).toBeInTheDocument();
 
-    // Simulate the deletion process (find and click the delete button)
-    fireEvent.click(screen.getAllByTestId('delete-button')[0]); // Adjust according to your actual button text
+    fireEvent.click(screen.getAllByTestId('delete-button')[0]);
 
-    // Simulate the confirmation modal
-    fireEvent.click(screen.getByText('Delete')); // Simulate the confirmation button
+    fireEvent.click(screen.getByText('Delete'));
 
-    // Wait for the delete request to complete and the image to be removed
     await waitFor(() => {
       expect(
         useDeleteUpload({ letter: {} as Letter, token: null }).deleteFile,
@@ -1099,7 +1086,7 @@ describe('LetterForm', () => {
     });
   });
 
-  it('should handle delete image errors', async () => {
+  it('Should handle delete image errors.', async () => {
     (useSearchParams as jest.Mock).mockReturnValue({ get: () => '123' });
     (useSWRQuery as jest.Mock).mockImplementation(({ path }) => {
       if (path?.startsWith('/correspondence/')) {
@@ -1144,7 +1131,6 @@ describe('LetterForm', () => {
       return { data: {}, error: null, isLoading: false };
     });
 
-    // Mock the delete function hook
     (useDeleteUpload as jest.Mock).mockReturnValue({
       deleteFile: jest.fn().mockResolvedValue({ imageURLs: [] }),
       isDeleting: false,
@@ -1157,16 +1143,12 @@ describe('LetterForm', () => {
       </ImageModalProvider>,
     );
 
-    // Check that images are initially present
     expect(screen.getByText('Caption!')).toBeInTheDocument();
 
-    // Simulate the deletion process (find and click the delete button)
-    fireEvent.click(screen.getAllByTestId('delete-button')[0]); // Adjust according to your actual button text
+    fireEvent.click(screen.getAllByTestId('delete-button')[0]);
 
-    // Simulate the confirmation modal
-    fireEvent.click(screen.getByText('Delete')); // Simulate the confirmation button
+    fireEvent.click(screen.getByText('Delete'));
 
-    // Wait for the delete request to complete and the image to be removed
     await waitFor(() => {
       expect(showToast).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -1177,7 +1159,7 @@ describe('LetterForm', () => {
     });
   });
 
-  it('should show progress spinner when deleting or updating', async () => {
+  it('Should show progress spinner when deleting or updating.', async () => {
     (useSearchParams as jest.Mock).mockReturnValue({ get: () => '123' });
     (useSWRQuery as jest.Mock).mockImplementation(({ path }) => {
       if (path?.startsWith('/correspondence/')) {
@@ -1222,7 +1204,6 @@ describe('LetterForm', () => {
       return { data: {}, error: null, isLoading: false };
     });
 
-    // Mock the delete function hook
     (useDeleteUpload as jest.Mock).mockReturnValue({
       deleteFile: jest.fn().mockResolvedValue({ imageURLs: [] }),
       isDeleting: true,
@@ -1240,7 +1221,7 @@ describe('LetterForm', () => {
     });
   });
 
-  it('should dismiss confirmation modal', async () => {
+  it('Should dismiss confirmation modal.', async () => {
     (useSearchParams as jest.Mock).mockReturnValue({ get: () => '123' });
     (useSWRQuery as jest.Mock).mockImplementation(({ path }) => {
       if (path?.startsWith('/correspondence/')) {
@@ -1285,7 +1266,6 @@ describe('LetterForm', () => {
       return { data: {}, error: null, isLoading: false };
     });
 
-    // Mock the delete function hook
     (useDeleteUpload as jest.Mock).mockReturnValue({
       deleteFile: jest.fn().mockResolvedValue({ imageURLs: [] }),
       isDeleting: false,
@@ -1298,16 +1278,12 @@ describe('LetterForm', () => {
       </ImageModalProvider>,
     );
 
-    // Check that images are initially present
     expect(screen.getByText('Caption!')).toBeInTheDocument();
 
-    // Simulate the deletion process (find and click the delete button)
-    fireEvent.click(screen.getAllByTestId('delete-button')[0]); // Adjust according to your actual button text
+    fireEvent.click(screen.getAllByTestId('delete-button')[0]);
 
-    // Simulate the confirmation modal
-    fireEvent.click(screen.getAllByDisplayValue('Cancel')[1]); // Simulate the confirmation button
+    fireEvent.click(screen.getAllByDisplayValue('Cancel')[1]);
 
-    // Wait for the delete request to complete and the image to be removed
     await waitFor(() => {
       expect(screen.queryByText('Delete')).toBeNull();
     });

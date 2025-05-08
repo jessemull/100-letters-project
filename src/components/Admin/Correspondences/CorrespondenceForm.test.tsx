@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { CorrespondenceForm } from '@components/Admin'; // Adjust path as needed
+import { CorrespondenceForm } from '@components/Admin';
 import { useAuth } from '@contexts/AuthProvider';
 import { useSWRQuery } from '@hooks/useSWRQuery';
 import { useSWRMutation } from '@hooks/useSWRMutation';

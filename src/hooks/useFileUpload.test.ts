@@ -1,6 +1,7 @@
+import { Letter, View } from '@ts-types/letter';
 import { renderHook, act } from '@testing-library/react';
 import { useFileUpload } from '@hooks/useFileUpload';
-import { Letter, View } from '@ts-types/letter';
+import { useSWRMutation as mockUseSWRMutation } from '@hooks/useSWRMutation';
 
 jest.mock('@util/letter', () => ({
   formatLetterDates: jest.fn((letter) => letter),
@@ -13,8 +14,6 @@ jest.mock('@hooks/useSWRMutation', () => ({
 const mockGetSignedURL = jest.fn();
 const mockFileUpload = jest.fn();
 const mockUpdateLetter = jest.fn();
-
-import { useSWRMutation as mockUseSWRMutation } from '@hooks/useSWRMutation';
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -66,7 +65,7 @@ describe('useFileUpload', () => {
   const file = new Blob(['dummy content'], { type: 'image/png' });
   Object.defineProperty(file, 'size', { value: 1234 });
 
-  it('successfully uploads a file', async () => {
+  it('Successfully uploads a file.', async () => {
     const { result } = renderHook(() =>
       useFileUpload({
         letter: baseLetter,
@@ -102,7 +101,7 @@ describe('useFileUpload', () => {
     );
   });
 
-  it('uses undefined caption if not provided', async () => {
+  it('Uses undefined caption if not provided.', async () => {
     const { result } = renderHook(() =>
       useFileUpload({
         letter: baseLetter,
@@ -119,7 +118,7 @@ describe('useFileUpload', () => {
     expect(response?.imageURL.caption).toBeUndefined();
   });
 
-  it('handles Error instance', async () => {
+  it('Handles Error instance.', async () => {
     mockGetSignedURL.mockRejectedValueOnce(new Error('Boom!'));
 
     const { result } = renderHook(() =>
@@ -138,7 +137,7 @@ describe('useFileUpload', () => {
     expect(result.current.isUploading).toBe(false);
   });
 
-  it('handles string error', async () => {
+  it('Handles string error.', async () => {
     mockGetSignedURL.mockRejectedValueOnce('Something broke');
 
     const { result } = renderHook(() =>
@@ -156,7 +155,7 @@ describe('useFileUpload', () => {
     expect(result.current.error).toBe('Something broke');
   });
 
-  it('throws formatted error from POST onError handler', async () => {
+  it('Throws formatted error from POST onError handler.', async () => {
     (mockUseSWRMutation as jest.Mock).mockImplementation(
       ({ method, onError }) => {
         if (method === 'POST') {
@@ -187,7 +186,7 @@ describe('useFileUpload', () => {
     expect(result.current.error).toBe('403: post failed');
   });
 
-  it('throws formatted error from POST onError handler with default status', async () => {
+  it('Throws formatted error from POST onError handler with default status.', async () => {
     (mockUseSWRMutation as jest.Mock).mockImplementation(
       ({ method, onError }) => {
         if (method === 'POST') {
@@ -218,7 +217,7 @@ describe('useFileUpload', () => {
     expect(result.current.error).toBe('0: post failed');
   });
 
-  it('throws formatted error from PUT onError handler', async () => {
+  it('Throws formatted error from PUT onError handler.', async () => {
     (mockUseSWRMutation as jest.Mock).mockImplementation(
       ({ method, onError, onSuccess, path }) => {
         if (method === 'POST') {
@@ -270,7 +269,7 @@ describe('useFileUpload', () => {
     expect(result.current.error).toBe('503: put failed');
   });
 
-  it('throws formatted error from PUT onError handler with default status', async () => {
+  it('Throws formatted error from PUT onError handler with default status.', async () => {
     (mockUseSWRMutation as jest.Mock).mockImplementation(
       ({ method, onError, onSuccess, path }) => {
         if (method === 'POST') {
@@ -322,7 +321,7 @@ describe('useFileUpload', () => {
     expect(result.current.error).toBe('0: put failed');
   });
 
-  it('throws formatted error from PUT letter onError handler', async () => {
+  it('Throws formatted error from PUT letter onError handler.', async () => {
     (mockUseSWRMutation as jest.Mock).mockImplementation(
       ({ method, onError, onSuccess, path }) => {
         if (method === 'POST') {
@@ -370,7 +369,7 @@ describe('useFileUpload', () => {
     expect(result.current.error).toBe('503: put failed');
   });
 
-  it('throws formatted error from PUT letter onError handler with default status', async () => {
+  it('Throws formatted error from PUT letter onError handler with default status.', async () => {
     (mockUseSWRMutation as jest.Mock).mockImplementation(
       ({ method, onError, onSuccess, path }) => {
         if (method === 'POST') {

@@ -1,10 +1,10 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
 import {
   ImageModalContext,
   ImageModalProvider,
   useImageModal,
-} from './ImageModalContext'; // adjust path as needed
+} from './ImageModalContext';
+import { render, screen, fireEvent } from '@testing-library/react';
 
 const TestComponent = ({ alt }: { alt?: string }) => {
   const { showImage, hideImage } = useImageModal();
@@ -17,7 +17,7 @@ const TestComponent = ({ alt }: { alt?: string }) => {
   );
 };
 
-describe('ImageModalProvider', () => {
+describe('ImageModalProvider Component', () => {
   it('does not render modal by default', () => {
     render(
       <ImageModalProvider>
@@ -28,7 +28,7 @@ describe('ImageModalProvider', () => {
     expect(screen.queryByAltText('A test image')).not.toBeInTheDocument();
   });
 
-  it('shows modal with image and alt text when showImage is called', () => {
+  it('Shows modal with image and alt text when showImage is called.', () => {
     render(
       <ImageModalProvider>
         <TestComponent alt="A test image" />
@@ -41,7 +41,7 @@ describe('ImageModalProvider', () => {
     expect(screen.getByRole('button', { name: /close/i })).toBeInTheDocument();
   });
 
-  it('shows modal with image and default alt text when showImage is called', () => {
+  it('Shows modal with image and default alt text when showImage is called.', () => {
     render(
       <ImageModalProvider>
         <TestComponent />
@@ -53,7 +53,7 @@ describe('ImageModalProvider', () => {
     expect(screen.getByRole('button', { name: /close/i })).toBeInTheDocument();
   });
 
-  it('hides modal when hideImage is called', () => {
+  it('Hides modal when hideImage is called.', () => {
     render(
       <ImageModalProvider>
         <TestComponent alt="A test image" />
@@ -67,12 +67,12 @@ describe('ImageModalProvider', () => {
     expect(screen.queryByAltText('A test image')).not.toBeInTheDocument();
   });
 
-  it('throws error when hook is used outside provider', () => {
+  it('Throws error when hook is used outside provider.', () => {
     const consoleError = jest
       .spyOn(console, 'error')
       .mockImplementation(() => {});
     const BrokenComponent = () => {
-      useImageModal(); // should throw
+      useImageModal();
       return null;
     };
 
@@ -83,7 +83,7 @@ describe('ImageModalProvider', () => {
     consoleError.mockRestore();
   });
 
-  it('Provides default values', () => {
+  it('Provides default values.', () => {
     expect(ImageModalContext).toBeDefined();
   });
 });

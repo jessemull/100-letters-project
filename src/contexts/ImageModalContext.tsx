@@ -1,14 +1,14 @@
 'use client';
 
-import { X } from 'lucide-react';
 import Image from 'next/image';
 import {
+  ReactNode,
   createContext,
   useContext,
-  useState,
   useEffect,
-  ReactNode,
+  useState,
 } from 'react';
+import { X } from 'lucide-react';
 
 type ImageModalContextType = {
   showImage: (src: string, alt?: string) => void;

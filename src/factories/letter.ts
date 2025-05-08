@@ -28,7 +28,7 @@ export const LetterImageFactory = Factory.define<LetterImage>(() => ({
     LetterMimeType.WEBP,
     LetterMimeType.GIF,
   ]),
-  sizeInBytes: faker.number.int({ min: 50000, max: 5000000 }), // ~50KB–5MB
+  sizeInBytes: faker.number.int({ min: 50000, max: 5000000 }),
   uploadedBy: faker.internet.email(),
 }));
 

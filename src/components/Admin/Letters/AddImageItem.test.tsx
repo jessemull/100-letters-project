@@ -1,7 +1,7 @@
-import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
 import AddImageItem from '@components/Admin/Letters/AddImageItem';
+import React from 'react';
 import { View } from '@ts-types/letter';
+import { fireEvent, render, screen } from '@testing-library/react';
 
 describe('AddImageItem', () => {
   const defaultProps = {
@@ -24,7 +24,7 @@ describe('AddImageItem', () => {
     jest.clearAllMocks();
   });
 
-  it('renders all fields correctly', () => {
+  it('Renders all fields correctly.', () => {
     render(<AddImageItem {...defaultProps} />);
 
     expect(screen.getByText('Add New Image')).toBeInTheDocument();
@@ -37,21 +37,21 @@ describe('AddImageItem', () => {
     ).toBeInTheDocument();
   });
 
-  it('handles caption change', () => {
+  it('Handles caption change.', () => {
     render(<AddImageItem {...defaultProps} />);
     const captionInput = screen.getByLabelText('Caption');
     fireEvent.change(captionInput, { target: { value: 'New caption' } });
     expect(defaultProps.setCaption).toHaveBeenCalledWith('New caption');
   });
 
-  it('handles view selection change', () => {
+  it('Handles view selection change.', () => {
     render(<AddImageItem {...defaultProps} />);
     const select = screen.getByLabelText('View');
     fireEvent.change(select, { target: { value: 'back' } });
     expect(defaultProps.setView).toHaveBeenCalledWith('back');
   });
 
-  it('handles file selection', () => {
+  it('Handles file selection.', () => {
     render(<AddImageItem {...defaultProps} />);
     const fileInput = screen.getByLabelText('Select Image +');
     const input =
@@ -69,26 +69,26 @@ describe('AddImageItem', () => {
     }
   });
 
-  it('calls uploadImage on button click', () => {
+  it('Calls uploadImage on button click.', () => {
     render(<AddImageItem {...defaultProps} />);
     const uploadButton = screen.getByRole('button', { name: 'Upload Image +' });
     fireEvent.click(uploadButton);
     expect(defaultProps.uploadImage).toHaveBeenCalled();
   });
 
-  it('calls resetAddNewImage on X icon click', () => {
+  it('Calls resetAddNewImage on X icon click.', () => {
     render(<AddImageItem {...defaultProps} />);
     const closeButton = screen.getByTestId('add-image-close-icon');
     fireEvent.click(closeButton);
     expect(defaultProps.resetAddNewImage).toHaveBeenCalled();
   });
 
-  it('shows placeholder when file is null', () => {
+  it('Chows placeholder when file is null.', () => {
     render(<AddImageItem {...{ ...defaultProps, file: null }} />);
     expect(screen.getByText('Select an image file...')).toBeInTheDocument();
   });
 
-  it('disables upload button when disableUploadButton is true', () => {
+  it('Disables upload button when disableUploadButton is true.', () => {
     render(
       <AddImageItem {...{ ...defaultProps, disableUploadButton: true }} />,
     );

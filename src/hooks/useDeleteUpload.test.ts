@@ -35,10 +35,9 @@ describe('useDeleteUpload', () => {
       { id: 'img-1', fileKey: 'key-1' },
       { id: 'img-2', fileKey: 'key-2' },
     ],
-    // add all other required Letter fields here as dummy values
   } as any;
 
-  it('successfully deletes an image and updates letter', async () => {
+  it('Successfully deletes an image and updates letter.', async () => {
     mockDeleteUpload.mockResolvedValue({});
     mockUpdateLetter.mockResolvedValue({
       message: 'Success!',
@@ -66,7 +65,7 @@ describe('useDeleteUpload', () => {
     });
   });
 
-  it('handles error if upload deletion fails', async () => {
+  it('Handles error if upload deletion fails.', async () => {
     mockDeleteUpload.mockRejectedValue(new Error('Failed to delete'));
 
     const { result } = renderHook(() =>
@@ -81,7 +80,7 @@ describe('useDeleteUpload', () => {
     expect(result.current.isDeleting).toBe(false);
   });
 
-  it('handles string error gracefully', async () => {
+  it('Handles string error gracefully.', async () => {
     mockDeleteUpload.mockRejectedValue('simple error string');
 
     const { result } = renderHook(() =>
@@ -96,7 +95,7 @@ describe('useDeleteUpload', () => {
     expect(result.current.isDeleting).toBe(false);
   });
 
-  it('throws formatted error from DELETE onError handler', async () => {
+  it('Throws formatted error from DELETE onError handler.', async () => {
     (mockUseSWRMutation as jest.Mock).mockImplementation(
       ({ method, onError }) => {
         if (method === 'DELETE') {
@@ -121,7 +120,7 @@ describe('useDeleteUpload', () => {
     expect(result.current.error).toBe('400: Delete failed');
   });
 
-  it('throws formatted error from DELETE onError handler with default status', async () => {
+  it('Throws formatted error from DELETE onError handler with default status.', async () => {
     (mockUseSWRMutation as jest.Mock).mockImplementation(
       ({ method, onError }) => {
         if (method === 'DELETE') {
@@ -146,7 +145,7 @@ describe('useDeleteUpload', () => {
     expect(result.current.error).toBe('0: Random error!');
   });
 
-  it('throws formatted error from PUT onError handler', async () => {
+  it('Throws formatted error from PUT onError handler.', async () => {
     (mockUseSWRMutation as jest.Mock).mockImplementation(
       ({ method, onError }) => {
         if (method === 'DELETE') {
@@ -176,7 +175,7 @@ describe('useDeleteUpload', () => {
     expect(result.current.error).toBe('500: Update failed');
   });
 
-  it('throws formatted error from PUT onError handler with default message', async () => {
+  it('Throws formatted error from PUT onError handler with default message.', async () => {
     (mockUseSWRMutation as jest.Mock).mockImplementation(
       ({ method, onError, onSuccess }) => {
         if (method === 'DELETE') {

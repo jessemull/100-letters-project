@@ -1,6 +1,6 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import ImageItem from './ImageItem';
-import { Letter, LetterImage, View } from '@ts-types/letter';
+import { LetterImage, View } from '@ts-types/letter';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { useAuth } from '@contexts/AuthProvider';
 import { useImageModal } from '@contexts/ImageModalContext';
 import { useSWRMutation } from '@hooks/useSWRMutation';
@@ -17,7 +17,7 @@ jest.mock('@hooks/useSWRMutation', () => ({
   useSWRMutation: jest.fn(),
 }));
 
-describe('ImageItem', () => {
+describe('ImageItem Component', () => {
   const mockMutate = jest.fn();
   const mockDeleteImage = jest.fn();
   const mockOnUpdateImage = jest.fn();
@@ -62,7 +62,7 @@ describe('ImageItem', () => {
     });
   });
 
-  it('renders image and displays caption and view label', () => {
+  it('Renders image and displays caption and view label.', () => {
     render(
       <ImageItem
         data={data as LetterImage}
@@ -76,7 +76,7 @@ describe('ImageItem', () => {
     expect(screen.getByText('test caption')).toBeInTheDocument();
   });
 
-  it('renders image and displays default caption', () => {
+  it('Renders image and displays default caption.', () => {
     const { caption, ...rest } = data;
     render(
       <ImageItem
@@ -91,7 +91,7 @@ describe('ImageItem', () => {
     expect(screen.getByText('No Caption')).toBeInTheDocument();
   });
 
-  it('renders image and handles long captions', () => {
+  it('Renders image and handles long captions.', () => {
     const { caption, ...rest } = data;
     render(
       <ImageItem
@@ -113,7 +113,7 @@ describe('ImageItem', () => {
     ).toBeInTheDocument();
   });
 
-  it('handles image modal open', async () => {
+  it('Handles image modal open.', async () => {
     render(
       <ImageItem
         data={data as LetterImage}
@@ -129,7 +129,7 @@ describe('ImageItem', () => {
     });
   });
 
-  it('toggles edit form visibility', () => {
+  it('Toggles edit form visibility.', () => {
     render(
       <ImageItem
         data={data as LetterImage}
@@ -144,7 +144,7 @@ describe('ImageItem', () => {
     expect(screen.getByLabelText('Caption')).toBeInTheDocument();
   });
 
-  it('calls deleteImage when trash icon is clicked', () => {
+  it('Calls deleteImage when trash icon is clicked.', () => {
     render(
       <ImageItem
         data={data as LetterImage}
@@ -158,7 +158,7 @@ describe('ImageItem', () => {
     expect(mockDeleteImage).toHaveBeenCalledWith('img1');
   });
 
-  it('submits image update', async () => {
+  it('Submits image update.', async () => {
     (useSWRMutation as jest.Mock).mockReturnValue({
       mutate: mockMutate.mockResolvedValue(undefined),
       isLoading: false,
@@ -187,7 +187,7 @@ describe('ImageItem', () => {
     });
   });
 
-  it('shows loading indicator when isLoading is true', () => {
+  it('Shows loading indicator when isLoading is true.', () => {
     (useSWRMutation as jest.Mock).mockReturnValue({
       mutate: mockMutate,
       isLoading: true,
@@ -205,7 +205,7 @@ describe('ImageItem', () => {
     expect(screen.getByTestId('progress')).toBeInTheDocument();
   });
 
-  it('calls onSuccess and handles success UI updates', async () => {
+  it('Calls onSuccess and handles success UI updates.', async () => {
     const mockResponse = {
       data: {
         imageURLs: [
@@ -230,10 +230,8 @@ describe('ImageItem', () => {
       />,
     );
 
-    // Open edit form
     fireEvent.click(screen.getByTestId('edit-button-icon'));
 
-    // Click update button
     fireEvent.click(screen.getByRole('button', { name: 'Update Image' }));
 
     await waitFor(() => {
@@ -241,11 +239,9 @@ describe('ImageItem', () => {
         mockResponse.data.imageURLs,
       );
     });
-
-    // Ensure success toast is shown (you can add test id or mock showToast separately if needed)
   });
 
-  it('calls onError and handles error UI updates', async () => {
+  it('Calls onError and handles error UI updates.', async () => {
     const error = 'Something went wrong';
     const status = '500';
 
@@ -268,10 +264,8 @@ describe('ImageItem', () => {
       />,
     );
 
-    // Open edit form
     fireEvent.click(screen.getByTestId('edit-button-icon'));
 
-    // Change inputs to simulate edits
     fireEvent.change(screen.getByLabelText('Caption'), {
       target: { value: 'Changed Caption' },
     });
@@ -279,15 +273,12 @@ describe('ImageItem', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Update Image' }));
 
     await waitFor(() => {
-      // onError resets caption and view from data
       expect(screen.getByLabelText('Caption')).toHaveValue('test caption');
       expect(mockOnUpdateImage).not.toHaveBeenCalled();
     });
-
-    // Optionally test showToast mock here
   });
 
-  it('calls onError and handles error UI updates with default error and status', async () => {
+  it('Calls onError and handles error UI updates with default error and status.', async () => {
     (useSWRMutation as jest.Mock).mockImplementation(({ onError }) => ({
       mutate: async () => {
         await onError({});
@@ -304,10 +295,8 @@ describe('ImageItem', () => {
       />,
     );
 
-    // Open edit form
     fireEvent.click(screen.getByTestId('edit-button-icon'));
 
-    // Change inputs to simulate edits
     fireEvent.change(screen.getByLabelText('Caption'), {
       target: { value: 'Changed Caption' },
     });
@@ -315,11 +304,8 @@ describe('ImageItem', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Update Image' }));
 
     await waitFor(() => {
-      // onError resets caption and view from data
       expect(screen.getByLabelText('Caption')).toHaveValue('test caption');
       expect(mockOnUpdateImage).not.toHaveBeenCalled();
     });
-
-    // Optionally test showToast mock here
   });
 });

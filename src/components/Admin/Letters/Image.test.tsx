@@ -1,11 +1,9 @@
-// src/components/__tests__/Image.test.tsx
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Image } from '@components/Admin/Letters';
-import NextImage from 'next/image';
 import { ImageProps } from './Image';
 
-describe('Image component', () => {
+describe('Image Component', () => {
   const getImage = (props?: Partial<ImageProps>) => (
     <Image
       src="/test.jpg"
@@ -17,7 +15,7 @@ describe('Image component', () => {
     />
   );
 
-  it('renders with correct props', () => {
+  it('Renders with correct props.', () => {
     render(getImage());
     const img = screen.getByAltText('Test image') as HTMLImageElement;
 
@@ -27,7 +25,7 @@ describe('Image component', () => {
     expect(img.className).toContain('rounded');
   });
 
-  it('uses default fallbackSrc if none provided', () => {
+  it('Uses default fallbackSrc if none provided.', () => {
     render(getImage({ src: undefined }));
     const img = screen.getByAltText('Test image') as HTMLImageElement;
 
