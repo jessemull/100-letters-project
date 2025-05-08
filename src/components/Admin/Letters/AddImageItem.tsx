@@ -38,7 +38,11 @@ const AddImageItem = ({
     <div className="p-4 bg-white/10 border border-white rounded-xl transition-transform transform hover:scale-[1.01] cursor-pointer space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold text-white">Add New Image</h2>
-        <X color="white" onClick={resetAddNewImage} />
+        <X
+          data-testid="add-image-close-icon"
+          color="white"
+          onClick={resetAddNewImage}
+        />
       </div>
       <div className="flex flex-col">
         <div className="flex flex-col space-y-4 md:flex-row md:space-x-4 md:space-y-0">
@@ -71,6 +75,7 @@ const AddImageItem = ({
             Select Image +
           </label>
           <input
+            data-testid="file-input"
             id="imageUpload"
             type="file"
             accept="image/*"

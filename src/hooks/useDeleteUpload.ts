@@ -110,5 +110,3 @@ export function useDeleteUpload({ letter, token }: UseDeleteUpload) {
     deleteFile,
   };
 }
-
-export default UseDeleteUpload;

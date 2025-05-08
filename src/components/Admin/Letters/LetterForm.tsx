@@ -41,7 +41,7 @@ import {
   letterByIdUpdate,
   lettersUpdate,
 } from '@util/cache';
-import useFileUpload from '@hooks/useFileUpload';
+import { useFileUpload } from '@hooks/useFileUpload';
 import ImageItem from './ImageItem';
 import AddImageItem from './AddImageItem';
 import { useDeleteUpload } from '@hooks/useDeleteUpload';
@@ -326,6 +326,15 @@ const LetterForm = () => {
   }, [error, correspondencesError, singleCorrespondenceError]);
 
   useEffect(() => {
+    if (deleteUploadError) {
+      showToast({
+        message: deleteUploadError,
+        type: 'error',
+      });
+    }
+  }, [deleteUploadError]);
+
+  useEffect(() => {
     if (
       !letterId &&
       singleCorrespondence?.data?.correspondence?.correspondenceId &&
@@ -367,8 +376,8 @@ const LetterForm = () => {
   ]);
 
   const disableUploadButton = useMemo(() => {
-    return !Boolean(file) || !Boolean(view);
-  }, [file, view]);
+    return !Boolean(file);
+  }, [file]);
 
   return isLoading || authenticating || singleCorrespondenceIsLoading ? (
     <Progress color="white" size={16} />
@@ -392,7 +401,7 @@ const LetterForm = () => {
               options={correspondenceOptions}
               onChange={(value) => updateField('correspondenceId', value)}
               placeholder="Correspondence ID"
-              value={values.correspondenceId}
+              value={values.correspondenceId || ''}
             />
           )}
         <TextInput
@@ -402,7 +411,7 @@ const LetterForm = () => {
           onChange={({ target: { value } }) => updateField('title', value)}
           placeholder="Title"
           type="text"
-          value={values.title}
+          value={values.title || ''}
         />
         <TextArea
           id="description"
@@ -431,7 +440,7 @@ const LetterForm = () => {
             }
             options={typeOptions}
             placeholder="Type"
-            value={values.type}
+            value={values.type || ''}
           />
           <Select
             errors={errors.method}
@@ -442,7 +451,7 @@ const LetterForm = () => {
             }
             options={methodOptions}
             placeholder="Method"
-            value={values.method}
+            value={values.method || ''}
           />
           <Select
             errors={errors.status}
@@ -453,7 +462,7 @@ const LetterForm = () => {
             }
             options={statusOptions}
             placeholder="Status"
-            value={values.status}
+            value={values.status || ''}
           />
           <DatePicker
             customInput={
@@ -529,6 +538,7 @@ const LetterForm = () => {
                   />
                 ) : (
                   <Button
+                    data-testid="add-image-button"
                     id="add-image"
                     onClick={() => setIsAddingImage(true)}
                     value="Add Image +"

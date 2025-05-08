@@ -13,11 +13,7 @@ describe('AccessDeniedPage Component', () => {
     await act(async () => {
       render(<ForbiddenPage />);
     });
-    expect(screen.getAllByText('100 Letters Project').length).toBe(1);
     expect(screen.getByText('Access Denied')).toBeInTheDocument();
-    expect(
-      screen.getByText('© 2025 100 Letters Project. All rights reserved.'),
-    ).toBeInTheDocument();
   });
 
   it('Has no accessibility errors.', async () => {

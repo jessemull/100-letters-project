@@ -3,7 +3,7 @@
 import NextImage from 'next/image';
 import React, { useState } from 'react';
 
-interface Props {
+export interface ImageProps {
   src: string;
   alt: string;
   fallbackSrc?: string;
@@ -19,7 +19,7 @@ const Image = ({
   fill,
   sizes,
   src,
-}: Props) => {
+}: ImageProps) => {
   const [imgSrc, setImgSrc] = useState(src);
   return (
     <NextImage

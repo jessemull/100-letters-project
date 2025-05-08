@@ -156,11 +156,12 @@ const ImageItem = ({ data, deleteImage, letter, onUpdateImage }: Props) => {
               </div>
               <div className="space-y-2 flex flex-col items-center justify-center">
                 <button
-                  data-testid="edit-button"
+                  data-testid="full-screen-button"
                   className="text-white hover:text-gray-400"
-                  aria-label="Edit"
+                  aria-label="Full Screen"
                 >
                   <Fullscreen
+                    data-testid="full-screen-button-icon"
                     className="w-6 h-6"
                     onClick={() => showImage(data.url, 'No Image')}
                   />
@@ -171,6 +172,7 @@ const ImageItem = ({ data, deleteImage, letter, onUpdateImage }: Props) => {
                   aria-label="Edit"
                 >
                   <PenSquare
+                    data-testid="edit-button-icon"
                     className="w-6 h-6"
                     onClick={() => setIsOpen(!isOpen)}
                   />

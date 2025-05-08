@@ -163,5 +163,3 @@ export function useFileUpload({ caption, letter, token, view }: UseFileUpload) {
     uploadFile,
   };
 }
-
-export default useFileUpload;
