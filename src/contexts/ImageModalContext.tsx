@@ -49,8 +49,8 @@ export const ImageModalProvider = ({ children }: { children: ReactNode }) => {
     <ImageModalContext.Provider value={{ showImage, hideImage }}>
       {children}
       {imageSrc && (
-        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-          <div className="relative border-4 border-white rounded-xl bg-black max-w-full max-h-full overflow-auto">
+        <div className="fixed inset-0 z-50 bg-black/80 p-4 overflow-auto flex items-center justify-center">
+          <div className="relative border-4 border-white rounded-xl bg-black max-w-full max-h-[90vh] overflow-auto">
             <button
               onClick={hideImage}
               className="absolute -top-4 -right-4 text-white p-1 hover:text-gray-300 shadow-lg p-4"
@@ -58,15 +58,15 @@ export const ImageModalProvider = ({ children }: { children: ReactNode }) => {
             >
               <X className="border border-white rounded-full w-6 h-6" />
             </button>
-            <div className="w-[400px]">
+            <div className="w-[400px] md:w-[800px]">
               <Image
                 alt={altText}
                 src={imageSrc}
                 width={800}
                 height={0}
-                style={{ height: 'auto' }}
-                className="w-full h-auto"
-                sizes="400px"
+                style={{ height: 'auto', maxHeight: '90vh' }}
+                className="w-full h-auto object-contain"
+                sizes="(max-width: 768px) 400px, 800px"
               />
             </div>
           </div>
