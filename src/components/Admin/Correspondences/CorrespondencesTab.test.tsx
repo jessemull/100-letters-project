@@ -2,6 +2,7 @@ import * as AuthProvider from '@contexts/AuthProvider';
 import React from 'react';
 import showToast from '@components/Form/Toast';
 import { CorrespondencesTab } from '@components/Admin';
+import { axe } from 'jest-axe';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { useRouter } from 'next/navigation';
 
@@ -201,5 +202,11 @@ describe('CorrespondencesTab', () => {
         '/correspondence?lastEvaluatedKey=123',
       );
     });
+  });
+
+  it('Has no accessibility violations.', async () => {
+    const { container } = render(<CorrespondencesTab />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

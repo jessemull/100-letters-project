@@ -1,12 +1,13 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { CorrespondenceForm } from '@components/Admin';
-import { useAuth } from '@contexts/AuthProvider';
-import { useSWRQuery } from '@hooks/useSWRQuery';
-import { useSWRMutation } from '@hooks/useSWRMutation';
-import { showToast } from '@components/Form';
-import { useSearchParams } from 'next/navigation';
 import { RecipientFactory } from '@factories/recipient';
+import { axe } from 'jest-axe';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { showToast } from '@components/Form';
+import { useAuth } from '@contexts/AuthProvider';
 import { useRouter } from 'next/navigation';
+import { useSWRMutation } from '@hooks/useSWRMutation';
+import { useSWRQuery } from '@hooks/useSWRQuery';
+import { useSearchParams } from 'next/navigation';
 
 jest.mock('@contexts/AuthProvider');
 jest.mock('@hooks/useSWRQuery');
@@ -557,5 +558,11 @@ describe('CorrespondenceForm', () => {
         type: 'error',
       }),
     );
+  });
+
+  it('Has no accessibility violations.', async () => {
+    const { container } = render(<CorrespondenceForm />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

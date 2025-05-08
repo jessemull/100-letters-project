@@ -163,7 +163,7 @@ describe('useForm', () => {
     });
 
     act(() => {
-      result.current.updateField('email', '');
+      result.current.updateField('email', undefined as unknown as string);
     });
 
     expect(result.current.errors.email).toContain('Invalid email');

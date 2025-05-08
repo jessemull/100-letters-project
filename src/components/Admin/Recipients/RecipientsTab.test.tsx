@@ -5,6 +5,7 @@ import { AuthContextType } from '@contexts/AuthProvider';
 import { Recipient } from '@ts-types/recipients';
 import { RecipientFactory } from '@factories/recipient';
 import { RecipientsTab } from '@components/Admin';
+import { axe } from 'jest-axe';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { useRouter } from 'next/navigation';
 
@@ -234,7 +235,7 @@ describe('RecipientsTab', () => {
     });
   });
 
-  it('Triggers fetchMore when inView is true, loadingMore is false, and lastEvaluatedKey is not null', async () => {
+  it('Triggers fetchMore when inView is true, loadingMore is false, and lastEvaluatedKey is not null.', async () => {
     const fetchMore = jest.fn();
 
     useSWRQuery.mockReturnValue({
@@ -251,5 +252,12 @@ describe('RecipientsTab', () => {
     await waitFor(() => {
       expect(fetchMore).toHaveBeenCalledWith('/recipient?lastEvaluatedKey=123');
     });
+  });
+
+  it('Has no accessibility violations.', async () => {
+    const { container } = render(<RecipientsTab />);
+
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

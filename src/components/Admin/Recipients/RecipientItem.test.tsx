@@ -1,6 +1,7 @@
 import React from 'react';
 import RecipientItem from './RecipientItem';
 import { RecipientFactory } from '@factories/recipient';
+import { axe } from 'jest-axe';
 import { render, screen, fireEvent } from '@testing-library/react';
 
 describe('RecipientItem', () => {
@@ -13,7 +14,7 @@ describe('RecipientItem', () => {
     jest.clearAllMocks();
   });
 
-  it('renders recipient name and organization', () => {
+  it('Renders recipient name and organization.', () => {
     render(
       <RecipientItem
         data={mockRecipient}
@@ -27,7 +28,7 @@ describe('RecipientItem', () => {
     ).toBeInTheDocument();
   });
 
-  it('calls onEdit with correct recipientId when edit button is clicked', () => {
+  it('Calls onEdit with correct recipientId when edit button is clicked.', () => {
     render(
       <RecipientItem
         data={mockRecipient}
@@ -41,7 +42,7 @@ describe('RecipientItem', () => {
     expect(onEditMock).toHaveBeenCalledTimes(1);
   });
 
-  it('calls onDelete with correct recipientId when delete button is clicked', () => {
+  it('Calls onDelete with correct recipientId when delete button is clicked.', () => {
     render(
       <RecipientItem
         data={mockRecipient}
@@ -56,7 +57,7 @@ describe('RecipientItem', () => {
     expect(onDeleteMock).toHaveBeenCalledTimes(1);
   });
 
-  it('has a card container with expected styling', () => {
+  it('Has a card container with expected styling.', () => {
     render(
       <RecipientItem
         data={mockRecipient}
@@ -68,5 +69,18 @@ describe('RecipientItem', () => {
     const container = screen.getByTestId('card-edit-button');
     expect(container).toHaveClass('p-4');
     expect(container).toHaveClass('cursor-pointer');
+  });
+
+  it('Has no accessibility violations.', async () => {
+    const { container } = render(
+      <RecipientItem
+        data={mockRecipient}
+        onEdit={onEditMock}
+        onDelete={onDeleteMock}
+      />,
+    );
+
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

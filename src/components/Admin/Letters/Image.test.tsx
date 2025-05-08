@@ -1,7 +1,8 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
 import { Image } from '@components/Admin/Letters';
 import { ImageProps } from './Image';
+import { axe } from 'jest-axe';
+import { render, screen, fireEvent } from '@testing-library/react';
 
 describe('Image Component', () => {
   const getImage = (props?: Partial<ImageProps>) => (
@@ -33,5 +34,12 @@ describe('Image Component', () => {
 
     const updatedImg = screen.getByAltText('Test image') as HTMLImageElement;
     expect(updatedImg.src).toContain('missing.jpg');
+  });
+
+  it('Has no accessibility violations.', async () => {
+    const { container } = render(getImage());
+
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

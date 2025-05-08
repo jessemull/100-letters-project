@@ -2,6 +2,7 @@ import { ImageModalProvider } from '@contexts/ImageModalContext';
 import { Letter, View } from '@ts-types/letter';
 import { LetterForm } from '@components/Admin';
 import { LetterImageFactory } from '@factories/letter';
+import { axe } from 'jest-axe';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { showToast } from '@components/Form';
 import { useAuth } from '@contexts/AuthProvider';
@@ -10,6 +11,7 @@ import { useFileUpload } from '@hooks/useFileUpload';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSWRMutation } from '@hooks/useSWRMutation';
 import { useSWRQuery } from '@hooks/useSWRQuery';
+import { act } from 'react';
 
 jest.mock('@contexts/AuthProvider', () => ({
   useAuth: jest.fn(),
@@ -239,6 +241,24 @@ describe('LetterForm', () => {
   });
 
   it('Shows loading state if still fetching.', () => {
+    (useSearchParams as jest.Mock).mockReturnValue({
+      get: () => 'abc123',
+    });
+    (useSWRQuery as jest.Mock).mockImplementation(({ path }) => {
+      if (path === '/letter/abc123') {
+        return {
+          data: { data: sampleLetter },
+          isLoading: false,
+        };
+      }
+      if (path === '/correspondence/c1') {
+        return {
+          data: { data: { correspondenceId: 'c1' } },
+          isLoading: false,
+        };
+      }
+      return {};
+    });
     (useAuth as jest.Mock).mockReturnValue({ loading: true });
     render(
       <ImageModalProvider>
@@ -622,7 +642,7 @@ describe('LetterForm', () => {
     });
   });
 
-  it('should allow user to update image', async () => {
+  it('Should allow user to update image.', async () => {
     const mutateMock = jest.fn().mockResolvedValue({});
     (useSearchParams as jest.Mock).mockReturnValue({ get: () => '123' });
     (useSWRMutation as jest.Mock).mockImplementation(({ onSuccess }) => ({
@@ -745,35 +765,42 @@ describe('LetterForm', () => {
       return { data: {}, error: null, isLoading: false };
     });
 
-    render(
-      <ImageModalProvider>
-        <LetterForm />
-      </ImageModalProvider>,
-    );
-
-    expect(screen.getByText('Caption!')).toBeInTheDocument();
-
-    fireEvent.click(screen.getByText('Add Image +'));
-
-    await waitFor(() => {
-      expect(screen.getByText('Add New Image')).toBeInTheDocument();
+    await act(async () => {
+      render(
+        <ImageModalProvider>
+          <LetterForm />
+        </ImageModalProvider>,
+      );
     });
+
+    expect(await screen.findByText('Caption!')).toBeInTheDocument();
+
+    await act(async () => {
+      fireEvent.click(screen.getByText('Add Image +'));
+    });
+
+    expect(await screen.findByText('Add New Image')).toBeInTheDocument();
 
     const input =
       screen.getByTestId('file-input') ||
       screen.getByLabelText('Select Image +').closest('label')?.nextSibling;
 
-    fireEvent.change(input, {
-      target: {
-        files: [new File(['test'], 'new-image.png', { type: 'image/png' })],
-      },
+    await act(async () => {
+      fireEvent.change(input as Element, {
+        target: {
+          files: [new File(['test'], 'new-image.png', { type: 'image/png' })],
+        },
+      });
     });
 
-    await waitFor(() => {
-      expect(screen.getByText('new-image.png')).toBeInTheDocument();
+    expect(await screen.findByText('new-image.png')).toBeInTheDocument();
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Upload Image +' }));
     });
 
-    fireEvent.click(screen.getByRole('button', { name: 'Upload Image +' }));
+    // Optionally wait for UI update after upload
+    // expect(await screen.findByText('Uploaded!')).toBeInTheDocument();
   });
 
   it('Should handle file upload errors.', async () => {
@@ -870,7 +897,7 @@ describe('LetterForm', () => {
     (useFileUpload as jest.Mock).mockReturnValue({
       uploadFile: jest.fn().mockResolvedValue({
         message: 'Success!',
-        imageURL: { url: '/imageURL' },
+        imageURL: { id: 'id', url: '/imageURL' },
       }),
       isUploading: false,
       error: null,
@@ -919,15 +946,19 @@ describe('LetterForm', () => {
       return { data: {}, error: null, isLoading: false };
     });
 
-    render(
-      <ImageModalProvider>
-        <LetterForm />
-      </ImageModalProvider>,
-    );
+    await act(async () => {
+      render(
+        <ImageModalProvider>
+          <LetterForm />
+        </ImageModalProvider>,
+      );
+    });
 
     expect(screen.getByText('Caption!')).toBeInTheDocument();
 
-    fireEvent.click(screen.getByText('Add Image +'));
+    await act(async () => {
+      fireEvent.click(screen.getByText('Add Image +'));
+    });
 
     await waitFor(() => {
       expect(screen.getByText('Add New Image')).toBeInTheDocument();
@@ -937,17 +968,21 @@ describe('LetterForm', () => {
       screen.getByTestId('file-input') ||
       screen.getByLabelText('Select Image +').closest('label')?.nextSibling;
 
-    fireEvent.change(input, {
-      target: {
-        files: [new File(['test'], 'new-image.png', { type: 'image/png' })],
-      },
+    await act(async () => {
+      fireEvent.change(input!, {
+        target: {
+          files: [new File(['test'], 'new-image.png', { type: 'image/png' })],
+        },
+      });
     });
 
     await waitFor(() => {
       expect(screen.getByText('new-image.png')).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByRole('button', { name: 'Upload Image +' }));
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Upload Image +' }));
+    });
   });
 
   it('Should allow user to cancel adding image.', async () => {
@@ -1287,5 +1322,16 @@ describe('LetterForm', () => {
     await waitFor(() => {
       expect(screen.queryByText('Delete')).toBeNull();
     });
+  });
+
+  it('Has no accessibility violations.', async () => {
+    const { container } = render(
+      <ImageModalProvider>
+        <LetterForm />
+      </ImageModalProvider>,
+    );
+
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

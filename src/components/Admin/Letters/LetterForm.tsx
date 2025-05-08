@@ -2,21 +2,7 @@
 
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import {
-  GetLetterByIdResponse,
-  Letter,
-  LetterFormResponse,
-  LetterType,
-  LetterMethod,
-  View,
-  LetterImage,
-} from '@ts-types/letter';
-import {
-  Correspondence,
-  GetCorrespondenceByIdResponse,
-  GetCorrespondencesResponse,
-  Status,
-} from '@ts-types/correspondence';
+import { AddImageItem, ImageItem } from '@components/Admin/Letters';
 import {
   AutoSelect,
   Button,
@@ -27,25 +13,38 @@ import {
   TextInput,
   showToast,
 } from '@components/Form';
-import { required } from '@util/validators';
-import { toDateTimeLocal } from '@util/date-time';
-import { useAuth } from '@contexts/AuthProvider';
 import { ChangeEvent, useEffect, useMemo, useState } from 'react';
-import { useForm } from '@hooks/useForm';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useSWRMutation } from '@hooks/useSWRMutation';
-import { useSWRQuery } from '@hooks/useSWRQuery';
+import {
+  Correspondence,
+  GetCorrespondenceByIdResponse,
+  GetCorrespondencesResponse,
+  Status,
+} from '@ts-types/correspondence';
+import {
+  GetLetterByIdResponse,
+  Letter,
+  LetterFormResponse,
+  LetterType,
+  LetterMethod,
+  View,
+  LetterImage,
+} from '@ts-types/letter';
 import {
   correspondenceByIdLetterUpdate,
   correspondencesLetterUpdate,
   letterByIdUpdate,
   lettersUpdate,
 } from '@util/cache';
-import { useFileUpload } from '@hooks/useFileUpload';
-import ImageItem from './ImageItem';
-import AddImageItem from './AddImageItem';
-import { useDeleteUpload } from '@hooks/useDeleteUpload';
 import { formatLetterDates } from '@util/letter';
+import { required } from '@util/validators';
+import { toDateTimeLocal } from '@util/date-time';
+import { useAuth } from '@contexts/AuthProvider';
+import { useDeleteUpload } from '@hooks/useDeleteUpload';
+import { useFileUpload } from '@hooks/useFileUpload';
+import { useForm } from '@hooks/useForm';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useSWRMutation } from '@hooks/useSWRMutation';
+import { useSWRQuery } from '@hooks/useSWRQuery';
 
 const methodOptions = [
   { label: 'Digital', value: LetterMethod.DIGITAL },
@@ -364,6 +363,7 @@ const LetterForm = () => {
       lastName: 'No Last Name',
       firstName: 'No First Name',
     };
+
     const title = correspondence?.title || 'No Title';
 
     return `${recipient.lastName}, ${recipient.firstName} - ${title}`.trim();

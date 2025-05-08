@@ -1,3 +1,4 @@
+import { axe } from 'jest-axe';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { showToast } from '@components/Form';
 import { toast } from 'react-hot-toast';
@@ -60,5 +61,16 @@ describe('showToast', () => {
     fireEvent.click(closeButton);
 
     expect(mockToastDismiss).toHaveBeenCalledWith('toast-id-123');
+  });
+
+  it('Has no accessibility violations.', async () => {
+    showToast({ type: 'error', message: 'Dismiss me' });
+
+    const renderFn = mockToastCustom.mock.calls[0][0];
+    const mockT = { id: 'toast-id-123' } as Parameters<typeof renderFn>[0];
+
+    const { container } = render(renderFn(mockT));
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

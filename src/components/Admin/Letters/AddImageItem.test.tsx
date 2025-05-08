@@ -1,6 +1,7 @@
 import AddImageItem from '@components/Admin/Letters/AddImageItem';
 import React from 'react';
 import { View } from '@ts-types/letter';
+import { axe } from 'jest-axe';
 import { fireEvent, render, screen } from '@testing-library/react';
 
 describe('AddImageItem', () => {
@@ -95,5 +96,12 @@ describe('AddImageItem', () => {
     expect(
       screen.getByRole('button', { name: 'Upload Image +' }),
     ).toBeDisabled();
+  });
+
+  it('Has no accessibility violations.', async () => {
+    const { container } = render(<AddImageItem {...defaultProps} />);
+
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

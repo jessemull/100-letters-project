@@ -1,5 +1,6 @@
 import ImageItem from './ImageItem';
 import { LetterImage, View } from '@ts-types/letter';
+import { axe } from 'jest-axe';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { useAuth } from '@contexts/AuthProvider';
 import { useImageModal } from '@contexts/ImageModalContext';
@@ -307,5 +308,19 @@ describe('ImageItem Component', () => {
       expect(screen.getByLabelText('Caption')).toHaveValue('test caption');
       expect(mockOnUpdateImage).not.toHaveBeenCalled();
     });
+  });
+
+  it('Has no accessibility violations.', async () => {
+    const { container } = render(
+      <ImageItem
+        data={data as LetterImage}
+        deleteImage={mockDeleteImage}
+        letter={letter as any}
+        onUpdateImage={mockOnUpdateImage}
+      />,
+    );
+
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });
