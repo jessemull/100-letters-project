@@ -1,3 +1,4 @@
+import { debounce, throttle } from './debounce';
 import { isEmail, maxLength, minLength, required } from './validators';
 import { flattenValidators, get, set } from './form';
 import { toUTCTime, toDateTimeLocal } from './date-time';
@@ -30,6 +31,7 @@ export {
   correspondencesDeleteUpdate,
   correspondencesLetterUpdate,
   correspondencesUpdate,
+  debounce,
   deleteCorrespondenceLetterUpdate,
   deleteCorrespondenceRecipientUpdate,
   deleteCorrespondenceUpdate,
@@ -50,6 +52,7 @@ export {
   recipientsUpdate,
   required,
   set,
+  throttle,
   toDateTimeLocal,
   toUTCTime,
 };

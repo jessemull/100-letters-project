@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Button, TextInput } from '@components/Form';
 import {
   CorrespondencesTab,
@@ -9,6 +9,7 @@ import {
 } from '@components/Admin';
 import { Search, ChevronDown } from 'lucide-react';
 import { Tab, TabList, TabPanel, TabPanels, TabGroup } from '@headlessui/react';
+import { debounce } from '@util/debounce';
 import { useAuth } from '@contexts/AuthProvider';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 
@@ -17,19 +18,19 @@ const tabs = [
     createRoute: '/admin/correspondence',
     key: 'correspondences',
     label: 'Correspondences',
-    placeholder: 'Search by title or recipient…',
+    placeholder: 'Search by title...',
   },
   {
     createRoute: '/admin/letter',
     key: 'letters',
     label: 'Letters',
-    placeholder: 'Search letter text or title…',
+    placeholder: 'Search by title...',
   },
   {
     createRoute: '/admin/recipient',
     key: 'recipients',
     label: 'Recipients',
-    placeholder: 'Search by name or organization…',
+    placeholder: 'Search by last name...',
   },
 ];
 
@@ -46,6 +47,7 @@ const Admin = () => {
 
   const [selectedIndex, setSelectedIndex] = useState(initialTabIndex);
   const [search, setSearch] = useState('');
+  const [searchInput, setSearchInput] = useState('');
 
   const { isLoggedIn, loading: authenticating } = useAuth();
 
@@ -58,6 +60,8 @@ const Admin = () => {
   }, [authenticating, isLoggedIn, router]);
 
   const handleTabChange = (index: number) => {
+    setSearch('');
+    setSearchInput('');
     setSelectedIndex(index);
     const newTab = tabs[index].key;
     const newUrl = `${pathname}?tab=${newTab}`;
@@ -67,6 +71,16 @@ const Admin = () => {
   const handleCreateClick = () => {
     router.push(activeTab.createRoute);
   };
+
+  const debouncedSetSearch = useRef(
+    debounce((value: string) => {
+      setSearch(value);
+    }, 500),
+  ).current;
+
+  useEffect(() => {
+    debouncedSetSearch(searchInput);
+  }, [searchInput]);
 
   return (
     <div className="flex-1 flex w-full h-full text-white font-merriweather min-h-screen">
@@ -124,23 +138,23 @@ const Admin = () => {
                 data-testid="admin-search"
                 IconStart={Search}
                 id="admin-search-input"
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(e) => setSearchInput(e.target.value)}
                 placeholder={activeTab.placeholder}
                 type="text"
-                value={search}
+                value={searchInput}
               />
             </div>
           </div>
           <div className="flex-1 min-h-0">
             <TabPanels className="h-full">
               <TabPanel className="h-full">
-                <CorrespondencesTab />
+                <CorrespondencesTab search={search} />
               </TabPanel>
               <TabPanel className="h-full">
-                <LettersTab />
+                <LettersTab search={search} />
               </TabPanel>
               <TabPanel className="h-full">
-                <RecipientsTab />
+                <RecipientsTab search={search} />
               </TabPanel>
             </TabPanels>
           </div>

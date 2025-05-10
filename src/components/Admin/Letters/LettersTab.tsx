@@ -20,7 +20,11 @@ import {
   lettersDeleteUpdate,
 } from '@util/cache';
 
-const LettersTab: React.FC = () => {
+interface Props {
+  search: string;
+}
+
+const LettersTab: React.FC<Props> = ({ search }) => {
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [letterId, setLetterId] = useState('');
   const [correspondenceId, setCorrespondenceId] = useState('');
@@ -31,7 +35,7 @@ const LettersTab: React.FC = () => {
 
   const { data, fetchMore, isLoading, loadingMore } =
     useSWRQuery<GetLettersResponse>({
-      path: '/letter',
+      path: search ? `/letter?search=${search}` : '/letter',
       token,
     });
 
@@ -71,7 +75,11 @@ const LettersTab: React.FC = () => {
 
   useEffect(() => {
     if (inView && !loadingMore && lastEvaluatedKey !== null) {
-      fetchMore(`/letter?lastEvaluatedKey=${lastEvaluatedKey}`);
+      fetchMore(
+        search
+          ? `/letter?lastEvaluatedKey=${lastEvaluatedKey}&search=${search}`
+          : `/letter?lastEvaluatedKey=${lastEvaluatedKey}`,
+      );
     }
   }, [inView, lastEvaluatedKey, fetchMore, loadingMore]);
 

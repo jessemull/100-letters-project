@@ -18,7 +18,11 @@ import {
   deleteCorrespondenceUpdate,
 } from '@util/cache';
 
-const CorrespondencesTab: React.FC = () => {
+interface Props {
+  search: string;
+}
+
+const CorrespondencesTab: React.FC<Props> = ({ search }) => {
   const [correspondenceId, setCorrespondenceId] = useState('');
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [lastEvaluatedKey, setLastEvaluatedKey] = useState<string | null>(null);
@@ -28,7 +32,7 @@ const CorrespondencesTab: React.FC = () => {
 
   const { data, fetchMore, isLoading, loadingMore } =
     useSWRQuery<GetCorrespondencesResponse>({
-      path: '/correspondence',
+      path: search ? `/correspondence?search=${search}` : '/correspondence',
       token,
     });
 
@@ -38,7 +42,11 @@ const CorrespondencesTab: React.FC = () => {
 
   useEffect(() => {
     if (inView && !loadingMore && lastEvaluatedKey !== null) {
-      fetchMore(`/correspondence?lastEvaluatedKey=${lastEvaluatedKey}`);
+      fetchMore(
+        search
+          ? `/correspondence?lastEvaluatedKey=${lastEvaluatedKey}&search=${search}`
+          : `/correspondence?lastEvaluatedKey=${lastEvaluatedKey}`,
+      );
     }
   }, [inView, lastEvaluatedKey, loadingMore, fetchMore]);
 

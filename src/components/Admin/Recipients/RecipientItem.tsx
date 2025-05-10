@@ -19,7 +19,7 @@ const RecipientItem = ({ data, onDelete, onEdit }: Props) => {
       <div className="flex items-center justify-between">
         <div>
           <h3 className="font-semibold text-lg text-white">
-            {`${data?.firstName} ${data?.lastName}`}
+            {`${data?.lastName}, ${data?.firstName}`}
           </h3>
           <p className="text-sm text-gray-300">{data?.organization}</p>
         </div>
