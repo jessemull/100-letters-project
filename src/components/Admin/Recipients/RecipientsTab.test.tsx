@@ -72,7 +72,7 @@ describe('RecipientsTab', () => {
       response: {},
     }));
 
-    render(<RecipientsTab />);
+    render(<RecipientsTab search="" />);
     expect(screen.getByTestId('progress')).toBeInTheDocument();
   });
 
@@ -95,9 +95,9 @@ describe('RecipientsTab', () => {
       response: {},
     }));
 
-    render(<RecipientsTab />);
+    render(<RecipientsTab search="" />);
     expect(
-      screen.getByText(`${mockRecipient.firstName} ${mockRecipient.lastName}`),
+      screen.getByText(`${mockRecipient.lastName}, ${mockRecipient.firstName}`),
     ).toBeInTheDocument();
   });
 
@@ -114,7 +114,7 @@ describe('RecipientsTab', () => {
       response: {},
     }));
 
-    render(<RecipientsTab />);
+    render(<RecipientsTab search="" />);
 
     expect(screen.getByText('No results found.')).toBeInTheDocument();
   });
@@ -132,7 +132,7 @@ describe('RecipientsTab', () => {
       response: {},
     }));
 
-    render(<RecipientsTab />);
+    render(<RecipientsTab search="" />);
 
     fireEvent.click(screen.getByTestId('delete-button'));
     expect(screen.getByText('Delete Recipient')).toBeInTheDocument();
@@ -160,7 +160,7 @@ describe('RecipientsTab', () => {
       response: {},
     }));
 
-    render(<RecipientsTab />);
+    render(<RecipientsTab search="" />);
     fireEvent.click(screen.getByTestId('edit-button'));
     expect(mockPush).toHaveBeenCalledWith(
       `/admin/recipient?recipientId=${mockRecipient.recipientId}`,
@@ -191,7 +191,7 @@ describe('RecipientsTab', () => {
       response: {},
     }));
 
-    render(<RecipientsTab />);
+    render(<RecipientsTab search="" />);
     fireEvent.click(screen.getByTestId('delete-button'));
     fireEvent.click(screen.getByText('Delete'));
 
@@ -223,7 +223,7 @@ describe('RecipientsTab', () => {
       response: {},
     }));
 
-    render(<RecipientsTab />);
+    render(<RecipientsTab search="" />);
     fireEvent.click(screen.getByTestId('delete-button'));
     fireEvent.click(screen.getByText('Delete'));
 
@@ -245,7 +245,7 @@ describe('RecipientsTab', () => {
     });
     useSWRMutation.mockReturnValue({ isLoading: false, mutate: jest.fn() });
 
-    render(<RecipientsTab />);
+    render(<RecipientsTab search="" />);
 
     fireEvent.scroll(window);
 
@@ -254,8 +254,70 @@ describe('RecipientsTab', () => {
     });
   });
 
+  it('Uses search query param when search is defined.', async () => {
+    const mockSearch = 'john';
+
+    useSWRQuery.mockImplementation(({ path }: { path: string }) => {
+      return {
+        data: { data: [], lastEvaluatedKey: '' },
+        isLoading: false,
+      };
+    });
+
+    useSWRMutation.mockImplementation(() => ({
+      error: null,
+      isLoading: false,
+      mutate: jest.fn(),
+      response: {},
+    }));
+
+    render(<RecipientsTab search={mockSearch} />);
+
+    await waitFor(() => {
+      expect(useSWRQuery).toHaveBeenCalledWith({
+        path: `/recipient?search=${mockSearch}`,
+        token: 'test-token',
+      });
+    });
+  });
+
+  it('Triggers fetchMore with lastEvaluatedKey and search when both are present.', async () => {
+    const fetchMore = jest.fn();
+    const mockSearch = 'john';
+
+    useSWRQuery.mockReturnValue({
+      data: { data: [mockRecipient], lastEvaluatedKey: '123' },
+      fetchMore,
+      isLoading: false,
+    });
+
+    useSWRMutation.mockReturnValue({ isLoading: false, mutate: jest.fn() });
+
+    render(<RecipientsTab search={mockSearch} />);
+
+    fireEvent.scroll(window);
+
+    await waitFor(() => {
+      expect(fetchMore).toHaveBeenCalledWith(
+        '/recipient?lastEvaluatedKey=123&search=john',
+      );
+    });
+  });
+
   it('Has no accessibility violations.', async () => {
-    const { container } = render(<RecipientsTab />);
+    useSWRQuery.mockImplementation(() => ({
+      data: { data: [], lastEvaluatedKey: '' },
+      isLoading: false,
+    }));
+
+    useSWRMutation.mockImplementation(() => ({
+      error: null,
+      isLoading: false,
+      mutate: jest.fn(),
+      response: {},
+    }));
+
+    const { container } = render(<RecipientsTab search="" />);
 
     const results = await axe(container);
     expect(results).toHaveNoViolations();

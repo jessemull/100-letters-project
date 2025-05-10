@@ -81,7 +81,7 @@ const LettersTab: React.FC<Props> = ({ search }) => {
           : `/letter?lastEvaluatedKey=${lastEvaluatedKey}`,
       );
     }
-  }, [inView, lastEvaluatedKey, fetchMore, loadingMore]);
+  }, [inView, lastEvaluatedKey, fetchMore, loadingMore, search]);
 
   useEffect(() => {
     setLastEvaluatedKey(data?.lastEvaluatedKey || null);

@@ -80,7 +80,7 @@ const Admin = () => {
 
   useEffect(() => {
     debouncedSetSearch(searchInput);
-  }, [searchInput]);
+  }, [searchInput, debouncedSetSearch]);
 
   return (
     <div className="flex-1 flex w-full h-full text-white font-merriweather min-h-screen">

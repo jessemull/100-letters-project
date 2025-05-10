@@ -48,7 +48,7 @@ const CorrespondencesTab: React.FC<Props> = ({ search }) => {
           : `/correspondence?lastEvaluatedKey=${lastEvaluatedKey}`,
       );
     }
-  }, [inView, lastEvaluatedKey, loadingMore, fetchMore]);
+  }, [inView, lastEvaluatedKey, loadingMore, fetchMore, search]);
 
   const { isLoading: isDeleting, mutate } = useSWRMutation<
     {},

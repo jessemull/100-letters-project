@@ -2,7 +2,6 @@ import * as AuthProvider from '@contexts/AuthProvider';
 import React from 'react';
 import showToast from '@components/Form/Toast';
 import { AuthContextType } from '@contexts/AuthProvider';
-import { LetterImageFactory } from '@factories/letter';
 import { LettersTab } from '@components/Admin';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { useRouter } from 'next/navigation';
@@ -59,7 +58,7 @@ describe('LettersTab', () => {
   it('Displays loading state.', () => {
     useSWRQuery.mockReturnValue({ data: undefined, isLoading: true });
     useSWRMutation.mockReturnValue({ isLoading: false, mutate: jest.fn() });
-    render(<LettersTab />);
+    render(<LettersTab search="" />);
     expect(screen.getByTestId('progress')).toBeInTheDocument();
   });
 
@@ -69,7 +68,7 @@ describe('LettersTab', () => {
       isLoading: false,
     });
     useSWRMutation.mockReturnValue({ isLoading: false, mutate: jest.fn() });
-    render(<LettersTab />);
+    render(<LettersTab search="" />);
     expect(screen.getByText('Test Letter')).toBeInTheDocument();
   });
 
@@ -79,7 +78,7 @@ describe('LettersTab', () => {
       isLoading: false,
     });
     useSWRMutation.mockReturnValue({ isLoading: false, mutate: jest.fn() });
-    render(<LettersTab />);
+    render(<LettersTab search="" />);
     expect(screen.getByText('No results found.')).toBeInTheDocument();
   });
 
@@ -89,7 +88,7 @@ describe('LettersTab', () => {
       isLoading: false,
     });
     useSWRMutation.mockReturnValue({ isLoading: false, mutate: mockMutate });
-    render(<LettersTab />);
+    render(<LettersTab search="" />);
     fireEvent.click(screen.getByTestId('delete-button'));
     fireEvent.click(screen.getByText('Delete'));
     await waitFor(() => {
@@ -106,7 +105,7 @@ describe('LettersTab', () => {
       isLoading: false,
     });
     useSWRMutation.mockReturnValue({ isLoading: false, mutate: jest.fn() });
-    render(<LettersTab />);
+    render(<LettersTab search="" />);
     fireEvent.click(screen.getByTestId('edit-button'));
     expect(mockPush).toHaveBeenCalledWith('/admin/letter?letterId=1');
   });
@@ -127,7 +126,7 @@ describe('LettersTab', () => {
         });
     };
     useSWRMutation.mockReturnValue({ isLoading: false, mutate: mutateFn });
-    render(<LettersTab />);
+    render(<LettersTab search="" />);
     fireEvent.click(screen.getByTestId('delete-button'));
     fireEvent.click(screen.getByText('Delete'));
     await waitFor(() => {
@@ -150,7 +149,7 @@ describe('LettersTab', () => {
       if (onUpdate) onUpdate({});
     };
     useSWRMutation.mockReturnValue({ isLoading: false, mutate: mutateFn });
-    render(<LettersTab />);
+    render(<LettersTab search="" />);
     fireEvent.click(screen.getByTestId('delete-button'));
     fireEvent.click(screen.getByText('Delete'));
     await waitFor(() => {
@@ -171,12 +170,38 @@ describe('LettersTab', () => {
     });
     useSWRMutation.mockReturnValue({ isLoading: false, mutate: jest.fn() });
 
-    render(<LettersTab />);
+    render(<LettersTab search="" />);
 
     fireEvent.scroll(window);
 
     await waitFor(() => {
       expect(fetchMore).toHaveBeenCalledWith('/letter?lastEvaluatedKey=123');
+    });
+  });
+
+  it('Triggers fetchMore with search term in path when search is set.', async () => {
+    const fetchMore = jest.fn();
+
+    useSWRQuery.mockReturnValue({
+      data: {
+        data: [testLetter],
+        lastEvaluatedKey: '456',
+      },
+      fetchMore,
+      isLoading: false,
+      loadingMore: false,
+    });
+
+    useSWRMutation.mockReturnValue({ isLoading: false, mutate: jest.fn() });
+
+    render(<LettersTab search="test-search" />);
+
+    fireEvent.scroll(window);
+
+    await waitFor(() => {
+      expect(fetchMore).toHaveBeenCalledWith(
+        '/letter?lastEvaluatedKey=456&search=test-search',
+      );
     });
   });
 
@@ -202,7 +227,7 @@ describe('LettersTab', () => {
 
     useSWRMutation.mockReturnValue({ isLoading: false, mutate: jest.fn() });
 
-    const { container } = render(<LettersTab />);
+    const { container } = render(<LettersTab search="" />);
     const listItems = container.querySelectorAll('li');
 
     expect(mockRef).toHaveBeenCalledTimes(1);
@@ -210,7 +235,7 @@ describe('LettersTab', () => {
   });
 
   it('Has no accessibility violations.', async () => {
-    const { container } = render(<LettersTab />);
+    const { container } = render(<LettersTab search="" />);
 
     const results = await axe(container);
     expect(results).toHaveNoViolations();

@@ -24,7 +24,7 @@ describe('RecipientItem', () => {
     );
 
     expect(
-      screen.getByText(`${mockRecipient.firstName} ${mockRecipient.lastName}`),
+      screen.getByText(`${mockRecipient.lastName}, ${mockRecipient.firstName}`),
     ).toBeInTheDocument();
   });
 
