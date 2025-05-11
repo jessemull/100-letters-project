@@ -60,7 +60,7 @@ describe('CorrespondencesTab', () => {
   it('Displays loading state.', () => {
     useSWRQuery.mockReturnValue({ data: undefined, isLoading: true });
     useSWRMutation.mockReturnValue({ isLoading: false, mutate: jest.fn() });
-    render(<CorrespondencesTab />);
+    render(<CorrespondencesTab search="" />);
     expect(screen.getByTestId('progress')).toBeInTheDocument();
   });
 
@@ -80,7 +80,7 @@ describe('CorrespondencesTab', () => {
       isLoading: false,
     });
     useSWRMutation.mockReturnValue({ isLoading: false, mutate: jest.fn() });
-    render(<CorrespondencesTab />);
+    render(<CorrespondencesTab search="" />);
     expect(screen.getByText('Test Correspondence')).toBeInTheDocument();
   });
 
@@ -90,7 +90,7 @@ describe('CorrespondencesTab', () => {
       isLoading: false,
     });
     useSWRMutation.mockReturnValue({ isLoading: false, mutate: jest.fn() });
-    render(<CorrespondencesTab />);
+    render(<CorrespondencesTab search="" />);
     expect(screen.getByText('No results found.')).toBeInTheDocument();
   });
 
@@ -100,7 +100,7 @@ describe('CorrespondencesTab', () => {
       isLoading: false,
     });
     useSWRMutation.mockReturnValue({ isLoading: false, mutate: mockMutate });
-    render(<CorrespondencesTab />);
+    render(<CorrespondencesTab search="" />);
     fireEvent.click(screen.getByTestId('delete-button'));
     fireEvent.click(screen.getByText('Delete'));
     await waitFor(() => {
@@ -117,7 +117,7 @@ describe('CorrespondencesTab', () => {
       isLoading: false,
     });
     useSWRMutation.mockReturnValue({ isLoading: false, mutate: jest.fn() });
-    render(<CorrespondencesTab />);
+    render(<CorrespondencesTab search="" />);
     fireEvent.click(screen.getByTestId('edit-button'));
     expect(mockPush).toHaveBeenCalledWith(
       '/admin/correspondence?correspondenceId=1',
@@ -140,7 +140,7 @@ describe('CorrespondencesTab', () => {
         });
     };
     useSWRMutation.mockReturnValue({ isLoading: false, mutate: mutateFn });
-    render(<CorrespondencesTab />);
+    render(<CorrespondencesTab search="" />);
     fireEvent.click(screen.getByTestId('delete-button'));
     fireEvent.click(screen.getByText('Delete'));
     await waitFor(() => {
@@ -163,7 +163,7 @@ describe('CorrespondencesTab', () => {
       if (onUpdate) onUpdate({});
     };
     useSWRMutation.mockReturnValue({ isLoading: false, mutate: mutateFn });
-    render(<CorrespondencesTab />);
+    render(<CorrespondencesTab search="" />);
     fireEvent.click(screen.getByTestId('delete-button'));
     fireEvent.click(screen.getByText('Delete'));
     await waitFor(() => {
@@ -175,7 +175,7 @@ describe('CorrespondencesTab', () => {
   });
 
   it('Calls closeConfirmationModal when modal is closed.', async () => {
-    render(<CorrespondencesTab />);
+    render(<CorrespondencesTab search="" />);
     fireEvent.click(screen.getByTestId('delete-button'));
     fireEvent.click(screen.getByText('Cancel'));
     await waitFor(() => {
@@ -193,7 +193,7 @@ describe('CorrespondencesTab', () => {
     });
     useSWRMutation.mockReturnValue({ isLoading: false, mutate: jest.fn() });
 
-    render(<CorrespondencesTab />);
+    render(<CorrespondencesTab search="" />);
 
     fireEvent.scroll(window);
 
@@ -204,8 +204,47 @@ describe('CorrespondencesTab', () => {
     });
   });
 
+  it('Fetches data with search term and then fetches more when in view', async () => {
+    const fetchMoreMock = jest.fn();
+    const initialData = {
+      data: [
+        { correspondenceId: '1', title: 'First' },
+        { correspondenceId: '2', title: 'Second' },
+      ],
+      lastEvaluatedKey: 'next-key',
+    };
+
+    const moreData = {
+      data: [
+        { correspondenceId: '3', title: 'Third' },
+        { correspondenceId: '4', title: 'Fourth' },
+      ],
+      lastEvaluatedKey: null,
+    };
+
+    useSWRQuery.mockReturnValue({
+      data: initialData,
+      fetchMore: fetchMoreMock,
+      isLoading: false,
+      loadingMore: false,
+    });
+
+    useSWRMutation.mockReturnValue({ isLoading: false, mutate: jest.fn() });
+
+    render(<CorrespondencesTab search="query" />);
+
+    expect(screen.getByText('First')).toBeInTheDocument();
+    expect(screen.getByText('Second')).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(fetchMoreMock).toHaveBeenCalledWith(
+        '/correspondence?lastEvaluatedKey=next-key&search=query',
+      );
+    });
+  });
+
   it('Has no accessibility violations.', async () => {
-    const { container } = render(<CorrespondencesTab />);
+    const { container } = render(<CorrespondencesTab search="" />);
     const results = await axe(container);
     expect(results).toHaveNoViolations();
   });

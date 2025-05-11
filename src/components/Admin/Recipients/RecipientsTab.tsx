@@ -15,7 +15,11 @@ import { useSWRQuery } from '@hooks/useSWRQuery';
 import { useInView } from 'react-intersection-observer';
 import { deleteRecipientUpdate } from '@util/cache';
 
-const RecipientsTab: React.FC = () => {
+interface Props {
+  search: string;
+}
+
+const RecipientsTab: React.FC<Props> = ({ search }) => {
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [recipientId, setRecipientId] = useState('');
   const [lastEvaluatedKey, setLastEvaluatedKey] = useState<string | null>(null);
@@ -25,7 +29,7 @@ const RecipientsTab: React.FC = () => {
 
   const { data, fetchMore, isLoading, loadingMore } =
     useSWRQuery<GetRecipientsResponse>({
-      path: '/recipient',
+      path: search ? `/recipient?search=${search}` : '/recipient',
       token,
     });
 
@@ -74,9 +78,13 @@ const RecipientsTab: React.FC = () => {
 
   useEffect(() => {
     if (inView && !loadingMore && lastEvaluatedKey !== null) {
-      fetchMore(`/recipient?lastEvaluatedKey=${lastEvaluatedKey}`);
+      fetchMore(
+        search
+          ? `/recipient?lastEvaluatedKey=${lastEvaluatedKey}&search=${search}`
+          : `/recipient?lastEvaluatedKey=${lastEvaluatedKey}`,
+      );
     }
-  }, [inView, lastEvaluatedKey, fetchMore, loadingMore]);
+  }, [inView, lastEvaluatedKey, fetchMore, loadingMore, search]);
 
   useEffect(() => {
     setLastEvaluatedKey(data?.lastEvaluatedKey || null);
