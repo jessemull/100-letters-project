@@ -9,7 +9,9 @@ export interface ImageProps {
   fallbackSrc?: string;
   height?: number | `${number}` | undefined;
   className?: string;
+  priority?: boolean;
   fill?: boolean;
+  loading?: string;
   sizes?: string;
   width?: number | `${number}` | undefined;
 }
@@ -20,6 +22,7 @@ const Image = ({
   fallbackSrc = '/missing.jpg',
   fill,
   height,
+  priority,
   sizes,
   src,
   width,
@@ -34,6 +37,7 @@ const Image = ({
       height={height}
       onError={() => setImgSrc(fallbackSrc)}
       sizes={sizes}
+      priority={priority}
       src={imgSrc || fallbackSrc}
       width={width}
     />

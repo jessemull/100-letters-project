@@ -7,6 +7,15 @@ import { CorrespondenceProvider } from '@contexts/CorrespondenceProvider';
 import { Letter } from '@ts-types/letter';
 import { Recipient } from '@ts-types/recipients';
 import { ImageModalProvider } from '@contexts/ImageModalContext';
+import { Merriweather } from 'next/font/google';
+
+const merriweather = Merriweather({
+  subsets: ['latin'],
+  weight: ['400'],
+  style: ['normal', 'italic'],
+  variable: '--font-merriweather',
+  display: 'swap',
+});
 
 const {
   correspondences,
@@ -71,7 +80,7 @@ export default function RootLayout({
         <meta property="og:title" content="100 Letters Project" />
         <meta property="og:image" content="/og-image.png" />
       </head>
-      <body className="antialiased">
+      <body className={`${merriweather.variable} antialiased`}>
         <AuthProvider>
           <ImageModalProvider>
             <CorrespondenceProvider
