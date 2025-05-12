@@ -4,10 +4,10 @@ import data from '@public/data.json';
 import { AuthProvider } from '@contexts/AuthProvider';
 import { Correspondence } from '@ts-types/correspondence';
 import { CorrespondenceProvider } from '@contexts/CorrespondenceProvider';
-import { Letter } from '@ts-types/letter';
-import { Recipient } from '@ts-types/recipients';
 import { ImageModalProvider } from '@contexts/ImageModalContext';
+import { Letter } from '@ts-types/letter';
 import { Merriweather } from 'next/font/google';
+import { Recipient } from '@ts-types/recipients';
 
 const merriweather = Merriweather({
   subsets: ['latin'],
@@ -17,13 +17,11 @@ const merriweather = Merriweather({
   display: 'swap',
 });
 
-const {
-  correspondences,
-  earliestSentAtDate = '',
-  letters,
-  recipients,
-  responseCompletion,
-} = data;
+const correspondences = data.correspondences ?? [];
+const earliestSentAtDate = data.earliestSentAtDate ?? '';
+const letters = data.letters ?? [];
+const recipients = data.recipients ?? [];
+const responseCompletion = data.responseCompletion ?? 0;
 
 export const metadata = {
   alternates: {
