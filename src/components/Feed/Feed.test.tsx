@@ -1,16 +1,9 @@
-import { Feed, calculateCountdown } from '@components/Feed';
+import { Feed, calculateCountdown, categories } from '@components/Feed';
 import { axe } from 'jest-axe';
-import {
-  fireEvent,
-  getByTestId,
-  render,
-  screen,
-  waitFor,
-} from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { useCorrespondence } from '@contexts/CorrespondenceProvider';
 import { act } from 'react';
 import { CorrespondenceFactory } from '@factories/correspondence';
-import { categories } from '@pages/page';
 
 jest.mock('@contexts/CorrespondenceProvider');
 
