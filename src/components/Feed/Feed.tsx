@@ -44,7 +44,7 @@ const Feed: React.FC<Props> = ({ categories }) => {
 
   const showMoreCategories = useMemo(() => {
     return numCategoryRows * 6 < categories.length;
-  }, [numCategoryRows]);
+  }, [categories.length, numCategoryRows]);
 
   const showMoreLetters = useMemo(() => {
     return numLetterRows * 3 < correspondences.length;
