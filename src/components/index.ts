@@ -1,3 +1,4 @@
+export * from './About';
 export * from './Admin';
 export * from './Animation';
 export * from './ComingSoon';

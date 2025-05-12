@@ -8,7 +8,13 @@ import { Letter } from '@ts-types/letter';
 import { Recipient } from '@ts-types/recipients';
 import { ImageModalProvider } from '@contexts/ImageModalContext';
 
-const { correspondences, letters, recipients } = data;
+const {
+  correspondences,
+  earliestSentAtDate,
+  letters,
+  recipients,
+  responseCompletion,
+} = data;
 
 export const metadata = {
   alternates: {
@@ -70,8 +76,10 @@ export default function RootLayout({
           <ImageModalProvider>
             <CorrespondenceProvider
               correspondences={correspondences as Correspondence[]}
+              earliestSentAtDate={earliestSentAtDate as string}
               letters={letters as Letter[]}
               recipients={recipients as Recipient[]}
+              responseCompletion={responseCompletion as number}
             >
               {children}
             </CorrespondenceProvider>

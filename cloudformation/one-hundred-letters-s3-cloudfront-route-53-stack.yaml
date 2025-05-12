@@ -147,6 +147,7 @@ Resources:
 
   CloudFrontKeyGroup:
     Type: AWS::CloudFront::KeyGroup
+    Condition: IsDev
     Properties:
       KeyGroupConfig:
         Name: !Sub "KeyGroup-for-${Environment}"
@@ -155,6 +156,7 @@ Resources:
 
   CloudFrontPublicKey:
     Type: AWS::CloudFront::PublicKey
+    Condition: IsDev
     Properties:
       PublicKeyConfig:
         CallerReference: !Sub "PublicKey-${Environment}"
@@ -249,5 +251,6 @@ Resources:
 
 Conditions:
   IsProd: !Equals [ !Ref Environment, "prod" ]
+  IsDev: !Not [ !Equals [ !Ref Environment, "prod" ] ]
   EnableSignedCookiesCheckCondition: !Equals [ !Ref EnableSignedCookiesCheck, "true" ]
   CreateDNSRecordsCondition: !Equals [ !Ref CreateDNSRecords, "true" ]

@@ -51,7 +51,7 @@ const MobileMenu: FC<MobileMenuProps> = ({
           <span>Home</span>
         </Link>
         <Link
-          href="/"
+          href="/about"
           onClick={onClose}
           className="flex items-center space-x-3 hover:text-gray-400"
         >

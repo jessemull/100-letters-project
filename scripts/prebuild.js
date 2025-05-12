@@ -17,23 +17,37 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 const client = new CognitoIdentityProviderClient({ region: 'us-west-2' });
 
-const fetchData = async (endpoint, token) => {
-  const url = `${apiUrl}/${endpoint}`;
-  const headers = { Authorization: `Bearer ${token}` };
-  try {
-    const response = await fetch(url, { headers });
+const fetchAllPages = async (endpoint, token) => {
+  let allData = [];
+  let lastEvaluatedKey = null;
 
-    if (!response.ok) {
-      console.error(`Error fetching data from ${url}: `, response.status);
-      process.exit(1);
+  do {
+    let url = `${apiUrl}/${endpoint}`;
+
+    if (lastEvaluatedKey) {
+      url += `?lastEvaluatedKey=${encodeURIComponent(lastEvaluatedKey)}`;
     }
 
-    const json = await response.json();
-    return json.data;
-  } catch (error) {
-    console.error(`Error fetching data from ${url}: `, error);
-    process.exit(1);
-  }
+    const headers = { Authorization: `Bearer ${token}` };
+
+    try {
+      const response = await fetch(url, { headers });
+
+      if (!response.ok) {
+        console.error(`Error fetching data from ${url}: `, response.status);
+        process.exit(1);
+      }
+
+      const json = await response.json();
+      allData = allData.concat(json.data || []);
+      lastEvaluatedKey = json.lastEvaluatedKey;
+    } catch (error) {
+      console.error(`Error fetching data from ${url}: `, error);
+      process.exit(1);
+    }
+  } while (lastEvaluatedKey);
+
+  return allData;
 };
 
 async function authenticateUser() {
@@ -61,11 +75,35 @@ async function authenticateUser() {
 
     const token = response.AuthenticationResult.IdToken;
 
-    const correspondences = await fetchData('correspondence', token);
-    const letters = await fetchData('letter', token);
-    const recipients = await fetchData('recipient', token);
+    const correspondences = await fetchAllPages('correspondence', token);
+    const letters = await fetchAllPages('letter', token);
+    const recipients = await fetchAllPages('recipient', token);
 
-    const data = { correspondences, letters, recipients };
+    const completedStatuses = ['COMPLETED', 'RESPONDED'];
+
+    const respondedCount = correspondences.filter((c) =>
+      completedStatuses.includes(c.status),
+    ).length;
+
+    const totalCount = correspondences.length;
+
+    const responseCompletion = totalCount > 0 ? respondedCount / totalCount : 0;
+
+    const sentDates = letters
+      .map((letter) => new Date(letter.sentAt))
+      .filter((date) => !isNaN(date.getTime()));
+
+    const earliestSentAtDate = sentDates.length
+      ? new Date(Math.min(...sentDates)).toISOString()
+      : null;
+
+    const data = {
+      correspondences,
+      earliestSentAtDate,
+      letters,
+      recipients,
+      responseCompletion,
+    };
 
     const outputPath = path.join(__dirname, '../public', 'data.json');
 

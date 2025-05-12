@@ -1,9 +1,9 @@
 import PageLayout from './page.layout';
-import { Feed } from '../components';
+import { Feed, categories } from '@components/Feed';
 
 const HomePage = () => (
   <PageLayout>
-    <Feed />
+    <Feed categories={categories} />
   </PageLayout>
 );
 
