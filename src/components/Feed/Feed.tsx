@@ -115,7 +115,10 @@ const Feed: React.FC<Props> = ({ categories }) => {
               {correspondences
                 .slice(0, numLetterRows * 3)
                 .map(
-                  ({ correspondenceId, letters, reason, recipient, title }) => (
+                  (
+                    { correspondenceId, letters, reason, recipient, title },
+                    idx,
+                  ) => (
                     <div
                       key={correspondenceId}
                       className="rounded-xl overflow-hidden shadow-lg text-black font-merriweather cursor-pointer transform transition duration-200 hover:scale-[1.02]"
@@ -129,6 +132,8 @@ const Feed: React.FC<Props> = ({ categories }) => {
                         width={400}
                         height={250}
                         className="w-full h-48 object-cover"
+                        loading={idx === 0 ? 'eager' : undefined}
+                        priority={idx === 0}
                       />
                       <div className="p-4 bg-white/10 h-full">
                         <h3 className="text-lg text-white font-bold">
@@ -147,7 +152,7 @@ const Feed: React.FC<Props> = ({ categories }) => {
         </div>
         {showMoreLetters && (
           <button
-            className="bg-white/10 hover:bg-white/20 border rounded-3xl border-white p-4"
+            className="bg-white/10 hover:bg-white/20 border rounded-3xl border-white pr-4 pl-4 pt-2 pb-2"
             id="show-more-letters"
             data-testid="show-more-letters"
             onClick={() => setNumLetterPages(numLetterRows + 1)}
@@ -168,6 +173,8 @@ const Feed: React.FC<Props> = ({ categories }) => {
                   alt={cat.name}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  priority={index === 0}
+                  loading={index === 0 ? 'eager' : undefined}
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
                   <span className="text-white text-lg font-semibold font-merriweather">
