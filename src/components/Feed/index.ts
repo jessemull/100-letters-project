@@ -1,3 +1,3 @@
-import Feed from './Feed';
+import Feed, { calculateCountdown } from './Feed';
 
-export { Feed };
+export { calculateCountdown, Feed };
