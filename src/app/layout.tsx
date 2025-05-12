@@ -19,7 +19,7 @@ const merriweather = Merriweather({
 
 const {
   correspondences,
-  earliestSentAtDate,
+  earliestSentAtDate = '',
   letters,
   recipients,
   responseCompletion,
