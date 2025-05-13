@@ -169,16 +169,16 @@ Resources:
     Properties:
       CachePolicyConfig:
         Name: !Sub "CompressionCachePolicy-${Environment}"
-        DefaultTTL: 86400
-        MinTTL: 1
+        DefaultTTL: 31536000
+        MinTTL: 86400
         MaxTTL: 31536000
         ParametersInCacheKeyAndForwardedToOrigin:
           EnableAcceptEncodingGzip: true
           EnableAcceptEncodingBrotli: true
-          HeadersConfig:
-            HeaderBehavior: none
           CookiesConfig:
             CookieBehavior: none
+          HeadersConfig:
+            HeaderBehavior: none
           QueryStringsConfig:
             QueryStringBehavior: none
 
@@ -188,6 +188,7 @@ Resources:
       DistributionConfig:
         Comment: !Sub "CloudFront Distribution for 100 Letters Project - ${Environment}"
         Enabled: true
+        HttpVersion: http2
         Origins:
           - Id: "S3Origin"
             DomainName: !GetAtt StaticWebsiteBucket.RegionalDomainName
