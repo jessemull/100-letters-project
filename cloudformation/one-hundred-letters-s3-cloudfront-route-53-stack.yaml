@@ -168,7 +168,7 @@ Resources:
     Type: AWS::CloudFront::CachePolicy
     Properties:
       CachePolicyConfig:
-        Name: CompressionCachePolicy
+        Name: !Sub "CompressionCachePolicy-${Environment}"
         DefaultTTL: 86400
         MinTTL: 1
         MaxTTL: 31536000
@@ -181,7 +181,7 @@ Resources:
             CookieBehavior: none
           QueryStringsConfig:
             QueryStringBehavior: none
-            
+
   StaticWebsiteCloudFront:
     Type: AWS::CloudFront::Distribution
     Properties:
