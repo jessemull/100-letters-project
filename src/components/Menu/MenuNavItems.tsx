@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { Home, Info, Mail, Shield, LogIn, LogOut } from 'lucide-react';
-import { usePathname } from 'next/navigation';
 import { useMemo } from 'react';
 
 const baseClass = 'flex items-center hover:text-gray-400 transition-colors';
@@ -19,8 +18,6 @@ const MenuNavItems = ({
   collapsed: boolean;
   onNavigate?: () => void;
 }) => {
-  const pathname = usePathname();
-
   const collapsedClass = useMemo(
     () => (collapsed ? 'justify-center' : 'space-x-3 justify-start'),
     [collapsed],
@@ -31,10 +28,8 @@ const MenuNavItems = ({
     [collapsedClass],
   );
 
-  const handleNavClick = (href: string) => () => {
-    if (pathname === href) {
-      onNavigate();
-    }
+  const handleNavClick = () => {
+    onNavigate();
   };
 
   return (
@@ -42,7 +37,7 @@ const MenuNavItems = ({
       <Link
         aria-label="Home"
         href="/"
-        onClick={handleNavClick('/')}
+        onClick={handleNavClick}
         className={linkClass}
       >
         <Home className={iconClass} />
@@ -51,7 +46,7 @@ const MenuNavItems = ({
       <Link
         aria-label="About"
         href="/about"
-        onClick={handleNavClick('/about')}
+        onClick={handleNavClick}
         className={linkClass}
       >
         <Info className={iconClass} />
@@ -60,7 +55,7 @@ const MenuNavItems = ({
       <Link
         aria-label="Contact"
         href="/contact"
-        onClick={handleNavClick('/contact')}
+        onClick={handleNavClick}
         className={linkClass}
       >
         <Mail className={iconClass} />
@@ -70,7 +65,7 @@ const MenuNavItems = ({
         <Link
           aria-label="Admin"
           href="/admin"
-          onClick={handleNavClick('/admin')}
+          onClick={handleNavClick}
           className={linkClass}
         >
           <Shield className={iconClass} />
@@ -80,9 +75,7 @@ const MenuNavItems = ({
       {isLoggedIn ? (
         <button
           aria-label="Logout"
-          onClick={() => {
-            handleLogout();
-          }}
+          onClick={handleLogout}
           className={`${baseClass} ${collapsed ? 'justify-center' : 'space-x-3 justify-start'} text-red-200 hover:text-red-600`}
         >
           <LogOut className={iconClass} />
@@ -92,7 +85,7 @@ const MenuNavItems = ({
         <Link
           aria-label="Login"
           href="/login"
-          onClick={handleNavClick('/login')}
+          onClick={handleNavClick}
           className={linkClass}
         >
           <LogIn className={iconClass} />

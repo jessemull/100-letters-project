@@ -5,10 +5,14 @@ import { Footer } from '@components/Footer';
 import { Header } from '@components/Header';
 import { Toaster } from 'react-hot-toast';
 import { useDesktopMenu } from '@contexts/DesktopMenuProvider';
+import { useMemo } from 'react';
 
 const PageLayout = ({ children }: { children: React.ReactNode }) => {
   const { collapsed, setCollapsed } = useDesktopMenu();
-  const sidebarWidth = collapsed ? 'w-16' : 'w-80';
+  const sidebarWidth = useMemo(
+    () => (collapsed ? 'w-16' : 'w-80'),
+    [collapsed],
+  );
 
   return (
     <div className="relative flex min-h-screen flex-col">
@@ -24,6 +28,7 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => {
       <div className="flex flex-1 min-h-0">
         <div
           className={`hidden lg:block ${sidebarWidth} transition-all duration-300`}
+          data-testid="menu-width"
         >
           <DesktopMenu collapsed={collapsed} setCollapsed={setCollapsed} />
         </div>

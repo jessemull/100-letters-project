@@ -1,8 +1,8 @@
 'use client';
 
-import MenuNavItems from './MenuNavItems';
-import { useAuth } from '@contexts/AuthProvider';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { MenuNavItems } from '@components/Menu';
+import { useAuth } from '@contexts/AuthProvider';
 
 const DesktopMenu = ({
   collapsed,

@@ -1,8 +1,8 @@
 'use client';
 
 import Image from 'next/image';
-import MenuNavItems from './MenuNavItems';
 import { FC } from 'react';
+import { MenuNavItems } from '@components/Menu';
 import { X } from 'lucide-react';
 import { motion } from 'framer-motion';
 

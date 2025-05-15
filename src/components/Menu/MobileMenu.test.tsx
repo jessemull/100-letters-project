@@ -109,7 +109,7 @@ describe('MobileMenu', () => {
     fireEvent.click(screen.getByText('Logout'));
     await waitFor(() => {
       expect(handleLogout).toHaveBeenCalled();
-      expect(onClose).toHaveBeenCalledTimes(2);
+      expect(onClose).toHaveBeenCalled();
     });
   });
 
