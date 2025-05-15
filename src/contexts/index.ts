@@ -5,6 +5,11 @@ import {
   useCorrespondence,
 } from './CorrespondenceProvider';
 import {
+  DesktopMenuContext,
+  DesktopMenuProvider,
+  useDesktopMenu,
+} from './DesktopMenuProvider';
+import {
   ImageModalContext,
   ImageModalProvider,
   useImageModal,
@@ -15,9 +20,12 @@ export {
   AuthProvider,
   CorrespondenceContext,
   CorrespondenceProvider,
+  DesktopMenuContext,
+  DesktopMenuProvider,
   ImageModalContext,
   ImageModalProvider,
   useAuth,
   useCorrespondence,
+  useDesktopMenu,
   useImageModal,
 };
