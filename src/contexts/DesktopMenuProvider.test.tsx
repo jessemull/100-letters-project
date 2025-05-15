@@ -18,7 +18,7 @@ const TestComponent = () => {
 };
 
 describe('DesktopMenuProvider', () => {
-  it('provides default value of collapsed = true', () => {
+  it('Provides default value of collapsed = true.', () => {
     render(
       <DesktopMenuProvider>
         <TestComponent />
@@ -28,7 +28,7 @@ describe('DesktopMenuProvider', () => {
     expect(screen.getByText(/Collapsed: true/i)).toBeInTheDocument();
   });
 
-  it('toggles collapsed state when setCollapsed is called', () => {
+  it('Toggles collapsed state when setCollapsed is called.', () => {
     render(
       <DesktopMenuProvider>
         <TestComponent />
@@ -46,7 +46,7 @@ describe('DesktopMenuProvider', () => {
     expect(screen.getByText(/Collapsed: true/i)).toBeInTheDocument();
   });
 
-  it('throws error if useDesktopMenu is used outside of provider', () => {
+  it('Throws error if useDesktopMenu is used outside of provider.', () => {
     const consoleError = jest
       .spyOn(console, 'error')
       .mockImplementation(() => {});
@@ -63,7 +63,7 @@ describe('DesktopMenuProvider', () => {
     consoleError.mockRestore();
   });
 
-  it('DesktopMenuContext is defined', () => {
+  it('DesktopMenuContext is defined.', () => {
     expect(DesktopMenuContext).toBeDefined();
   });
 });

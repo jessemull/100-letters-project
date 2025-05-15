@@ -9,7 +9,7 @@ jest.mock('@contexts/AuthProvider', () => ({
 }));
 
 describe('DesktopMenu', () => {
-  it('calls setCollapsed when toggle button is clicked', () => {
+  it('Calls setCollapsed when toggle button is clicked.', () => {
     const setCollapsed = jest.fn();
     render(<DesktopMenu collapsed={false} setCollapsed={setCollapsed} />);
 

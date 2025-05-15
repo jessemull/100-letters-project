@@ -18,7 +18,7 @@ describe('MenuNavItems', () => {
     handleLogout.mockClear();
   });
 
-  it('renders and handles navigation safely when onNavigate is not defined', () => {
+  it('Renders and handles navigation safely when onNavigate is not defined.', () => {
     render(
       <MenuNavItems
         isLoggedIn={false}
@@ -34,7 +34,7 @@ describe('MenuNavItems', () => {
     expect(screen.getByText('Home')).toBeInTheDocument();
   });
 
-  it('renders only icons when collapsed is true', () => {
+  it('Renders only icons when collapsed is true.', () => {
     render(
       <MenuNavItems
         isLoggedIn={true}

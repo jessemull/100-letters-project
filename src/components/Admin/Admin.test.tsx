@@ -9,6 +9,12 @@ import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
 jest.mock('@contexts/AuthProvider');
 
+jest.mock('@util/debounce', () => ({
+  debounce: (fn: Function) => {
+    return fn;
+  },
+}));
+
 jest.mock('next/navigation', () => ({
   usePathname: jest.fn(),
   useSearchParams: jest.fn(),
@@ -210,5 +216,30 @@ describe('Admin', () => {
     await waitFor(() => {
       expect(mockPush).toHaveBeenCalledWith('/admin/recipient');
     });
+  });
+  it('Calls setSearch via debounce when user types in search input.', async () => {
+    renderWithAuth();
+
+    (useDataHook.useSWRQuery as jest.Mock).mockReturnValue({
+      data: {
+        data: [
+          { id: 1, title: 'Alpha Correspondence' },
+          { id: 2, title: 'Beta Correspondence' },
+        ],
+      },
+      isLoading: false,
+    });
+
+    render(<Admin />);
+
+    const input = screen.getByTestId('text-input');
+    fireEvent.change(input, { target: { value: 'Beta' } });
+
+    await waitFor(
+      () => {
+        expect(screen.getByText('Beta Correspondence')).toBeInTheDocument();
+      },
+      { timeout: 1000 },
+    );
   });
 });

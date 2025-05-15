@@ -9,7 +9,7 @@ jest.mock('next/navigation', () => ({
 }));
 
 describe('PageLayout', () => {
-  it('applies w-80 when collapsed is false', () => {
+  it('Collapses menu.', () => {
     render(
       <DesktopMenuContext.Provider
         value={{ collapsed: false, setCollapsed: jest.fn() }}
