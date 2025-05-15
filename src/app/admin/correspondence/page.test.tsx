@@ -1,6 +1,7 @@
 import CorrespondencePage from './page';
 import React from 'react';
 import { render, screen } from '@testing-library/react';
+import { DesktopMenuProvider } from '@contexts/DesktopMenuProvider';
 
 jest.mock('@components/Admin/Correspondences/CorrespondenceForm', () => {
   const MockForm = () => <div data-testid="correspondence-form" />;
@@ -18,12 +19,20 @@ jest.mock('../../page.layout', () => {
 
 describe('CorrespondencePage', () => {
   it('Renders the page layout.', () => {
-    render(<CorrespondencePage />);
+    render(
+      <DesktopMenuProvider>
+        <CorrespondencePage />
+      </DesktopMenuProvider>,
+    );
     expect(screen.getByTestId('page-layout')).toBeInTheDocument();
   });
 
   it('Renders the correspondence form.', async () => {
-    render(<CorrespondencePage />);
+    render(
+      <DesktopMenuProvider>
+        <CorrespondencePage />
+      </DesktopMenuProvider>,
+    );
     expect(screen.getByTestId('correspondence-form')).toBeInTheDocument();
   });
 });

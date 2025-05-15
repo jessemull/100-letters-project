@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Menu, LogIn, LogOut } from 'lucide-react';
-import { MobileMenu } from '@components/Header';
+import { MobileMenu } from '@components/Menu';
 import { useAuth } from '@contexts/AuthProvider';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -25,9 +25,9 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-gray-900 text-white px-4 py-3 font-merriweather sticky top-0 z-50 w-full">
+    <header className="bg-gray-900 text-white px-4 py-3 font-merriweather sticky top-0 z-50 w-full h-[56px]">
       <div className="flex justify-between items-center max-w-full">
-        <button aria-label="Open Menu" className="md:hidden">
+        <button aria-label="Open Menu" className="lg:hidden">
           <Menu
             className="h-6 w-6 text-white"
             data-testid="open-menu"

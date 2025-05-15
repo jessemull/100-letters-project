@@ -1,6 +1,7 @@
 import LetterPage from './page';
 import React from 'react';
 import { render, screen } from '@testing-library/react';
+import { DesktopMenuProvider } from '@contexts/DesktopMenuProvider';
 
 jest.mock('@components/Admin/Letters/LetterForm', () => {
   const MockForm = () => <div data-testid="letter-form" />;
@@ -28,12 +29,20 @@ jest.mock('@components/Form', () => {
 
 describe('LetterPage', () => {
   it('Renders the page layout.', () => {
-    render(<LetterPage />);
+    render(
+      <DesktopMenuProvider>
+        <LetterPage />
+      </DesktopMenuProvider>,
+    );
     expect(screen.getByTestId('page-layout')).toBeInTheDocument();
   });
 
   it('Renders the letter form.', async () => {
-    render(<LetterPage />);
+    render(
+      <DesktopMenuProvider>
+        <LetterPage />
+      </DesktopMenuProvider>,
+    );
     expect(screen.getByTestId('letter-form')).toBeInTheDocument();
   });
 });

@@ -8,6 +8,7 @@ import { ImageModalProvider } from '@contexts/ImageModalContext';
 import { Letter } from '@ts-types/letter';
 import { Merriweather } from 'next/font/google';
 import { Recipient } from '@ts-types/recipients';
+import { DesktopMenuProvider } from '@contexts/DesktopMenuProvider';
 
 const merriweather = Merriweather({
   subsets: ['latin'],
@@ -80,17 +81,19 @@ export default function RootLayout({
       </head>
       <body className={`${merriweather.variable} antialiased`}>
         <AuthProvider>
-          <ImageModalProvider>
-            <CorrespondenceProvider
-              correspondences={correspondences as Correspondence[]}
-              earliestSentAtDate={earliestSentAtDate as string}
-              letters={letters as Letter[]}
-              recipients={recipients as Recipient[]}
-              responseCompletion={responseCompletion as number}
-            >
-              {children}
-            </CorrespondenceProvider>
-          </ImageModalProvider>
+          <DesktopMenuProvider>
+            <ImageModalProvider>
+              <CorrespondenceProvider
+                correspondences={correspondences as Correspondence[]}
+                earliestSentAtDate={earliestSentAtDate as string}
+                letters={letters as Letter[]}
+                recipients={recipients as Recipient[]}
+                responseCompletion={responseCompletion as number}
+              >
+                {children}
+              </CorrespondenceProvider>
+            </ImageModalProvider>
+          </DesktopMenuProvider>
         </AuthProvider>
         <>
           <Script

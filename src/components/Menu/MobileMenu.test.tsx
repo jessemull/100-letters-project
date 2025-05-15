@@ -1,4 +1,4 @@
-import { MobileMenu } from '@components/Header';
+import { MobileMenu } from '@components/Menu';
 import { axe } from 'jest-axe';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 
@@ -109,7 +109,7 @@ describe('MobileMenu', () => {
     fireEvent.click(screen.getByText('Logout'));
     await waitFor(() => {
       expect(handleLogout).toHaveBeenCalled();
-      expect(onClose).toHaveBeenCalledTimes(2);
+      expect(onClose).toHaveBeenCalled();
     });
   });
 

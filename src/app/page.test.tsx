@@ -1,4 +1,5 @@
 import HomePage from '@pages/page';
+import { DesktopMenuProvider } from '@contexts/DesktopMenuProvider';
 import { axe } from 'jest-axe';
 import { render, screen } from '@testing-library/react';
 
@@ -16,7 +17,11 @@ jest.mock('next/link', () => {
 
 describe('HomePage Component', () => {
   it('Renders homepage.', () => {
-    render(<HomePage />);
+    render(
+      <DesktopMenuProvider>
+        <HomePage />
+      </DesktopMenuProvider>,
+    );
     expect(screen.getAllByText('100 Letters Project').length).toBe(2);
     expect(
       screen.getByText('© 2025 100 Letters Project. All rights reserved.'),
@@ -24,7 +29,11 @@ describe('HomePage Component', () => {
   });
 
   it('Has no accessibility errors.', async () => {
-    const { container } = render(<HomePage />);
+    const { container } = render(
+      <DesktopMenuProvider>
+        <HomePage />
+      </DesktopMenuProvider>,
+    );
     const results = await axe(container);
     expect(results).toHaveNoViolations();
   });

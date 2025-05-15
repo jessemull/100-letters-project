@@ -1,4 +1,5 @@
 import LoginPage from '@pages/login/page';
+import { DesktopMenuProvider } from '@contexts/DesktopMenuProvider';
 import { axe } from 'jest-axe';
 import { render, screen, act } from '@testing-library/react';
 
@@ -11,7 +12,11 @@ jest.mock('next/navigation', () => ({
 describe('LoginPage Component', () => {
   it('Renders login page.', async () => {
     await act(async () => {
-      render(<LoginPage />);
+      render(
+        <DesktopMenuProvider>
+          <LoginPage />
+        </DesktopMenuProvider>,
+      );
     });
     expect(screen.getAllByText('100 Letters Project').length).toBe(1);
     expect(
@@ -21,7 +26,11 @@ describe('LoginPage Component', () => {
 
   it('Has no accessibility errors.', async () => {
     await act(async () => {
-      const { container } = render(<LoginPage />);
+      const { container } = render(
+        <DesktopMenuProvider>
+          <LoginPage />
+        </DesktopMenuProvider>,
+      );
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
