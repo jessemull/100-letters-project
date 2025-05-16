@@ -77,7 +77,6 @@ async function authenticateUser() {
 
     const correspondences = await fetchAllPages('correspondence', token);
     const letters = await fetchAllPages('letter', token);
-    const recipients = await fetchAllPages('recipient', token);
 
     const completedStatuses = ['COMPLETED', 'RESPONDED'];
 
@@ -97,17 +96,83 @@ async function authenticateUser() {
       ? new Date(Math.min(...sentDates)).toISOString()
       : null;
 
+    const searchData = {
+      correspondences: [],
+      recipients: [],
+      letters: [],
+    };
+
+    for (const correspondence of correspondences) {
+      const {
+        correspondenceId,
+        title: correspondenceTitle,
+        recipient,
+        letters,
+      } = correspondence;
+
+      searchData.correspondences.push({
+        correspondenceId,
+        title: correspondenceTitle,
+      });
+
+      if (recipient?.firstName || recipient?.lastName) {
+        searchData.recipients.push({
+          correspondenceId,
+          firstName: recipient.firstName || '',
+          lastName: recipient.lastName || '',
+          fullName:
+            `${recipient.firstName || ''} ${recipient.lastName || ''}`.trim(),
+        });
+      }
+
+      for (const letter of letters || []) {
+        if (letter.title) {
+          searchData.letters.push({
+            correspondenceId,
+            title: letter.title,
+          });
+        }
+      }
+    }
+
+    searchData.letters.sort((a, b) =>
+      (a.title || '')
+        .toLowerCase()
+        .localeCompare((b.title || '').toLowerCase()),
+    );
+
+    searchData.correspondences.sort((a, b) =>
+      (a.title || '')
+        .toLowerCase()
+        .localeCompare((b.title || '').toLowerCase()),
+    );
+
+    searchData.recipients.sort((a, b) =>
+      (a.lastName || '')
+        .toLowerCase()
+        .localeCompare((b.lastName || '').toLowerCase()),
+    );
+
+    const correspondencesById = correspondences.reduce(
+      (acc, correspondence) => {
+        acc[correspondence.correspondenceId] = correspondence;
+        return acc;
+      },
+      {},
+    );
+
     const data = {
       correspondences,
+      correspondencesById,
       earliestSentAtDate,
-      letters,
-      recipients,
       responseCompletion,
     };
 
     const outputPath = path.join(__dirname, '../public', 'data.json');
-
     fs.writeFileSync(outputPath, JSON.stringify(data, null, 2));
+
+    const searchPath = path.join(__dirname, '../public', 'search.json');
+    fs.writeFileSync(searchPath, JSON.stringify(searchData, null, 2));
 
     console.log(`Data successfully written to ${outputPath}`);
   } catch (error) {

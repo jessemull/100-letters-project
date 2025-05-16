@@ -3,6 +3,7 @@
 import { DesktopMenu } from '@components/Menu';
 import { Footer } from '@components/Footer';
 import { Header } from '@components/Header';
+import { SearchProvider } from '@contexts/SearchProvider';
 import { Toaster } from 'react-hot-toast';
 import { useDesktopMenu } from '@contexts/DesktopMenuProvider';
 import { useMemo } from 'react';
@@ -30,7 +31,9 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => {
           className={`hidden lg:block ${sidebarWidth} transition-all duration-300`}
           data-testid="menu-width"
         >
-          <DesktopMenu collapsed={collapsed} setCollapsed={setCollapsed} />
+          <SearchProvider>
+            <DesktopMenu collapsed={collapsed} setCollapsed={setCollapsed} />
+          </SearchProvider>
         </div>
         <div className="flex-1 flex flex-col">
           <main className="flex-1 p-4 sm:p-6 md:p-8 flex justify-center items-start overflow-y-auto pb-[56px]">
