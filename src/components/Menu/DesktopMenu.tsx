@@ -20,7 +20,7 @@ const DesktopMenu = ({
   return (
     <aside
       className={`
-        hidden font-merriweather lg:flex flex-col bg-gray-800 text-white transition-all duration-300 bg-white/20
+        hidden font-merriweather lg:flex flex-col text-white transition-all duration-300
         ${collapsed ? 'w-16' : 'w-80'}
         top-14 left-0 bottom-0
         overflow-y-auto
@@ -42,7 +42,7 @@ const DesktopMenu = ({
 
       <nav
         aria-label="Desktop Navigation"
-        className="flex flex-col gap-4 text-sm" // removed p-4 here
+        className="flex flex-col gap-4 text-sm"
       >
         <div className="flex flex-col gap-4 text-sm px-4 pt-4">
           <MenuNavItems
