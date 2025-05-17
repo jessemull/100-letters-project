@@ -95,12 +95,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: static-data
-          path: .
-      
-      - name: Move Static Data
-        run: |
-          mkdir -p src/data
-          mv data.json search.json src/data/
+          path: src/data
 
       - name: Run Jest Tests
         run: npm run test
@@ -140,12 +135,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: static-data
-          path: .
-      
-      - name: Move Static Data
-        run: |
-          mkdir -p src/data
-          mv data.json search.json src/data/
+          path: src/data
 
       - name: Start Next.js Server Locally
         run: |
