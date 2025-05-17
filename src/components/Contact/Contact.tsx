@@ -1,14 +1,14 @@
 'use client';
 
-import ReCAPTCHA from 'react-google-recaptcha';
 import React, { useState } from 'react';
-import { Button, TextArea, TextInput } from '@components/Form';
+import { Button, Progress, TextArea, TextInput } from '@components/Form';
 import {
   ContactForm,
   ContactFormBody,
   ContactFormResponse,
 } from '@ts-types/contact';
 import { isEmail, maxLength, required } from '@util/validators';
+import { LazyRecaptcha } from '@components/Contact';
 import { useForm } from '@hooks/useForm';
 import { useRouter } from 'next/navigation';
 import { useSWRMutation } from '@hooks/useSWRMutation';
@@ -138,11 +138,11 @@ const Contact = () => {
             placeholder="Write your message here..."
             value={values.message}
           />
-          <div className="flex justify-center">
-            <ReCAPTCHA
+          <div className="flex justify-center h-[78px]">
+            <LazyRecaptcha
               sitekey={CAPTCHA_SITE_KEY}
-              onChange={(token) => handleCaptchaToken(token)}
-              className="mt-[-6px]"
+              onChange={(token: string | null) => handleCaptchaToken(token)}
+              className="mt-[-2px]"
             />
           </div>
           <div className="flex flex-col xl:flex-row xl:flex-row-reverse gap-4 xl:justify-between">
