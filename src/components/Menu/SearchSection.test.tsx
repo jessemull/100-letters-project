@@ -1,8 +1,7 @@
-import { render, screen, fireEvent, prettyDOM } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import SearchSection from './SearchSection';
 import { axe } from 'jest-axe';
 
-// Example data type for testing
 interface Item {
   name: string;
 }
@@ -22,7 +21,7 @@ describe('SearchSection', () => {
     setTerm.mockClear();
   });
 
-  it('renders with default open state and shows limited items', () => {
+  it('Renders with default open state and shows limited items.', () => {
     render(
       <SearchSection
         title={title}
@@ -42,7 +41,7 @@ describe('SearchSection', () => {
     expect(screen.getByText('Show More')).toBeInTheDocument();
   });
 
-  it('expands to show more items when Show More is clicked', () => {
+  it('Expands to show more items when Show More is clicked.', () => {
     render(
       <SearchSection
         title={title}
@@ -58,7 +57,7 @@ describe('SearchSection', () => {
     expect(screen.getAllByTestId('list-item')).toHaveLength(20);
   });
 
-  it('search input updates and resets shown items', () => {
+  it('Search input updates and resets shown items.', () => {
     render(
       <SearchSection
         title={title}
@@ -95,7 +94,7 @@ describe('SearchSection', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('has no accessibility violations', async () => {
+  it('Has no accessibility violations.', async () => {
     const { container } = render(
       <SearchSection
         title={title}
@@ -110,7 +109,7 @@ describe('SearchSection', () => {
     expect(results).toHaveNoViolations();
   });
 
-  it('does not render search input or list when isOpen is false', () => {
+  it('Does not render search input or list when isOpen is false.', () => {
     render(
       <SearchSection
         title={title}

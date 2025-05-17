@@ -22,14 +22,14 @@ jest.mock('@public/search.json', () => ({
 }));
 
 describe('useSearch', () => {
-  it('returns empty array if search term is blank', () => {
+  it('Returns empty array if search term is blank.', () => {
     const { result } = renderHook(() =>
       useSearch({ type: 'correspondences', term: '  ' }),
     );
     expect(result.current).toEqual([]);
   });
 
-  it('returns correspondence search results', () => {
+  it('Returns correspondence search results.', () => {
     const { result } = renderHook(() =>
       useSearch({ type: 'correspondences', term: 'First' }),
     );
@@ -39,7 +39,7 @@ describe('useSearch', () => {
     ]);
   });
 
-  it('returns recipient search results (matches fullName)', () => {
+  it('Returns recipient search results (matches fullName).', () => {
     const { result } = renderHook(() =>
       useSearch({ type: 'recipients', term: 'Alice' }),
     );
@@ -49,7 +49,7 @@ describe('useSearch', () => {
     ]);
   });
 
-  it('returns letter search results', () => {
+  it('Returns letter search results.', () => {
     const { result } = renderHook(() =>
       useSearch({ type: 'letters', term: 'Thank' }),
     );
@@ -59,7 +59,7 @@ describe('useSearch', () => {
     ]);
   });
 
-  it('respects the limit parameter', () => {
+  it('Respects the limit parameter.', () => {
     const { result } = renderHook(() =>
       useSearch({ type: 'correspondences', term: 'Correspondence', limit: 1 }),
     );
