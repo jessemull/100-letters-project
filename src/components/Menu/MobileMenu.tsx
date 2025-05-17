@@ -2,7 +2,12 @@
 
 import Image from 'next/image';
 import { FC } from 'react';
-import { MenuNavItems } from '@components/Menu';
+import {
+  CorrespondenceSearch,
+  LetterSearch,
+  MenuNavItems,
+  RecipientSearch,
+} from '@components/Menu';
 import { X } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -24,10 +29,10 @@ const MobileMenu: FC<MobileMenuProps> = ({
   return (
     <motion.div
       className={`
-        fixed top-0 left-0 h-full bg-gray-900 text-white z-50
-        w-full sm:w-[50%] md:w-[50%] max-w-md
-        overflow-hidden lg:hidden
-      `}
+      fixed top-0 left-0 h-full bg-gray-900 text-white z-50
+      w-full sm:w-[50%] md:w-[50%] max-w-md
+      overflow-y-auto lg:hidden
+    `}
       initial={{ x: '-100%' }}
       animate={{ x: 0 }}
       exit={{ x: '-100%' }}
@@ -56,6 +61,19 @@ const MobileMenu: FC<MobileMenuProps> = ({
           onNavigate={onClose}
         />
       </nav>
+      <div className="flex flex-col mt-4">
+        <div className="px-4">
+          <RecipientSearch />
+        </div>
+        <hr className="border-t border-white w-full my-4" />
+        <div className="px-4">
+          <LetterSearch />
+        </div>
+        <hr className="border-t border-white w-full my-4" />
+        <div className="px-4">
+          <CorrespondenceSearch />
+        </div>
+      </div>
     </motion.div>
   );
 };

@@ -7,6 +7,7 @@ import { MobileMenu } from '@components/Menu';
 import { useAuth } from '@contexts/AuthProvider';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { SearchProvider } from '@contexts/SearchProvider';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -68,12 +69,14 @@ const Header = () => {
           </Link>
         )}
       </div>
-      <MobileMenu
-        isOpen={isMenuOpen}
-        onClose={() => setIsMenuOpen(false)}
-        isLoggedIn={isLoggedIn}
-        handleLogout={handleLogout}
-      />
+      <SearchProvider>
+        <MobileMenu
+          isOpen={isMenuOpen}
+          onClose={() => setIsMenuOpen(false)}
+          isLoggedIn={isLoggedIn}
+          handleLogout={handleLogout}
+        />
+      </SearchProvider>
     </header>
   );
 };
