@@ -1,12 +1,12 @@
 'use client';
 
-import { useMemo } from 'react';
-import { useDesktopMenu } from '@contexts/DesktopMenuProvider';
 import { DesktopMenu } from '@components/Menu';
-import { SearchProvider } from '@contexts/SearchProvider';
-import { Header } from '@components/Header';
 import { Footer } from '@components/Footer';
+import { Header } from '@components/Header';
+import { SearchProvider } from '@contexts/SearchProvider';
 import { Toaster } from 'react-hot-toast';
+import { useDesktopMenu } from '@contexts/DesktopMenuProvider';
+import { useMemo } from 'react';
 
 const PageLayout = ({ children }: { children: React.ReactNode }) => {
   const { collapsed, setCollapsed } = useDesktopMenu();
@@ -28,9 +28,21 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => {
       />
       <div className="relative z-10 flex flex-col min-h-screen">
         <Header />
-        <div className="hidden lg:flex w-full flex-1">
+        <main
+          role="main"
+          className={`
+            flex flex-1 w-full
+            flex-col lg:flex-row
+            justify-center lg:justify-start
+            items-center lg:items-stretch
+            p-4 sm:p-6 lg:p-0 md:p-8
+            min-h-[calc(100vh-56px-56px-32px)]
+            sm:min-h-[calc(100vh-56px-56px-24px)]
+            min-h-[calc(100vh-56px-56px-16px)]
+          `}
+        >
           <div
-            className={`${sidebarWidth} text-white`}
+            className={`hidden lg:block ${sidebarWidth} text-white`}
             data-testid="menu-width"
           >
             <div className="flex flex-col h-screen sticky top-0">
@@ -47,18 +59,7 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => {
               </div>
             </div>
           </div>
-          <main className="flex-1 p-8">{children}</main>
-        </div>
-        <main
-          className={`
-            flex lg:hidden flex-1 justify-center items-center
-            p-4 sm:p-6 md:p-8
-            min-h-[calc(100vh-56px-56px-32px)]
-            sm:min-h-[calc(100vh-56px-56px-24px)]
-            min-h-[calc(100vh-56px-56px-16px)]
-          `}
-        >
-          {children}
+          <div className="flex-1 w-full px-0 lg:px-8">{children}</div>
         </main>
         <Footer />
       </div>

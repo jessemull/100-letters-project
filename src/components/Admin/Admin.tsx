@@ -124,7 +124,7 @@ const Admin = () => {
                 </Tab>
               ))}
             </TabList>
-            <div className="w-full sm:w-1/4 md:w-1/6 lg:w-1/8 xl:w-1/12">
+            <div className="w-full sm:w-1/4 md:w-1/6 lg:w-1/8 xl:w-1/12 lg:min-w-[128px]">
               <Button
                 value="Create New"
                 id="admin-create-new-button"
