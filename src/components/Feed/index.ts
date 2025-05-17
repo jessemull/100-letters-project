@@ -1,3 +1,6 @@
-import Feed, { calculateCountdown, categories } from './Feed';
+import Card from './Card';
+import Feed from './Feed';
+import Search from './Search';
+import Splash from './Splash';
 
-export { calculateCountdown, Feed, categories };
+export { Card, Feed, Search, Splash };

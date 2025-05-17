@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
+import { Card } from '@components/Feed';
 import { CountDown } from '@ts-types/feed';
 import { Image } from '@components/Admin/Letters';
 import { calculateCountdown } from '@util/feed';
@@ -70,36 +71,14 @@ const Splash = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
             {correspondences
               .slice(0, numLetterRows * 3)
-              .map(
-                (
-                  { correspondenceId, letters, reason, recipient, title },
-                  idx,
-                ) => (
-                  <div
-                    key={correspondenceId}
-                    className="rounded-xl overflow-hidden shadow-lg text-black font-merriweather cursor-pointer transform transition duration-200 hover:scale-[1.02]"
-                  >
-                    <Image
-                      src={
-                        letters[0]?.imageURLs[0]?.urlThumbnail || '/missing.jpg'
-                      }
-                      alt={letters[0]?.title || 'Letter Image'}
-                      width={400}
-                      height={250}
-                      className="w-full h-48 object-cover"
-                      loading={idx === 0 ? 'eager' : undefined}
-                      priority={idx === 0}
-                    />
-                    <div className="p-4 bg-white/10 h-full">
-                      <h3 className="text-lg text-white font-bold">{title}</h3>
-                      <p className="text-sm text-white">{`${recipient.lastName}, ${recipient.firstName}`}</p>
-                      <p className="text-sm text-white italic">
-                        {reason.description}
-                      </p>
-                    </div>
-                  </div>
-                ),
-              )}
+              .map((correspondence, idx) => (
+                <Card
+                  correspondence={correspondence}
+                  key={correspondence.correspondenceId}
+                  loading={idx === 0 ? 'eager' : undefined}
+                  priority={idx === 0}
+                />
+              ))}
           </div>
         )}
       </div>
