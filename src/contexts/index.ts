@@ -14,6 +14,7 @@ import {
   ImageModalProvider,
   useImageModal,
 } from './ImageModalContext';
+import { SearchContext, SearchProvider, useSearchData } from './SearchProvider';
 
 export {
   AuthContext,
@@ -24,8 +25,11 @@ export {
   DesktopMenuProvider,
   ImageModalContext,
   ImageModalProvider,
+  SearchContext,
+  SearchProvider,
   useAuth,
   useCorrespondence,
   useDesktopMenu,
   useImageModal,
+  useSearchData,
 };

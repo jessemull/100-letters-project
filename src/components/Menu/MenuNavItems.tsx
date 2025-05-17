@@ -76,7 +76,7 @@ const MenuNavItems = ({
         <button
           aria-label="Logout"
           onClick={handleLogout}
-          className={`${baseClass} ${collapsed ? 'justify-center' : 'space-x-3 justify-start'} text-red-200 hover:text-red-600`}
+          className={`${baseClass} ${collapsed ? 'justify-center' : 'space-x-3 justify-start'}`}
         >
           <LogOut className={iconClass} />
           {!collapsed && <span>Logout</span>}

@@ -77,7 +77,6 @@ async function authenticateUser() {
 
     const correspondences = await fetchAllPages('correspondence', token);
     const letters = await fetchAllPages('letter', token);
-    const recipients = await fetchAllPages('recipient', token);
 
     const completedStatuses = ['COMPLETED', 'RESPONDED'];
 
@@ -97,19 +96,89 @@ async function authenticateUser() {
       ? new Date(Math.min(...sentDates)).toISOString()
       : null;
 
+    const searchData = {
+      correspondences: [],
+      recipients: [],
+      letters: [],
+    };
+
+    for (const correspondence of correspondences) {
+      const {
+        correspondenceId,
+        title: correspondenceTitle,
+        recipient,
+        letters,
+      } = correspondence;
+
+      searchData.correspondences.push({
+        correspondenceId,
+        title: correspondenceTitle,
+      });
+
+      if (recipient?.firstName || recipient?.lastName) {
+        searchData.recipients.push({
+          correspondenceId,
+          firstName: recipient.firstName || '',
+          lastName: recipient.lastName || '',
+          fullName:
+            `${recipient.firstName || ''} ${recipient.lastName || ''}`.trim(),
+        });
+      }
+
+      for (const letter of letters || []) {
+        if (letter.title) {
+          searchData.letters.push({
+            correspondenceId,
+            title: letter.title,
+          });
+        }
+      }
+    }
+
+    searchData.letters.sort((a, b) =>
+      (a.title || '')
+        .toLowerCase()
+        .localeCompare((b.title || '').toLowerCase()),
+    );
+
+    searchData.correspondences.sort((a, b) =>
+      (a.title || '')
+        .toLowerCase()
+        .localeCompare((b.title || '').toLowerCase()),
+    );
+
+    searchData.recipients.sort((a, b) =>
+      (a.lastName || '')
+        .toLowerCase()
+        .localeCompare((b.lastName || '').toLowerCase()),
+    );
+
+    const correspondencesById = correspondences.reduce(
+      (acc, correspondence) => {
+        acc[correspondence.correspondenceId] = correspondence;
+        return acc;
+      },
+      {},
+    );
+
     const data = {
       correspondences,
+      correspondencesById,
       earliestSentAtDate,
-      letters,
-      recipients,
       responseCompletion,
     };
 
-    const outputPath = path.join(__dirname, '../public', 'data.json');
+    const dataDir = path.join(__dirname, '../src/data');
+    fs.mkdirSync(dataDir, { recursive: true });
 
+    const outputPath = path.join(dataDir, 'data.json');
     fs.writeFileSync(outputPath, JSON.stringify(data, null, 2));
 
+    const searchPath = path.join(dataDir, 'search.json');
+    fs.writeFileSync(searchPath, JSON.stringify(searchData, null, 2));
+
     console.log(`Data successfully written to ${outputPath}`);
+    console.log(`Search index successfully written to ${searchPath}`);
   } catch (error) {
     console.error('Error loading data: ', error);
     process.exit(1);
@@ -117,10 +186,8 @@ async function authenticateUser() {
 }
 
 const noRefresh = process.argv.includes('--no-refresh');
-const outputPath = path.join(__dirname, '../public', 'data.json');
 
-if (fs.existsSync(outputPath) && noRefresh) {
-  console.log('File public/data.json already exists. Skipping data refresh...');
+if (noRefresh) {
   process.exit(0);
 } else {
   console.log('Fetching static data from 100 Letters API...');

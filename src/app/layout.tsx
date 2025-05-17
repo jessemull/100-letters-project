@@ -1,13 +1,11 @@
 import './globals.css';
 import Script from 'next/script';
-import data from '@public/data.json';
+import data from '@data/data.json';
 import { AuthProvider } from '@contexts/AuthProvider';
-import { Correspondence } from '@ts-types/correspondence';
+import { Correspondence, CorrespondencesMap } from '@ts-types/correspondence';
 import { CorrespondenceProvider } from '@contexts/CorrespondenceProvider';
 import { ImageModalProvider } from '@contexts/ImageModalContext';
-import { Letter } from '@ts-types/letter';
 import { Merriweather } from 'next/font/google';
-import { Recipient } from '@ts-types/recipients';
 import { DesktopMenuProvider } from '@contexts/DesktopMenuProvider';
 
 const merriweather = Merriweather({
@@ -20,8 +18,7 @@ const merriweather = Merriweather({
 
 const correspondences = data.correspondences ?? [];
 const earliestSentAtDate = data.earliestSentAtDate ?? '';
-const letters = data.letters ?? [];
-const recipients = data.recipients ?? [];
+const correspondencesById = data.correspondencesById ?? {};
 const responseCompletion = data.responseCompletion ?? 0;
 
 export const metadata = {
@@ -85,9 +82,8 @@ export default function RootLayout({
             <ImageModalProvider>
               <CorrespondenceProvider
                 correspondences={correspondences as Correspondence[]}
+                correspondencesById={correspondencesById as CorrespondencesMap}
                 earliestSentAtDate={earliestSentAtDate as string}
-                letters={letters as Letter[]}
-                recipients={recipients as Recipient[]}
                 responseCompletion={responseCompletion as number}
               >
                 {children}

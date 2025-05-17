@@ -4,4 +4,5 @@ export * from './form';
 export * from './letter';
 export * from './login';
 export * from './recipients';
+export * from './search';
 export * from './uploads';

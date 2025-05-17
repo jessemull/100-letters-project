@@ -16,7 +16,7 @@
       "@factories/*": ["src/factories/*"],
       "@hooks/*": ["src/hooks/*"],
       "@pages/*": ["src/app/*"],
-      "@public/*": ["public/*"],
+      "@data/*": ["src/data/*"],
       "@ts-types/*": ["src/types/*"],
       "@util/*": ["src/util/*"]
     },

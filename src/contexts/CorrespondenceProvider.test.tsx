@@ -1,31 +1,31 @@
-import { Correspondence } from '@ts-types/correspondence';
+import { Correspondence, CorrespondencesMap } from '@ts-types/correspondence';
 import {
   CorrespondenceContext,
   CorrespondenceProvider,
   useCorrespondence,
 } from './index';
 import { CorrespondenceFactory } from '@factories/correspondence';
-import { Letter } from '@ts-types/letter';
-import { LetterFactory } from '@factories/letter';
-import { Recipient } from '@ts-types/recipients';
-import { RecipientFactory } from '@factories/recipient';
 import { axe } from 'jest-axe';
 import { render, screen } from '@testing-library/react';
 
 const mockCorrespondences: Correspondence[] =
   CorrespondenceFactory.buildList(2);
-const mockLetters: Letter[] = LetterFactory.buildList(2);
-const mockRecipients: Recipient[] = RecipientFactory.buildList(2);
+const mockCorrespondencesById = mockCorrespondences.reduce(
+  (acc, correspondence) => {
+    acc[correspondence.correspondenceId] = correspondence;
+    return acc;
+  },
+  {} as CorrespondencesMap,
+);
+const mockDate = new Date().toISOString();
 
 const TestComponent = () => {
-  const { correspondences, letters, recipients } = useCorrespondence();
+  const { correspondences } = useCorrespondence();
   return (
     <div>
       <div data-testid="correspondence-count">
         Correspondences: {correspondences.length}
       </div>
-      <div data-testid="letter-count">Letters: {letters.length}</div>
-      <div data-testid="recipient-count">Recipients: {recipients.length}</div>
     </div>
   );
 };
@@ -35,8 +35,9 @@ describe('CorrespondenceContext', () => {
     render(
       <CorrespondenceProvider
         correspondences={mockCorrespondences}
-        letters={mockLetters}
-        recipients={mockRecipients}
+        correspondencesById={mockCorrespondencesById}
+        earliestSentAtDate={mockDate}
+        responseCompletion={0.1}
       >
         <TestComponent />
       </CorrespondenceProvider>,
@@ -44,25 +45,22 @@ describe('CorrespondenceContext', () => {
     expect(screen.getByTestId('correspondence-count')).toHaveTextContent(
       'Correspondences: 2',
     );
-    expect(screen.getByTestId('letter-count')).toHaveTextContent('Letters: 2');
-    expect(screen.getByTestId('recipient-count')).toHaveTextContent(
-      'Recipients: 2',
-    );
   });
 
   it('Uses default values when no props are passed', () => {
     render(
-      <CorrespondenceProvider correspondences={[]} letters={[]} recipients={[]}>
+      <CorrespondenceProvider
+        correspondences={[]}
+        correspondencesById={mockCorrespondencesById}
+        earliestSentAtDate={mockDate}
+        responseCompletion={0.1}
+      >
         <TestComponent />
       </CorrespondenceProvider>,
     );
 
     expect(screen.getByTestId('correspondence-count')).toHaveTextContent(
       'Correspondences: 0',
-    );
-    expect(screen.getByTestId('letter-count')).toHaveTextContent('Letters: 0');
-    expect(screen.getByTestId('recipient-count')).toHaveTextContent(
-      'Recipients: 0',
     );
   });
 
@@ -74,8 +72,9 @@ describe('CorrespondenceContext', () => {
     const { container } = render(
       <CorrespondenceProvider
         correspondences={mockCorrespondences}
-        letters={mockLetters}
-        recipients={mockRecipients}
+        correspondencesById={mockCorrespondencesById}
+        earliestSentAtDate={mockDate}
+        responseCompletion={0.1}
       >
         <TestComponent />
       </CorrespondenceProvider>,
