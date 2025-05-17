@@ -44,10 +44,8 @@ jobs:
       - name: Cache Static Data
         uses: actions/upload-artifact@v4
         with:
-          name: cached-data-files
-          path: |
-            src/data/data.json
-            src/data/search.json
+          name: static-data
+          path: src/data
           retention-days: 1
 
       - name: Archive Build Output
@@ -96,7 +94,7 @@ jobs:
       - name: Restore Static Data
         uses: actions/download-artifact@v4
         with:
-          name: cached-data-files
+          name: static-data
           path: .
 
       - name: Run Jest Tests
@@ -136,7 +134,7 @@ jobs:
       - name: Restore Static Data
         uses: actions/download-artifact@v4
         with:
-          name: cached-data-files
+          name: static-data
           path: .
 
       - name: Start Next.js Server Locally
