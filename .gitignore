@@ -44,7 +44,8 @@ next-env.d.ts
 .lighthouseci/
 
 # static data for next export and seo files
-public/data.json
+src/data/data.json
+src/data/search.json
 public/robots.txt
 public/sitemap-0.xml
 public/sitemap.xml
@@ -57,3 +58,6 @@ public/sitemap.xml
 
 # ignore coverage everywhere
 **/dist
+
+# cypres
+/cypress

@@ -131,3 +131,5 @@ export type CreateOrUpdateCorrespondenceInput = {
   };
   letters: LetterUpdateInput[];
 };
+
+export type CorrespondencesMap = { [correspondenceId: string]: Correspondence };
