@@ -168,10 +168,13 @@ async function authenticateUser() {
       responseCompletion,
     };
 
-    const outputPath = path.join(__dirname, '../public', 'data.json');
+    const dataDir = path.join(__dirname, '../src/data');
+    fs.mkdirSync(dataDir, { recursive: true });
+
+    const outputPath = path.join(dataDir, 'data.json');
     fs.writeFileSync(outputPath, JSON.stringify(data, null, 2));
 
-    const searchPath = path.join(__dirname, '../public', 'search.json');
+    const searchPath = path.join(dataDir, 'search.json');
     fs.writeFileSync(searchPath, JSON.stringify(searchData, null, 2));
 
     console.log(`Data successfully written to ${outputPath}`);

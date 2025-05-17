@@ -1,5 +1,5 @@
 import Fuse from 'fuse.js';
-import searchIndex from '@public/search.json';
+import searchIndex from '@data/search.json';
 import {
   CorrespondenceSearchItem,
   LetterSearchItem,
