@@ -20,12 +20,7 @@ const CorrespondenceSearch = () => {
       term={term}
       title="Correspondences"
       renderItem={(item) => (
-        <Link
-          href={`/correspondence?correspondenceId=${item.correspondenceId}`}
-          className="hover:underline"
-        >
-          {item.title}
-        </Link>
+        <span className="hover:underline cursor-pointer">{item.title}</span>
       )}
     />
   );
