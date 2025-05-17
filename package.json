@@ -102,7 +102,6 @@
     "prepare": "husky install",
     "proxy": "node ./proxy/index.js",
     "start": "next start",
-    "pretest": "node ./scripts/pretest.js",
     "test": "jest --coverage",
     "test:watch": "jest --watch",
     "token": "node ./scripts/cognito-token.js"
