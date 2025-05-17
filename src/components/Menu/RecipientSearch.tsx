@@ -8,7 +8,6 @@ import { useState } from 'react';
 const RecipientSearch = () => {
   const [term, setTerm] = useState('');
   const { recipients } = useSearchData();
-  console.log(recipients, term);
   const results = useSearch({
     type: 'recipients',
     term,
