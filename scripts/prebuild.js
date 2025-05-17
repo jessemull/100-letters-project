@@ -175,6 +175,7 @@ async function authenticateUser() {
     fs.writeFileSync(searchPath, JSON.stringify(searchData, null, 2));
 
     console.log(`Data successfully written to ${outputPath}`);
+    console.log(`Search index successfully written to ${searchPath}`);
   } catch (error) {
     console.error('Error loading data: ', error);
     process.exit(1);
@@ -182,10 +183,8 @@ async function authenticateUser() {
 }
 
 const noRefresh = process.argv.includes('--no-refresh');
-const outputPath = path.join(__dirname, '../public', 'data.json');
 
-if (fs.existsSync(outputPath) && noRefresh) {
-  console.log('File public/data.json already exists. Skipping data refresh...');
+if (noRefresh) {
   process.exit(0);
 } else {
   console.log('Fetching static data from 100 Letters API...');
