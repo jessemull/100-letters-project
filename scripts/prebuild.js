@@ -153,6 +153,18 @@ async function authenticateUser() {
         .localeCompare((b.lastName || '').toLowerCase()),
     );
 
+    const fullNameCorrespondences = correspondences.map((correspondence) => {
+      const recipient = correspondence.recipient || {};
+      return {
+        ...correspondence,
+        recipient: {
+          ...recipient,
+          fullName:
+            `${recipient.firstName || ''} ${recipient.lastName || ''}`.trim(),
+        },
+      };
+    });
+
     const correspondencesById = correspondences.reduce(
       (acc, correspondence) => {
         acc[correspondence.correspondenceId] = correspondence;
@@ -162,7 +174,7 @@ async function authenticateUser() {
     );
 
     const data = {
-      correspondences,
+      correspondences: fullNameCorrespondences,
       correspondencesById,
       earliestSentAtDate,
       responseCompletion,

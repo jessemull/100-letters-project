@@ -12,11 +12,12 @@
     "moduleResolution": "node",
     "paths": {
       "@components/*": ["src/components/*"],
+      "@constants/*": ["src/constants/*"],
       "@contexts/*": ["src/contexts/*"],
+      "@data/*": ["src/data/*"],
       "@factories/*": ["src/factories/*"],
       "@hooks/*": ["src/hooks/*"],
       "@pages/*": ["src/app/*"],
-      "@data/*": ["src/data/*"],
       "@ts-types/*": ["src/types/*"],
       "@util/*": ["src/util/*"]
     },
