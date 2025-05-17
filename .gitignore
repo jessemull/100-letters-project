@@ -58,3 +58,6 @@ public/sitemap.xml
 
 # ignore coverage everywhere
 **/dist
+
+# cypres
+/cypress

@@ -40,6 +40,15 @@ jobs:
           cp public/sitemap.xml out/
           cp public/robots.txt out/
           cp public/sitemap-0.xml out/
+      
+      - name: Cache Static Data
+        uses: actions/upload-artifact@v4
+        with:
+          name: cached-data-files
+          path: |
+            src/data/data.json
+            src/data/search.json
+          retention-days: 1
 
       - name: Archive Build Output
         uses: actions/upload-artifact@v4
@@ -69,7 +78,7 @@ jobs:
 
   test:
     name: Run Unit Tests
-    needs: lint
+    needs: [build, lint]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -83,6 +92,12 @@ jobs:
 
       - name: Install Dependencies
         run: npm ci
+
+      - name: Restore Static Data
+        uses: actions/download-artifact@v4
+        with:
+          name: cached-data-files
+          path: .
 
       - name: Run Jest Tests
         run: npm run test
@@ -117,6 +132,12 @@ jobs:
 
       - name: Install Dependencies
         run: npm ci
+
+      - name: Restore Static Data
+        uses: actions/download-artifact@v4
+        with:
+          name: cached-data-files
+          path: .
 
       - name: Start Next.js Server Locally
         run: |
