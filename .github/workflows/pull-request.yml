@@ -96,6 +96,11 @@ jobs:
         with:
           name: static-data
           path: .
+      
+      - name: Move Static Data
+        run: |
+          mkdir -p src/data
+          mv data.json search.json src/data/
 
       - name: Run Jest Tests
         run: npm run test
@@ -136,6 +141,11 @@ jobs:
         with:
           name: static-data
           path: .
+      
+      - name: Move Static Data
+        run: |
+          mkdir -p src/data
+          mv data.json search.json src/data/
 
       - name: Start Next.js Server Locally
         run: |
