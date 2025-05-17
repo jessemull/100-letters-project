@@ -31,6 +31,7 @@ const customJestConfig = {
     '^@factories/(.*)$': '<rootDir>/src/factories/$1',
     '^@hooks/(.*)$': '<rootDir>/src/hooks/$1',
     '^@ts-types/(.*)$': '<rootDir>/src/types/$1',
+    '^@public/(.*)$': '<rootDir>/public/$1',
     '^@util/(.*)$': '<rootDir>/src/util/$1',
     '^react-resize-detector$': '<rootDir>/__mocks__/react-resize-detector.js',
   },

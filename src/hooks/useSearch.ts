@@ -40,7 +40,6 @@ export function useSearch({
   limit = 100,
 }: SearchOptions): SearchResult[] {
   const results = useMemo(() => {
-    console.log(term, type);
     if (!term.trim()) return [];
     const fuse = fuseMap[type];
     return fuse

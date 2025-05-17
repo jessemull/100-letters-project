@@ -62,7 +62,7 @@ function SearchSection<T>({
           {showMoreButtonVisible && (
             <button
               onClick={() => setItemsToShowCount((count) => count + 10)}
-              className={`mt-2 ${isOpen ? 'mb-4' : ''} 
+              className={`mt-2 mb-4
               text-white 
               text-sm 
               px-3 py-1 rounded 

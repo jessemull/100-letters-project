@@ -20,7 +20,7 @@ const DesktopMenu = ({
   return (
     <aside
       className={`
-        hidden font-merriweather lg:flex flex-col text-white transition-all duration-300
+        hidden font-merriweather lg:flex flex-col text-white transition-all bg-white/20 duration-300
         ${collapsed ? 'w-16' : 'w-80'}
         top-14 left-0 bottom-0
         overflow-y-auto

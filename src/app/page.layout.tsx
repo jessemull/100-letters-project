@@ -29,7 +29,8 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => {
       <Header />
       <div className="flex w-full">
         <div
-          className={`hidden lg:block ${sidebarWidth} bg-white/20 text-white`}
+          className={`hidden lg:block ${sidebarWidth} text-white`}
+          data-testid="menu-width"
         >
           <div className="flex flex-col h-screen sticky top-0">
             <div
