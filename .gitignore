@@ -45,6 +45,7 @@ next-env.d.ts
 
 # static data for next export and seo files
 public/data.json
+public/search.json
 public/robots.txt
 public/sitemap-0.xml
 public/sitemap.xml
