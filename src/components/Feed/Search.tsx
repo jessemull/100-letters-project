@@ -13,7 +13,7 @@ interface Props {
   term: string;
 }
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 12;
 
 const Search: React.FC<Props> = ({ results, term }) => {
   const [page, setPage] = useState(1);
@@ -35,9 +35,9 @@ const Search: React.FC<Props> = ({ results, term }) => {
   }, [items]);
 
   useEffect(() => {
-    if (inView && visibleItems.length < results.length) {
+    if (inView && visibleItems.length < items.length) {
       const nextPage = page + 1;
-      const nextItems = results.slice(0, nextPage * ITEMS_PER_PAGE);
+      const nextItems = items.slice(0, nextPage * ITEMS_PER_PAGE);
       setVisibleItems(nextItems);
       setPage(nextPage);
     }
@@ -63,7 +63,7 @@ const Search: React.FC<Props> = ({ results, term }) => {
           />
         ))}
       </div>
-      {visibleItems.length < results.length && (
+      {visibleItems.length < items.length && (
         <div ref={ref} className="flex justify-center mt-8">
           <Progress color="white" size={16} />
         </div>

@@ -11,7 +11,6 @@ import { X } from 'lucide-react';
 const Feed = () => {
   const [term, setTerm] = useState('');
   const [showSearch, setShowSearch] = useState(false);
-  const [hydrated, setHydrated] = useState(false);
 
   const pushedHistoryRef = useRef(false);
 
@@ -30,7 +29,6 @@ const Feed = () => {
       }
       pushedHistoryRef.current = true;
     }
-    setHydrated(true);
   }, []);
 
   useEffect(() => {
@@ -82,8 +80,7 @@ const Feed = () => {
           type="text"
           value={term}
         />
-        {hydrated &&
-          (showSearch ? <Search term={term} results={results} /> : <Splash />)}
+        {showSearch ? <Search term={term} results={results} /> : <Splash />}
       </div>
     </div>
   );
