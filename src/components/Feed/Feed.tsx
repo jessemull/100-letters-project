@@ -6,6 +6,7 @@ import Splash from './Splash';
 import { SearchAllItem } from '@ts-types/search';
 import { TextInput } from '@components/Form';
 import { useSearch } from '@hooks/useSearch';
+import { X } from 'lucide-react';
 
 const Feed = () => {
   const [term, setTerm] = useState('');
@@ -16,7 +17,7 @@ const Feed = () => {
 
   const results = useSearch({ type: 'all', term }) as SearchAllItem[];
 
-  // Once the user has set search terms they can hit the back button to view the splash page component again.
+  // Once the user has set search terms they must hit the back button to view the splash page component again.
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -35,7 +36,6 @@ const Feed = () => {
   useEffect(() => {
     const url = new URL(window.location.href);
     const currentQuery = url.searchParams.get('search');
-
     if (term && term !== currentQuery) {
       url.searchParams.set('search', term);
       if (!pushedHistoryRef.current) {
@@ -75,13 +75,15 @@ const Feed = () => {
       <div className="relative z-10 w-full max-w-6xl flex flex-col items-center space-y-12">
         <TextInput
           id="search-all"
+          IconEnd={term ? X : undefined}
           onChange={({ target: { value } }) => setTerm(value)}
+          onIconEndClick={() => setTerm('')}
           placeholder="Search for letters and people..."
           type="text"
           value={term}
         />
         {hydrated &&
-          (showSearch ? <Search results={term ? results : []} /> : <Splash />)}
+          (showSearch ? <Search term={term} results={results} /> : <Splash />)}
       </div>
     </div>
   );

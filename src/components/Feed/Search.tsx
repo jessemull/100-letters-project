@@ -1,26 +1,38 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Card } from '@components/Feed';
 import { Progress } from '@components/Form';
 import { SearchAllItem } from '@ts-types/search';
 import { useInView } from 'react-intersection-observer';
+import { useCorrespondence } from '@contexts/CorrespondenceProvider';
+import { Correspondence } from '@ts-types/correspondence';
 
 interface Props {
   results: SearchAllItem[];
+  term: string;
 }
 
 const ITEMS_PER_PAGE = 6;
 
-const Search: React.FC<Props> = ({ results }) => {
+const Search: React.FC<Props> = ({ results, term }) => {
   const [page, setPage] = useState(1);
   const [ref, inView] = useInView({ threshold: 0 });
-  const [visibleItems, setVisibleItems] = useState<SearchAllItem[]>([]);
+  const [visibleItems, setVisibleItems] = useState<
+    SearchAllItem[] | Correspondence[]
+  >([]);
+
+  const { correspondences } = useCorrespondence();
+
+  const items = useMemo(
+    () => (term ? results : correspondences),
+    [term, results, correspondences],
+  );
 
   useEffect(() => {
     setPage(1);
-    setVisibleItems(results.slice(0, ITEMS_PER_PAGE));
-  }, [results]);
+    setVisibleItems(items.slice(0, ITEMS_PER_PAGE));
+  }, [items]);
 
   useEffect(() => {
     if (inView && visibleItems.length < results.length) {
@@ -31,7 +43,7 @@ const Search: React.FC<Props> = ({ results }) => {
     }
   }, [inView]);
 
-  if (results.length === 0) {
+  if (items.length === 0) {
     return (
       <p className="text-white text-center mt-8 text-lg">
         No matching letters or people found.

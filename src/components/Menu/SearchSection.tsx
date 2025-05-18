@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronDown, ChevronUp, Search } from 'lucide-react';
+import { ChevronDown, ChevronUp, Search, X } from 'lucide-react';
 import { useState, ReactNode } from 'react';
 
 interface SearchSectionProps<T> {
@@ -42,7 +42,7 @@ function SearchSection<T>({
             <input
               type="text"
               placeholder={`Search ${title.toLowerCase()}...`}
-              className="text-sm pl-7 pr-3 w-full h-8 rounded-xl bg-white/25 border border-white text-white placeholder-white/70 focus:outline-none"
+              className="text-sm pl-7 pr-7 w-full h-10 md:h-8 rounded-xl bg-white/25 border border-white text-white placeholder-white/70 focus:outline-none"
               value={term}
               onChange={(e) => {
                 setTerm(e.target.value);
@@ -53,6 +53,15 @@ function SearchSection<T>({
               size={15}
               className="absolute left-2 top-1/2 -translate-y-1/2 text-white pointer-events-none"
             />
+            {term && (
+              <button
+                type="button"
+                onClick={() => setTerm('')}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-white hover:text-white/70 transition"
+              >
+                <X size={15} />
+              </button>
+            )}
           </div>
           <ul className="space-y-2 text-white text-sm mt-3">
             {itemsToRender.map((item, i) => (
