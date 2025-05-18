@@ -55,8 +55,8 @@ describe('Envelope Component', () => {
     [100, 'text-xs'],
     [150, 'text-sm'],
     [200, 'text-lg'],
-    [300, 'text-xl'],
-    [400, 'text-2xl'],
+    [300, 'text-2xl'],
+    [400, 'text-3xl'],
     [1500, 'text-3xl'],
     [3000, 'text-4xl'],
   ])('Sets correct text size at width %i', async (width, expectedClass) => {
