@@ -78,7 +78,7 @@ describe('ImageItem Component', () => {
   });
 
   it('Renders image and displays default caption.', () => {
-    const { caption, ...rest } = data;
+    const { caption, ...rest } = data; // eslint-disable-line unused-imports/no-unused-vars
     render(
       <ImageItem
         data={rest as LetterImage}
@@ -93,7 +93,7 @@ describe('ImageItem Component', () => {
   });
 
   it('Renders image and handles long captions.', () => {
-    const { caption, ...rest } = data;
+    const { caption, ...rest } = data; // eslint-disable-line unused-imports/no-unused-vars
     render(
       <ImageItem
         data={

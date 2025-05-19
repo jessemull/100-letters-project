@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { CorrespondenceSearchItem } from '@ts-types/search';
 import { SearchSection } from '@components/Menu';
 import { useSearch } from '@hooks/useSearch';

@@ -465,8 +465,6 @@ describe('useSWRMutation', () => {
       }),
     );
 
-    const jsonSpy = jest.spyOn(JSON, 'parse');
-
     await act(async () => {
       await result.current.mutate({ path: '/missing-content-type' });
     });

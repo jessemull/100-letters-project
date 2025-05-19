@@ -35,7 +35,7 @@ const TestComponent = () => {
   const handleClick = async () => {
     try {
       await signIn('testUser', 'password');
-    } catch (error) {}
+    } catch (e) {} // eslint-disable-line unused-imports/no-unused-vars
   };
 
   return (

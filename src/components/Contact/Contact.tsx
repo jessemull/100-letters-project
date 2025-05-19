@@ -76,6 +76,7 @@ const Contact = () => {
             'g-recaptcha-response': captchaToken,
           },
         });
+        /* eslint-disable-next-line unused-imports/no-unused-vars */
       } catch (e) {
         setError(defaultErrorMessage);
       }

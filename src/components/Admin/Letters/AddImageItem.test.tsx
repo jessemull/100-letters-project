@@ -54,7 +54,6 @@ describe('AddImageItem', () => {
 
   it('Handles file selection.', () => {
     render(<AddImageItem {...defaultProps} />);
-    const fileInput = screen.getByLabelText('Select Image +');
     const input =
       screen.getByTestId('file-input') ||
       screen.getByLabelText('Select Image +').closest('label')?.nextSibling;

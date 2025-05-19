@@ -214,14 +214,6 @@ describe('CorrespondencesTab', () => {
       lastEvaluatedKey: 'next-key',
     };
 
-    const moreData = {
-      data: [
-        { correspondenceId: '3', title: 'Third' },
-        { correspondenceId: '4', title: 'Fourth' },
-      ],
-      lastEvaluatedKey: null,
-    };
-
     useSWRQuery.mockReturnValue({
       data: initialData,
       fetchMore: fetchMoreMock,
