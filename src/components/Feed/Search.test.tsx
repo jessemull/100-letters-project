@@ -1,6 +1,7 @@
 import React from 'react';
 import Search from '@components/Feed/Search';
 import { SearchAllItem } from '@ts-types/search';
+import { axe } from 'jest-axe';
 import { render, screen } from '@testing-library/react';
 import { useCorrespondence } from '@contexts/CorrespondenceProvider';
 import { useInView } from 'react-intersection-observer';
@@ -100,5 +101,13 @@ describe('Search Component', () => {
   it('Does not render Progress when all items are visible.', () => {
     render(<Search results={correspondenceData as SearchAllItem[]} term="" />);
     expect(screen.queryByTestId('progress')).not.toBeInTheDocument();
+  });
+
+  it('Has no accessibility violations.', async () => {
+    const { container } = render(
+      <Search results={correspondenceData as SearchAllItem[]} term="" />,
+    );
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

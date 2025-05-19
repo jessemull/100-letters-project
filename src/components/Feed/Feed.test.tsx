@@ -1,137 +1,99 @@
-import Feed from '@components/Feed/Feed';
-import { axe } from 'jest-axe';
-import { render, screen, fireEvent, act } from '@testing-library/react';
+// __tests__/Feed.test.tsx
+
+import React from 'react';
+import { fireEvent, render, screen } from '@testing-library/react';
+import Feed from '@components/Feed/Feed'; // Adjust path based on your structure
 import { useSearch } from '@hooks/useSearch';
+import { axe } from 'jest-axe';
 
 jest.mock('@hooks/useSearch', () => ({
   useSearch: jest.fn(),
+}));
+
+jest.mock('@components/Feed', () => ({
+  Search: ({ term }: any) => <div data-testid="search">Search for {term}</div>,
+  Splash: () => <div data-testid="splash">Splash</div>,
 }));
 
 jest.mock('@components/Form', () => ({
   TextInput: ({ value, onChange, onIconEndClick, IconEnd }: any) => (
     <div>
       <input
-        type="text"
+        data-testid="text-input"
         value={value}
-        placeholder="Search for letters and people..."
         onChange={onChange}
-        data-testid="search-input"
+        placeholder="Search for letters and people..."
       />
       {IconEnd && (
-        <button onClick={onIconEndClick} data-testid="clear-icon">
-          clear
+        <button data-testid="icon-end" onClick={onIconEndClick}>
+          X
         </button>
       )}
     </div>
   ),
 }));
 
-jest.mock('@components/Feed', () => ({
-  Splash: () => <div data-testid="splash">Splash Component</div>,
-  Search: ({ term }: { term: string }) => (
-    <div data-testid="search-results">Search results for: {term}</div>
-  ),
-}));
-
 describe('Feed component', () => {
+  const mockResults = [{ title: 'Result 1' }, { title: 'Result 2' }];
+  let pushStateSpy: jest.SpyInstance;
+
   beforeEach(() => {
-    (useSearch as jest.Mock).mockImplementation(() => [
-      { id: 1, type: 'person', name: 'Test Result' },
-    ]);
-    window.history.replaceState({}, '', '/');
+    (useSearch as jest.Mock).mockReturnValue(mockResults);
+    pushStateSpy = jest.spyOn(window.history, 'pushState');
   });
 
-  it('Renders splash by default.', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('Renders Splash by default.', () => {
     render(<Feed />);
     expect(screen.getByTestId('splash')).toBeInTheDocument();
   });
 
-  it('Renders search results when there is a search param in URL.', async () => {
-    window.history.pushState({}, '', '/?search=test');
-
-    await act(() => Promise.resolve()); // wait for useEffect
+  it('Shows Search when term is typed and history is pushed.', () => {
     render(<Feed />);
-    expect(screen.getByTestId('search-results')).toHaveTextContent('test');
+    const input = screen.getByTestId('text-input');
+    fireEvent.change(input, { target: { value: 'test' } });
+
+    expect(screen.getByTestId('search')).toHaveTextContent('test');
+    expect(pushStateSpy).toHaveBeenCalledWith({ search: true }, '');
   });
 
-  it('Updates term when typing in input.', () => {
+  it('Clearing term still shows Search component.', () => {
     render(<Feed />);
-    const input = screen.getByTestId('search-input');
-    fireEvent.change(input, { target: { value: 'new term' } });
-    expect(input).toHaveValue('new term');
+    const input = screen.getByTestId('text-input');
+
+    fireEvent.change(input, { target: { value: 'test' } });
+    expect(screen.getByTestId('search')).toBeInTheDocument();
+
+    const iconEnd = screen.getByTestId('icon-end');
+    fireEvent.click(iconEnd);
+
+    expect(screen.getByTestId('search')).toBeInTheDocument();
   });
 
-  it('Shows clear icon when term is present and clears input on click.', () => {
+  it('Renders IconEnd (X) when term is present and clicking it clears the input.', () => {
     render(<Feed />);
-    const input = screen.getByTestId('search-input');
-    fireEvent.change(input, { target: { value: 'something' } });
-    expect(screen.getByTestId('clear-icon')).toBeInTheDocument();
-    fireEvent.click(screen.getByTestId('clear-icon'));
+    const input = screen.getByTestId('text-input');
+
+    fireEvent.change(input, { target: { value: 'x' } });
+    expect(screen.getByTestId('icon-end')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('icon-end'));
     expect(input).toHaveValue('');
   });
 
-  it('Pushes search param to URL when typing a new term.', () => {
+  it('Handles back button to return to Splash and reset term.', () => {
     render(<Feed />);
-    const input = screen.getByTestId('search-input');
+    const input = screen.getByTestId('text-input');
+
     fireEvent.change(input, { target: { value: 'hello' } });
+    expect(screen.getByTestId('search')).toBeInTheDocument();
 
-    // Wait for useEffect to trigger the URL change
-    expect(window.location.search).toBe('?search=hello');
-    expect(screen.getByTestId('search-results')).toBeInTheDocument();
-  });
-
-  it('Removes search param from URL when clearing term.', () => {
-    render(<Feed />);
-    const input = screen.getByTestId('search-input');
-    fireEvent.change(input, { target: { value: 'test' } });
-    expect(window.location.search).toBe('?search=test');
-
-    fireEvent.click(screen.getByTestId('clear-icon'));
-    expect(window.location.search).toBe('');
-  });
-
-  it('Syncs term and showSearch on popstate back to splash.', () => {
-    render(<Feed />);
-    const input = screen.getByTestId('search-input');
-    fireEvent.change(input, { target: { value: 'abc' } });
-    expect(screen.getByTestId('search-results')).toBeInTheDocument();
-
-    window.history.pushState({}, '', '/');
-    act(() => {
-      window.dispatchEvent(new PopStateEvent('popstate'));
-    });
-
-    expect(screen.getByTestId('search-results')).toBeInTheDocument();
-  });
-
-  it('Syncs term and showSearch on popstate to search view.', () => {
-    render(<Feed />);
-    window.history.pushState({}, '', '/?search=abc');
-
-    act(() => {
-      window.dispatchEvent(new PopStateEvent('popstate'));
-    });
-
-    expect(screen.getByTestId('search-results')).toBeInTheDocument();
-    expect(screen.getByTestId('search-input')).toHaveValue('abc');
-  });
-
-  it('Uses pushState the first time and replaceState afterwards when updating the URL.', () => {
-    const pushSpy = jest.spyOn(window.history, 'pushState');
-    const replaceSpy = jest.spyOn(window.history, 'replaceState');
-
-    render(<Feed />);
-    const input = screen.getByTestId('search-input');
-
-    fireEvent.change(input, { target: { value: 'first' } });
-    expect(pushSpy).toHaveBeenCalled();
-    expect(replaceSpy).not.toHaveBeenCalled();
-
-    fireEvent.change(input, { target: { value: 'second' } });
-    expect(replaceSpy).toHaveBeenCalled();
-
-    pushSpy.mockRestore();
-    replaceSpy.mockRestore();
+    fireEvent.popState(window);
+    expect(screen.getByTestId('splash')).toBeInTheDocument();
+    expect(input).toHaveValue('');
   });
 
   it('Has no accessibility violations.', async () => {

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Search, Splash } from '@components/Feed';
 import { SearchAllItem } from '@ts-types/search';
 import { TextInput } from '@components/Form';
@@ -10,55 +10,20 @@ import { X } from 'lucide-react';
 const Feed = () => {
   const [term, setTerm] = useState('');
   const [showSearch, setShowSearch] = useState(false);
-  const hasPushedHistory = useRef(false);
 
   const results = useSearch({ type: 'all', term }) as SearchAllItem[];
 
-  const updateURLSearchParam = (value: string | null) => {
-    const url = new URL(window.location.href);
-    if (value) {
-      url.searchParams.set('search', value);
-      const method = hasPushedHistory.current ? 'replaceState' : 'pushState';
-      window.history[method]({ search: true }, '', url.toString());
-      hasPushedHistory.current = true;
-    } else {
-      url.searchParams.delete('search');
-      window.history.replaceState({}, '', url.toString());
-      hasPushedHistory.current = false;
-    }
-  };
-
-  const syncWithURL = () => {
-    const params = new URLSearchParams(window.location.search);
-    const query = params.get('search');
-    if (query) {
-      setTerm(query);
-      setShowSearch(true);
-      hasPushedHistory.current = true;
-    } else {
-      setTerm('');
-      hasPushedHistory.current = false;
-    }
-  };
-
   useEffect(() => {
-    syncWithURL();
-  }, []);
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const currentQuery = params.get('search');
-    if (term && term !== currentQuery) {
-      updateURLSearchParam(term);
+    if (term && !showSearch) {
+      window.history.pushState({ search: true }, '');
       setShowSearch(true);
-    } else if (!term && currentQuery) {
-      updateURLSearchParam(null);
     }
-  }, [term]);
+  }, [term, showSearch]);
 
   useEffect(() => {
     const handlePopState = () => {
-      syncWithURL();
+      setShowSearch(false);
+      setTerm('');
     };
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);

@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Splash from '@components/Feed/Splash';
+import { axe } from 'jest-axe';
 import { calculateCountdown } from '@util/feed';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { useCorrespondence } from '@contexts/CorrespondenceProvider';
@@ -120,5 +121,12 @@ describe('Splash Component', () => {
     expect(clearIntervalSpy).toHaveBeenCalled();
 
     clearIntervalSpy.mockRestore();
+  });
+
+  it('Has no accessibility violations.', async () => {
+    jest.useRealTimers();
+    const { container } = render(<Splash />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });
