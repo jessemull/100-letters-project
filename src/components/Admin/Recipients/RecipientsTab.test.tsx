@@ -257,7 +257,7 @@ describe('RecipientsTab', () => {
   it('Uses search query param when search is defined.', async () => {
     const mockSearch = 'john';
 
-    useSWRQuery.mockImplementation(({ path }: { path: string }) => {
+    useSWRQuery.mockImplementation(() => {
       return {
         data: { data: [], lastEvaluatedKey: '' },
         isLoading: false,

@@ -69,7 +69,7 @@ describe('Card Commponent', () => {
   });
 
   it('Accepts and passes loading and priority props to the Image component.', () => {
-    const { container } = render(
+    render(
       <Card correspondence={mockCorrespondence} loading="lazy" priority />,
     );
     const img = screen.getByTestId('card-image');

@@ -20,9 +20,7 @@ describe('useSWRQuery', () => {
       error: new Error('Internal Server Error'),
     });
 
-    const { result } = renderHook(() =>
-      useSWRQuery({ path: '/some-path', token: null }),
-    );
+    renderHook(() => useSWRQuery({ path: '/some-path', token: null }));
 
     expect(mockUseSWR).toHaveBeenCalledWith(null, null, undefined);
   });
@@ -34,9 +32,7 @@ describe('useSWRQuery', () => {
       error: new Error('Internal Server Error'),
     });
 
-    const { result } = renderHook(() =>
-      useSWRQuery({ path: null, token: 'fake-token' }),
-    );
+    renderHook(() => useSWRQuery({ path: null, token: 'fake-token' }));
 
     expect(mockUseSWR).toHaveBeenCalledWith(
       null,
@@ -60,9 +56,7 @@ describe('useSWRQuery', () => {
       return { data: null, isLoading: true };
     });
 
-    const { result } = renderHook(() =>
-      useSWRQuery({ path: '/test', token: 'abc123' }),
-    );
+    renderHook(() => useSWRQuery({ path: '/test', token: 'abc123' }));
 
     const expectedUrl = `${API_BASE_URL}/test`;
     expect(mockUseSWR).toHaveBeenCalledWith(

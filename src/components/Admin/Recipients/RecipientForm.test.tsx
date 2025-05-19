@@ -92,7 +92,7 @@ describe('RecipientForm', () => {
 
     (useSWRMutation as jest.Mock).mockImplementation(({ onSuccess }) => ({
       isLoading: false,
-      mutate: async ({ body }: any) => {
+      mutate: async () => {
         onSuccess?.();
       },
     }));
@@ -179,7 +179,7 @@ describe('RecipientForm', () => {
 
     (useSWRMutation as jest.Mock).mockImplementation(({ onError }) => ({
       isLoading: false,
-      mutate: async ({ body }: any) => {
+      mutate: async () => {
         onError?.({});
       },
     }));
@@ -232,7 +232,7 @@ describe('RecipientForm', () => {
 
     (useSWRMutation as jest.Mock).mockImplementation(({ onError }) => ({
       isLoading: false,
-      mutate: async ({ body }: any) => {
+      mutate: async () => {
         onError?.({ error: 'Mock error!', status: 400 });
       },
     }));

@@ -452,7 +452,7 @@ describe('LetterForm', () => {
     });
 
     const mutateMock = jest.fn().mockResolvedValue({});
-    (useSWRMutation as jest.Mock).mockImplementation(({ onError }) => ({
+    (useSWRMutation as jest.Mock).mockImplementation(() => ({
       isLoading: false,
       mutate: mutateMock,
     }));

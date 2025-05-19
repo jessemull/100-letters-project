@@ -18,10 +18,10 @@ const mockUpdateLetter = jest.fn();
 beforeEach(() => {
   jest.clearAllMocks();
   (mockUseSWRMutation as jest.Mock).mockImplementation(
-    ({ method, onError, onSuccess, path }) => {
+    ({ method, onSuccess, path }) => {
       if (method === 'POST') {
         return {
-          mutate: mockGetSignedURL.mockImplementation(async (params) => {
+          mutate: mockGetSignedURL.mockImplementation(async () => {
             onSuccess?.();
             return {
               data: {
@@ -44,7 +44,7 @@ beforeEach(() => {
         };
       } else if (method === 'PUT') {
         return {
-          mutate: mockFileUpload.mockImplementation(async (params) => {
+          mutate: mockFileUpload.mockImplementation(async () => {
             onSuccess?.();
             return {};
           }),
@@ -222,7 +222,7 @@ describe('useFileUpload', () => {
       ({ method, onError, onSuccess, path }) => {
         if (method === 'POST') {
           return {
-            mutate: mockGetSignedURL.mockImplementation(async (params) => {
+            mutate: mockGetSignedURL.mockImplementation(async () => {
               onSuccess?.();
               return {
                 data: {
@@ -274,7 +274,7 @@ describe('useFileUpload', () => {
       ({ method, onError, onSuccess, path }) => {
         if (method === 'POST') {
           return {
-            mutate: mockGetSignedURL.mockImplementation(async (params) => {
+            mutate: mockGetSignedURL.mockImplementation(async () => {
               onSuccess?.();
               return {
                 data: {
@@ -323,10 +323,10 @@ describe('useFileUpload', () => {
 
   it('Throws formatted error from PUT letter onError handler.', async () => {
     (mockUseSWRMutation as jest.Mock).mockImplementation(
-      ({ method, onError, onSuccess, path }) => {
+      ({ method, onError, onSuccess }) => {
         if (method === 'POST') {
           return {
-            mutate: mockGetSignedURL.mockImplementation(async (params) => {
+            mutate: mockGetSignedURL.mockImplementation(async () => {
               onSuccess?.();
               return {
                 data: {
@@ -371,10 +371,10 @@ describe('useFileUpload', () => {
 
   it('Throws formatted error from PUT letter onError handler with default status.', async () => {
     (mockUseSWRMutation as jest.Mock).mockImplementation(
-      ({ method, onError, onSuccess, path }) => {
+      ({ method, onError, onSuccess }) => {
         if (method === 'POST') {
           return {
-            mutate: mockGetSignedURL.mockImplementation(async (params) => {
+            mutate: mockGetSignedURL.mockImplementation(async () => {
               onSuccess?.();
               return {
                 data: {
