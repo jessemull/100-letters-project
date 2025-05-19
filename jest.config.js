@@ -9,7 +9,9 @@ const customJestConfig = {
   collectCoverageFrom: ['src/**/*.{ts,tsx}'],
   coveragePathIgnorePatterns: [
     '/src/app/layout.tsx',
+    '/src/constants/index.ts',
     '/src/components/index.ts',
+    '/src/components/.*/index.ts',
     '/src/contexts/index.ts',
     '/src/factories/index.ts',
     '/src/hooks/index.ts',
@@ -27,11 +29,12 @@ const customJestConfig = {
   },
   moduleNameMapper: {
     '^@components/(.*)$': '<rootDir>/src/components/$1',
+    '^@constants/(.*)$': '<rootDir>/src/constants/$1',
     '^@contexts/(.*)$': '<rootDir>/src/contexts/$1',
+    '^@data/(.*)$': '<rootDir>/src/data/$1',
     '^@factories/(.*)$': '<rootDir>/src/factories/$1',
     '^@hooks/(.*)$': '<rootDir>/src/hooks/$1',
     '^@ts-types/(.*)$': '<rootDir>/src/types/$1',
-    '^@data/(.*)$': '<rootDir>/src/data/$1',
     '^@util/(.*)$': '<rootDir>/src/util/$1',
     '^react-resize-detector$': '<rootDir>/__mocks__/react-resize-detector.js',
   },

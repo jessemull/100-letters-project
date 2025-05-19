@@ -1,9 +1,12 @@
 import PageLayout from './page.layout';
-import { Feed, categories } from '@components/Feed';
+import { Feed } from '@components/Feed';
+import { SearchProvider } from '@contexts/SearchProvider';
 
 const HomePage = () => (
   <PageLayout>
-    <Feed categories={categories} />
+    <SearchProvider>
+      <Feed />
+    </SearchProvider>
   </PageLayout>
 );
 

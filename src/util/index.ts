@@ -22,9 +22,11 @@ import {
   recipientsCorrespondenceUpdate,
   recipientsUpdate,
 } from './cache';
+import { calculateCountdown } from './feed';
 import { formatLetterDates } from './letter';
 
 export {
+  calculateCountdown,
   correspondenceByIdDeleteUpdate,
   correspondenceByIdLetterUpdate,
   correspondenceByIdUpdate,

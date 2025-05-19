@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button, Progress, TextArea, TextInput } from '@components/Form';
+import { Button, TextArea, TextInput } from '@components/Form';
 import {
   ContactForm,
   ContactFormBody,

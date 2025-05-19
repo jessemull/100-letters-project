@@ -2,8 +2,7 @@
 
 import { AnimatePresence, motion } from 'framer-motion';
 import { Heart } from '@components/Animation';
-import { useResizeDetector } from 'react-resize-detector';
-import { useState, useEffect, MutableRefObject, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
 interface EnvelopeProps {
   width?: number;
@@ -26,60 +25,64 @@ const Envelope: React.FC<EnvelopeProps> = ({ width }) => {
   const [textSize, setTextSize] = useState('text-4xl');
 
   useEffect(() => {
-    if (width) {
-      let newWidth = Math.max(width * 0.2, 110);
+    if (!width) return;
 
-      if (width < 768) {
-        newWidth = width * 0.6;
-      }
+    let newWidth = Math.max(width * 0.2, 110);
 
-      const height = newWidth * (224 / 320);
-      const flap = newWidth * (120 / 320);
-
-      setSize({ width: newWidth, height, flap });
-
-      let newTextSize: string;
-
-      if (newWidth < 320 * 0.25) {
-        newTextSize = 'text-xs';
-      } else if (newWidth < 480 * 0.25) {
-        newTextSize = 'text-sm';
-      } else if (newWidth < 640 * 0.25) {
-        newTextSize = 'text-lg';
-      } else if (newWidth < 768 * 0.25) {
-        newTextSize = 'text-xl';
-      } else if (newWidth < 1024 * 0.25) {
-        newTextSize = 'text-2xl';
-      } else if (newWidth < 1280 * 0.25) {
-        newTextSize = 'text-3xl';
-      } else {
-        newTextSize = 'text-4xl';
-      }
-
-      if (newTextSize !== textSize) {
-        setTextSize(newTextSize);
-      }
-
-      setIsReady(true);
+    if (width < 640) {
+      newWidth = width * 0.65;
+    } else if (width < 768) {
+      newWidth = width * 0.3;
+    } else if (width < 1024) {
+      newWidth = width * 0.25;
+    } else if (width < 1280) {
+      newWidth = width * 0.25;
+    } else {
+      newWidth = width * 0.175;
     }
-  }, [width, textSize]);
+
+    const height = newWidth * (224 / 320);
+    const flap = newWidth * (120 / 320);
+
+    setSize({ width: newWidth, height, flap });
+
+    let newTextSize = 'text-4xl';
+    const thresholds = [
+      { max: 320 * 0.25, className: 'text-xs' },
+      { max: 480 * 0.25, className: 'text-sm' },
+      { max: 640 * 0.25, className: 'text-lg' },
+      { max: 768 * 0.25, className: 'text-xl' },
+      { max: 1024 * 0.25, className: 'text-2xl' },
+      { max: 1280 * 0.25, className: 'text-3xl' },
+    ];
+
+    for (const threshold of thresholds) {
+      if (newWidth < threshold.max) {
+        newTextSize = threshold.className;
+        break;
+      }
+    }
+
+    setTextSize(newTextSize);
+    setIsReady(true);
+  }, [width]);
 
   useEffect(() => {
-    if (isReady) {
-      setTimeout(() => setStartAnimation(true), 500);
-      setTimeout(() => setShowLetter(true), 800);
-      setTimeout(() => {
-        setFlapZIndex(5);
-      }, 1000);
-      setTimeout(() => setShowText(true), 1200);
-    }
+    if (!isReady) return;
+
+    const timers = [
+      setTimeout(() => setStartAnimation(true), 500),
+      setTimeout(() => setShowLetter(true), 800),
+      setTimeout(() => setFlapZIndex(5), 1000),
+      setTimeout(() => setShowText(true), 1200),
+    ];
+
+    return () => timers.forEach(clearTimeout);
   }, [isReady]);
 
   const scaleFactor = useMemo(() => size.width / 287.8, [size.width]);
 
-  if (!isReady) {
-    return null;
-  }
+  if (!isReady) return null;
 
   return (
     <div
@@ -124,8 +127,9 @@ const Envelope: React.FC<EnvelopeProps> = ({ width }) => {
             </div>
           </motion.div>
         )}
+
         <motion.div
-          className="absolute top-0 left-0 w-0 h-0 border-l-transparent border-r-transparent  border-t-yellow-500 origin-top"
+          className="absolute top-0 left-0 w-0 h-0 border-l-transparent border-r-transparent border-t-yellow-500 origin-top"
           style={{
             borderLeftWidth: `${size.width * 0.5}px`,
             borderRightWidth: `${size.width * 0.5}px`,
@@ -137,6 +141,7 @@ const Envelope: React.FC<EnvelopeProps> = ({ width }) => {
           animate={startAnimation ? { rotateX: 180 } : {}}
           transition={{ duration: 0.8 }}
         />
+
         {showText && (
           <motion.div
             className={`absolute flex flex-col items-center justify-center ${textSize} font-bold z-40 font-merriweather text-midnight`}

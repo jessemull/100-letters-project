@@ -1,148 +1,104 @@
-import { Feed, calculateCountdown, categories } from '@components/Feed';
-import { axe } from 'jest-axe';
+// __tests__/Feed.test.tsx
+
+import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
-import { useCorrespondence } from '@contexts/CorrespondenceProvider';
-import { act } from 'react';
-import { CorrespondenceFactory } from '@factories/correspondence';
+import Feed from '@components/Feed/Feed'; // Adjust path based on your structure
+import { useSearch } from '@hooks/useSearch';
+import { axe } from 'jest-axe';
 
-jest.mock('@contexts/CorrespondenceProvider');
+jest.mock('@hooks/useSearch', () => ({
+  useSearch: jest.fn(),
+}));
 
-describe('Feed Component', () => {
+jest.mock('@components/Feed', () => ({
+  Search: ({ term }: any) => <div data-testid="search">Search for {term}</div>,
+  Splash: () => <div data-testid="splash">Splash</div>,
+}));
+
+jest.mock('@components/Form', () => ({
+  TextInput: ({ value, onChange, onIconEndClick, IconEnd }: any) => (
+    <div>
+      <input
+        data-testid="text-input"
+        value={value}
+        onChange={onChange}
+        placeholder="Search for letters and people..."
+      />
+      {IconEnd && (
+        <button data-testid="icon-end" onClick={onIconEndClick}>
+          X
+        </button>
+      )}
+    </div>
+  ),
+}));
+
+describe('Feed component', () => {
+  const mockResults = [{ title: 'Result 1' }, { title: 'Result 2' }];
+  let pushStateSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    (useSearch as jest.Mock).mockReturnValue(mockResults);
+    pushStateSpy = jest.spyOn(window.history, 'pushState');
+  });
+
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it('Renders correspondences.', () => {
-    const correspondences = CorrespondenceFactory.buildList(6);
-    (useCorrespondence as jest.Mock).mockReturnValue({
-      correspondences,
-      earliestSentAtDate: '',
-      responseCompletion: 0.5,
-    });
-
-    render(<Feed categories={categories} />);
-    expect(screen.getByText('Browse by Category')).toBeInTheDocument();
-    expect(screen.getByText(correspondences[0].title)).toBeInTheDocument();
+  it('Renders Splash by default.', () => {
+    render(<Feed />);
+    expect(screen.getByTestId('splash')).toBeInTheDocument();
   });
 
-  it('Renders default image and alt.', () => {
-    const correspondences = CorrespondenceFactory.buildList(6);
-    correspondences[0].letters = [];
-    (useCorrespondence as jest.Mock).mockReturnValue({
-      correspondences,
-      earliestSentAtDate: '',
-      responseCompletion: 0.5,
-    });
+  it('Shows Search when term is typed and history is pushed.', () => {
+    render(<Feed />);
+    const input = screen.getByTestId('text-input');
+    fireEvent.change(input, { target: { value: 'test' } });
 
-    render(<Feed categories={categories} />);
-    expect(screen.getByText('Browse by Category')).toBeInTheDocument();
-    expect(screen.getByAltText('Letter Image')).toBeInTheDocument();
+    expect(screen.getByTestId('search')).toHaveTextContent('test');
+    expect(pushStateSpy).toHaveBeenCalledWith({ search: true }, '');
   });
 
-  it('Has no accessibility errors.', async () => {
-    jest.useRealTimers();
+  it('Clearing term still shows Search component.', () => {
+    render(<Feed />);
+    const input = screen.getByTestId('text-input');
 
-    (useCorrespondence as jest.Mock).mockReturnValue({
-      correspondences: [],
-      earliestSentAtDate: '',
-      responseCompletion: 0.5,
-    });
+    fireEvent.change(input, { target: { value: 'test' } });
+    expect(screen.getByTestId('search')).toBeInTheDocument();
 
-    const { container } = render(<Feed categories={categories} />);
+    const iconEnd = screen.getByTestId('icon-end');
+    fireEvent.click(iconEnd);
+
+    expect(screen.getByTestId('search')).toBeInTheDocument();
+  });
+
+  it('Renders IconEnd (X) when term is present and clicking it clears the input.', () => {
+    render(<Feed />);
+    const input = screen.getByTestId('text-input');
+
+    fireEvent.change(input, { target: { value: 'x' } });
+    expect(screen.getByTestId('icon-end')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('icon-end'));
+    expect(input).toHaveValue('');
+  });
+
+  it('Handles back button to return to Splash and reset term.', () => {
+    render(<Feed />);
+    const input = screen.getByTestId('text-input');
+
+    fireEvent.change(input, { target: { value: 'hello' } });
+    expect(screen.getByTestId('search')).toBeInTheDocument();
+
+    fireEvent.popState(window);
+    expect(screen.getByTestId('splash')).toBeInTheDocument();
+    expect(input).toHaveValue('');
+  });
+
+  it('Has no accessibility violations.', async () => {
+    const { container } = render(<Feed />);
     const results = await axe(container);
     expect(results).toHaveNoViolations();
-  });
-
-  it('Shows countdown when earliestSentAtDate is present.', async () => {
-    jest.useFakeTimers();
-
-    const now = new Date();
-    const mockDate = new Date(now);
-    mockDate.setFullYear(now.getFullYear() - 1);
-
-    (useCorrespondence as jest.Mock).mockReturnValue({
-      correspondences: [],
-      earliestSentAtDate: mockDate.toISOString(),
-      responseCompletion: 0.5,
-    });
-
-    render(<Feed categories={categories} />);
-
-    await act(async () => {
-      jest.advanceTimersByTime(1100);
-    });
-
-    expect(
-      screen.getByText(/Countdown to the Letter-o-calypse/),
-    ).toBeInTheDocument();
-
-    jest.useRealTimers();
-  });
-
-  it('Does not show countdown when earliestSentAtDate is not present.', () => {
-    (useCorrespondence as jest.Mock).mockReturnValue({
-      correspondences: [],
-      earliestSentAtDate: null,
-      responseCompletion: 0.5,
-    });
-
-    render(<Feed categories={categories} />);
-    expect(
-      screen.getByText(/Countdown clock kicking off soon/),
-    ).toBeInTheDocument();
-  });
-
-  it('Helper calculateCountdown returns zeros if date is in the past.', () => {
-    const pastDate = new Date(Date.now() - 10000);
-
-    const { days, hours, minutes, seconds } = calculateCountdown(pastDate);
-
-    expect(days).toBe(0);
-    expect(hours).toBe(0);
-    expect(minutes).toBe(0);
-    expect(seconds).toBe(0);
-  });
-
-  it('Helper calculateCountdown returns correct values if date is in the future.', () => {
-    const futureDate = new Date(Date.now() + 90061000); // 1d 1h 1m 1s
-
-    const { days, hours, minutes, seconds } = calculateCountdown(futureDate);
-
-    expect(days).toBe(1);
-    expect(hours).toBe(1);
-    expect(minutes).toBe(1);
-    expect(seconds).toBe(1);
-  });
-
-  it('Shows more correspondences.', async () => {
-    const correspondences = CorrespondenceFactory.buildList(6);
-    (useCorrespondence as jest.Mock).mockReturnValue({
-      correspondences,
-      earliestSentAtDate: '',
-      responseCompletion: 0.5,
-    });
-
-    render(<Feed categories={categories} />);
-
-    fireEvent.click(screen.getByTestId('show-more-letters'));
-
-    expect(screen.getByText('Browse by Category')).toBeInTheDocument();
-    expect(screen.getByText(correspondences[4].title)).toBeInTheDocument();
-  });
-
-  it('Shows more categories.', async () => {
-    const correspondences = CorrespondenceFactory.buildList(6);
-    (useCorrespondence as jest.Mock).mockReturnValue({
-      correspondences,
-      earliestSentAtDate: '',
-      responseCompletion: 0.5,
-    });
-
-    render(<Feed categories={[...categories, ...categories]} />);
-
-    fireEvent.click(screen.getByTestId('show-more-categories'));
-
-    expect(screen.getByText('Browse by Category')).toBeInTheDocument();
-    expect(screen.getAllByText(categories[0].name).length).toEqual(2);
   });
 });

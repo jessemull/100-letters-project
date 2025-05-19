@@ -1,5 +1,6 @@
 export * from './contact';
 export * from './correspondence';
+export * from './feed';
 export * from './form';
 export * from './letter';
 export * from './login';

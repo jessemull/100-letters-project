@@ -55,8 +55,8 @@ describe('Envelope Component', () => {
     [100, 'text-xs'],
     [150, 'text-sm'],
     [200, 'text-lg'],
-    [300, 'text-xl'],
-    [400, 'text-2xl'],
+    [300, 'text-2xl'],
+    [400, 'text-3xl'],
     [1500, 'text-3xl'],
     [3000, 'text-4xl'],
   ])('Sets correct text size at width %i', async (width, expectedClass) => {
@@ -68,5 +68,22 @@ describe('Envelope Component', () => {
 
     const msg = await screen.findByTestId('msg-100');
     expect(msg.parentElement).toHaveClass(expectedClass);
+  });
+
+  it('Does not render envelope if width is undefined.', () => {
+    const { container } = render(<Envelope />);
+    expect(container.firstChild).toBeNull();
+  });
+
+  it('Calculates newWidth as 0.3 * width when width < 768 but >= 640.', async () => {
+    renderWithWidth(700);
+
+    act(() => {
+      jest.advanceTimersByTime(3500);
+    });
+
+    const envelope = await screen.findByTestId('envelope');
+
+    expect(envelope.firstChild).toHaveStyle({ width: '210px' });
   });
 });
