@@ -5,7 +5,7 @@ import { Search, Splash } from '@components/Feed';
 import { SearchAllItem } from '@ts-types/search';
 import { TextInput } from '@components/Form';
 import { useSearch } from '@hooks/useSearch';
-import { X } from 'lucide-react';
+import { SearchIcon, X } from 'lucide-react';
 
 const Feed = () => {
   const [term, setTerm] = useState('');
@@ -35,6 +35,7 @@ const Feed = () => {
         <TextInput
           id="search-all"
           IconEnd={term ? X : undefined}
+          IconStart={SearchIcon}
           onChange={({ target: { value } }) => setTerm(value)}
           onIconEndClick={() => setTerm('')}
           placeholder="Search for letters and people..."
