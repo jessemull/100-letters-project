@@ -69,4 +69,21 @@ describe('Envelope Component', () => {
     const msg = await screen.findByTestId('msg-100');
     expect(msg.parentElement).toHaveClass(expectedClass);
   });
+
+  it('Does not render envelope if width is undefined.', () => {
+    const { container } = render(<Envelope />);
+    expect(container.firstChild).toBeNull();
+  });
+
+  it('Calculates newWidth as 0.3 * width when width < 768 but >= 640.', async () => {
+    renderWithWidth(700);
+
+    act(() => {
+      jest.advanceTimersByTime(3500);
+    });
+
+    const envelope = await screen.findByTestId('envelope');
+
+    expect(envelope.firstChild).toHaveStyle({ width: '210px' });
+  });
 });

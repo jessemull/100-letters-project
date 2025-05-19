@@ -1,4 +1,4 @@
-import { Contact } from '@components/Contact';
+import Contact from '@components/Contact/Contact';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { useRouter } from 'next/navigation';
 import { useForm } from '@hooks/useForm';
@@ -16,9 +16,9 @@ jest.mock('next/navigation', () => ({
   useRouter: jest.fn(),
 }));
 
-jest.mock('react-google-recaptcha', () => ({
+jest.mock('@components/Contact', () => ({
   __esModule: true,
-  default: ({ onChange }: any) => (
+  LazyRecaptcha: ({ onChange }: any) => (
     <button
       aria-label="Mock reCAPTCHA"
       data-testid="recaptcha"
@@ -39,14 +39,14 @@ describe('Contact Component', () => {
       message: '',
     };
 
-    const updateField = jest.fn((field, value) => {
+    const updateField = jest.fn((field: string, value: string) => {
       values = { ...values, [field]: value };
     });
 
     return {
       errors: {},
       isDirty: true,
-      onSubmit: jest.fn().mockImplementation((fn) => fn()),
+      onSubmit: jest.fn().mockImplementation((fn: () => any) => fn()),
       updateField,
       get values() {
         return values;
@@ -67,6 +67,7 @@ describe('Contact Component', () => {
     });
 
     render(<Contact />);
+
     expect(screen.getByPlaceholderText('First Name')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Last Name')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Email')).toBeInTheDocument();
@@ -96,10 +97,8 @@ describe('Contact Component', () => {
   });
 
   it('Submits the form successfully.', async () => {
-    const mutateMock = jest.fn().mockResolvedValue({ success: true });
-
     (useSWRMutation as jest.Mock).mockImplementation(({ onSuccess }) => ({
-      mutate: async (...args: any[]) => {
+      mutate: async () => {
         onSuccess?.();
         return { success: true };
       },
@@ -167,7 +166,7 @@ describe('Contact Component', () => {
     ).toBeInTheDocument();
   });
 
-  it('Handles captcha token change correctly.', async () => {
+  it('Handles captcha token change correctly.', () => {
     (useSWRMutation as jest.Mock).mockReturnValue({
       mutate: jest.fn(),
       isLoading: false,
@@ -212,8 +211,7 @@ describe('Contact Component', () => {
       fireEvent.click(screen.getByText('Submit'));
     });
 
-    const backButton = screen.getByRole('button', { name: 'Back' });
-    fireEvent.click(backButton);
+    fireEvent.click(screen.getByRole('button', { name: 'Back' }));
 
     expect(mockPush).toHaveBeenCalledWith('/');
   });

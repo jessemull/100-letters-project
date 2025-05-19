@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useRef } from 'react';
-import Search from './Search';
-import Splash from './Splash';
+import { Search, Splash } from '@components/Feed';
 import { SearchAllItem } from '@ts-types/search';
 import { TextInput } from '@components/Form';
 import { useSearch } from '@hooks/useSearch';
@@ -11,58 +10,55 @@ import { X } from 'lucide-react';
 const Feed = () => {
   const [term, setTerm] = useState('');
   const [showSearch, setShowSearch] = useState(false);
-
-  const pushedHistoryRef = useRef(false);
+  const hasPushedHistory = useRef(false);
 
   const results = useSearch({ type: 'all', term }) as SearchAllItem[];
 
-  // Once the user has set search terms they must hit the back button to view the splash page component again.
+  const updateURLSearchParam = (value: string | null) => {
+    const url = new URL(window.location.href);
+    if (value) {
+      url.searchParams.set('search', value);
+      const method = hasPushedHistory.current ? 'replaceState' : 'pushState';
+      window.history[method]({ search: true }, '', url.toString());
+      hasPushedHistory.current = true;
+    } else {
+      url.searchParams.delete('search');
+      window.history.replaceState({}, '', url.toString());
+      hasPushedHistory.current = false;
+    }
+  };
 
-  useEffect(() => {
+  const syncWithURL = () => {
     const params = new URLSearchParams(window.location.search);
     const query = params.get('search');
     if (query) {
       setTerm(query);
       setShowSearch(true);
-      if (!window.history.state) {
-        window.history.replaceState({ search: true }, '', window.location.href);
-      }
-      pushedHistoryRef.current = true;
+      hasPushedHistory.current = true;
+    } else {
+      setTerm('');
+      hasPushedHistory.current = false;
     }
+  };
+
+  useEffect(() => {
+    syncWithURL();
   }, []);
 
   useEffect(() => {
-    const url = new URL(window.location.href);
-    const currentQuery = url.searchParams.get('search');
+    const params = new URLSearchParams(window.location.search);
+    const currentQuery = params.get('search');
     if (term && term !== currentQuery) {
-      url.searchParams.set('search', term);
-      if (!pushedHistoryRef.current) {
-        window.history.pushState({ search: true }, '', url.toString());
-        pushedHistoryRef.current = true;
-      } else {
-        window.history.replaceState({ search: true }, '', url.toString());
-      }
+      updateURLSearchParam(term);
       setShowSearch(true);
     } else if (!term && currentQuery) {
-      url.searchParams.delete('search');
-      window.history.replaceState({}, '', url.toString());
-      pushedHistoryRef.current = false;
+      updateURLSearchParam(null);
     }
   }, [term]);
 
   useEffect(() => {
-    const handlePopState = (event: PopStateEvent) => {
-      const params = new URLSearchParams(window.location.search);
-      const query = params.get('search');
-      if (query) {
-        setTerm(query);
-        setShowSearch(true);
-        pushedHistoryRef.current = true;
-      } else {
-        setTerm('');
-        setShowSearch(false);
-        pushedHistoryRef.current = false;
-      }
+    const handlePopState = () => {
+      syncWithURL();
     };
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);

@@ -41,7 +41,7 @@ const Search: React.FC<Props> = ({ results, term }) => {
       setVisibleItems(nextItems);
       setPage(nextPage);
     }
-  }, [inView]);
+  }, [inView, items, page, visibleItems.length]);
 
   if (items.length === 0) {
     return (

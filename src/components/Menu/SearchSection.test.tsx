@@ -76,7 +76,7 @@ describe('SearchSection', () => {
     expect(setTerm).toHaveBeenCalledWith('new term');
   });
 
-  it('toggles open/closed state', () => {
+  it('Toggles open/closed state.', () => {
     render(
       <SearchSection
         title={title}
@@ -128,5 +128,25 @@ describe('SearchSection', () => {
     ).not.toBeInTheDocument();
     expect(screen.queryByTestId('list-item')).not.toBeInTheDocument();
     expect(screen.queryByText('Show More')).not.toBeInTheDocument();
+  });
+
+  it('Clear term when clear button is clicked.', () => {
+    render(
+      <SearchSection
+        title={title}
+        data={allData}
+        results={results}
+        renderItem={renderItem}
+        setTerm={setTerm}
+        term="something"
+      />,
+    );
+
+    const buttons = screen.getAllByRole('button');
+    const clearBtn = buttons.find((btn) => btn.textContent === '');
+
+    fireEvent.click(clearBtn as HTMLElement);
+
+    expect(setTerm).toHaveBeenCalledWith('');
   });
 });

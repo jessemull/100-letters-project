@@ -12,12 +12,7 @@ const Splash = () => {
   const { correspondences, earliestSentAtDate, responseCompletion } =
     useCorrespondence();
   const [countdown, setCountdown] = useState<null | CountDown>(null);
-  const [numCategoryRows, setNumCategoryRows] = useState(2);
   const [numLetterRows, setNumLetterPages] = useState(1);
-
-  const showMoreCategories = useMemo(() => {
-    return numCategoryRows * 6 < categories.length;
-  }, [categories.length, numCategoryRows]);
 
   const showMoreLetters = useMemo(() => {
     return numLetterRows * 3 < correspondences.length;
@@ -116,18 +111,6 @@ const Splash = () => {
             </div>
           ))}
         </div>
-        {showMoreCategories && (
-          <div className="flex justify-center pt-4">
-            <button
-              className="bg-white/10 hover:bg-white/20 border rounded-3xl border-white p-4"
-              id="show-more-categories"
-              data-testid="show-more-categories"
-              onClick={() => setNumCategoryRows(numCategoryRows + 1)}
-            >
-              See More +
-            </button>
-          </div>
-        )}
       </div>
     </>
   );

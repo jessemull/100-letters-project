@@ -9,7 +9,9 @@ const customJestConfig = {
   collectCoverageFrom: ['src/**/*.{ts,tsx}'],
   coveragePathIgnorePatterns: [
     '/src/app/layout.tsx',
+    '/src/constants/index.ts',
     '/src/components/index.ts',
+    '/src/components/.*/index.ts',
     '/src/contexts/index.ts',
     '/src/factories/index.ts',
     '/src/hooks/index.ts',
