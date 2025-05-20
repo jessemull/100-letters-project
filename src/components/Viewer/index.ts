@@ -1,4 +1,4 @@
-import CorrespondenceDetails from './CorrespondenceDetails';
+import Correspondence from './Correspondence';
 import ViewCorrespondence from './ViewCorrespondence';
 
-export { CorrespondenceDetails, ViewCorrespondence };
+export { Correspondence, ViewCorrespondence };

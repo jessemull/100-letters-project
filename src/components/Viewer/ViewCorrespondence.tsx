@@ -3,7 +3,7 @@
 import { useSearchParams } from 'next/navigation';
 import { useCorrespondence } from '@contexts/CorrespondenceProvider';
 import { useMemo } from 'react';
-import { CorrespondenceDetails } from '@components/Viewer';
+import { Correspondence } from '@components/Viewer';
 
 const ViewCorrespondence = () => {
   const { correspondencesById } = useCorrespondence();
@@ -24,8 +24,8 @@ const ViewCorrespondence = () => {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white px-4 py-8 max-w-6xl mx-auto space-y-8">
-      <CorrespondenceDetails correspondence={correspondence} />
+    <div className="text-white px-4 py-8 max-w-6xl mx-auto space-y-8">
+      <Correspondence correspondence={correspondence} />
     </div>
   );
 };
