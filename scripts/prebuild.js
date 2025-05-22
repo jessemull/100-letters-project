@@ -67,13 +67,13 @@ async function authenticateUser() {
     if (
       !response ||
       !response.AuthenticationResult ||
-      !response.AuthenticationResult.IdToken
+      !response.AuthenticationResult.AccessToken
     ) {
       console.error('Error authenticating user...');
       process.exit(1);
     }
 
-    const token = response.AuthenticationResult.IdToken;
+    const token = response.AuthenticationResult.AccessToken;
 
     const correspondences = await fetchAllPages('correspondence', token);
     const letters = await fetchAllPages('letter', token);

@@ -23,8 +23,8 @@ jest.mock('@aws-amplify/auth', () => ({
 const mockUser = { username: 'testUser' };
 const mockSession = {
   tokens: {
-    idToken: {
-      toString: jest.fn(() => 'mockIdToken'),
+    accessToken: {
+      toString: jest.fn(() => 'mockAccessToken'),
     },
   },
 };
@@ -40,7 +40,7 @@ const TestComponent = () => {
 
   return (
     <div>
-      <div data-testid="id-token">{token || 'No Token'}</div>
+      <div data-testid="access-token">{token || 'No Token'}</div>
       <div data-testid="is-logged-in">{isLoggedIn ? 'Yes' : 'No'}</div>
       <div data-testid="user">{user ? user.username : 'No User'}</div>
       <button onClick={handleClick}>Sign In</button>
@@ -66,12 +66,12 @@ describe('AuthProvider', () => {
       );
     });
 
-    expect(screen.getByTestId('id-token')).toHaveTextContent('No Token');
+    expect(screen.getByTestId('access-token')).toHaveTextContent('No Token');
     expect(screen.getByTestId('is-logged-in')).toHaveTextContent('No');
     expect(screen.getByTestId('user')).toHaveTextContent('No User');
   });
 
-  it('Sets user and idToken when authenticated on mount.', async () => {
+  it('Sets user and accessToken when authenticated on mount.', async () => {
     (getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
     (fetchAuthSession as jest.Mock).mockResolvedValue(mockSession);
 
@@ -82,13 +82,15 @@ describe('AuthProvider', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByTestId('id-token')).toHaveTextContent('mockIdToken');
+      expect(screen.getByTestId('access-token')).toHaveTextContent(
+        'mockAccessToken',
+      );
       expect(screen.getByTestId('is-logged-in')).toHaveTextContent('Yes');
       expect(screen.getByTestId('user')).toHaveTextContent('testUser');
     });
   });
 
-  it('Sets idToken to null if fetching session fails.', async () => {
+  it('Sets accessToken to null if fetching session fails.', async () => {
     (getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
     (fetchAuthSession as jest.Mock).mockRejectedValue(new Error('Failed'));
 
@@ -100,12 +102,12 @@ describe('AuthProvider', () => {
       );
     });
 
-    expect(screen.getByTestId('id-token')).toHaveTextContent('No Token');
+    expect(screen.getByTestId('access-token')).toHaveTextContent('No Token');
     expect(screen.getByTestId('is-logged-in')).toHaveTextContent('No');
     expect(screen.getByTestId('user')).toHaveTextContent('No User');
   });
 
-  it('Sets idToken to null if fetching session returns bad data.', async () => {
+  it('Sets accessToken to null if fetching session returns bad data.', async () => {
     (getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
     (fetchAuthSession as jest.Mock).mockResolvedValue({});
 
@@ -117,7 +119,7 @@ describe('AuthProvider', () => {
       );
     });
 
-    expect(screen.getByTestId('id-token')).toHaveTextContent('No Token');
+    expect(screen.getByTestId('access-token')).toHaveTextContent('No Token');
     expect(screen.getByTestId('is-logged-in')).toHaveTextContent('No');
     expect(screen.getByTestId('user')).toHaveTextContent('No User');
   });
@@ -138,7 +140,9 @@ describe('AuthProvider', () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByTestId('id-token')).toHaveTextContent('mockIdToken');
+      expect(screen.getByTestId('access-token')).toHaveTextContent(
+        'mockAccessToken',
+      );
       expect(screen.getByTestId('is-logged-in')).toHaveTextContent('Yes');
       expect(screen.getByTestId('user')).toHaveTextContent('testUser');
     });
@@ -160,7 +164,7 @@ describe('AuthProvider', () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByTestId('id-token')).toHaveTextContent('No Token');
+      expect(screen.getByTestId('access-token')).toHaveTextContent('No Token');
       expect(screen.getByTestId('is-logged-in')).toHaveTextContent('No');
       expect(screen.getByTestId('user')).toHaveTextContent('No User');
     });
@@ -183,7 +187,9 @@ describe('AuthProvider', () => {
 
     await act(async () => {
       await waitFor(() => {
-        expect(screen.getByTestId('id-token')).toHaveTextContent('No Token');
+        expect(screen.getByTestId('access-token')).toHaveTextContent(
+          'No Token',
+        );
       });
     });
   });
@@ -207,7 +213,9 @@ describe('AuthProvider', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByTestId('id-token')).toHaveTextContent('mockIdToken');
+      expect(screen.getByTestId('access-token')).toHaveTextContent(
+        'mockAccessToken',
+      );
       expect(screen.getByTestId('is-logged-in')).toHaveTextContent('Yes');
       expect(screen.getByTestId('user')).toHaveTextContent('testUser');
     });
@@ -220,7 +228,7 @@ describe('AuthProvider', () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByTestId('id-token')).toHaveTextContent('No Token');
+      expect(screen.getByTestId('access-token')).toHaveTextContent('No Token');
       expect(screen.getByTestId('is-logged-in')).toHaveTextContent('No');
       expect(screen.getByTestId('user')).toHaveTextContent('No User');
     });
@@ -237,7 +245,7 @@ describe('AuthProvider', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByTestId('id-token')).toHaveTextContent('No Token');
+      expect(screen.getByTestId('access-token')).toHaveTextContent('No Token');
       expect(screen.getByTestId('is-logged-in')).toHaveTextContent('No');
       expect(screen.getByTestId('user')).toHaveTextContent('No User');
     });
