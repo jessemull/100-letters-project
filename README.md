@@ -9,6 +9,7 @@ This repository is part of the **100 Letters Project** which includes the follow
 - **[100 Letters Project API](https://github.com/jessemull/100-letters-project-api)**: The **100 Letters Project** API.
 - **[100 Letters Project Client](https://github.com/jessemull/100-letters-project)**: The **100 Letters Project** NextJS client.
 - **[100 Letters Project Lambda@Edge](https://github.com/jessemull/100-letters-project-lambda-at-edge)**: The **100 Letters Project** Lambda@Edge.
+- **[100 Letters Project Authorizer](https://github.com/jessemull/100-letters-project-authorizer)**: The **100 Letters Project** authorizer.
 
 ## Table of Contents
 
