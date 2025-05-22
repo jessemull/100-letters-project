@@ -27,7 +27,7 @@ Amplify.configure({
   },
 });
 
-const COOKIE_KEY = '100_letters_cognito_id_token';
+const COOKIE_KEY = '100_letters_cognito_access_token';
 const DEFAULT_ERROR_MESSAGE = 'Error signing in. Please try again.';
 
 export interface AuthContextType {
@@ -67,10 +67,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     cookies.remove(COOKIE_KEY);
   };
 
-  const getIdToken = useCallback(async (): Promise<string | null> => {
+  const getAccessToken = useCallback(async (): Promise<string | null> => {
     try {
       const session = await fetchAuthSession();
-      return session.tokens?.idToken?.toString() || null;
+      return session.tokens?.accessToken?.toString() || null;
     } catch {
       return null;
     }
@@ -79,13 +79,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const initializeSession = useCallback(async () => {
     try {
       const currentUser = await getCurrentUser();
-      const idToken = await getIdToken();
-      if (!idToken) throw new Error('Missing ID token');
+      const accessToken = await getAccessToken();
+      if (!accessToken) throw new Error('Missing access token');
 
       setUser(currentUser);
-      setToken(idToken);
+      setToken(accessToken);
       setIsLoggedIn(true);
-      cookies.set(COOKIE_KEY, idToken, {
+      cookies.set(COOKIE_KEY, accessToken, {
         expires: 1,
         secure: true,
         sameSite: 'Strict',
@@ -95,7 +95,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  }, [getIdToken]);
+  }, [getAccessToken]);
 
   useEffect(() => {
     initializeSession();
