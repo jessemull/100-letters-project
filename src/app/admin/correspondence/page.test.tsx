@@ -3,6 +3,19 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { DesktopMenuProvider } from '@contexts/DesktopMenuProvider';
 
+jest.mock('@contexts/AuthProvider', () => ({
+  useAuth: jest.fn().mockReturnValue({
+    authenticating: false,
+    isLoggedIn: true,
+  }),
+}));
+
+jest.mock('next/navigation', () => ({
+  useRouter: jest.fn().mockReturnValue({
+    replace: jest.fn(),
+  }),
+}));
+
 jest.mock('@components/Admin/Correspondences/CorrespondenceForm', () => {
   const MockForm = () => <div data-testid="correspondence-form" />;
   MockForm.displayName = 'MockCorrespondenceForm';

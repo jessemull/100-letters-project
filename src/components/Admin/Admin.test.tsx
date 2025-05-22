@@ -51,21 +51,6 @@ describe('Admin', () => {
     jest.clearAllMocks();
   });
 
-  it('Redirects to /403 if user is not logged in and not authenticating.', async () => {
-    renderWithAuth({ isLoggedIn: false, loading: false });
-
-    (useDataHook.useSWRQuery as jest.Mock).mockReturnValue({
-      data: [],
-      isLoading: true,
-    });
-
-    render(<Admin />);
-
-    await waitFor(() => {
-      expect(mockPush).toHaveBeenCalledWith('/forbidden');
-    });
-  });
-
   it('Has no accessibility violations.', async () => {
     renderWithAuth();
 
