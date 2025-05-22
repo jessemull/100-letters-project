@@ -59,7 +59,10 @@ This repository is part of the **100 Letters Project** which includes the follow
     - [Deploy](#deploy-on-merge)
     - [Deploy On Merge](#deploy-on-merge)
     - [Rollback](#rollback)
-15. [Cognito ID Token](#cognito-id-token)
+15. [Cognito Access Token](#cognito-access-token)
+    - [Generating An Access Token](#generating-an-access-token)
+    - [Using An Access Token](#using-an-access-token)
+    - [Environment Variables](#environment-variables)
 16. [Connecting to the Bastion Host](#connecting-to-the-bastion-host)
     - [Environment Variables](#environment-variables-2)
 17. [License](#license)
@@ -506,34 +509,35 @@ The workflow performs the following steps:
 
 This workflow is defined in the `.github/workflows/rollback.yml` file.
 
-## Cognito ID Token
+## Cognito Access Token
 
-All write routes are protected via Cognito User Pools. A valid ID token is required to use these endpoints.
+All write routes are protected via Cognito User Pools. A valid access token is required to use these endpoints and access the UI.
 
-### Generating An ID Token
+### Generating An Access Token
 
-To generate a valid ID token:
+To generate a valid Access token:
 
 ```bash
 npm run token
 ```
 
-### Using An ID Token
+### Using An Access Token
 
-To use the token add it to the Authorization request header:
+To use the API add the token to the Authorization request header:
 
 ```bash
-curl -X POST "https://api-dev.onehundredletters.com/<stage>/<route>"  -H "Authorization: Bearer <token>"
+curl -X POST "https://bgv89ajo02.execute-api.us-west-2.amazonaws.com/<stage>/<route>"  -H "Authorization: Bearer <token>"
 ```
 
 ### Environment Variables
 
-The following environment variables must be set in a `.env.test` and `.env.production` file in the root of the project to generate a token:
+The following environment variables must be set in a `.env` file in the root of the project to generate a token:
 
 ```
+COGNITO_USER_POOL_ID=cognito-user-pool-id
 COGNITO_USER_POOL_USERNAME=cognito-user-pool-username
 COGNITO_USER_POOL_PASSWORD=cognito-user-pool-password
-NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID=cognito-user-pool-client-id
+COGNITO_USER_POOL_CLIENT_ID=cognito-user-pool-client-id
 ```
 
 ## Connecting to the Bastion Host
