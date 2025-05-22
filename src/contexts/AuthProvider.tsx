@@ -10,12 +10,14 @@ import React, {
   ReactNode,
 } from 'react';
 import { Amplify } from 'aws-amplify';
+import { showToast } from '@components/Form';
 import {
   getCurrentUser,
   fetchAuthSession,
   signIn as amplifySignIn,
   signOut as amplifySignOut,
 } from '@aws-amplify/auth';
+import { useRouter } from 'next/navigation';
 
 Amplify.configure({
   Auth: {
@@ -60,6 +62,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<any | null>(null);
   const [token, setToken] = useState<string | null>(null);
 
+  const router = useRouter();
+
   const resetAuthState = () => {
     setIsLoggedIn(false);
     setUser(null);
@@ -80,7 +84,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const currentUser = await getCurrentUser();
       const accessToken = await getAccessToken();
-      if (!accessToken) throw new Error('Missing access token');
+      if (!accessToken) throw new Error('Missing access token!');
 
       setUser(currentUser);
       setToken(accessToken);
@@ -118,6 +122,41 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     await amplifySignOut();
     resetAuthState();
   };
+
+  useEffect(() => {
+    if (!isLoggedIn) return;
+
+    const interval = setInterval(
+      async () => {
+        try {
+          const newToken = await getAccessToken();
+
+          if (!newToken) throw new Error('No token!');
+
+          if (newToken !== token) {
+            setToken(newToken);
+            cookies.set(COOKIE_KEY, newToken, {
+              expires: 1,
+              secure: true,
+              sameSite: 'Strict',
+            });
+          }
+        } catch {
+          setTimeout(() => {
+            resetAuthState();
+          }, 100);
+          router.push('/login');
+          showToast({
+            message: 'User session has expired. Please log in again!',
+            type: 'error',
+          });
+        }
+      },
+      55 * 60 * 1000,
+    );
+
+    return () => clearInterval(interval);
+  }, [getAccessToken, router, token, isLoggedIn]);
 
   return (
     <AuthContext.Provider
