@@ -24,7 +24,7 @@ const mockUser = { username: 'testUser' };
 const mockSession = {
   tokens: {
     accessToken: {
-      toString: jest.fn(() => 'mockIdToken'),
+      toString: jest.fn(() => 'mockAccessToken'),
     },
   },
 };
@@ -83,7 +83,7 @@ describe('AuthProvider', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('access-token')).toHaveTextContent(
-        'mockIdToken',
+        'mockAccessToken',
       );
       expect(screen.getByTestId('is-logged-in')).toHaveTextContent('Yes');
       expect(screen.getByTestId('user')).toHaveTextContent('testUser');
@@ -141,7 +141,7 @@ describe('AuthProvider', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('access-token')).toHaveTextContent(
-        'mockIdToken',
+        'mockAccessToken',
       );
       expect(screen.getByTestId('is-logged-in')).toHaveTextContent('Yes');
       expect(screen.getByTestId('user')).toHaveTextContent('testUser');
@@ -214,7 +214,7 @@ describe('AuthProvider', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('access-token')).toHaveTextContent(
-        'mockIdToken',
+        'mockAccessToken',
       );
       expect(screen.getByTestId('is-logged-in')).toHaveTextContent('Yes');
       expect(screen.getByTestId('user')).toHaveTextContent('testUser');
