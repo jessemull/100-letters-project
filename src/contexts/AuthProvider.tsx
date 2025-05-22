@@ -84,7 +84,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const currentUser = await getCurrentUser();
       const accessToken = await getAccessToken();
-      if (!accessToken) throw new Error('Missing access token');
+      if (!accessToken) throw new Error('Missing access token!');
 
       setUser(currentUser);
       setToken(accessToken);
@@ -131,7 +131,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         try {
           const newToken = await getAccessToken();
 
-          if (!newToken) throw new Error('No token');
+          if (!newToken) throw new Error('No token!');
 
           if (newToken !== token) {
             setToken(newToken);
