@@ -34,12 +34,11 @@ describe('Header Component', () => {
   });
 
   afterAll(() => {
-    window.location = originalLocation;
+    window.location = originalLocation as string & Location;
   });
 
   it('Renders header with logged-in state.', async () => {
     (useAuth as jest.Mock).mockReturnValue({
-      getIdToken: jest.fn(),
       isLoggedIn: true,
       signOut: jest.fn(),
     });
@@ -60,7 +59,6 @@ describe('Header Component', () => {
 
   it('Renders header with logged-out state.', async () => {
     (useAuth as jest.Mock).mockReturnValue({
-      getIdToken: jest.fn(),
       isLoggedIn: false,
       signOut: jest.fn(),
     });
@@ -80,7 +78,6 @@ describe('Header Component', () => {
 
   it('Has no accessibility errors.', async () => {
     (useAuth as jest.Mock).mockReturnValue({
-      getIdToken: jest.fn(),
       isLoggedIn: false,
       signOut: jest.fn(),
     });
@@ -94,7 +91,6 @@ describe('Header Component', () => {
 
   it('Opens menu when the button is clicked (on mobile).', async () => {
     (useAuth as jest.Mock).mockReturnValue({
-      getIdToken: jest.fn(),
       isLoggedIn: false,
       signOut: jest.fn(),
     });
@@ -113,7 +109,6 @@ describe('Header Component', () => {
   it('Logs out when the logout icon is clicked.', async () => {
     const signOutMock = jest.fn();
     (useAuth as jest.Mock).mockReturnValue({
-      getIdToken: jest.fn(),
       isLoggedIn: true,
       signOut: signOutMock,
     });
@@ -134,7 +129,6 @@ describe('Header Component', () => {
       throw new Error('Sign out failed');
     });
     (useAuth as jest.Mock).mockReturnValue({
-      getIdToken: jest.fn(),
       isLoggedIn: true,
       signOut: signOutMock,
     });
@@ -161,7 +155,6 @@ describe('Header Component', () => {
 
   it('Opens and then closes the mobile menu.', async () => {
     (useAuth as jest.Mock).mockReturnValue({
-      getIdToken: jest.fn(),
       isLoggedIn: false,
       signOut: jest.fn(),
     });

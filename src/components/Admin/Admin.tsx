@@ -10,7 +10,6 @@ import {
 import { Search, ChevronDown } from 'lucide-react';
 import { Tab, TabList, TabPanel, TabPanels, TabGroup } from '@headlessui/react';
 import { debounce } from '@util/debounce';
-import { useAuth } from '@contexts/AuthProvider';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 
 const tabs = [
@@ -49,15 +48,7 @@ const Admin = () => {
   const [search, setSearch] = useState('');
   const [searchInput, setSearchInput] = useState('');
 
-  const { isLoggedIn, loading: authenticating } = useAuth();
-
   const activeTab = tabs[selectedIndex];
-
-  useEffect(() => {
-    if (!isLoggedIn && !authenticating) {
-      router.push('/forbidden');
-    }
-  }, [authenticating, isLoggedIn, router]);
 
   const handleTabChange = (index: number) => {
     setSearch('');

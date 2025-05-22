@@ -10,3 +10,4 @@ export * from './Form';
 export * from './Header';
 export * from './Login';
 export * from './Menu';
+export * from './ProtectedRoute';

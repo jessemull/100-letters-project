@@ -14,8 +14,8 @@ jest.mock('next/navigation', () => ({
 
 jest.mock('@contexts/AuthProvider', () => ({
   useAuth: jest.fn().mockReturnValue({
-    loading: false,
-    token: 'test-token',
+    authenticating: false,
+    isLoggedIn: true,
   }),
 }));
 
