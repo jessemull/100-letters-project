@@ -10,12 +10,14 @@ import React, {
   ReactNode,
 } from 'react';
 import { Amplify } from 'aws-amplify';
+import { showToast } from '@components/Form';
 import {
   getCurrentUser,
   fetchAuthSession,
   signIn as amplifySignIn,
   signOut as amplifySignOut,
 } from '@aws-amplify/auth';
+import { useRouter } from 'next/navigation';
 
 Amplify.configure({
   Auth: {
@@ -27,7 +29,7 @@ Amplify.configure({
   },
 });
 
-const COOKIE_KEY = '100_letters_cognito_id_token';
+const COOKIE_KEY = '100_letters_cognito_access_token';
 const DEFAULT_ERROR_MESSAGE = 'Error signing in. Please try again.';
 
 export interface AuthContextType {
@@ -60,6 +62,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<any | null>(null);
   const [token, setToken] = useState<string | null>(null);
 
+  const router = useRouter();
+
   const resetAuthState = () => {
     setIsLoggedIn(false);
     setUser(null);
@@ -67,10 +71,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     cookies.remove(COOKIE_KEY);
   };
 
-  const getIdToken = useCallback(async (): Promise<string | null> => {
+  const getAccessToken = useCallback(async (): Promise<string | null> => {
     try {
       const session = await fetchAuthSession();
-      return session.tokens?.idToken?.toString() || null;
+      return session.tokens?.accessToken?.toString() || null;
     } catch {
       return null;
     }
@@ -79,13 +83,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const initializeSession = useCallback(async () => {
     try {
       const currentUser = await getCurrentUser();
-      const idToken = await getIdToken();
-      if (!idToken) throw new Error('Missing ID token');
+      const accessToken = await getAccessToken();
+      if (!accessToken) throw new Error('Missing access token!');
 
       setUser(currentUser);
-      setToken(idToken);
+      setToken(accessToken);
       setIsLoggedIn(true);
-      cookies.set(COOKIE_KEY, idToken, {
+      cookies.set(COOKIE_KEY, accessToken, {
         expires: 1,
         secure: true,
         sameSite: 'Strict',
@@ -95,7 +99,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  }, [getIdToken]);
+  }, [getAccessToken]);
 
   useEffect(() => {
     initializeSession();
@@ -118,6 +122,41 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     await amplifySignOut();
     resetAuthState();
   };
+
+  useEffect(() => {
+    if (!isLoggedIn) return;
+
+    const interval = setInterval(
+      async () => {
+        try {
+          const newToken = await getAccessToken();
+
+          if (!newToken) throw new Error('No token!');
+
+          if (newToken !== token) {
+            setToken(newToken);
+            cookies.set(COOKIE_KEY, newToken, {
+              expires: 1,
+              secure: true,
+              sameSite: 'Strict',
+            });
+          }
+        } catch {
+          setTimeout(() => {
+            resetAuthState();
+          }, 100);
+          router.push('/login');
+          showToast({
+            message: 'User session has expired. Please log in again!',
+            type: 'error',
+          });
+        }
+      },
+      55 * 60 * 1000,
+    );
+
+    return () => clearInterval(interval);
+  }, [getAccessToken, router, token, isLoggedIn]);
 
   return (
     <AuthContext.Provider

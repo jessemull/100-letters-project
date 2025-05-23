@@ -12,6 +12,18 @@ import {
   signIn as amplifySignIn,
 } from '@aws-amplify/auth';
 import { render, screen, waitFor, act } from '@testing-library/react';
+import { showToast } from '@components/Form';
+import { useRouter } from 'next/navigation';
+
+jest.mock('@components/Form', () => ({
+  showToast: jest.fn(),
+}));
+
+jest.mock('next/navigation', () => ({
+  useRouter: jest.fn().mockReturnValue({
+    push: jest.fn(),
+  }),
+}));
 
 jest.mock('@aws-amplify/auth', () => ({
   getCurrentUser: jest.fn(),
@@ -23,8 +35,8 @@ jest.mock('@aws-amplify/auth', () => ({
 const mockUser = { username: 'testUser' };
 const mockSession = {
   tokens: {
-    idToken: {
-      toString: jest.fn(() => 'mockIdToken'),
+    accessToken: {
+      toString: jest.fn(() => 'mockAccessToken'),
     },
   },
 };
@@ -40,7 +52,7 @@ const TestComponent = () => {
 
   return (
     <div>
-      <div data-testid="id-token">{token || 'No Token'}</div>
+      <div data-testid="access-token">{token || 'No Token'}</div>
       <div data-testid="is-logged-in">{isLoggedIn ? 'Yes' : 'No'}</div>
       <div data-testid="user">{user ? user.username : 'No User'}</div>
       <button onClick={handleClick}>Sign In</button>
@@ -66,12 +78,12 @@ describe('AuthProvider', () => {
       );
     });
 
-    expect(screen.getByTestId('id-token')).toHaveTextContent('No Token');
+    expect(screen.getByTestId('access-token')).toHaveTextContent('No Token');
     expect(screen.getByTestId('is-logged-in')).toHaveTextContent('No');
     expect(screen.getByTestId('user')).toHaveTextContent('No User');
   });
 
-  it('Sets user and idToken when authenticated on mount.', async () => {
+  it('Sets user and accessToken when authenticated on mount.', async () => {
     (getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
     (fetchAuthSession as jest.Mock).mockResolvedValue(mockSession);
 
@@ -82,13 +94,15 @@ describe('AuthProvider', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByTestId('id-token')).toHaveTextContent('mockIdToken');
+      expect(screen.getByTestId('access-token')).toHaveTextContent(
+        'mockAccessToken',
+      );
       expect(screen.getByTestId('is-logged-in')).toHaveTextContent('Yes');
       expect(screen.getByTestId('user')).toHaveTextContent('testUser');
     });
   });
 
-  it('Sets idToken to null if fetching session fails.', async () => {
+  it('Sets accessToken to null if fetching session fails.', async () => {
     (getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
     (fetchAuthSession as jest.Mock).mockRejectedValue(new Error('Failed'));
 
@@ -100,12 +114,12 @@ describe('AuthProvider', () => {
       );
     });
 
-    expect(screen.getByTestId('id-token')).toHaveTextContent('No Token');
+    expect(screen.getByTestId('access-token')).toHaveTextContent('No Token');
     expect(screen.getByTestId('is-logged-in')).toHaveTextContent('No');
     expect(screen.getByTestId('user')).toHaveTextContent('No User');
   });
 
-  it('Sets idToken to null if fetching session returns bad data.', async () => {
+  it('Sets accessToken to null if fetching session returns bad data.', async () => {
     (getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
     (fetchAuthSession as jest.Mock).mockResolvedValue({});
 
@@ -117,7 +131,7 @@ describe('AuthProvider', () => {
       );
     });
 
-    expect(screen.getByTestId('id-token')).toHaveTextContent('No Token');
+    expect(screen.getByTestId('access-token')).toHaveTextContent('No Token');
     expect(screen.getByTestId('is-logged-in')).toHaveTextContent('No');
     expect(screen.getByTestId('user')).toHaveTextContent('No User');
   });
@@ -138,7 +152,9 @@ describe('AuthProvider', () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByTestId('id-token')).toHaveTextContent('mockIdToken');
+      expect(screen.getByTestId('access-token')).toHaveTextContent(
+        'mockAccessToken',
+      );
       expect(screen.getByTestId('is-logged-in')).toHaveTextContent('Yes');
       expect(screen.getByTestId('user')).toHaveTextContent('testUser');
     });
@@ -160,7 +176,7 @@ describe('AuthProvider', () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByTestId('id-token')).toHaveTextContent('No Token');
+      expect(screen.getByTestId('access-token')).toHaveTextContent('No Token');
       expect(screen.getByTestId('is-logged-in')).toHaveTextContent('No');
       expect(screen.getByTestId('user')).toHaveTextContent('No User');
     });
@@ -183,7 +199,9 @@ describe('AuthProvider', () => {
 
     await act(async () => {
       await waitFor(() => {
-        expect(screen.getByTestId('id-token')).toHaveTextContent('No Token');
+        expect(screen.getByTestId('access-token')).toHaveTextContent(
+          'No Token',
+        );
       });
     });
   });
@@ -207,7 +225,9 @@ describe('AuthProvider', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByTestId('id-token')).toHaveTextContent('mockIdToken');
+      expect(screen.getByTestId('access-token')).toHaveTextContent(
+        'mockAccessToken',
+      );
       expect(screen.getByTestId('is-logged-in')).toHaveTextContent('Yes');
       expect(screen.getByTestId('user')).toHaveTextContent('testUser');
     });
@@ -220,7 +240,7 @@ describe('AuthProvider', () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByTestId('id-token')).toHaveTextContent('No Token');
+      expect(screen.getByTestId('access-token')).toHaveTextContent('No Token');
       expect(screen.getByTestId('is-logged-in')).toHaveTextContent('No');
       expect(screen.getByTestId('user')).toHaveTextContent('No User');
     });
@@ -237,9 +257,167 @@ describe('AuthProvider', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByTestId('id-token')).toHaveTextContent('No Token');
+      expect(screen.getByTestId('access-token')).toHaveTextContent('No Token');
       expect(screen.getByTestId('is-logged-in')).toHaveTextContent('No');
       expect(screen.getByTestId('user')).toHaveTextContent('No User');
     });
+  });
+
+  it('Triggers logout and toast when no token is returned in interval.', async () => {
+    jest.useFakeTimers();
+
+    const mockPush = jest.fn();
+    (useRouter as jest.Mock).mockReturnValue({
+      push: mockPush,
+    });
+    (getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
+    (fetchAuthSession as jest.Mock)
+      .mockResolvedValueOnce(mockSession)
+      .mockResolvedValueOnce({});
+
+    render(
+      <AuthProvider>
+        <TestComponent />
+      </AuthProvider>,
+    );
+
+    await waitFor(() =>
+      expect(screen.getByTestId('is-logged-in')).toHaveTextContent('Yes'),
+    );
+
+    act(() => {
+      jest.advanceTimersByTime(55 * 60 * 1000);
+    });
+
+    await waitFor(() => {
+      expect(mockPush).toHaveBeenCalledWith('/login');
+      expect(showToast).toHaveBeenCalledWith({
+        message: 'User session has expired. Please log in again!',
+        type: 'error',
+      });
+    });
+
+    jest.useRealTimers();
+  });
+
+  it('Updates token if a new one is returned during interval.', async () => {
+    jest.useFakeTimers();
+
+    (getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
+    (fetchAuthSession as jest.Mock)
+      .mockResolvedValueOnce(mockSession)
+      .mockResolvedValueOnce({
+        tokens: {
+          accessToken: {
+            toString: jest.fn(() => 'newMockToken'),
+          },
+        },
+      });
+
+    render(
+      <AuthProvider>
+        <TestComponent />
+      </AuthProvider>,
+    );
+
+    await waitFor(() =>
+      expect(screen.getByTestId('access-token')).toHaveTextContent(
+        'mockAccessToken',
+      ),
+    );
+
+    act(() => {
+      jest.advanceTimersByTime(55 * 60 * 1000);
+    });
+
+    await waitFor(() =>
+      expect(screen.getByTestId('access-token')).toHaveTextContent(
+        'newMockToken',
+      ),
+    );
+
+    jest.useRealTimers();
+  });
+
+  it('Does nothing if the token is unchanged during interval.', async () => {
+    jest.useFakeTimers();
+
+    const mockPush = jest.fn();
+    (useRouter as jest.Mock).mockReturnValue({
+      push: mockPush,
+    });
+    (getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
+    (fetchAuthSession as jest.Mock).mockResolvedValue(mockSession);
+
+    render(
+      <AuthProvider>
+        <TestComponent />
+      </AuthProvider>,
+    );
+
+    await waitFor(() =>
+      expect(screen.getByTestId('access-token')).toHaveTextContent(
+        'mockAccessToken',
+      ),
+    );
+
+    act(() => {
+      jest.advanceTimersByTime(55 * 60 * 1000);
+    });
+
+    await waitFor(() =>
+      expect(screen.getByTestId('access-token')).toHaveTextContent(
+        'mockAccessToken',
+      ),
+    );
+
+    expect(mockPush).not.toHaveBeenCalled();
+    expect(showToast).not.toHaveBeenCalled();
+
+    jest.useRealTimers();
+  });
+
+  it('Handles session expiration and calls resetAuthState via setTimeout.', async () => {
+    jest.useFakeTimers();
+
+    (getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
+    (fetchAuthSession as jest.Mock)
+      .mockResolvedValueOnce(mockSession)
+      .mockRejectedValueOnce(new Error('Token fetch failed'));
+
+    const pushMock = jest.fn();
+    (useRouter as jest.Mock).mockReturnValue({ push: pushMock });
+
+    await act(async () => {
+      render(
+        <AuthProvider>
+          <TestComponent />
+        </AuthProvider>,
+      );
+    });
+
+    expect(screen.getByTestId('is-logged-in')).toHaveTextContent('Yes');
+
+    act(() => {
+      jest.advanceTimersByTime(55 * 60 * 1000);
+    });
+
+    await waitFor(() => {
+      expect(showToast).toHaveBeenCalledWith({
+        message: 'User session has expired. Please log in again!',
+        type: 'error',
+      });
+      expect(pushMock).toHaveBeenCalledWith('/login');
+    });
+
+    act(() => {
+      jest.advanceTimersByTime(100);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('is-logged-in')).toHaveTextContent('No');
+    });
+
+    jest.useRealTimers();
   });
 });

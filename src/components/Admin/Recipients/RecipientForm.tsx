@@ -128,7 +128,9 @@ const RecipientForm = () => {
   }, [recipientId, data, values.recipientId, setValues]);
 
   return isLoading || authenticating ? (
-    <Progress color="white" size={16} />
+    <div className="w-full h-full flex items-center justify-center">
+      <Progress color="white" size={16} />
+    </div>
   ) : (
     <div className="p-6 md:p-12 w-full max-w-3xl mx-auto space-y-6">
       <h1 className="text-3xl font-semibold text-white">Recipient Form</h1>
