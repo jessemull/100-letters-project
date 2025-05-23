@@ -4,21 +4,23 @@ import { ChevronDown, ChevronUp, Search, X } from 'lucide-react';
 import { useState, ReactNode } from 'react';
 
 interface SearchSectionProps<T> {
-  title: string;
   data: T[];
-  results: T[];
+  onItemClick: (item: T) => void;
   renderItem: (item: T) => ReactNode;
+  results: T[];
   setTerm: (term: string) => void;
   term: string;
+  title: string;
 }
 
 function SearchSection<T>({
-  title,
   data,
-  results,
+  onItemClick,
   renderItem,
+  results,
   setTerm,
   term,
+  title,
 }: SearchSectionProps<T>) {
   const [isOpen, setIsOpen] = useState(true);
   const [itemsToShowCount, setItemsToShowCount] = useState(10);
@@ -65,7 +67,15 @@ function SearchSection<T>({
           </div>
           <ul className="space-y-2 text-white text-sm mt-3">
             {itemsToRender.map((item, i) => (
-              <li key={i}>{renderItem(item)}</li>
+              <li key={i}>
+                <button
+                  type="button"
+                  onClick={() => onItemClick(item)}
+                  className="w-full text-left bg-transparent hover:bg-white/10 rounded transition focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+                >
+                  {renderItem(item)}
+                </button>
+              </li>
             ))}
           </ul>
           {showMoreButtonVisible && (

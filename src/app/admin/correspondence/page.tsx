@@ -4,7 +4,7 @@ import PageLayout from '@pages/page.layout';
 import React, { Suspense } from 'react';
 import { CorrespondenceForm } from '@components/Admin';
 import { Progress } from '@components/Form';
-import { ProtectedRoute } from '@components/ProtectedRoute';
+import { ProtectedRoute } from '@components/Protected';
 
 const CorrespondencePage = () => (
   <PageLayout>

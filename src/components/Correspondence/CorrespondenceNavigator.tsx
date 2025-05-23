@@ -9,7 +9,7 @@ import {
   LetterSelector,
   LetterText,
   RecipientDetails,
-} from '@components/CorrespondenceNavigator';
+} from '@components/Correspondence';
 import { useState } from 'react';
 
 const CorrespondenceNavigator = ({

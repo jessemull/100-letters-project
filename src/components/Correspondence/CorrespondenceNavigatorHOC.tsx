@@ -3,7 +3,7 @@
 import { useSearchParams } from 'next/navigation';
 import { useCorrespondence } from '@contexts/CorrespondenceProvider';
 import { useMemo } from 'react';
-import { CorrespondenceNavigator } from '@components/CorrespondenceNavigator';
+import { CorrespondenceNavigator } from '@components/Correspondence';
 
 const CorrespondenceNavigatorHOC = () => {
   const { correspondencesById } = useCorrespondence();

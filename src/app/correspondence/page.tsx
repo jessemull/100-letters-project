@@ -2,7 +2,7 @@
 
 import PageLayout from '../page.layout';
 import React from 'react';
-import { CorrespondenceNavigatorHOC } from '@components/CorrespondenceNavigator';
+import { CorrespondenceNavigatorHOC } from '@components/Correspondence';
 
 const CorrespondencePage = () => (
   <PageLayout>
