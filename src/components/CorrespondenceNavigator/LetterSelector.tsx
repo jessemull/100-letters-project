@@ -27,7 +27,9 @@ const LetterSelector = ({
 
   return (
     <div className="flex flex-col items-start space-y-2 max-h-[350px]">
-      <h1 className="text-3xl font-bold">Letters</h1>
+      <h1 className="text-3xl font-extrabold tracking-tight text-white drop-shadow-lg">
+        Letters
+      </h1>
 
       <button
         onClick={() => onSelect(Math.max(0, selected - 1))}
@@ -47,7 +49,11 @@ const LetterSelector = ({
               key={letter.letterId}
               onClick={() => onSelect(idx)}
               className={`text-left text-white transition transform duration-150 ease-in-out
-                ${isSelected ? 'font-bold underline' : 'opacity-80'}
+                ${
+                  isSelected
+                    ? 'bg-white/20 text-white font-semibold rounded px-2 py-1 shadow border-l-4 border-white pl-2'
+                    : 'hover:bg-white/10 hover:text-white/90 transition px-2 py-1 rounded'
+                }
                 hover:opacity-100 hover:underline
               `}
             >

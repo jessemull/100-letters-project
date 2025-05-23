@@ -6,16 +6,20 @@ interface Props {
 }
 
 const RecipientDetails: React.FC<Props> = ({ correspondence }) => (
-  <div className="bg-white/10 p-4 rounded-xl">
-    <h2 className="text-xl font-semibold">Recipient</h2>
-    <p>
+  <div className="bg-white/20 p-6 rounded-2xl shadow-xl border border-white/10 backdrop-blur-md">
+    <h2 className="text-xl font-bold text-white mb-2">Recipient</h2>
+    <p className="text-white/90 text-lg mb-1">
       {correspondence.recipient.firstName} {correspondence.recipient.lastName}
     </p>
-    <p className="text-white/70 italic">
+    <p className="text-white/70 italic mb-1">
       {correspondence.recipient.occupation}
     </p>
-    <p className="text-white/60">{correspondence.recipient.organization}</p>
-    <p className="mt-2 text-white/80">{correspondence.recipient.description}</p>
+    <p className="text-white/60 mb-2">
+      {correspondence.recipient.organization}
+    </p>
+    <p className="mt-2 text-white/85 leading-relaxed">
+      {correspondence.recipient.description}
+    </p>
   </div>
 );
 

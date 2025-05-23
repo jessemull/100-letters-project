@@ -1,6 +1,5 @@
 import Image from 'next/image';
 import { Letter, LetterImage } from '@ts-types/letter';
-import { viewMap } from '@constants/letter';
 
 interface Props {
   letter: Letter;
@@ -25,7 +24,7 @@ const ImageCarousel: React.FC<Props> = ({ letter, onClick, selected }) => (
                 : 'hover:border hover:border-white'
             }`}
           >
-            <div className="relative w-full h-full">
+            <div className="relative w-24 h-24 flex-shrink-0 group hover:scale-105 transition-transform duration-300 ease-out">
               <Image
                 src={letter.imageURLs[idx]?.urlThumbnail || './missing.jpg'}
                 alt={`Thumbnail ${idx}`}
@@ -33,13 +32,8 @@ const ImageCarousel: React.FC<Props> = ({ letter, onClick, selected }) => (
                 className="object-cover"
               />
               <div
-                className={`absolute inset-0 transition-all duration-300 ${
-                  isSelected ? 'bg-black/70' : ''
-                }`}
+                className={`absolute inset-0 transition-all duration-300 ${isSelected ? 'ring-2 ring-white ring-offset-2' : 'hover:ring hover:ring-white/50'}`}
               />
-              <span className="absolute bottom-1 left-1 px-1.5 py-0.5 text-xs font-medium rounded bg-white/80 text-black backdrop-blur-sm shadow-sm border border-black/10 z-10">
-                {viewMap[letter.imageURLs[idx].view]}
-              </span>
             </div>
           </div>
         </button>

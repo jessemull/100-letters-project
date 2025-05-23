@@ -24,7 +24,7 @@ const CorrespondenceNavigator = ({
   const selectedImage = selectedLetter.imageURLs[selectedImageIndex];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="font-merriweather max-w-7xl mx-auto px-4 py-8">
       <div className="flex flex-col md:flex-row gap-8 items-start">
         <div className="flex-shrink-0">
           <LetterSelector
