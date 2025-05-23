@@ -3,7 +3,7 @@ import React from 'react';
 import { Card } from '@components/Feed';
 import { Correspondence } from '@ts-types/correspondence';
 import { axe } from 'jest-axe';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn().mockReturnValue({
@@ -87,6 +87,27 @@ describe('Card Commponent', () => {
     const cardDiv = container.querySelector('div');
     expect(cardDiv?.className).toMatch(/rounded-xl/);
     expect(cardDiv?.className).toMatch(/hover:scale/);
+  });
+
+  it('Fires router.push when Enter or Space is pressed.', () => {
+    const pushMock = jest.fn();
+    (require('next/navigation').useRouter as jest.Mock).mockReturnValue({
+      push: pushMock,
+    });
+
+    render(<Card correspondence={mockCorrespondence} />);
+    const card = screen.getByRole('button');
+
+    fireEvent.keyDown(card, { key: 'Enter', code: 'Enter', charCode: 13 });
+    expect(pushMock).toHaveBeenCalledWith(
+      '/correspondence?correspondenceId=abc123',
+    );
+
+    pushMock.mockClear();
+    fireEvent.keyDown(card, { key: ' ', code: 'Space', charCode: 32 });
+    expect(pushMock).toHaveBeenCalledWith(
+      '/correspondence?correspondenceId=abc123',
+    );
   });
 
   it('Has no accessibility violations.', async () => {

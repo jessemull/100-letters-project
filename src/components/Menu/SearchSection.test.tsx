@@ -26,6 +26,7 @@ describe('SearchSection', () => {
       <SearchSection
         title={title}
         data={allData}
+        onItemClick={jest.fn()}
         results={[]}
         renderItem={renderItem}
         setTerm={setTerm}
@@ -46,6 +47,7 @@ describe('SearchSection', () => {
       <SearchSection
         title={title}
         data={allData}
+        onItemClick={jest.fn()}
         results={[]}
         renderItem={renderItem}
         setTerm={setTerm}
@@ -62,6 +64,7 @@ describe('SearchSection', () => {
       <SearchSection
         title={title}
         data={allData}
+        onItemClick={jest.fn()}
         results={results}
         renderItem={renderItem}
         setTerm={setTerm}
@@ -81,6 +84,7 @@ describe('SearchSection', () => {
       <SearchSection
         title={title}
         data={allData}
+        onItemClick={jest.fn()}
         results={[]}
         renderItem={renderItem}
         setTerm={setTerm}
@@ -99,6 +103,7 @@ describe('SearchSection', () => {
       <SearchSection
         title={title}
         data={allData}
+        onItemClick={jest.fn()}
         results={[]}
         renderItem={renderItem}
         setTerm={setTerm}
@@ -114,6 +119,7 @@ describe('SearchSection', () => {
       <SearchSection
         title={title}
         data={allData}
+        onItemClick={jest.fn()}
         results={[]}
         renderItem={renderItem}
         setTerm={setTerm}
@@ -135,6 +141,7 @@ describe('SearchSection', () => {
       <SearchSection
         title={title}
         data={allData}
+        onItemClick={jest.fn()}
         results={results}
         renderItem={renderItem}
         setTerm={setTerm}
@@ -148,5 +155,27 @@ describe('SearchSection', () => {
     fireEvent.click(clearBtn as HTMLElement);
 
     expect(setTerm).toHaveBeenCalledWith('');
+  });
+
+  it('Calls onItemClick when an item is clicked', () => {
+    const onItemClick = jest.fn();
+
+    render(
+      <SearchSection
+        title={title}
+        data={allData}
+        results={results}
+        renderItem={renderItem}
+        setTerm={setTerm}
+        term=""
+        onItemClick={onItemClick}
+      />,
+    );
+
+    const itemButtons = screen.getAllByRole('button', { name: /Item \d+/i });
+    fireEvent.click(itemButtons[0]);
+
+    expect(onItemClick).toHaveBeenCalledTimes(1);
+    expect(onItemClick).toHaveBeenCalledWith(allData[0]);
   });
 });

@@ -3,10 +3,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Card } from '@components/Feed';
 import { CountDown } from '@ts-types/feed';
-import { Image } from '@components/Admin/Letters';
 import { calculateCountdown } from '@util/feed';
-import { categories } from '@constants/feed';
 import { useCorrespondence } from '@contexts/CorrespondenceProvider';
+import { Categories } from '@components/Feed';
 
 const Splash = () => {
   const { correspondences, earliestSentAtDate, responseCompletion } =
@@ -87,31 +86,7 @@ const Splash = () => {
           View More Letters +
         </button>
       )}
-      <div className="w-full space-y-4">
-        <h2 className="text-2xl font-bold">Browse by Category</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          {categories.map((cat, index) => (
-            <div
-              key={index}
-              className="relative rounded-xl overflow-hidden group cursor-pointer h-32"
-            >
-              <Image
-                src={cat.imageUrl}
-                alt={cat.name}
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-300"
-                priority={index === 0}
-                loading={index === 0 ? 'eager' : undefined}
-              />
-              <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                <span className="text-white text-lg font-semibold font-merriweather">
-                  {cat.name}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      <Categories />
     </>
   );
 };

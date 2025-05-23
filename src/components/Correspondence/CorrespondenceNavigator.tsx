@@ -5,6 +5,7 @@ import CorrespondenceDetails from './CorrespondenceDetails';
 import Image from 'next/image';
 import { Correspondence } from '@ts-types/correspondence';
 import {
+  CorrespondenceNotFound,
   LetterDetails,
   LetterSelector,
   LetterText,
@@ -16,48 +17,43 @@ import { useSearchParams } from 'next/navigation';
 
 const CorrespondenceNavigator = () => {
   const { correspondencesById } = useCorrespondence();
-
-  // Search params are used for correspondence look up and to set the selected letter.
-
   const searchParams = useSearchParams();
+
   const correspondenceId = searchParams.get('correspondenceId');
   const letterId = searchParams.get('letterId');
 
-  // Grab the correspondence from the provider.
-
   const correspondence = useMemo(() => {
     if (!correspondenceId) return null;
-    return correspondencesById[correspondenceId];
-  }, [correspondenceId, correspondencesById]) as Correspondence;
-
-  // We need to initialize with the right index to avoid re-renders.
-
-  useEffect(() => {
-    if (!correspondence || !letterId) return;
-
-    const index = correspondence.letters.findIndex(
-      (letter) => letter.letterId === letterId,
-    );
-
-    if (index !== -1) {
-      setSelectedLetterIndex(index);
-    }
-  }, [correspondence, letterId]);
+    return correspondencesById[correspondenceId] || null;
+  }, [correspondenceId, correspondencesById]) as Correspondence | null;
 
   const initialSelectedLetterIndex = useMemo(() => {
-    if (!correspondence || !letterId) return 0;
+    if (!letterId || !correspondence) return 0;
     const index = correspondence.letters.findIndex(
       (letter) => letter.letterId === letterId,
     );
     return index !== -1 ? index : 0;
   }, [correspondence, letterId]);
 
-  // User can select the letter from the letter selector and the image on thumnail click.
-
   const [selectedLetterIndex, setSelectedLetterIndex] = useState(
     initialSelectedLetterIndex,
   );
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
+  useEffect(() => {
+    if (!letterId || !correspondence) return;
+    const index = correspondence.letters.findIndex(
+      (letter) => letter.letterId === letterId,
+    );
+    if (index !== -1) {
+      setSelectedLetterIndex(index);
+    }
+  }, [correspondence, letterId]);
+
+  // 🚨 Early return must come AFTER all hooks
+  if (!correspondence) {
+    return <CorrespondenceNotFound />;
+  }
 
   const selectedLetter = correspondence.letters[selectedLetterIndex];
   const selectedImage = selectedLetter.imageURLs[selectedImageIndex];

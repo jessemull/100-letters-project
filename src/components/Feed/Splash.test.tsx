@@ -13,6 +13,7 @@ jest.mock('@components/Feed', () => ({
   Card: ({ correspondence }: any) => (
     <div data-testid="card">{correspondence.title}</div>
   ),
+  Categories: () => <div data-testid="categories">Categories</div>,
 }));
 
 jest.mock('@components/Admin/Letters', () => ({

@@ -26,7 +26,7 @@ const ImageCarousel: React.FC<Props> = ({ letter, onClick, selected }) => (
           >
             <div className="relative w-24 h-24 flex-shrink-0 group hover:scale-105 transition-transform duration-300 ease-out">
               <Image
-                src={letter.imageURLs[idx]?.urlThumbnail || './missing.jpg'}
+                src={letter.imageURLs[idx]?.urlThumbnail || '/missing.jpg'}
                 alt={`Thumbnail ${idx}`}
                 fill
                 className="object-cover"
