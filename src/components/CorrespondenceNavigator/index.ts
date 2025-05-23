@@ -4,6 +4,7 @@ import CorrespondenceNavigatorHOC from './CorrespondenceNavigatorHOC';
 import ImageCarousel from './ImageCarousel';
 import LetterDetails from './LetterDetails';
 import LetterSelector from './LetterSelector';
+import LetterText from './LetterText';
 import RecipientDetails from './RecipientDetails';
 
 export {
@@ -13,5 +14,6 @@ export {
   ImageCarousel,
   LetterDetails,
   LetterSelector,
+  LetterText,
   RecipientDetails,
 };

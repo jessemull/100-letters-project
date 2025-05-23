@@ -1,5 +1,6 @@
 import Image from 'next/image';
-import { Letter, LetterImage, LetterType } from '@ts-types/letter';
+import { Letter, LetterImage } from '@ts-types/letter';
+import { viewMap } from '@constants/letter';
 
 interface Props {
   letter: Letter;
@@ -36,8 +37,8 @@ const ImageCarousel: React.FC<Props> = ({ letter, onClick, selected }) => (
                   isSelected ? 'bg-black/70' : ''
                 }`}
               />
-              <span className="absolute bottom-1 left-1 bg-black text-xs px-1 rounded-3xl text-white z-10">
-                {LetterType[letter.type]}
+              <span className="absolute bottom-1 left-1 px-1.5 py-0.5 text-xs font-medium rounded bg-white/80 text-black backdrop-blur-sm shadow-sm border border-black/10 z-10">
+                {viewMap[letter.imageURLs[idx].view]}
               </span>
             </div>
           </div>

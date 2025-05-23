@@ -26,8 +26,8 @@ const LetterSelector = ({
   }, [selected]);
 
   return (
-    <div className="flex flex-col items-start space-y-2 max-h-[400px]">
-      <h2 className="text-2xl font-semibold text-white mb-2">Letters</h2>
+    <div className="flex flex-col items-start space-y-2 max-h-[350px]">
+      <h1 className="text-3xl font-bold">Letters</h1>
 
       <button
         onClick={() => onSelect(Math.max(0, selected - 1))}

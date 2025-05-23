@@ -3,10 +3,13 @@
 import Carousel from './ImageCarousel';
 import CorrespondenceDetails from './CorrespondenceDetails';
 import Image from 'next/image';
-import LetterDetails from './LetterDetails';
-import LetterSelector from './LetterSelector';
-import RecipientDetails from './RecipientDetails';
 import { Correspondence as CorrespondenceType } from '@ts-types/correspondence';
+import {
+  LetterDetails,
+  LetterSelector,
+  LetterText,
+  RecipientDetails,
+} from '@components/CorrespondenceNavigator';
 import { useState } from 'react';
 
 const CorrespondenceNavigator = ({
@@ -21,22 +24,19 @@ const CorrespondenceNavigator = ({
   const selectedImage = selectedLetter.imageURLs[selectedImageIndex];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
-      <div className="flex flex-col md:flex-row gap-8">
-        <LetterSelector
-          letters={correspondence.letters}
-          selected={selectedLetterIndex}
-          onSelect={(idx) => {
-            setSelectedLetterIndex(idx);
-            setSelectedImageIndex(0);
-          }}
-        />
-        <div className="md:w-1/2 space-y-6 text-white">
-          <CorrespondenceDetails correspondence={correspondence} />
-          <RecipientDetails correspondence={correspondence} />
-          <LetterDetails letter={selectedLetter} />
+    <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="flex flex-col md:flex-row gap-8 items-start">
+        <div className="flex-shrink-0">
+          <LetterSelector
+            letters={correspondence.letters}
+            selected={selectedLetterIndex}
+            onSelect={(idx) => {
+              setSelectedLetterIndex(idx);
+              setSelectedImageIndex(0);
+            }}
+          />
         </div>
-        <div className="md:w-1/2 space-y-4">
+        <div className="flex-1 space-y-4 min-w-0">
           <div className="w-full aspect-[4/3] relative rounded-2xl overflow-hidden shadow-md">
             <Image
               src={selectedImage?.url || '/missing.jpg'}
@@ -52,7 +52,13 @@ const CorrespondenceNavigator = ({
             selected={selectedImageIndex}
           />
         </div>
+        <div className="flex-1 space-y-6 text-white min-w-0">
+          <CorrespondenceDetails correspondence={correspondence} />
+          <RecipientDetails correspondence={correspondence} />
+          <LetterDetails letter={selectedLetter} />
+        </div>
       </div>
+      <LetterText letter={selectedLetter} />
     </div>
   );
 };

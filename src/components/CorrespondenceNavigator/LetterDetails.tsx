@@ -7,7 +7,7 @@ interface Props {
 
 const LetterDetails: React.FC<Props> = ({ letter }) => (
   <div className="bg-white/10 p-4 rounded-xl">
-    <h2 className="text-xl font-semibold">Letter Details</h2>
+    <h2 className="text-xl font-semibold">Details</h2>
     <p>{letter.title}</p>
     {letter.sentAt && (
       <p className="text-white/70 italic">
