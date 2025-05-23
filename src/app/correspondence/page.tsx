@@ -2,12 +2,12 @@
 
 import PageLayout from '../page.layout';
 import React from 'react';
-import { ViewCorrespondence } from '@components/Viewer';
+import { CorrespondenceNavigatorHOC } from '@components/CorrespondenceNavigator';
 
-const ViewCorrespondencePage = () => (
+const CorrespondencePage = () => (
   <PageLayout>
-    <ViewCorrespondence />
+    <CorrespondenceNavigatorHOC />
   </PageLayout>
 );
 
-export default ViewCorrespondencePage;
+export default CorrespondencePage;

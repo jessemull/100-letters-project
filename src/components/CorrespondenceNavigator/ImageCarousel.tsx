@@ -7,11 +7,10 @@ interface Props {
   selected: number;
 }
 
-const Carousel: React.FC<Props> = ({ letter, onClick, selected }) => (
+const ImageCarousel: React.FC<Props> = ({ letter, onClick, selected }) => (
   <div className="flex gap-2 overflow-x-auto items-center">
     {letter.imageURLs.map((image, idx) => {
       const isSelected = selected === idx;
-
       return (
         <button
           key={image.id}
@@ -26,20 +25,17 @@ const Carousel: React.FC<Props> = ({ letter, onClick, selected }) => (
             }`}
           >
             <div className="relative w-full h-full">
-              {/* Image */}
               <Image
                 src={letter.imageURLs[idx]?.urlThumbnail || './missing.jpg'}
                 alt={`Thumbnail ${idx}`}
                 fill
                 className="object-cover"
               />
-              {/* Dark overlay */}
               <div
                 className={`absolute inset-0 transition-all duration-300 ${
                   isSelected ? 'bg-black/70' : ''
                 }`}
               />
-              {/* Label */}
               <span className="absolute bottom-1 left-1 bg-black text-xs px-1 rounded-3xl text-white z-10">
                 {LetterType[letter.type]}
               </span>
@@ -51,4 +47,4 @@ const Carousel: React.FC<Props> = ({ letter, onClick, selected }) => (
   </div>
 );
 
-export default Carousel;
+export default ImageCarousel;

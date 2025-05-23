@@ -3,9 +3,9 @@
 import { useSearchParams } from 'next/navigation';
 import { useCorrespondence } from '@contexts/CorrespondenceProvider';
 import { useMemo } from 'react';
-import { Correspondence } from '@components/Viewer';
+import { CorrespondenceNavigator } from '@components/CorrespondenceNavigator';
 
-const ViewCorrespondence = () => {
+const CorrespondenceNavigatorHOC = () => {
   const { correspondencesById } = useCorrespondence();
   const searchParams = useSearchParams();
   const correspondenceId = searchParams.get('correspondenceId');
@@ -25,9 +25,9 @@ const ViewCorrespondence = () => {
 
   return (
     <div className="text-white px-4 py-8 max-w-6xl mx-auto space-y-8">
-      <Correspondence correspondence={correspondence} />
+      <CorrespondenceNavigator correspondence={correspondence} />
     </div>
   );
 };
 
-export default ViewCorrespondence;
+export default CorrespondenceNavigatorHOC;

@@ -1,5 +1,5 @@
-import { Correspondence } from '@ts-types/correspondence';
 import React from 'react';
+import { Correspondence } from '@ts-types/correspondence';
 
 interface Props {
   correspondence: Correspondence;
@@ -7,7 +7,7 @@ interface Props {
 
 const RecipientDetails: React.FC<Props> = ({ correspondence }) => (
   <div className="bg-white/10 p-4 rounded-xl">
-    <h2 className="text-xl font-semibold">Recipient</h2>
+    <h2 className="text-xl font-semibold">Recipient Details</h2>
     <p>
       {correspondence.recipient.firstName} {correspondence.recipient.lastName}
     </p>
