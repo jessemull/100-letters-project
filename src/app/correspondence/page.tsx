@@ -2,11 +2,11 @@
 
 import PageLayout from '../page.layout';
 import React from 'react';
-import { CorrespondenceNavigatorHOC } from '@components/Correspondence';
+import { CorrespondenceNavigator } from '@components/Correspondence';
 
 const CorrespondencePage = () => (
   <PageLayout>
-    <CorrespondenceNavigatorHOC />
+    <CorrespondenceNavigator />
   </PageLayout>
 );
 

@@ -5,6 +5,12 @@ import { Correspondence } from '@ts-types/correspondence';
 import { axe } from 'jest-axe';
 import { render, screen } from '@testing-library/react';
 
+jest.mock('next/navigation', () => ({
+  useRouter: jest.fn().mockReturnValue({
+    push: jest.fn(),
+  }),
+}));
+
 jest.mock('@components/Admin/Letters', () => ({
   Image: ({ src, alt }: { src: string; alt: string }) => (
     <Image
