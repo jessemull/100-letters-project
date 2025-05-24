@@ -8,13 +8,13 @@ import {
   CorrespondenceNotFound,
   LetterDetails,
   LetterSelector,
+  LetterSelectorMobile,
   LetterText,
   RecipientDetails,
 } from '@components/Correspondence';
 import { useEffect, useMemo, useState } from 'react';
 import { useCorrespondence } from '@contexts/CorrespondenceProvider';
 import { useSearchParams } from 'next/navigation';
-import LetterSelectorMobile from './LetterSelectorMobile';
 
 const CorrespondenceNavigator = () => {
   const { correspondencesById } = useCorrespondence();
