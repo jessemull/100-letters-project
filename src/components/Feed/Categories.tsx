@@ -5,11 +5,11 @@ import clsx from 'clsx';
 import { Image } from '@components/Admin/Letters';
 import { categories } from '@constants/feed';
 
-type CategoriesProps = {
+interface Props {
   desktopCols?: 6 | 4 | 3;
-};
+}
 
-const Categories = ({ desktopCols = 6 }: CategoriesProps) => {
+const Categories: React.FC<Props> = ({ desktopCols = 6 }) => {
   const gridColsClass = clsx(
     'grid',
     'grid-cols-2',

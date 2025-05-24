@@ -1,9 +1,10 @@
-import { render, screen } from '@testing-library/react';
-import { LetterDetails } from '@components/Correspondence';
 import { Letter } from '@ts-types/letter';
+import { LetterDetails } from '@components/Correspondence';
 import { Status } from '@ts-types/correspondence';
+import { axe } from 'jest-axe';
+import { render, screen } from '@testing-library/react';
 
-describe('LetterDetails', () => {
+describe('LetterDetails Component', () => {
   const baseLetter = {
     letterId: 'letter-001',
     title: 'Thank You, Mr. Rogers',
@@ -11,7 +12,7 @@ describe('LetterDetails', () => {
     imageURLs: [],
   } as unknown as Letter;
 
-  it('renders required fields: title and description', () => {
+  it('Renders required fields: title and description.', () => {
     render(<LetterDetails letter={baseLetter} />);
 
     expect(
@@ -24,7 +25,7 @@ describe('LetterDetails', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders sentAt, receivedAt, and status when provided', () => {
+  it('Renders sentAt, receivedAt, and status when provided.', () => {
     const letterWithExtras: Letter = {
       ...baseLetter,
       sentAt: '2024-04-01T00:00:00Z',
@@ -37,11 +38,17 @@ describe('LetterDetails', () => {
     expect(screen.getByText(/status: responded/i)).toBeInTheDocument();
   });
 
-  it('omits sentAt, receivedAt, and status if not provided', () => {
+  it('Omits sentAt, receivedAt, and status if not provided.', () => {
     render(<LetterDetails letter={baseLetter} />);
 
     expect(screen.queryByText(/sent:/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/received:/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/status:/i)).not.toBeInTheDocument();
+  });
+
+  it('Has no accessibility violations.', async () => {
+    const { container } = render(<LetterDetails letter={baseLetter} />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

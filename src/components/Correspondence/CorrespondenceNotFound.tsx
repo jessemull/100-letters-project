@@ -8,6 +8,7 @@ const CorrespondenceNotFound = () => {
   const goHome = () => {
     router.push('/');
   };
+
   return (
     <div className="max-w-4xl space-y-[125px] w-full h-full flex font-merriweather items-center justify-center flex-col mx-auto text-white">
       <div className="text-center space-y-6">

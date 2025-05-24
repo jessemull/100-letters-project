@@ -1,6 +1,7 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
 import { CorrespondenceSearch } from '@components/Menu';
+import { axe } from 'jest-axe';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { useRouter } from 'next/navigation';
 
 jest.mock('next/navigation', () => ({
@@ -50,8 +51,8 @@ jest.mock('@components/Menu/SearchSection', () => ({
   default: (props: any) => <MockSearchSection {...props} />,
 }));
 
-describe('CorrespondenceSearch', () => {
-  it('calls router.push when an item is clicked', () => {
+describe('CorrespondenceSearch Component', () => {
+  it('Calls router.push when an item is clicked.', () => {
     const pushMock = jest.fn();
     (useRouter as jest.Mock).mockReturnValue({ push: pushMock });
 
@@ -63,5 +64,11 @@ describe('CorrespondenceSearch', () => {
     expect(pushMock).toHaveBeenCalledWith(
       '/correspondence?correspondenceId=abc123',
     );
+  });
+
+  it('Has no accessibility violations.', async () => {
+    const { container } = render(<CorrespondenceSearch />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

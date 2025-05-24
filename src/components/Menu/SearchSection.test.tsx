@@ -157,7 +157,7 @@ describe('SearchSection', () => {
     expect(setTerm).toHaveBeenCalledWith('');
   });
 
-  it('Calls onItemClick when an item is clicked', () => {
+  it('Calls onItemClick when an item is clicked.', () => {
     const onItemClick = jest.fn();
 
     render(

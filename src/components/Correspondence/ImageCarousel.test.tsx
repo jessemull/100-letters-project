@@ -1,16 +1,9 @@
-import { render, screen, fireEvent } from '@testing-library/react';
 import ImageCarousel from './ImageCarousel';
 import { Letter, LetterImage } from '@ts-types/letter';
+import { axe } from 'jest-axe';
+import { render, screen, fireEvent } from '@testing-library/react';
 
-// jest.mock('next/image', () => ({
-//   __esModule: true,
-//   default: (props: any) => {
-//     const { src, alt, ...rest } = props;
-//     return <img src={src} alt={alt} {...rest} />;
-//   },
-// }));
-
-describe('ImageCarousel', () => {
+describe('ImageCarousel Component', () => {
   const mockImages = [
     { id: '1', urlThumbnail: '/thumb1.jpg' },
     { id: '2', urlThumbnail: '/thumb2.jpg' },
@@ -27,7 +20,7 @@ describe('ImageCarousel', () => {
     handleClick.mockClear();
   });
 
-  it('renders all images', () => {
+  it('Renders all images.', () => {
     render(
       <ImageCarousel letter={mockLetter} onClick={handleClick} selected={1} />,
     );
@@ -37,7 +30,7 @@ describe('ImageCarousel', () => {
     });
   });
 
-  it('calls onClick with correct index and image on button click', () => {
+  it('Calls onClick with correct index and image on button click.', () => {
     render(
       <ImageCarousel letter={mockLetter} onClick={handleClick} selected={0} />,
     );
@@ -48,7 +41,7 @@ describe('ImageCarousel', () => {
     expect(handleClick).toHaveBeenCalledWith(1, mockImages[1]);
   });
 
-  it('applies selected styles correctly', () => {
+  it('Applies selected styles correctly.', () => {
     render(
       <ImageCarousel letter={mockLetter} onClick={handleClick} selected={2} />,
     );
@@ -59,7 +52,7 @@ describe('ImageCarousel', () => {
     expect(ringDiv).toBeInTheDocument();
   });
 
-  it('uses fallback image if urlThumbnail is missing', () => {
+  it('Uses fallback image if urlThumbnail is missing.', () => {
     const fallbackLetter = {
       imageURLs: [{ id: '1', urlThumbnail: '' }],
     } as unknown as Letter;
@@ -77,5 +70,13 @@ describe('ImageCarousel', () => {
       'src',
       '/_next/image?url=%2Fmissing.jpg&w=3840&q=75',
     );
+  });
+
+  it('Has no accessibility violations.', async () => {
+    const { container } = render(
+      <ImageCarousel letter={mockLetter} onClick={handleClick} selected={1} />,
+    );
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

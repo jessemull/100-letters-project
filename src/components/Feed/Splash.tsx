@@ -2,10 +2,10 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { Card } from '@components/Feed';
+import { Categories } from '@components/Feed';
 import { CountDown } from '@ts-types/feed';
 import { calculateCountdown } from '@util/feed';
 import { useCorrespondence } from '@contexts/CorrespondenceProvider';
-import { Categories } from '@components/Feed';
 
 const Splash = () => {
   const { correspondences, earliestSentAtDate, responseCompletion } =

@@ -1,9 +1,9 @@
 import { CorrespondenceSearchItem } from '@ts-types/search';
 import { SearchSection } from '@components/Menu';
+import { useRouter } from 'next/navigation';
 import { useSearch } from '@hooks/useSearch';
 import { useSearchData } from '@contexts/SearchProvider';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 
 const CorrespondenceSearch = () => {
   const [term, setTerm] = useState('');

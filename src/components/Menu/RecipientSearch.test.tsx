@@ -1,6 +1,7 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
 import { RecipientSearch } from '@components/Menu';
+import { axe } from 'jest-axe';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { useRouter } from 'next/navigation';
 
 jest.mock('next/navigation', () => ({
@@ -53,7 +54,7 @@ jest.mock('@components/Menu/SearchSection', () => ({
 }));
 
 describe('RecipientSearch', () => {
-  it('calls router.push with correct query when a recipient is clicked', () => {
+  it('Calls router.push with correct query when a recipient is clicked.', () => {
     const pushMock = jest.fn();
     (useRouter as jest.Mock).mockReturnValue({ push: pushMock });
 
@@ -65,5 +66,11 @@ describe('RecipientSearch', () => {
     expect(pushMock).toHaveBeenCalledWith(
       '/correspondence?correspondenceId=abc123',
     );
+  });
+
+  it('Has no accessibility violations.', async () => {
+    const { container } = render(<RecipientSearch />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

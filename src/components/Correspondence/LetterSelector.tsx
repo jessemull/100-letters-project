@@ -3,21 +3,22 @@ import { ChevronUp, ChevronDown } from 'lucide-react';
 import { useRef, useEffect } from 'react';
 
 const getLetterDate = (letter: Letter) => {
-  if (letter.sentAt) return new Date(letter.sentAt).toLocaleDateString();
-  if (letter.receivedAt)
+  if (letter.sentAt) {
+    return new Date(letter.sentAt).toLocaleDateString();
+  } else if (letter.receivedAt) {
     return new Date(letter.receivedAt).toLocaleDateString();
-  return 'No Date';
+  } else {
+    return 'No Date';
+  }
 };
 
-const LetterSelector = ({
-  letters,
-  selected,
-  onSelect,
-}: {
+interface Props {
   letters: Letter[];
-  selected: number;
   onSelect: (index: number) => void;
-}) => {
+  selected: number;
+}
+
+const LetterSelector: React.FC<Props> = ({ letters, onSelect, selected }) => {
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   useEffect(() => {
@@ -30,14 +31,13 @@ const LetterSelector = ({
       <h1 className="text-3xl font-extrabold tracking-tight text-white drop-shadow-lg">
         Letters
       </h1>
-
       <button
-        onClick={() => onSelect(Math.max(0, selected - 1))}
+        aria-label="Scroll up one letter"
         className="text-white hover:scale-110 transition"
+        onClick={() => onSelect(Math.max(0, selected - 1))}
       >
         <ChevronUp size={20} />
       </button>
-
       <div className="flex flex-col space-y-2 overflow-y-auto max-h-[300px] pr-1">
         {letters.map((letter, idx) => {
           const isSelected = idx === selected;
@@ -62,10 +62,10 @@ const LetterSelector = ({
           );
         })}
       </div>
-
       <button
-        onClick={() => onSelect(Math.min(letters.length - 1, selected + 1))}
+        aria-label="Scroll down one letter"
         className="text-white hover:scale-110 transition"
+        onClick={() => onSelect(Math.min(letters.length - 1, selected + 1))}
       >
         <ChevronDown size={20} />
       </button>

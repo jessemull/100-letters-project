@@ -1,6 +1,7 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
 import { LetterSearch } from '@components/Menu';
+import { axe } from 'jest-axe';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { useRouter } from 'next/navigation';
 
 jest.mock('next/navigation', () => ({
@@ -52,8 +53,8 @@ jest.mock('@components/Menu/SearchSection', () => ({
   default: (props: any) => <MockSearchSection {...props} />,
 }));
 
-describe('LetterSearch', () => {
-  it('calls router.push with correct query when an item is clicked', () => {
+describe('LetterSearch Component', () => {
+  it('Calls router.push with correct query when an item is clicked.', () => {
     const pushMock = jest.fn();
     (useRouter as jest.Mock).mockReturnValue({ push: pushMock });
 
@@ -65,5 +66,11 @@ describe('LetterSearch', () => {
     expect(pushMock).toHaveBeenCalledWith(
       '/correspondence?correspondenceId=xyz789&letterId=lmn456',
     );
+  });
+
+  it('Has no accessibility violations.', async () => {
+    const { container } = render(<LetterSearch />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

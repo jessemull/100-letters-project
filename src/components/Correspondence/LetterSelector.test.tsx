@@ -1,9 +1,10 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { LetterSelector } from '@components/Correspondence';
 import { Letter } from '@ts-types/letter';
+import { LetterSelector } from '@components/Correspondence';
 import { Status } from '@ts-types/correspondence';
+import { axe } from 'jest-axe';
+import { render, screen, fireEvent } from '@testing-library/react';
 
-describe('LetterSelector', () => {
+describe('LetterSelector Component', () => {
   const mockOnSelect = jest.fn();
 
   const letters: Letter[] = [
@@ -40,7 +41,7 @@ describe('LetterSelector', () => {
     mockOnSelect.mockClear();
   });
 
-  it('renders header and all letter dates correctly', () => {
+  it('Renders header and all letter dates correctly.', () => {
     render(
       <LetterSelector letters={letters} selected={1} onSelect={mockOnSelect} />,
     );
@@ -57,7 +58,7 @@ describe('LetterSelector', () => {
     expect(screen.getByText('No Date')).toBeInTheDocument(); // neither
   });
 
-  it('highlights the selected letter', () => {
+  it('Highlights the selected letter.', () => {
     render(
       <LetterSelector letters={letters} selected={1} onSelect={mockOnSelect} />,
     );
@@ -68,7 +69,7 @@ describe('LetterSelector', () => {
     expect(selectedBtn).toHaveClass('font-semibold');
   });
 
-  it('calls onSelect when a letter is clicked', () => {
+  it('Calls onSelect when a letter is clicked.', () => {
     render(
       <LetterSelector letters={letters} selected={0} onSelect={mockOnSelect} />,
     );
@@ -80,7 +81,7 @@ describe('LetterSelector', () => {
     expect(mockOnSelect).toHaveBeenCalledWith(1);
   });
 
-  it('navigates up with the up arrow button', () => {
+  it('Navigates up with the up arrow button.', () => {
     render(
       <LetterSelector letters={letters} selected={1} onSelect={mockOnSelect} />,
     );
@@ -90,7 +91,7 @@ describe('LetterSelector', () => {
     expect(mockOnSelect).toHaveBeenCalledWith(0);
   });
 
-  it('does not go below 0 when at top', () => {
+  it('Does not go below 0 when at top.', () => {
     render(
       <LetterSelector letters={letters} selected={0} onSelect={mockOnSelect} />,
     );
@@ -100,7 +101,7 @@ describe('LetterSelector', () => {
     expect(mockOnSelect).toHaveBeenCalledWith(0);
   });
 
-  it('navigates down with the down arrow button', () => {
+  it('Navigates down with the down arrow button.', () => {
     render(
       <LetterSelector letters={letters} selected={1} onSelect={mockOnSelect} />,
     );
@@ -110,7 +111,7 @@ describe('LetterSelector', () => {
     expect(mockOnSelect).toHaveBeenCalledWith(2);
   });
 
-  it('does not go past max index', () => {
+  it('Does not go past max index.', () => {
     render(
       <LetterSelector letters={letters} selected={2} onSelect={mockOnSelect} />,
     );
@@ -118,5 +119,13 @@ describe('LetterSelector', () => {
     const downButton = screen.getAllByRole('button').at(-1)!;
     fireEvent.click(downButton);
     expect(mockOnSelect).toHaveBeenCalledWith(2);
+  });
+
+  it('Has no accessibility violations.', async () => {
+    const { container } = render(
+      <LetterSelector letters={letters} selected={1} onSelect={mockOnSelect} />,
+    );
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

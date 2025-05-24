@@ -1,5 +1,6 @@
 import CorrespondenceNavigator from './CorrespondenceNavigator';
 import React from 'react';
+import { axe } from 'jest-axe';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { useCorrespondence } from '@contexts/CorrespondenceProvider';
 import { useSearchParams } from 'next/navigation';
@@ -60,7 +61,7 @@ jest.mock('next/navigation', () => ({
   useSearchParams: jest.fn(),
 }));
 
-describe('CorrespondenceNavigator', () => {
+describe('CorrespondenceNavigator Component', () => {
   const mockLetters = [
     {
       letterId: 'a',
@@ -96,7 +97,7 @@ describe('CorrespondenceNavigator', () => {
     });
   });
 
-  it('renders the main image and mocked children correctly', () => {
+  it('Renders the main image and mocked children correctly.', () => {
     render(<CorrespondenceNavigator />);
 
     expect(screen.getByAltText('Selected letter')).toHaveAttribute(
@@ -111,7 +112,7 @@ describe('CorrespondenceNavigator', () => {
     expect(screen.getByTestId('letter-text')).toBeInTheDocument();
   });
 
-  it('updates selected letter index and resets image index on letter select', () => {
+  it('Updates selected letter index and resets image index on letter select.', () => {
     render(<CorrespondenceNavigator />);
     fireEvent.click(screen.getByText('SelectLetter'));
     expect(screen.getByAltText('Selected letter')).toHaveAttribute(
@@ -120,7 +121,7 @@ describe('CorrespondenceNavigator', () => {
     );
   });
 
-  it('updates selected image when a thumbnail is clicked in carousel', () => {
+  it('Updates selected image when a thumbnail is clicked in carousel.', () => {
     render(<CorrespondenceNavigator />);
     fireEvent.click(screen.getByTestId('carousel'));
     expect(screen.getByAltText('Selected letter')).toHaveAttribute(
@@ -129,7 +130,7 @@ describe('CorrespondenceNavigator', () => {
     );
   });
 
-  it('falls back to /missing.jpg if selected image is undefined', () => {
+  it('Falls back to /missing.jpg if selected image is undefined.', () => {
     const noImageCorrespondence = {
       letters: [{ letterId: 'a', imageURLs: [] }],
     };
@@ -145,7 +146,7 @@ describe('CorrespondenceNavigator', () => {
     );
   });
 
-  it('returns null if correspondenceId param is missing', () => {
+  it('Returns null if correspondenceId param is missing.', () => {
     (useSearchParams as jest.Mock).mockReturnValue({
       get: () => null,
     });
@@ -155,7 +156,7 @@ describe('CorrespondenceNavigator', () => {
     expect(screen.getByText('Correspondence not found.')).toBeInTheDocument();
   });
 
-  it('renders CorrespondenceNotFound when correspondence is missing', () => {
+  it('Renders CorrespondenceNotFound when correspondence is missing.', () => {
     (useCorrespondence as jest.Mock).mockReturnValue({
       correspondencesById: {},
     });
@@ -171,33 +172,26 @@ describe('CorrespondenceNavigator', () => {
     expect(screen.getByTestId('not-found')).toBeInTheDocument();
   });
 
-  it('falls back to letter index 0 when letterId is not found in correspondence', () => {
-    const correspondence = {
-      letters: [
-        { letterId: 'a', imageURLs: [{ url: '/a.jpg' }] },
-        { letterId: 'b', imageURLs: [{ url: '/b.jpg' }] },
-      ],
-    };
-
-    (useCorrespondence as jest.Mock).mockReturnValue({
-      correspondencesById: { '123': correspondence },
-    });
-
+  it('Falls back to index 0 when letterId does not match any letter.', () => {
     (useSearchParams as jest.Mock).mockReturnValue({
       get: (key: string) => {
-        if (key === 'correspondenceId') return '123';
-        if (key === 'letterId') return 'not-a-match';
+        if (key === 'correspondenceId') return 'test';
+        if (key === 'letterId') return 'nonexistent-id';
         return null;
       },
     });
 
     render(<CorrespondenceNavigator />);
 
-    expect(screen.getByTestId('letter-selector')).toBeInTheDocument();
-    expect(screen.getByTestId('carousel')).toBeInTheDocument();
-    expect(screen.getByTestId('correspondence-details')).toBeInTheDocument();
-    expect(screen.getByTestId('recipient-details')).toBeInTheDocument();
-    expect(screen.getByTestId('letter-details')).toBeInTheDocument();
-    expect(screen.getByTestId('letter-text')).toBeInTheDocument();
+    expect(screen.getByAltText('Selected letter')).toHaveAttribute(
+      'src',
+      '/_next/image?url=%2Fimg1.jpg&w=3840&q=75',
+    );
+  });
+
+  it('Has no accessibility violations.', async () => {
+    const { container } = render(<CorrespondenceNavigator />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

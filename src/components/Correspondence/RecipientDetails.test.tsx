@@ -1,8 +1,9 @@
-import { render, screen } from '@testing-library/react';
-import { RecipientDetails } from '@components/Correspondence';
 import { Correspondence } from '@ts-types/correspondence';
+import { RecipientDetails } from '@components/Correspondence';
+import { axe } from 'jest-axe';
+import { render, screen } from '@testing-library/react';
 
-describe('RecipientDetails', () => {
+describe('RecipientDetails Component', () => {
   const correspondence = {
     correspondenceId: 'abc123',
     title: 'Letter to Marie Curie',
@@ -20,9 +21,8 @@ describe('RecipientDetails', () => {
     },
   } as unknown as Correspondence;
 
-  it('renders all recipient details', () => {
+  it('Renders all recipient details.', () => {
     render(<RecipientDetails correspondence={correspondence} />);
-
     expect(
       screen.getByRole('heading', { name: /recipient/i }),
     ).toBeInTheDocument();
@@ -34,5 +34,13 @@ describe('RecipientDetails', () => {
         /First woman to win a Nobel Prize and the only person to win in two scientific fields/i,
       ),
     ).toBeInTheDocument();
+  });
+
+  it('Has no accessibility violations.', async () => {
+    const { container } = render(
+      <RecipientDetails correspondence={correspondence} />,
+    );
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

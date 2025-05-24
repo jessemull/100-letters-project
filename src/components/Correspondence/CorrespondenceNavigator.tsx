@@ -50,7 +50,6 @@ const CorrespondenceNavigator = () => {
     }
   }, [correspondence, letterId]);
 
-  // 🚨 Early return must come AFTER all hooks
   if (!correspondence) {
     return <CorrespondenceNotFound />;
   }
