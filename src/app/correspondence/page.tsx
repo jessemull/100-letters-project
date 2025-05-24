@@ -1,12 +1,15 @@
 'use client';
 
 import PageLayout from '../page.layout';
-import React from 'react';
+import React, { Suspense } from 'react';
 import { CorrespondenceNavigator } from '@components/Correspondence';
+import { Progress } from '@components/Form';
 
 const CorrespondencePage = () => (
   <PageLayout>
-    <CorrespondenceNavigator />
+    <Suspense fallback={<Progress size={16} color="white" />}>
+      <CorrespondenceNavigator />
+    </Suspense>
   </PageLayout>
 );
 
