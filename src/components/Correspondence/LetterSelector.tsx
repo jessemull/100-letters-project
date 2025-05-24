@@ -42,7 +42,7 @@ const LetterSelectorHorizontal: React.FC<Props> = ({
 
   return (
     <div className="flex flex-col max-w-full">
-      <h1 className="text-3xl font-extrabold tracking-tight text-white drop-shadow-lg mb-5">
+      <h1 className="text-3xl font-extrabold tracking-tight text-white drop-shadow-lg mb-4">
         Letters
       </h1>
       <div className="flex items-center space-x-1">
@@ -56,9 +56,8 @@ const LetterSelectorHorizontal: React.FC<Props> = ({
             hover:scale-110
           "
           onClick={() => onSelect(Math.max(0, selected - 1))}
-          onMouseDown={(e) => e.preventDefault()}
         >
-          <StepBack size={24} className="text-white fill-white" />
+          <StepBack size={20} className="text-white fill-white" />
         </button>
         <div
           ref={containerRef}
@@ -73,12 +72,11 @@ const LetterSelectorHorizontal: React.FC<Props> = ({
                   itemRefs.current[idx] = el;
                 }}
                 onClick={() => onSelect(idx)}
-                onMouseDown={(e) => e.preventDefault()}
                 className={`text-md whitespace-nowrap px-3 py-1 rounded transition
                   ${
                     isSelected
-                      ? 'bg-white/20 text-lg text-white font-semibold shadow border-b-4 border-white'
-                      : 'hover:bg-white/10 hover:text-white/90 text-white/80'
+                      ? 'bg-white/20 text-md text-white font-semibold shadow border-b-4 border-white'
+                      : 'hover:bg-white/10 text-md hover:text-white/90 text-white/80'
                   }`}
               >
                 {getLetterDate(letter)}
@@ -96,9 +94,8 @@ const LetterSelectorHorizontal: React.FC<Props> = ({
             hover:scale-110
           "
           onClick={() => onSelect(Math.min(letters.length - 1, selected + 1))}
-          onMouseDown={(e) => e.preventDefault()}
         >
-          <StepForward size={24} className="text-white fill-white" />
+          <StepForward size={20} className="text-white fill-white" />
         </button>
       </div>
     </div>
