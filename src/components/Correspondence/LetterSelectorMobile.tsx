@@ -31,7 +31,7 @@ const LetterSelectorMobile: React.FC<Props> = ({
   };
 
   return (
-    <div className="max-w-full">
+    <div className="pt-2">
       <h1 className="text-3xl font-extrabold tracking-tight text-white drop-shadow-lg mb-4">
         Letters
       </h1>

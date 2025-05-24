@@ -68,7 +68,7 @@ const CorrespondenceNavigator = () => {
             <LetterDetails letter={selectedLetter} />
           </div>
         </div>
-        <div className="flex-1 space-y-4 min-w-0 order-2 md:order-1">
+        <div className="flex-1 space-y-4 min-w-0 w-full order-2 md:order-1">
           <div className="hidden lg:block">
             <LetterSelector
               letters={correspondence.letters}
@@ -79,7 +79,7 @@ const CorrespondenceNavigator = () => {
               }}
             />
           </div>
-          <div className="block lg:hidden m-0 mt-0">
+          <div className="block lg:hidden">
             <LetterSelectorMobile
               letters={correspondence.letters}
               selected={selectedLetterIndex}

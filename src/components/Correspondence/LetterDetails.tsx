@@ -6,7 +6,7 @@ interface Props {
 }
 
 const LetterDetails: React.FC<Props> = ({ letter }) => (
-  <div className="bg-white/20 p-4 lg:p-5 rounded-2xl shadow-xl border border-white/10 backdrop-blur-md">
+  <div className="md:bg-white/20 md:p-4 lg:p-5 md:rounded-2xl md:shadow-xl md:border md:border-white/10 md:backdrop-blur-md">
     <h2 className="text-xl font-bold text-white mb-2">Letter Details</h2>
     <p className="text-white/90 text-lg mb-1 break-words overflow-hidden">
       {letter.title}
