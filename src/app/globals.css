@@ -39,3 +39,20 @@ input:-webkit-autofill:active {
 input:-webkit-autofill::first-line {
   color: white !important;
 }
+
+.scrollbar-hide-unless-hover::-webkit-scrollbar {
+  height: 0px;
+}
+
+.scrollbar-hide-unless-hover:hover::-webkit-scrollbar {
+  height: 6px;
+}
+
+.scrollbar-hide-unless-hover::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-hide-unless-hover::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.4);
+  border-radius: 8px;
+}

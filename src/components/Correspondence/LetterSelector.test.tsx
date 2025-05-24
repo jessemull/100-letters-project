@@ -35,6 +35,7 @@ describe('LetterSelector Component', () => {
 
   beforeAll(() => {
     Element.prototype.scrollIntoView = jest.fn();
+    Element.prototype.scrollTo = jest.fn(); // ← Add this line
   });
 
   beforeEach(() => {

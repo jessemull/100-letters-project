@@ -8,6 +8,7 @@ import {
   CorrespondenceNotFound,
   LetterDetails,
   LetterSelector,
+  LetterSelectorMobile,
   LetterText,
   RecipientDetails,
 } from '@components/Correspondence';
@@ -58,20 +59,37 @@ const CorrespondenceNavigator = () => {
   const selectedImage = selectedLetter.imageURLs[selectedImageIndex];
 
   return (
-    <div className="font-merriweather max-w-7xl mx-auto px-4 py-16">
-      <div className="flex flex-col md:flex-row gap-8 items-start">
-        <div className="flex-shrink-0">
-          <LetterSelector
-            letters={correspondence.letters}
-            selected={selectedLetterIndex}
-            onSelect={(idx) => {
-              setSelectedLetterIndex(idx);
-              setSelectedImageIndex(0);
-            }}
-          />
+    <div className="font-merriweather max-w-7xl mx-auto px-4 py-4 md:py-16">
+      <div className="flex flex-col md:flex-row md:gap-8 items-start">
+        <div className="flex-1 space-y-6 text-white min-w-0 order-1 md:order-2">
+          <CorrespondenceDetails correspondence={correspondence} />
+          <RecipientDetails correspondence={correspondence} />
+          <div className="hidden md:block">
+            <LetterDetails letter={selectedLetter} />
+          </div>
         </div>
-        <div className="flex-1 space-y-4 min-w-0">
-          <div className="w-full aspect-[4/3] relative rounded-2xl overflow-hidden shadow-md">
+        <div className="flex-1 space-y-4 min-w-0 w-full order-2 md:order-1">
+          <div className="hidden lg:block">
+            <LetterSelector
+              letters={correspondence.letters}
+              selected={selectedLetterIndex}
+              onSelect={(idx) => {
+                setSelectedLetterIndex(idx);
+                setSelectedImageIndex(0);
+              }}
+            />
+          </div>
+          <div className="block lg:hidden">
+            <LetterSelectorMobile
+              letters={correspondence.letters}
+              selected={selectedLetterIndex}
+              onSelect={(idx) => {
+                setSelectedLetterIndex(idx);
+                setSelectedImageIndex(0);
+              }}
+            />
+          </div>
+          <div className="w-full aspect-[4/3] relative rounded-2xl overflow-hidden shadow-md max-w-full">
             <Image
               src={selectedImage?.url || '/missing.jpg'}
               alt="Selected letter"
@@ -85,14 +103,14 @@ const CorrespondenceNavigator = () => {
             onClick={(idx) => setSelectedImageIndex(idx)}
             selected={selectedImageIndex}
           />
-        </div>
-        <div className="flex-1 space-y-6 text-white min-w-0">
-          <CorrespondenceDetails correspondence={correspondence} />
-          <RecipientDetails correspondence={correspondence} />
-          <LetterDetails letter={selectedLetter} />
+          <div className="pt-5 block md:hidden">
+            <LetterDetails letter={selectedLetter} />
+          </div>
         </div>
       </div>
-      <LetterText letter={selectedLetter} />
+      <div className="mt-8">
+        <LetterText letter={selectedLetter} />
+      </div>
     </div>
   );
 };

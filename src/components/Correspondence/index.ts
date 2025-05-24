@@ -4,6 +4,7 @@ import CorrespondenceNotFound from './CorrespondenceNotFound';
 import ImageCarousel from './ImageCarousel';
 import LetterDetails from './LetterDetails';
 import LetterSelector from './LetterSelector';
+import LetterSelectorMobile from './LetterSelectorMobile';
 import LetterText from './LetterText';
 import RecipientDetails from './RecipientDetails';
 
@@ -14,6 +15,7 @@ export {
   ImageCarousel,
   LetterDetails,
   LetterSelector,
+  LetterSelectorMobile,
   LetterText,
   RecipientDetails,
 };

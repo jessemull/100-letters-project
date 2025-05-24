@@ -41,6 +41,11 @@ jest.mock('@components/Correspondence', () => ({
       <button onClick={() => props.onSelect(1)}>SelectLetter</button>
     </div>
   ),
+  LetterSelectorMobile: (props: any) => (
+    <div data-testid="letter-selector-mobile">
+      <button onClick={() => props.onSelect(1)}>SelectMobileLetter</button>
+    </div>
+  ),
   LetterDetails: () => (
     <div data-testid="letter-details">MockLetterDetails</div>
   ),
@@ -108,8 +113,8 @@ describe('CorrespondenceNavigator Component', () => {
     expect(screen.getByTestId('letter-selector')).toBeInTheDocument();
     expect(screen.getByTestId('correspondence-details')).toBeInTheDocument();
     expect(screen.getByTestId('recipient-details')).toBeInTheDocument();
-    expect(screen.getByTestId('letter-details')).toBeInTheDocument();
     expect(screen.getByTestId('letter-text')).toBeInTheDocument();
+    expect(screen.getAllByTestId('letter-details').length).toBe(2);
   });
 
   it('Updates selected letter index and resets image index on letter select.', () => {
@@ -186,6 +191,16 @@ describe('CorrespondenceNavigator Component', () => {
     expect(screen.getByAltText('Selected letter')).toHaveAttribute(
       'src',
       '/_next/image?url=%2Fimg1.jpg&w=3840&q=75',
+    );
+  });
+
+  it('Updates selected letter index when mobile letter selector is used.', () => {
+    render(<CorrespondenceNavigator />);
+    fireEvent.click(screen.getByText('SelectMobileLetter'));
+
+    expect(screen.getByAltText('Selected letter')).toHaveAttribute(
+      'src',
+      '/_next/image?url=%2Fimg3.jpg&w=3840&q=75',
     );
   });
 
