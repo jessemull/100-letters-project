@@ -60,7 +60,7 @@ const CorrespondenceNavigator = () => {
   return (
     <div className="font-merriweather max-w-7xl mx-auto px-4 py-16">
       <div className="flex flex-col md:flex-row gap-8 items-start">
-        <div className="flex-shrink-0">
+        <div className="flex-1 space-y-4 min-w-0">
           <LetterSelector
             letters={correspondence.letters}
             selected={selectedLetterIndex}
@@ -69,8 +69,6 @@ const CorrespondenceNavigator = () => {
               setSelectedImageIndex(0);
             }}
           />
-        </div>
-        <div className="flex-1 space-y-4 min-w-0">
           <div className="w-full aspect-[4/3] relative rounded-2xl overflow-hidden shadow-md">
             <Image
               src={selectedImage?.url || '/missing.jpg'}

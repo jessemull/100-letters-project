@@ -1,15 +1,12 @@
 import { Letter } from '@ts-types/letter';
-import { ChevronUp, ChevronDown } from 'lucide-react';
+import { StepBack, StepForward } from 'lucide-react';
 import { useRef, useEffect } from 'react';
 
 const getLetterDate = (letter: Letter) => {
-  if (letter.sentAt) {
-    return new Date(letter.sentAt).toLocaleDateString();
-  } else if (letter.receivedAt) {
+  if (letter.sentAt) return new Date(letter.sentAt).toLocaleDateString();
+  if (letter.receivedAt)
     return new Date(letter.receivedAt).toLocaleDateString();
-  } else {
-    return 'No Date';
-  }
+  return 'No Date';
 };
 
 interface Props {
@@ -18,59 +15,94 @@ interface Props {
   selected: number;
 }
 
-const LetterSelector: React.FC<Props> = ({ letters, onSelect, selected }) => {
+const LetterSelectorHorizontal: React.FC<Props> = ({
+  letters,
+  onSelect,
+  selected,
+}) => {
+  const containerRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   useEffect(() => {
+    const container = containerRef.current;
     const selectedEl = itemRefs.current[selected];
-    selectedEl?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    if (container && selectedEl) {
+      const offset =
+        selectedEl.offsetLeft -
+        container.offsetLeft -
+        container.clientWidth / 2 +
+        selectedEl.clientWidth / 2;
+      container.scrollTo({
+        left: offset,
+        behavior: 'smooth',
+      });
+    }
   }, [selected]);
 
   return (
-    <div className="flex flex-col items-start space-y-2 max-h-[350px]">
-      <h1 className="text-3xl font-extrabold tracking-tight text-white drop-shadow-lg">
+    <div className="flex flex-col max-w-full">
+      <h1 className="text-3xl font-extrabold tracking-tight text-white drop-shadow-lg mb-5">
         Letters
       </h1>
-      <button
-        aria-label="Scroll up one letter"
-        className="text-white hover:scale-110 transition"
-        onClick={() => onSelect(Math.max(0, selected - 1))}
-      >
-        <ChevronUp size={20} />
-      </button>
-      <div className="flex flex-col space-y-2 overflow-y-auto max-h-[300px] pr-1">
-        {letters.map((letter, idx) => {
-          const isSelected = idx === selected;
-          return (
-            <button
-              ref={(el) => {
-                itemRefs.current[idx] = el;
-              }}
-              key={letter.letterId}
-              onClick={() => onSelect(idx)}
-              className={`text-left text-white transition transform duration-150 ease-in-out
-                ${
-                  isSelected
-                    ? 'bg-white/20 text-white font-semibold rounded px-2 py-1 shadow border-l-4 border-white pl-2'
-                    : 'hover:bg-white/10 hover:text-white/90 transition px-2 py-1 rounded'
-                }
-                hover:opacity-100 hover:underline
-              `}
-            >
-              {getLetterDate(letter)}
-            </button>
-          );
-        })}
+      <div className="flex items-center space-x-1">
+        <button
+          aria-label="Scroll left one letter"
+          className="
+            text-white
+            shadow-md
+            transition 
+            transform 
+            hover:scale-110
+          "
+          onClick={() => onSelect(Math.max(0, selected - 1))}
+          onMouseDown={(e) => e.preventDefault()}
+        >
+          <StepBack size={24} className="text-white fill-white" />
+        </button>
+        <div
+          ref={containerRef}
+          className="flex overflow-x-auto space-x-2 max-w-full scrollbar-thin scrollbar-thumb-gray-600 scrollbar-hide-unless-hover"
+        >
+          {letters.map((letter, idx) => {
+            const isSelected = idx === selected;
+            return (
+              <button
+                key={letter.letterId}
+                ref={(el) => {
+                  itemRefs.current[idx] = el;
+                }}
+                onClick={() => onSelect(idx)}
+                onMouseDown={(e) => e.preventDefault()}
+                className={`text-md whitespace-nowrap px-3 py-1 rounded transition
+                  ${
+                    isSelected
+                      ? 'bg-white/20 text-lg text-white font-semibold shadow border-b-4 border-white'
+                      : 'hover:bg-white/10 hover:text-white/90 text-white/80'
+                  }`}
+              >
+                {getLetterDate(letter)}
+              </button>
+            );
+          })}
+        </div>
+        <button
+          aria-label="Scroll right one letter"
+          className="
+            text-white
+            shadow-md
+            transition 
+            transform 
+            hover:scale-110
+          "
+          onClick={() => onSelect(Math.min(letters.length - 1, selected + 1))}
+          onMouseDown={(e) => e.preventDefault()}
+        >
+          <StepForward size={24} className="text-white fill-white" />
+        </button>
       </div>
-      <button
-        aria-label="Scroll down one letter"
-        className="text-white hover:scale-110 transition"
-        onClick={() => onSelect(Math.min(letters.length - 1, selected + 1))}
-      >
-        <ChevronDown size={20} />
-      </button>
     </div>
   );
 };
 
-export default LetterSelector;
+export default LetterSelectorHorizontal;
