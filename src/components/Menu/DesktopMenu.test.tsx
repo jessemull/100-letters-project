@@ -1,6 +1,12 @@
 import { render, fireEvent, screen } from '@testing-library/react';
 import DesktopMenu from '@components/Menu/DesktopMenu';
 
+jest.mock('next/navigation', () => ({
+  useRouter: jest.fn().mockReturnValue({
+    push: jest.fn(),
+  }),
+}));
+
 jest.mock('@contexts/AuthProvider', () => ({
   useAuth: () => ({
     isLoggedIn: false,

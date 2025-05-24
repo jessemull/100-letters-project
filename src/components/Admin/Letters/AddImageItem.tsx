@@ -35,7 +35,7 @@ const AddImageItem = ({
   viewOptions,
 }: Props) => {
   return (
-    <div className="p-4 bg-white/10 border border-white rounded-xl transition-transform transform hover:scale-[1.01] cursor-pointer space-y-6">
+    <div className="p-4 backdrop-blur-md bg-white/10 border border-white rounded-xl transition-transform transform hover:scale-[1.01] cursor-pointer space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold text-white">Add New Image</h2>
         <X

@@ -2,6 +2,12 @@ import { MobileMenu } from '@components/Menu';
 import { axe } from 'jest-axe';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 
+jest.mock('next/navigation', () => ({
+  useRouter: jest.fn().mockReturnValue({
+    push: jest.fn(),
+  }),
+}));
+
 jest.mock('next/link', () => {
   const Link = ({ children, href, onClick }: any) => (
     <a href={href} onClick={onClick}>

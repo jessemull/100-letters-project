@@ -26,6 +26,7 @@ export type SearchAllItem = Omit<Correspondence, 'recipient'> & {
 
 export type LetterSearchItem = {
   correspondenceId: string;
+  letterId: string;
   title: string;
 };
 

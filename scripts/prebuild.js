@@ -129,6 +129,7 @@ async function authenticateUser() {
         if (letter.title) {
           searchData.letters.push({
             correspondenceId,
+            letterId: letter.letterId,
             title: letter.title,
           });
         }

@@ -1,19 +1,30 @@
 import { RecipientSearchItem } from '@ts-types/search';
 import { SearchSection } from '@components/Menu';
+import { useRouter } from 'next/navigation';
 import { useSearch } from '@hooks/useSearch';
 import { useSearchData } from '@contexts/SearchProvider';
 import { useState } from 'react';
 
 const RecipientSearch = () => {
   const [term, setTerm] = useState('');
+
   const { recipients } = useSearchData();
+
+  const router = useRouter();
+
   const results = useSearch({
     type: 'recipients',
     term,
   }) as RecipientSearchItem[];
+
+  const onItemClick = ({ correspondenceId }: RecipientSearchItem) => {
+    router.push(`/correspondence?correspondenceId=${correspondenceId}`);
+  };
+
   return (
     <SearchSection<RecipientSearchItem>
       data={recipients}
+      onItemClick={onItemClick}
       results={results}
       setTerm={setTerm}
       term={term}

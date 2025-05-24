@@ -14,7 +14,7 @@ const RecipientItem = ({ data, onDelete, onEdit }: Props) => {
   return (
     <div
       data-testid="card-edit-button"
-      className="p-4 bg-white/10 border border-white rounded-xl transition-transform transform hover:scale-[1.01] cursor-pointer"
+      className="p-4 backdrop-blur-md bg-white/10 border border-white rounded-xl transition-transform transform hover:scale-[1.01] cursor-pointer"
     >
       <div className="flex items-center justify-between">
         <div>

@@ -125,7 +125,7 @@ const ImageItem = ({ data, deleteImage, letter, onUpdateImage }: Props) => {
   return (
     <div
       data-testid="card-edit-button"
-      className="relative p-4 bg-white/10 border border-white rounded-xl transition-transform transform hover:scale-[1.01] cursor-pointer"
+      className="relative p-4 backdrop-blur-md bg-white/10 border border-white rounded-xl transition-transform transform hover:scale-[1.01] cursor-pointer"
     >
       {isLoading ? (
         <div className="flex items-center justify-center">
