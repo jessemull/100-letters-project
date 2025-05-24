@@ -45,7 +45,7 @@ const LetterSelectorHorizontal: React.FC<Props> = ({
       <h1 className="text-3xl font-extrabold tracking-tight text-white drop-shadow-lg mb-4">
         Letters
       </h1>
-      <div className="flex items-center space-x-1">
+      <div className="flex items-center space-x-1 overflow-hidden">
         <button
           aria-label="Scroll left one letter"
           className="
@@ -61,7 +61,7 @@ const LetterSelectorHorizontal: React.FC<Props> = ({
         </button>
         <div
           ref={containerRef}
-          className="flex overflow-x-auto space-x-2 max-w-full scrollbar-thin scrollbar-thumb-gray-600 scrollbar-hide-unless-hover"
+          className="flex overflow-x-auto space-x-2 max-w-full min-w-0 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-hide-unless-hover"
         >
           {letters.map((letter, idx) => {
             const isSelected = idx === selected;
@@ -72,7 +72,7 @@ const LetterSelectorHorizontal: React.FC<Props> = ({
                   itemRefs.current[idx] = el;
                 }}
                 onClick={() => onSelect(idx)}
-                className={`text-md whitespace-nowrap px-3 py-1 rounded transition
+                className={`text-md whitespace-nowrap px-3 py-1 rounded transition truncate max-w-[120px]
                   ${
                     isSelected
                       ? 'bg-white/20 text-md text-white font-semibold shadow border-b-4 border-white'
