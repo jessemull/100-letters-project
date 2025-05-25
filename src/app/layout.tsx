@@ -4,7 +4,6 @@ import data from '@data/data.json';
 import { AuthProvider } from '@contexts/AuthProvider';
 import { Correspondence, CorrespondencesMap } from '@ts-types/correspondence';
 import { CorrespondenceProvider } from '@contexts/CorrespondenceProvider';
-import { ImageModalProvider } from '@contexts/ImageModalContext';
 import { Merriweather } from 'next/font/google';
 import { DesktopMenuProvider } from '@contexts/DesktopMenuProvider';
 
@@ -79,16 +78,14 @@ export default function RootLayout({
       <body className={`${merriweather.variable} antialiased`}>
         <AuthProvider>
           <DesktopMenuProvider>
-            <ImageModalProvider>
-              <CorrespondenceProvider
-                correspondences={correspondences as Correspondence[]}
-                correspondencesById={correspondencesById as CorrespondencesMap}
-                earliestSentAtDate={earliestSentAtDate as string}
-                responseCompletion={responseCompletion as number}
-              >
-                {children}
-              </CorrespondenceProvider>
-            </ImageModalProvider>
+            <CorrespondenceProvider
+              correspondences={correspondences as Correspondence[]}
+              correspondencesById={correspondencesById as CorrespondencesMap}
+              earliestSentAtDate={earliestSentAtDate as string}
+              responseCompletion={responseCompletion as number}
+            >
+              {children}
+            </CorrespondenceProvider>
           </DesktopMenuProvider>
         </AuthProvider>
         <>

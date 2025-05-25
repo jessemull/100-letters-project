@@ -1,4 +1,3 @@
-import { ImageModalProvider } from '@contexts/ImageModalContext';
 import { Letter, View } from '@ts-types/letter';
 import { LetterForm } from '@components/Admin';
 import { LetterImageFactory } from '@factories/letter';
@@ -123,11 +122,7 @@ describe('LetterForm', () => {
       },
     }));
 
-    render(
-      <ImageModalProvider>
-        <LetterForm />
-      </ImageModalProvider>,
-    );
+    render(<LetterForm />);
 
     fireEvent.change(screen.getByLabelText('Title'), {
       target: { value: 'x' },
@@ -194,11 +189,7 @@ describe('LetterForm', () => {
       isLoading: false,
     });
 
-    render(
-      <ImageModalProvider>
-        <LetterForm />
-      </ImageModalProvider>,
-    );
+    render(<LetterForm />);
 
     expect(await screen.findByDisplayValue('letter title')).toBeInTheDocument();
     expect(screen.getByDisplayValue('text here')).toBeInTheDocument();
@@ -230,11 +221,7 @@ describe('LetterForm', () => {
       isLoading: false,
     });
 
-    render(
-      <ImageModalProvider>
-        <LetterForm />
-      </ImageModalProvider>,
-    );
+    render(<LetterForm />);
 
     expect(await screen.findByDisplayValue('letter title')).toBeInTheDocument();
     expect(screen.getByDisplayValue('text here')).toBeInTheDocument();
@@ -260,11 +247,7 @@ describe('LetterForm', () => {
       return {};
     });
     (useAuth as jest.Mock).mockReturnValue({ loading: true });
-    render(
-      <ImageModalProvider>
-        <LetterForm />
-      </ImageModalProvider>,
-    );
+    render(<LetterForm />);
     expect(screen.getByTestId('progress')).toBeInTheDocument();
   });
 
@@ -276,11 +259,7 @@ describe('LetterForm', () => {
       isLoading: false,
     });
 
-    render(
-      <ImageModalProvider>
-        <LetterForm />
-      </ImageModalProvider>,
-    );
+    render(<LetterForm />);
     fireEvent.click(screen.getByText('Cancel'));
     expect(backMock).toHaveBeenCalled();
   });
@@ -298,11 +277,7 @@ describe('LetterForm', () => {
       return {};
     });
 
-    render(
-      <ImageModalProvider>
-        <LetterForm />
-      </ImageModalProvider>,
-    );
+    render(<LetterForm />);
 
     expect(showToast).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -339,11 +314,7 @@ describe('LetterForm', () => {
       isLoading: false,
     });
 
-    render(
-      <ImageModalProvider>
-        <LetterForm />
-      </ImageModalProvider>,
-    );
+    render(<LetterForm />);
 
     fireEvent.change(screen.getByLabelText('Title'), {
       target: { value: 'x' },
@@ -402,11 +373,7 @@ describe('LetterForm', () => {
       isLoading: false,
     });
 
-    render(
-      <ImageModalProvider>
-        <LetterForm />
-      </ImageModalProvider>,
-    );
+    render(<LetterForm />);
 
     fireEvent.change(screen.getByLabelText('Title'), {
       target: { value: 'x' },
@@ -457,11 +424,7 @@ describe('LetterForm', () => {
       mutate: mutateMock,
     }));
 
-    render(
-      <ImageModalProvider>
-        <LetterForm />
-      </ImageModalProvider>,
-    );
+    render(<LetterForm />);
 
     expect(showToast).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -501,11 +464,7 @@ describe('LetterForm', () => {
       },
     }));
 
-    render(
-      <ImageModalProvider>
-        <LetterForm />
-      </ImageModalProvider>,
-    );
+    render(<LetterForm />);
 
     fireEvent.change(screen.getByLabelText('Title'), {
       target: { value: 'x' },
@@ -567,11 +526,7 @@ describe('LetterForm', () => {
       },
     }));
 
-    render(
-      <ImageModalProvider>
-        <LetterForm />
-      </ImageModalProvider>,
-    );
+    render(<LetterForm />);
 
     fireEvent.change(screen.getByLabelText('Title'), {
       target: { value: 'x' },
@@ -631,11 +586,7 @@ describe('LetterForm', () => {
 
     (useRouter as jest.Mock).mockReturnValue({ back: jest.fn() });
 
-    render(
-      <ImageModalProvider>
-        <LetterForm />
-      </ImageModalProvider>,
-    );
+    render(<LetterForm />);
 
     await waitFor(() => {
       expect(screen.getByText('Letter Form')).toBeInTheDocument();
@@ -695,11 +646,7 @@ describe('LetterForm', () => {
       return { data: {}, error: null, isLoading: false };
     });
 
-    render(
-      <ImageModalProvider>
-        <LetterForm />
-      </ImageModalProvider>,
-    );
+    render(<LetterForm />);
 
     expect(screen.getByText('Caption!')).toBeInTheDocument();
 
@@ -766,11 +713,7 @@ describe('LetterForm', () => {
     });
 
     await act(async () => {
-      render(
-        <ImageModalProvider>
-          <LetterForm />
-        </ImageModalProvider>,
-      );
+      render(<LetterForm />);
     });
 
     expect(await screen.findByText('Caption!')).toBeInTheDocument();
@@ -853,11 +796,7 @@ describe('LetterForm', () => {
       return { data: {}, error: null, isLoading: false };
     });
 
-    render(
-      <ImageModalProvider>
-        <LetterForm />
-      </ImageModalProvider>,
-    );
+    render(<LetterForm />);
 
     expect(screen.getByText('Caption!')).toBeInTheDocument();
 
@@ -947,11 +886,7 @@ describe('LetterForm', () => {
     });
 
     await act(async () => {
-      render(
-        <ImageModalProvider>
-          <LetterForm />
-        </ImageModalProvider>,
-      );
+      render(<LetterForm />);
     });
 
     expect(screen.getByText('Caption!')).toBeInTheDocument();
@@ -1030,11 +965,7 @@ describe('LetterForm', () => {
       return { data: {}, error: null, isLoading: false };
     });
 
-    render(
-      <ImageModalProvider>
-        <LetterForm />
-      </ImageModalProvider>,
-    );
+    render(<LetterForm />);
 
     expect(screen.getByText('Caption!')).toBeInTheDocument();
 
@@ -1102,11 +1033,7 @@ describe('LetterForm', () => {
       error: null,
     });
 
-    render(
-      <ImageModalProvider>
-        <LetterForm />
-      </ImageModalProvider>,
-    );
+    render(<LetterForm />);
 
     expect(screen.getByText('Caption!')).toBeInTheDocument();
 
@@ -1172,11 +1099,7 @@ describe('LetterForm', () => {
       error: 'Failed to delete!',
     });
 
-    render(
-      <ImageModalProvider>
-        <LetterForm />
-      </ImageModalProvider>,
-    );
+    render(<LetterForm />);
 
     expect(screen.getByText('Caption!')).toBeInTheDocument();
 
@@ -1245,11 +1168,7 @@ describe('LetterForm', () => {
       error: null,
     });
 
-    render(
-      <ImageModalProvider>
-        <LetterForm />
-      </ImageModalProvider>,
-    );
+    render(<LetterForm />);
 
     await waitFor(() => {
       expect(screen.getByTestId('progress')).toBeInTheDocument();
@@ -1307,11 +1226,7 @@ describe('LetterForm', () => {
       error: null,
     });
 
-    render(
-      <ImageModalProvider>
-        <LetterForm />
-      </ImageModalProvider>,
-    );
+    render(<LetterForm />);
 
     expect(screen.getByText('Caption!')).toBeInTheDocument();
 
@@ -1325,11 +1240,7 @@ describe('LetterForm', () => {
   });
 
   it('Has no accessibility violations.', async () => {
-    const { container } = render(
-      <ImageModalProvider>
-        <LetterForm />
-      </ImageModalProvider>,
-    );
+    const { container } = render(<LetterForm />);
 
     const results = await axe(container);
     expect(results).toHaveNoViolations();

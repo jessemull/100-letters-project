@@ -1,28 +1,45 @@
 import ImageItem from './ImageItem';
-import { LetterImage, View } from '@ts-types/letter';
+import { Letter, LetterImage, View } from '@ts-types/letter';
 import { axe } from 'jest-axe';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { useAuth } from '@contexts/AuthProvider';
-import { useImageModal } from '@contexts/ImageModalContext';
 import { useSWRMutation } from '@hooks/useSWRMutation';
 
 jest.mock('@contexts/AuthProvider', () => ({
   useAuth: jest.fn(),
 }));
 
-jest.mock('@contexts/ImageModalContext', () => ({
-  useImageModal: jest.fn(),
-}));
-
 jest.mock('@hooks/useSWRMutation', () => ({
   useSWRMutation: jest.fn(),
 }));
+
+jest.mock('yet-another-react-lightbox', () => {
+  return {
+    __esModule: true,
+    default: ({ open, close, render = {} }: any) => {
+      if (!open) return null;
+      return (
+        <div data-testid="mock-lightbox">
+          <button data-testid="view-handler">View Handler</button>
+          <button onClick={close} data-testid="close-button">
+            Close
+          </button>
+          <div data-testid="icon-prev">{render.iconPrev?.()}</div>
+          <div data-testid="icon-next">{render.iconNext?.()}</div>
+        </div>
+      );
+    },
+  };
+});
+
+jest.mock('yet-another-react-lightbox/plugins/zoom', () => {
+  return {};
+});
 
 describe('ImageItem Component', () => {
   const mockMutate = jest.fn();
   const mockDeleteImage = jest.fn();
   const mockOnUpdateImage = jest.fn();
-  const mockShowImage = jest.fn();
 
   const letter = {
     letterId: '1',
@@ -56,7 +73,6 @@ describe('ImageItem Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (useAuth as jest.Mock).mockReturnValue({ token: 'mock-token' });
-    (useImageModal as jest.Mock).mockReturnValue({ showImage: mockShowImage });
     (useSWRMutation as jest.Mock).mockReturnValue({
       mutate: mockMutate,
       isLoading: false,
@@ -112,22 +128,6 @@ describe('ImageItem Component', () => {
     expect(
       screen.getByText('This is a really long cap...'),
     ).toBeInTheDocument();
-  });
-
-  it('Handles image modal open.', async () => {
-    render(
-      <ImageItem
-        data={data as LetterImage}
-        deleteImage={mockDeleteImage}
-        letter={letter as any}
-        onUpdateImage={mockOnUpdateImage}
-      />,
-    );
-
-    fireEvent.click(screen.getAllByTestId('full-screen-button-icon')[0]);
-    await waitFor(() => {
-      expect(mockShowImage).toHaveBeenCalledWith('/url.jpg', 'No Image');
-    });
   });
 
   it('Toggles edit form visibility.', () => {
@@ -308,6 +308,49 @@ describe('ImageItem Component', () => {
       expect(screen.getByLabelText('Caption')).toHaveValue('test caption');
       expect(mockOnUpdateImage).not.toHaveBeenCalled();
     });
+  });
+
+  it('Opens and closes the lightbox when the full-screen button is clicked.', async () => {
+    (useAuth as jest.Mock).mockReturnValue({ token: 'test-token' });
+    (useSWRMutation as jest.Mock).mockReturnValue({
+      mutate: jest.fn(),
+      isLoading: false,
+    });
+
+    const data = {
+      id: 'img1',
+      caption: 'Test caption',
+      view: View.LETTER_FRONT,
+      url: '/test.jpg',
+      urlThumbnail: '/thumb.jpg',
+    } as LetterImage;
+
+    render(
+      <ImageItem
+        data={data}
+        deleteImage={mockDeleteImage}
+        letter={
+          {
+            letterId: '1',
+            correspondenceId: '1',
+            imageURLs: [data],
+          } as Letter
+        }
+        onUpdateImage={mockOnUpdateImage}
+      />,
+    );
+
+    const fullscreenButton = screen.getByTestId('full-screen-button');
+    fireEvent.click(fullscreenButton);
+    expect(screen.getByTestId('mock-lightbox')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('view-handler'));
+
+    expect(screen.getByText('Close')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('close-button'));
+
+    expect(screen.queryByText('Close')).toBeNull();
   });
 
   it('Has no accessibility violations.', async () => {
