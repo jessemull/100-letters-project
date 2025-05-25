@@ -259,6 +259,9 @@ describe('RecipientsTab', () => {
 
     useSWRQuery.mockImplementation(() => {
       return {
+        config: {
+          shouldRetryOnError: false,
+        },
         data: { data: [], lastEvaluatedKey: '' },
         isLoading: false,
       };
@@ -275,6 +278,9 @@ describe('RecipientsTab', () => {
 
     await waitFor(() => {
       expect(useSWRQuery).toHaveBeenCalledWith({
+        config: {
+          shouldRetryOnError: false,
+        },
         path: `/recipient?search=${mockSearch}`,
         token: 'test-token',
       });

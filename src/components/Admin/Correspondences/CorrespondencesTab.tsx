@@ -32,6 +32,7 @@ const CorrespondencesTab: React.FC<Props> = ({ search }) => {
 
   const { data, fetchMore, isLoading, loadingMore } =
     useSWRQuery<GetCorrespondencesResponse>({
+      config: { shouldRetryOnError: false },
       path: search ? `/correspondence?search=${search}` : '/correspondence',
       token,
     });

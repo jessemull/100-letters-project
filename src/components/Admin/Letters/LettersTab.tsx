@@ -35,6 +35,7 @@ const LettersTab: React.FC<Props> = ({ search }) => {
 
   const { data, fetchMore, isLoading, loadingMore } =
     useSWRQuery<GetLettersResponse>({
+      config: { shouldRetryOnError: false },
       path: search ? `/letter?search=${search}` : '/letter',
       token,
     });
