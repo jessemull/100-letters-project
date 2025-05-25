@@ -233,7 +233,6 @@ describe('CorrespondenceNavigator Component', () => {
   test('opens lightbox and triggers view and close handlers', () => {
     render(<CorrespondenceNavigator />);
 
-    // Click the expand button to open the lightbox
     fireEvent.click(screen.getByLabelText(/expand to fullscreen/i));
 
     expect(screen.getByTestId('mock-lightbox')).toBeInTheDocument();
