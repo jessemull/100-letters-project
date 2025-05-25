@@ -56,3 +56,56 @@ input:-webkit-autofill::first-line {
   background-color: rgba(255, 255, 255, 0.4);
   border-radius: 8px;
 }
+
+.yarl__container {
+  background-color: rgba(255, 255, 255, 0.25) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+}
+
+.yarl__slide_image {
+  border-radius: 1rem !important;
+}
+
+.yarl__button {
+  background: transparent !important;
+  box-shadow: none !important;
+  filter: none !important;
+  padding: 0 !important;
+  text-shadow: none !important;
+}
+
+.yarl__navigation_prev,
+.yarl__navigation_next {
+  background: transparent !important;
+  box-shadow: none !important;
+  filter: none !important;
+  padding: 24 16 !important;
+  text-shadow: none !important;
+}
+
+.yarl__icon {
+  background: transparent !important;
+  box-shadow: none !important;
+  filter: none !important;
+  text-shadow: none !important;
+}
+
+.yarl__icon svg {
+  background: transparent !important;
+  box-shadow: none !important;
+  filter: none !important;
+  text-shadow: none !important;
+}
+
+.yarl__toolbar {
+  -webkit-backdrop-filter: blur(8px);
+  align-items: center !important;
+  backdrop-filter: blur(8px);
+  background-color: rgba(255 255 255 / 0.2) !important;
+  border-radius: 0.5rem;
+  display: flex !important;
+  gap: 0.5rem !important;
+  margin: 1rem;
+  padding: 0.5rem 0.75rem;
+}
