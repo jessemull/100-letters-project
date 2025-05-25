@@ -1,5 +1,7 @@
 import Image from 'next/image';
+import React, { useRef } from 'react';
 import { Letter, LetterImage } from '@ts-types/letter';
+import { useDrag } from '@hooks/useDrag';
 
 interface Props {
   letter: Letter;
@@ -7,43 +9,59 @@ interface Props {
   selected: number;
 }
 
-const ImageCarousel: React.FC<Props> = ({ letter, onClick, selected }) => (
-  <div className="w-full overflow-x-auto -mx-4 px-4">
-    <div className="flex gap-2 items-center min-w-full">
-      {letter.imageURLs.map((image, idx) => {
-        const isSelected = selected === idx;
-        return (
-          <button
-            key={image.id}
-            onClick={() => onClick(idx, image)}
-            className="relative w-24 h-24 flex-shrink-0 border-2 border-transparent"
-          >
-            <div
-              className={`group w-full h-full rounded overflow-hidden transition-transform duration-300 transform ${
-                isSelected ? 'border-white' : 'hover:border-white'
+const ImageCarousel: React.FC<Props> = ({ letter, onClick, selected }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { onMouseDown, onMouseMove, onMouseUpOrLeave, shouldCancelClick } =
+    useDrag(containerRef as React.RefObject<HTMLDivElement>);
+
+  return (
+    <div
+      ref={containerRef}
+      data-testid="image-carousel"
+      className="w-full overflow-x-auto scrollbar-hide-unless-hover cursor-grab active:cursor-grabbing"
+      onMouseDown={onMouseDown}
+      onMouseMove={onMouseMove}
+      onMouseUp={onMouseUpOrLeave}
+      onMouseLeave={onMouseUpOrLeave}
+      role="presentation"
+    >
+      <div className="flex gap-2 items-center min-w-full select-none py-1 px-0.5">
+        {letter.imageURLs.map((image, idx) => {
+          const isSelected = selected === idx;
+          return (
+            <button
+              key={image.id}
+              data-testid={`thumbnail-${idx}`}
+              className={`snap-start relative w-24 h-24 flex-shrink-0 overflow-hidden rounded ${
+                isSelected
+                  ? 'border border-white'
+                  : 'hover:border hover:border-white'
               }`}
+              draggable={false}
+              onClick={(e) => {
+                if (shouldCancelClick()) {
+                  e.preventDefault();
+                  return;
+                }
+                onClick(idx, image);
+              }}
+              onDragStart={(e) => e.preventDefault()}
             >
-              <div className="relative w-24 h-24 flex-shrink-0 group hover:scale-105 transition-transform duration-300 ease-out">
-                <Image
-                  src={letter.imageURLs[idx]?.urlThumbnail || '/missing.jpg'}
-                  alt={`Thumbnail ${idx}`}
-                  fill
-                  className="object-cover"
-                />
-                <div
-                  className={`absolute inset-0 transition-all duration-300 ${
-                    isSelected
-                      ? 'ring-2 ring-white ring-offset-2'
-                      : 'hover:ring hover:ring-white/50'
-                  }`}
-                />
-              </div>
-            </div>
-          </button>
-        );
-      })}
+              <Image
+                src={image.urlThumbnail || '/missing.jpg'}
+                alt={`Thumbnail ${idx}`}
+                fill
+                className="object-cover transition-transform duration-300 ease-out hover:scale-105"
+              />
+              {isSelected && (
+                <div className="absolute inset-0 bg-black/50 z-10 pointer-events-none" />
+              )}
+            </button>
+          );
+        })}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default ImageCarousel;

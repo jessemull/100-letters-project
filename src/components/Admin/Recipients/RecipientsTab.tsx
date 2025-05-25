@@ -29,6 +29,7 @@ const RecipientsTab: React.FC<Props> = ({ search }) => {
 
   const { data, fetchMore, isLoading, loadingMore } =
     useSWRQuery<GetRecipientsResponse>({
+      config: { shouldRetryOnError: false },
       path: search ? `/recipient?search=${search}` : '/recipient',
       token,
     });
