@@ -230,7 +230,7 @@ describe('CorrespondenceNavigator Component', () => {
     );
   });
 
-  test('opens lightbox and triggers view and close handlers', () => {
+  test('Opens lightbox and triggers view and close handlers.', () => {
     render(<CorrespondenceNavigator />);
 
     fireEvent.click(screen.getByLabelText(/expand to fullscreen/i));
