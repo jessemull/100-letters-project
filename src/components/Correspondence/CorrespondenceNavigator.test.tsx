@@ -5,6 +5,32 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { useCorrespondence } from '@contexts/CorrespondenceProvider';
 import { useSearchParams } from 'next/navigation';
 
+jest.mock('yet-another-react-lightbox', () => {
+  return {
+    __esModule: true,
+    default: ({ open, close, on }: any) => {
+      if (!open) return null;
+      return (
+        <div data-testid="mock-lightbox">
+          <button
+            onClick={() => on.view({ index: 1 })}
+            data-testid="view-handler"
+          >
+            View Handler
+          </button>
+          <button onClick={close} data-testid="close-button">
+            Close
+          </button>
+        </div>
+      );
+    },
+  };
+});
+
+jest.mock('yet-another-react-lightbox/plugins/zoom', () => {
+  return {};
+});
+
 const MockCarousel = (props: any) => (
   <div
     role="button"
@@ -202,6 +228,22 @@ describe('CorrespondenceNavigator Component', () => {
       'src',
       '/_next/image?url=%2Fimg3.jpg&w=3840&q=75',
     );
+  });
+
+  test('Opens lightbox and triggers view and close handlers.', () => {
+    render(<CorrespondenceNavigator />);
+
+    fireEvent.click(screen.getByLabelText(/expand to fullscreen/i));
+
+    expect(screen.getByTestId('mock-lightbox')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('view-handler'));
+
+    expect(screen.getByText('Close')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('close-button'));
+
+    expect(screen.queryByText('Close')).toBeNull();
   });
 
   it('Has no accessibility violations.', async () => {

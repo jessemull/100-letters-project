@@ -6,6 +6,7 @@ interface Option {
 }
 
 interface SelectProps {
+  className?: string;
   IconEnd?: ElementType;
   IconStart?: ElementType;
   errors?: string | string[];
@@ -20,6 +21,7 @@ interface SelectProps {
 }
 
 const Select: React.FC<SelectProps> = ({
+  className,
   IconEnd,
   IconStart,
   errors,
@@ -47,7 +49,10 @@ const Select: React.FC<SelectProps> = ({
   return (
     <div className="relative w-full">
       {label && (
-        <label htmlFor={id} className="block text-white text-base mb-2">
+        <label
+          htmlFor={id}
+          className={`block text-white text-base mb-2 ${className}`}
+        >
           {label}
         </label>
       )}

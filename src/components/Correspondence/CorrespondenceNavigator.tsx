@@ -12,9 +12,20 @@ import {
   LetterText,
   RecipientDetails,
 } from '@components/Correspondence';
+import {
+  ChevronLeft,
+  ChevronRight,
+  Expand,
+  X,
+  ZoomIn,
+  ZoomOut,
+} from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useCorrespondence } from '@contexts/CorrespondenceProvider';
 import { useSearchParams } from 'next/navigation';
+import Lightbox from 'yet-another-react-lightbox';
+import Zoom from 'yet-another-react-lightbox/plugins/zoom';
+import 'yet-another-react-lightbox/styles.css';
 
 const CorrespondenceNavigator = () => {
   const { correspondencesById } = useCorrespondence();
@@ -40,6 +51,7 @@ const CorrespondenceNavigator = () => {
     initialSelectedLetterIndex,
   );
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
   useEffect(() => {
     if (!letterId || !correspondence) return;
@@ -57,6 +69,9 @@ const CorrespondenceNavigator = () => {
 
   const selectedLetter = correspondence.letters[selectedLetterIndex];
   const selectedImage = selectedLetter.imageURLs[selectedImageIndex];
+  const lightboxSlides = selectedLetter.imageURLs.map(({ url }) => ({
+    src: url,
+  }));
 
   return (
     <div className="font-merriweather max-w-7xl mx-auto px-4 py-4 md:py-16">
@@ -97,6 +112,13 @@ const CorrespondenceNavigator = () => {
               className="object-cover"
               priority
             />
+            <button
+              onClick={() => setIsLightboxOpen(true)}
+              className="absolute top-2 right-2 z-20 bg-black/40 hover:bg-black/60 p-1.5 rounded-md transition"
+              aria-label="Expand to fullscreen"
+            >
+              <Expand className="text-white/90 w-6 h-6" />
+            </button>
           </div>
           <Carousel
             letter={selectedLetter}
@@ -111,6 +133,47 @@ const CorrespondenceNavigator = () => {
       <div className="mt-8">
         <LetterText letter={selectedLetter} />
       </div>
+      {isLightboxOpen && (
+        <Lightbox
+          open={isLightboxOpen}
+          close={() => setIsLightboxOpen(false)}
+          slides={lightboxSlides}
+          index={selectedImageIndex}
+          on={{
+            view: ({ index }) => setSelectedImageIndex(index),
+          }}
+          plugins={[Zoom]}
+          render={{
+            iconPrev: () => (
+              <span className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 transition">
+                <ChevronLeft className="-translate-x-[1px] text-white w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7" />
+              </span>
+            ),
+            iconNext: () => (
+              <span className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 transition">
+                <ChevronRight className="translate-x-[1px] text-white w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7" />
+              </span>
+            ),
+            iconZoomIn: () => (
+              <ZoomIn className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-white" />
+            ),
+            iconZoomOut: () => (
+              <ZoomOut className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-white" />
+            ),
+            iconClose: () => (
+              <X className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-white" />
+            ),
+          }}
+          zoom={{
+            maxZoomPixelRatio: 5,
+            zoomInMultiplier: 2,
+            doubleTapDelay: 300,
+            doubleClickDelay: 300,
+            pinchZoomDistanceFactor: 100,
+            wheelZoomDistanceFactor: 100,
+          }}
+        />
+      )}
     </div>
   );
 };
