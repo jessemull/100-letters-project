@@ -1,11 +1,16 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { Card } from '@components/Feed';
-import { Categories } from '@components/Feed';
+import dynamic from 'next/dynamic';
+import { CardSkeleton, Categories } from '@components/Feed';
 import { CountDown } from '@ts-types/feed';
 import { calculateCountdown } from '@util/feed';
 import { useCorrespondence } from '@contexts/CorrespondenceProvider';
+
+const Card = dynamic(() => import('@components/Feed').then((mod) => mod.Card), {
+  ssr: false,
+  loading: () => <CardSkeleton />,
+});
 
 const Splash = () => {
   const { correspondences, earliestSentAtDate, responseCompletion } =
@@ -19,7 +24,6 @@ const Splash = () => {
 
   useEffect(() => {
     if (!earliestSentAtDate) return;
-
     const targetDate = new Date(earliestSentAtDate);
     targetDate.setFullYear(targetDate.getFullYear() + 1);
 

@@ -1,8 +1,8 @@
-import Image from 'next/image';
+import React from 'react';
 import Splash from '@components/Feed/Splash';
 import { axe } from 'jest-axe';
 import { calculateCountdown } from '@util/feed';
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import { useCorrespondence } from '@contexts/CorrespondenceProvider';
 
 jest.mock('@contexts/CorrespondenceProvider', () => ({
@@ -10,22 +10,11 @@ jest.mock('@contexts/CorrespondenceProvider', () => ({
 }));
 
 jest.mock('@components/Feed', () => ({
+  CardSkeleton: () => <div data-testid="card-skeleton">Loading...</div>,
   Card: ({ correspondence }: any) => (
     <div data-testid="card">{correspondence.title}</div>
   ),
   Categories: () => <div data-testid="categories">Categories</div>,
-}));
-
-jest.mock('@components/Admin/Letters', () => ({
-  Image: ({ src, alt }: { src: string; alt: string }) => (
-    <Image
-      src={src}
-      alt={alt}
-      width={100}
-      height={100}
-      data-testid="card-image"
-    />
-  ),
 }));
 
 jest.mock('@util/feed', () => ({
@@ -33,94 +22,161 @@ jest.mock('@util/feed', () => ({
 }));
 
 describe('Splash Component', () => {
+  const baseDate = new Date('2025-01-01T00:00:00Z');
+
+  const correspondenceData = [
+    { correspondenceId: '1', title: 'Letter 1' },
+    { correspondenceId: '2', title: 'Letter 2' },
+    { correspondenceId: '3', title: 'Letter 3' },
+    { correspondenceId: '4', title: 'Letter 4' },
+    { correspondenceId: '5', title: 'Letter 5' },
+    { correspondenceId: '6', title: 'Letter 6' },
+  ];
+
   beforeEach(() => {
     jest.useFakeTimers();
-    jest.clearAllTimers();
+    jest.clearAllMocks();
+    (useCorrespondence as jest.Mock).mockReturnValue({
+      correspondences: correspondenceData,
+      earliestSentAtDate: baseDate.toISOString(),
+      responseCompletion: 0.25,
+    });
+    (calculateCountdown as jest.Mock).mockReturnValue({
+      days: 300,
+      hours: 5,
+      minutes: 30,
+      seconds: 10,
+    });
   });
 
   afterEach(() => {
     jest.useRealTimers();
   });
 
-  const mockData = {
-    correspondences: [
-      { correspondenceId: '1', title: 'Letter 1' },
-      { correspondenceId: '2', title: 'Letter 2' },
-      { correspondenceId: '3', title: 'Letter 3' },
-      { correspondenceId: '4', title: 'Letter 4' },
-    ],
-    earliestSentAtDate: new Date().toISOString(),
-    responseCompletion: 0.825,
-  };
-
-  it('Renders header and correct stats.', () => {
-    (useCorrespondence as jest.Mock).mockReturnValue(mockData);
-    (calculateCountdown as jest.Mock).mockReturnValue({
-      days: 10,
-      hours: 5,
-      minutes: 30,
-      seconds: 15,
+  it('Renders header and stats correctly.', async () => {
+    await act(async () => {
+      render(<Splash />);
     });
 
-    render(<Splash />);
-    expect(screen.getByText('The 100 Letters Project')).toBeInTheDocument();
-    expect(screen.getByText('4 Letters Written')).toBeInTheDocument();
-    expect(screen.getByText('Respond-o-meter: 82.5%')).toBeInTheDocument();
-    expect(
-      screen.getByText('Countdown clock kicking off soon...'),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/The 100 Letters Project/i)).toBeInTheDocument();
+    expect(screen.getByText('6 Letters Written')).toBeInTheDocument();
+    expect(screen.getByText('Respond-o-meter: 25%')).toBeInTheDocument();
   });
 
-  it('Shows fallback countdown if no earliestSentAtDate.', () => {
-    (useCorrespondence as jest.Mock).mockReturnValue({
-      ...mockData,
-      earliestSentAtDate: null,
+  it('Shows countdown once earliestSentAtDate is provided.', async () => {
+    await act(async () => {
+      render(<Splash />);
     });
-    render(<Splash />);
+
+    act(() => {
+      jest.advanceTimersByTime(1000);
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Countdown to the Letter-o-calypse/i),
+      ).toBeInTheDocument();
+      expect(screen.getByText(/300d 5h 30m 10s/i)).toBeInTheDocument();
+    });
+  });
+
+  it('Shows fallback countdown if earliestSentAtDate is missing.', async () => {
+    (useCorrespondence as jest.Mock).mockReturnValue({
+      correspondences: [],
+      earliestSentAtDate: null,
+      responseCompletion: 0.5,
+    });
+
+    await act(async () => {
+      render(<Splash />);
+    });
+
     expect(
       screen.getByText(/Countdown clock kicking off soon/i),
     ).toBeInTheDocument();
   });
 
-  it('Renders only first 3 letters and loads more on click.', () => {
-    (useCorrespondence as jest.Mock).mockReturnValue(mockData);
-    render(<Splash />);
-
-    expect(screen.getAllByTestId('card')).toHaveLength(3);
-
-    fireEvent.click(screen.getByTestId('show-more-letters'));
-    expect(screen.getAllByTestId('card')).toHaveLength(4);
-  });
-
-  it('Shows coming soon when no correspondences.', () => {
+  it('Shows "Recent Letters Coming Soon!" if no correspondences exist.', async () => {
     (useCorrespondence as jest.Mock).mockReturnValue({
-      ...mockData,
       correspondences: [],
+      earliestSentAtDate: baseDate.toISOString(),
+      responseCompletion: 0.25,
     });
-    render(<Splash />);
-    expect(screen.getByText(/Recent Letters Coming Soon!/)).toBeInTheDocument();
+
+    await act(async () => {
+      render(<Splash />);
+    });
+
+    expect(
+      screen.getByText(/Recent Letters Coming Soon!/i),
+    ).toBeInTheDocument();
   });
 
-  it('Starts countdown timer and clears it on unmount.', () => {
-    (useCorrespondence as jest.Mock).mockReturnValue(mockData);
-    (calculateCountdown as jest.Mock).mockReturnValue({
-      days: 1,
-      hours: 2,
-      minutes: 3,
-      seconds: 4,
+  it('Renders first row of cards (3 items).', async () => {
+    await act(async () => {
+      render(<Splash />);
     });
 
+    const cards = await screen.findAllByTestId('card');
+    expect(cards.length).toBe(3);
+    expect(cards[0]).toHaveTextContent('Letter 1');
+  });
+
+  it('Does not show "View More Letters +" button when all are visible.', async () => {
+    (useCorrespondence as jest.Mock).mockReturnValue({
+      correspondences: [
+        { correspondenceId: '1', title: 'Only One' },
+        { correspondenceId: '2', title: 'Only Two' },
+      ],
+      earliestSentAtDate: baseDate.toISOString(),
+      responseCompletion: 0.25,
+    });
+
+    await act(async () => {
+      render(<Splash />);
+    });
+
+    expect(screen.queryByRole('button', { name: /Show More/i })).toBeNull();
+  });
+
+  it('Shows "View More Letters +" button when more items exist.', async () => {
+    await act(async () => {
+      render(<Splash />);
+    });
+
+    expect(
+      screen.getByRole('button', { name: /View More Letters +/i }),
+    ).toBeInTheDocument();
+  });
+
+  it('Loads next row when "View More Letters +" is clicked.', async () => {
+    await act(async () => {
+      render(<Splash />);
+    });
+
+    await act(async () => {
+      screen.getByRole('button', { name: /View More Letters +/i }).click();
+    });
+
+    await waitFor(() => {
+      const cards = screen.getAllByTestId('card');
+      expect(cards.length).toBe(6);
+    });
+  });
+
+  it('Cleans up countdown interval on unmount.', async () => {
     const clearIntervalSpy = jest.spyOn(global, 'clearInterval');
 
-    const { unmount } = render(<Splash />);
-    act(() => {
-      jest.advanceTimersByTime(1000);
+    let unmount: () => void;
+    await act(async () => {
+      ({ unmount } = render(<Splash />));
     });
 
-    expect(calculateCountdown).toHaveBeenCalled();
-    unmount();
-    expect(clearIntervalSpy).toHaveBeenCalled();
+    await act(async () => {
+      unmount();
+    });
 
+    expect(clearIntervalSpy).toHaveBeenCalled();
     clearIntervalSpy.mockRestore();
   });
 

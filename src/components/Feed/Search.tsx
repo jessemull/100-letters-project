@@ -1,12 +1,18 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { Card } from '@components/Feed';
+import dynamic from 'next/dynamic';
+import { CardSkeleton } from '@components/Feed';
+import { Correspondence } from '@ts-types/correspondence';
 import { Progress } from '@components/Form';
 import { SearchAllItem } from '@ts-types/search';
-import { useInView } from 'react-intersection-observer';
 import { useCorrespondence } from '@contexts/CorrespondenceProvider';
-import { Correspondence } from '@ts-types/correspondence';
+import { useInView } from 'react-intersection-observer';
+
+const Card = dynamic(() => import('@components/Feed').then((mod) => mod.Card), {
+  ssr: false,
+  loading: () => <CardSkeleton />,
+});
 
 interface Props {
   results: SearchAllItem[];

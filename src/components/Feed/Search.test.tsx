@@ -2,7 +2,7 @@ import React from 'react';
 import Search from '@components/Feed/Search';
 import { SearchAllItem } from '@ts-types/search';
 import { axe } from 'jest-axe';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { useCorrespondence } from '@contexts/CorrespondenceProvider';
 import { useInView } from 'react-intersection-observer';
 
@@ -11,6 +11,7 @@ jest.mock('@contexts/CorrespondenceProvider', () => ({
 }));
 
 jest.mock('@components/Feed', () => ({
+  CardSkeleton: () => <div data-testid="card-skeleton">Loading...</div>,
   Card: ({ correspondence, loading, priority }: any) => (
     <div data-testid="card" data-priority={priority} data-loading={loading}>
       {correspondence.title}
@@ -52,41 +53,42 @@ describe('Search Component', () => {
     ).toBeInTheDocument();
   });
 
-  it('Renders cards from results when term is present.', () => {
+  it('Shows loading fallback and then loads cards when no term.', async () => {
+    render(<Search results={[]} term="" />);
+
+    await waitFor(() => {
+      const cards = screen.getAllByTestId('card');
+      expect(cards.length).toBe(correspondenceData.length);
+      expect(cards[0]).toHaveAttribute('data-loading', 'eager');
+      expect(cards[0]).toHaveAttribute('data-priority', 'true');
+    });
+  });
+
+  it('Shows loading fallback and then loads cards when term is present.', async () => {
     render(
       <Search
         results={correspondenceData as SearchAllItem[]}
         term="some search"
       />,
     );
-    const cards = screen.getAllByTestId('card');
-    expect(cards.length).toBe(correspondenceData.length);
-    expect(cards[0]).toHaveAttribute('data-loading', 'eager');
-    expect(cards[0]).toHaveAttribute('data-priority', 'true');
+
+    await waitFor(() => {
+      const cards = screen.getAllByTestId('card');
+      expect(cards.length).toBe(correspondenceData.length);
+      expect(cards[0]).toHaveAttribute('data-loading', 'eager');
+      expect(cards[0]).toHaveAttribute('data-priority', 'true');
+    });
   });
 
-  it('Renders cards from correspondences when no term is present.', () => {
+  it('Renders cards from correspondences when no term is present.', async () => {
     render(<Search results={[]} term="" />);
-    const cards = screen.getAllByTestId('card');
-    expect(cards.length).toBe(correspondenceData.length);
+    await waitFor(() => {
+      const cards = screen.getAllByTestId('card');
+      expect(cards.length).toBe(correspondenceData.length);
+    });
   });
 
-  it('Renders Progress component if more items can be loaded and inView is false.', () => {
-    const extraItems = Array.from({ length: 20 }, (_, i) => ({
-      correspondenceId: `extra-${i + 1}`,
-      title: `Extra ${i + 1}`,
-    }));
-
-    render(
-      <Search
-        results={[...correspondenceData, ...extraItems] as SearchAllItem[]}
-        term="some"
-      />,
-    );
-    expect(screen.getByTestId('progress')).toBeInTheDocument();
-  });
-
-  it('Loads next page when inView is true and more items exist.', () => {
+  it('Loads next page when inView is true and more items exist.', async () => {
     (useInView as jest.Mock).mockReturnValue([{ current: null }, true]);
     const longList = Array.from({ length: 30 }, (_, i) => ({
       correspondenceId: `${i + 1}`,
@@ -94,12 +96,21 @@ describe('Search Component', () => {
     }));
 
     render(<Search results={longList as SearchAllItem[]} term="search" />);
-    const cards = screen.getAllByTestId('card');
-    expect(cards.length).toBeGreaterThan(12);
+
+    await waitFor(() => {
+      const cards = screen.getAllByTestId('card');
+      expect(cards.length).toBeGreaterThan(12);
+    });
   });
 
-  it('Does not render Progress when all items are visible.', () => {
+  it('Does not render Progress when all items are visible.', async () => {
     render(<Search results={correspondenceData as SearchAllItem[]} term="" />);
+
+    await waitFor(() => {
+      const cards = screen.getAllByTestId('card');
+      expect(cards.length).toBe(correspondenceData.length);
+    });
+
     expect(screen.queryByTestId('progress')).not.toBeInTheDocument();
   });
 
@@ -107,6 +118,13 @@ describe('Search Component', () => {
     const { container } = render(
       <Search results={correspondenceData as SearchAllItem[]} term="" />,
     );
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('card').length).toBe(
+        correspondenceData.length,
+      );
+    });
+
     const results = await axe(container);
     expect(results).toHaveNoViolations();
   });

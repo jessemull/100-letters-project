@@ -22,6 +22,7 @@ const Card: React.FC<Props> = ({ correspondence, loading, priority }) => {
 
   return (
     <div
+      data-testid="card"
       key={correspondenceId}
       role="button"
       tabIndex={0}
