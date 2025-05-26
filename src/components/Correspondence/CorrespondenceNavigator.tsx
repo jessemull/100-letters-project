@@ -155,13 +155,13 @@ const CorrespondenceNavigator = () => {
               </span>
             ),
             iconZoomIn: () => (
-              <ZoomIn className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-white" />
+              <ZoomIn className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-white hover:text-gray-300 transition-colors duration-200" />
             ),
             iconZoomOut: () => (
-              <ZoomOut className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-white" />
+              <ZoomOut className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-white hover:text-gray-300 transition-colors duration-200" />
             ),
             iconClose: () => (
-              <X className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-white" />
+              <X className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-white hover:text-gray-300 transition-colors duration-200" />
             ),
           }}
           zoom={{
