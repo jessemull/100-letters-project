@@ -2,19 +2,24 @@ import Image from 'next/image';
 import Splash from '@components/Feed/Splash';
 import { axe } from 'jest-axe';
 import { calculateCountdown } from '@util/feed';
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { useCorrespondence } from '@contexts/CorrespondenceProvider';
 
 jest.mock('@contexts/CorrespondenceProvider', () => ({
   useCorrespondence: jest.fn(),
 }));
 
-jest.mock('@components/Feed', () => ({
-  Card: ({ correspondence }: any) => (
-    <div data-testid="card">{correspondence.title}</div>
-  ),
-  Categories: () => <div data-testid="categories">Categories</div>,
-}));
+jest.mock('@components/Feed', () => {
+  return {
+    Card: ({ correspondence }: any) => (
+      <div data-testid="card">{correspondence.title}</div>
+    ),
+    Categories: () => <div data-testid="categories">Categories</div>,
+    LetterCount: () => <div data-testid="letter-count">Count</div>,
+    ResponseChart: () => <div data-testid="response-chart">Chart</div>,
+    CountDownClock: () => <div data-testid="count-down-clock">Clock</div>,
+  };
+});
 
 jest.mock('@components/Admin/Letters', () => ({
   Image: ({ src, alt }: { src: string; alt: string }) => (
@@ -64,22 +69,9 @@ describe('Splash Component', () => {
 
     render(<Splash />);
     expect(screen.getByText('The 100 Letters Project')).toBeInTheDocument();
-    expect(screen.getByText('4 Letters Written')).toBeInTheDocument();
-    expect(screen.getByText('Respond-o-meter: 82.5%')).toBeInTheDocument();
-    expect(
-      screen.getByText('Countdown clock kicking off soon...'),
-    ).toBeInTheDocument();
-  });
-
-  it('Shows fallback countdown if no earliestSentAtDate.', () => {
-    (useCorrespondence as jest.Mock).mockReturnValue({
-      ...mockData,
-      earliestSentAtDate: null,
-    });
-    render(<Splash />);
-    expect(
-      screen.getByText(/Countdown clock kicking off soon/i),
-    ).toBeInTheDocument();
+    expect(screen.getByText('Count')).toBeInTheDocument();
+    expect(screen.getByText('Chart')).toBeInTheDocument();
+    expect(screen.getByText('Clock')).toBeInTheDocument();
   });
 
   it('Renders only first 3 letters and loads more on click.', () => {
@@ -99,29 +91,6 @@ describe('Splash Component', () => {
     });
     render(<Splash />);
     expect(screen.getByText(/Recent Letters Coming Soon!/)).toBeInTheDocument();
-  });
-
-  it('Starts countdown timer and clears it on unmount.', () => {
-    (useCorrespondence as jest.Mock).mockReturnValue(mockData);
-    (calculateCountdown as jest.Mock).mockReturnValue({
-      days: 1,
-      hours: 2,
-      minutes: 3,
-      seconds: 4,
-    });
-
-    const clearIntervalSpy = jest.spyOn(global, 'clearInterval');
-
-    const { unmount } = render(<Splash />);
-    act(() => {
-      jest.advanceTimersByTime(1000);
-    });
-
-    expect(calculateCountdown).toHaveBeenCalled();
-    unmount();
-    expect(clearIntervalSpy).toHaveBeenCalled();
-
-    clearIntervalSpy.mockRestore();
   });
 
   it('Has no accessibility violations.', async () => {
