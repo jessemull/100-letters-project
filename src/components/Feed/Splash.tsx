@@ -1,55 +1,31 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
-import { Card } from '@components/Feed';
+import React, { useMemo, useState } from 'react';
+import {
+  Card,
+  CountDownClock,
+  LetterCount,
+  ResponseChart,
+} from '@components/Feed';
 import { Categories } from '@components/Feed';
-import { CountDown } from '@ts-types/feed';
-import { calculateCountdown } from '@util/feed';
 import { useCorrespondence } from '@contexts/CorrespondenceProvider';
 
 const Splash = () => {
   const { correspondences, earliestSentAtDate, responseCompletion } =
     useCorrespondence();
-  const [countdown, setCountdown] = useState<null | CountDown>(null);
   const [numLetterRows, setNumLetterPages] = useState(1);
 
   const showMoreLetters = useMemo(() => {
     return numLetterRows * 3 < correspondences.length;
   }, [correspondences, numLetterRows]);
 
-  useEffect(() => {
-    if (!earliestSentAtDate) return;
-
-    const targetDate = new Date(earliestSentAtDate);
-    targetDate.setFullYear(targetDate.getFullYear() + 1);
-
-    const interval = setInterval(() => {
-      setCountdown(calculateCountdown(targetDate));
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [earliestSentAtDate]);
-
   return (
     <>
       <div className="text-center space-y-2">
         <h1 className="text-4xl font-bold">The 100 Letters Project</h1>
-        <p className="text-lg">{correspondences.length} Letters Written</p>
-        <p className="text-lg">
-          Respond-o-meter:{' '}
-          {(responseCompletion * 100).toFixed(1).replace(/\.0$/, '')}%
-        </p>
-        {countdown ? (
-          <p className="text-lg">
-            Countdown to the Letter-o-calypse:{' '}
-            <span className="font-semibold">
-              {countdown.days}d {countdown.hours}h {countdown.minutes}m{' '}
-              {countdown.seconds}s
-            </span>
-          </p>
-        ) : (
-          <p>Countdown clock kicking off soon...</p>
-        )}
+        <LetterCount count={correspondences.length} />
+        <ResponseChart responseCompletion={responseCompletion} />
+        <CountDownClock earliestSentAtDate={earliestSentAtDate} />
       </div>
       <div className="w-full space-y-8">
         <h2 className="text-2xl font-bold text-center">{`Recent Letters${correspondences.length === 0 ? ' Coming Soon!' : ''}`}</h2>
