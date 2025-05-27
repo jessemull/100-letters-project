@@ -19,13 +19,15 @@ const Splash = () => {
     return numLetterRows * 3 < correspondences.length;
   }, [correspondences, numLetterRows]);
 
+  const date = new Date(earliestSentAtDate);
+  date.setFullYear(date.getFullYear() + 1);
   return (
     <>
       <div className="text-center space-y-2">
         <h1 className="text-4xl font-bold">The 100 Letters Project</h1>
         <LetterCount count={correspondences.length} />
         <ResponseChart responseCompletion={responseCompletion} />
-        <CountDownClock earliestSentAtDate={earliestSentAtDate} />
+        <CountDownClock endAt={date} />
       </div>
       <div className="w-full space-y-8">
         <h2 className="text-2xl font-bold text-center">{`Recent Letters${correspondences.length === 0 ? ' Coming Soon!' : ''}`}</h2>

@@ -109,3 +109,257 @@ input:-webkit-autofill::first-line {
   margin: 1rem;
   padding: 0.5rem 0.75rem;
 }
+
+.flip-countdown {
+  text-align: center;
+  perspective: 400px;
+  margin: 0 auto;
+  font-family: 'Roboto', Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  --background-color: #222;
+  --background-bottom-color: #222;
+  --text-color: #ccc;
+  --text-bottom-color: #fff;
+  box-sizing: border-box;
+}
+
+.flip-countdown *,
+.flip-countdown *::before,
+.flip-countdown *::after {
+  box-sizing: border-box;
+}
+
+.flip-countdown .flip-countdown-piece {
+  display: inline-block;
+  margin: 0 0.22em;
+}
+
+.flip-countdown .flip-countdown-piece .flip-countdown-title {
+  font-size: 2vw;
+}
+
+.flip-countdown .flip-countdown-piece .flip-countdown-card {
+  display: flex;
+}
+
+.flip-countdown
+  .flip-countdown-piece
+  .flip-countdown-card
+  .flip-countdown-card-sec {
+  display: block;
+  position: relative;
+  margin: 0 0.04em;
+  padding-bottom: 0.52em;
+  font-size: 9vw;
+  line-height: 0.95;
+  border-radius: 0.15em;
+  box-shadow:
+    0 3px 4px 0 rgba(0, 0, 0, 0.2),
+    inset 2px 4px 0 0 rgba(255, 255, 255, 0.08);
+}
+
+.flip-countdown
+  .flip-countdown-piece
+  .flip-countdown-card
+  .flip-countdown-card-sec
+  .card__top,
+.flip-countdown
+  .flip-countdown-piece
+  .flip-countdown-card
+  .flip-countdown-card-sec
+  .card__bottom,
+.flip-countdown
+  .flip-countdown-piece
+  .flip-countdown-card
+  .flip-countdown-card-sec
+  .card__back::before,
+.flip-countdown
+  .flip-countdown-piece
+  .flip-countdown-card
+  .flip-countdown-card-sec
+  .card__back::after {
+  display: block;
+  height: 0.52em;
+  color: white;
+  background: #222;
+  padding: 0 0.1em;
+  border-radius: 0.15em 0.15em 0 0;
+  transform-style: preserve-3d;
+  transform: translateZ(0);
+}
+
+.flip-countdown
+  .flip-countdown-piece
+  .flip-countdown-card
+  .flip-countdown-card-sec
+  .card__top {
+  border-bottom: solid 1px #000;
+}
+
+.flip-countdown
+  .flip-countdown-piece
+  .flip-countdown-card
+  .flip-countdown-card-sec
+  .card__bottom {
+  color: white;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  background: #222;
+  border-radius: 0 0 0.15em 0.15em;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.flip-countdown
+  .flip-countdown-piece
+  .flip-countdown-card
+  .flip-countdown-card-sec
+  .card__bottom::after {
+  display: block;
+  margin-top: -0.52em;
+  content: attr(data-value);
+}
+
+.flip-countdown
+  .flip-countdown-piece
+  .flip-countdown-card
+  .flip-countdown-card-sec
+  .card__back {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  left: 0%;
+  pointer-events: none;
+}
+
+.flip-countdown
+  .flip-countdown-piece
+  .flip-countdown-card
+  .flip-countdown-card-sec
+  .card__back::before {
+  position: relative;
+  content: attr(data-value);
+  z-index: -1;
+  overflow: hidden;
+}
+
+.flip-countdown
+  .flip-countdown-piece
+  .flip-countdown-card
+  .flip-countdown-card-sec.flip
+  .card__back
+  .card__bottom {
+  transform-origin: center top;
+  animation-fill-mode: both;
+  animation: flipBottom 0.6s cubic-bezier(0.15, 0.45, 0.28, 1);
+}
+
+.flip-countdown
+  .flip-countdown-piece
+  .flip-countdown-card
+  .flip-countdown-card-sec.flip
+  .card__back::before {
+  animation: flipTop 0.3s cubic-bezier(0.37, 0.01, 0.94, 0.35);
+  animation-fill-mode: both;
+  transform-origin: center bottom;
+}
+
+.flip-countdown-card-divider {
+  font-size: 2vw;
+}
+
+/* Themes */
+
+.flip-countdown.theme-light {
+  --text-color: #de4848;
+  --text-bottom-color: #de4848;
+  --background-color: #f7f7f7;
+  --background-bottom-color: #ffffff;
+}
+
+/* Sizes */
+
+.flip-countdown.size-medium .flip-countdown-piece {
+  margin: 0 0.2em;
+}
+
+.flip-countdown.size-medium .flip-countdown-piece .flip-countdown-title {
+  font-size: 24px;
+}
+
+.flip-countdown.size-medium
+  .flip-countdown-piece
+  .flip-countdown-card
+  .flip-countdown-card-sec {
+  margin: 0 0.025em;
+  font-size: 72px;
+}
+
+.flip-countdown.size-small .flip-countdown-piece {
+  margin: 0 0.15em;
+}
+
+.flip-countdown.size-small .flip-countdown-piece .flip-countdown-title {
+  font-size: 14px;
+}
+
+.flip-countdown.size-small
+  .flip-countdown-piece
+  .flip-countdown-card
+  .flip-countdown-card-sec {
+  margin: 0 0.023em;
+  font-size: 32px;
+}
+
+.flip-countdown.size-extra-small .flip-countdown-piece {
+  margin: 0 0.15em;
+}
+
+.flip-countdown.size-extra-small .flip-countdown-piece .flip-countdown-title {
+  font-size: 10px;
+}
+
+.flip-countdown.size-extra-small
+  .flip-countdown-piece
+  .flip-countdown-card
+  .flip-countdown-card-sec {
+  margin: 0 0.025em;
+  font-size: 20px;
+}
+
+/* Animations */
+
+@keyframes flipTop {
+  0% {
+    transform: rotateX(0deg);
+    z-index: 2;
+  }
+  0%,
+  99% {
+    opacity: 0.99;
+  }
+  100% {
+    transform: rotateX(-90deg);
+    opacity: 0;
+  }
+}
+
+@keyframes flipBottom {
+  0%,
+  50% {
+    z-index: -1;
+    transform: rotateX(90deg);
+    opacity: 0;
+  }
+  51% {
+    opacity: 0.99;
+  }
+  100% {
+    opacity: 0.99;
+    transform: rotateX(0deg);
+    z-index: 5;
+  }
+}
