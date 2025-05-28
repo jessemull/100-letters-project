@@ -1,53 +1,49 @@
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 
 interface Props {
-  responseCompletion: number; // expects 0 to 1, still used for the ring progress
-  letterCount: number; // total letters written so far
-  goalCount?: number; // optional, default 100 (not shown)
+  letterCount: number;
+  responseCompletion: number;
 }
 
-const ResponseChart: React.FC<Props> = ({
-  responseCompletion,
-  letterCount,
-  goalCount = 100,
-}) => {
-  const radius = 36;
-  const circumference = 2 * Math.PI * radius;
-  const progress = Math.min(Math.max(responseCompletion, 0), 1);
-  const strokeDashoffset = circumference * (1 - progress);
+const RADIUS = 36;
+const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
+const Completion: React.FC<Props> = ({ responseCompletion, letterCount }) => {
+  const progress = useMemo(
+    () => Math.min(Math.max(responseCompletion, 0), 1),
+    [responseCompletion],
+  );
+  const strokeDashoffset = useMemo(
+    () => CIRCUMFERENCE * (1 - progress),
+    [progress],
+  );
   return (
     <div className="flex flex-col items-center text-white">
-      {/* Label on top */}
       <p className="text-lg font-semibold">Letters Written</p>
-
       <svg width={100} height={100} viewBox="0 0 100 100">
-        {/* Background ring */}
         <circle
           cx="50"
           cy="50"
-          r={radius}
+          r={RADIUS}
           stroke="#444"
           strokeWidth="8"
           fill="none"
         />
-        {/* Progress ring */}
         <circle
           cx="50"
           cy="50"
-          r={radius}
+          r={RADIUS}
           stroke="#4ade80"
           strokeWidth="8"
           fill="none"
-          strokeDasharray={circumference}
+          strokeDasharray={CIRCUMFERENCE}
           strokeDashoffset={strokeDashoffset}
           strokeLinecap="round"
           style={{ transition: 'stroke-dashoffset 0.5s ease' }}
           transform="rotate(-90 50 50)"
         />
-        {/* Letter count centered */}
         <text
           x="50"
           y="55"
@@ -65,4 +61,4 @@ const ResponseChart: React.FC<Props> = ({
   );
 };
 
-export default ResponseChart;
+export default Completion;

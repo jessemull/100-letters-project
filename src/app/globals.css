@@ -121,3 +121,7 @@ input:-webkit-autofill::first-line {
 .tick-credits {
   display: none;
 }
+
+.tick {
+  margin-top: 0;
+}

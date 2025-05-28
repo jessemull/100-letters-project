@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
-import { Card, CountDownClock, ResponseChart } from '@components/Feed';
+import { Card, Clock, Completion } from '@components/Feed';
 import { Categories } from '@components/Feed';
 import { useCorrespondence } from '@contexts/CorrespondenceProvider';
 
@@ -16,14 +16,21 @@ const Splash = () => {
 
   return (
     <>
-      <div className="text-center space-y-2">
-        <h1 className="text-4xl font-bold">The 100 Letters Project</h1>
-        <ResponseChart
+      <div className="text-center space-y-4">
+        <div className="pb-4">
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">
+            The 100 Letters Project
+          </h1>
+          <h2 className="text-md md:text-lg font-medium">
+            100 Letters, 100 People, 1 Year.
+          </h2>
+        </div>
+
+        <Completion
           responseCompletion={responseCompletion}
           letterCount={correspondences.length}
-          goalCount={100}
         />
-        <CountDownClock earliestSentAtDate={earliestSentAtDate} />
+        <Clock earliestSentAtDate={earliestSentAtDate} />
       </div>
       <div className="w-full space-y-8">
         <h2 className="text-2xl font-bold text-center">{`Recent Letters${correspondences.length === 0 ? ' Coming Soon!' : ''}`}</h2>

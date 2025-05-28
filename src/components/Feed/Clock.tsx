@@ -5,10 +5,10 @@ import Tick from '@pqina/flip';
 import '@pqina/flip/dist/flip.min.css';
 
 interface Props {
-  earliestSentAtDate: string;
+  earliestSentAtDate?: string;
 }
 
-const CountDownClock: React.FC<Props> = ({ earliestSentAtDate }) => {
+const Clock: React.FC<Props> = ({ earliestSentAtDate }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const tickInstanceRef = useRef<any>(null);
   const [tickValue, setTickValue] = useState<string>();
@@ -33,11 +33,12 @@ const CountDownClock: React.FC<Props> = ({ earliestSentAtDate }) => {
   }, []);
 
   useEffect(() => {
-    if (!earliestSentAtDate) return;
+    const baseDate = earliestSentAtDate
+      ? new Date(earliestSentAtDate)
+      : new Date();
 
-    const startDate = new Date(earliestSentAtDate);
     const deadline = new Date(
-      startDate.getTime() + Tick.helper.duration(1, 'years'),
+      baseDate.getTime() + Tick.helper.duration(1, 'years'),
     );
 
     const counter = Tick.count.down(deadline, {
@@ -60,15 +61,26 @@ const CountDownClock: React.FC<Props> = ({ earliestSentAtDate }) => {
   }, [tickValue]);
 
   return (
-    <>
-      <p className="text-lg font-semibold">Ink Runs Dry In</p>
-      <div ref={containerRef} className="tick text-4xl">
+    <div className="flex flex-col items-center">
+      <p className="text-lg font-semibold mb-2">Ink Runs Dry In</p>
+      <div
+        className="
+          tick
+          flex justify-center
+          text-2xl
+          sm:text-3xl
+          md:text-4xl
+          lg:text-5xl
+        "
+        ref={containerRef}
+      >
         <div
           data-repeat="true"
           data-layout="horizontal center fit"
           data-transform="preset(d, h, m, s) -> delay"
+          className="flex gap-5"
         >
-          <div className="tick-group flex flex-col items-center gap-1 pr-4">
+          <div className="tick-group flex flex-col items-center gap-1">
             <div
               data-key="value"
               data-repeat="true"
@@ -84,8 +96,8 @@ const CountDownClock: React.FC<Props> = ({ earliestSentAtDate }) => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
-export default CountDownClock;
+export default Clock;

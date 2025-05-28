@@ -1,19 +1,19 @@
 import Card from './Card';
 import Categories from './Categories';
-import CountDownClock from './CountDownClock';
+import Clock from './Clock';
 import Feed from './Feed';
 import LetterCount from './LetterCount';
-import ResponseChart from './ResponseChart';
+import Completion from './Completion';
 import Search from './Search';
 import Splash from './Splash';
 
 export {
   Card,
   Categories,
-  CountDownClock,
+  Clock,
   Feed,
   LetterCount,
-  ResponseChart,
+  Completion,
   Search,
   Splash,
 };
