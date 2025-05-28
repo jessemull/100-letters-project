@@ -9,8 +9,8 @@ import Splash from './Splash';
 
 export {
   Card,
-  CountDownClock,
   Categories,
+  CountDownClock,
   Feed,
   LetterCount,
   ResponseChart,
