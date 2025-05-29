@@ -17,7 +17,10 @@ jest.mock('@components/Feed', () => {
     Categories: () => <div data-testid="categories">Categories</div>,
     Completion: () => <div data-testid="completion">Completion</div>,
     ResponseChart: () => <div data-testid="response-chart">Chart</div>,
-    CountDownClock: () => <div data-testid="count-down-clock">Clock</div>,
+    Clock: () => <div data-testid="count-down-clock">Clock</div>,
+    ClockSkeleton: () => (
+      <div data-testid="count-down-clock-skeleton">Clock Skeleton</div>
+    ),
   };
 });
 
