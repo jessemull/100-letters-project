@@ -46,7 +46,7 @@ const Completion: React.FC<Props> = ({ responseCompletion, letterCount }) => {
         />
         <text
           x="50"
-          y="55"
+          y="53"
           textAnchor="middle"
           fontSize="28"
           fontWeight="700"
