@@ -1,6 +1,7 @@
 import { debounce, throttle } from './debounce';
-import { isEmail, maxLength, minLength, required } from './validators';
 import { flattenValidators, get, set } from './form';
+import { formatTime, pad } from './clock';
+import { isEmail, maxLength, minLength, required } from './validators';
 import { toUTCTime, toDateTimeLocal } from './date-time';
 import {
   correspondenceByIdDeleteUpdate,
@@ -39,6 +40,7 @@ export {
   deleteCorrespondenceUpdate,
   deleteRecipientUpdate,
   flattenValidators,
+  formatTime,
   get,
   formatLetterDates,
   isEmail,
@@ -48,6 +50,7 @@ export {
   lettersUpdate,
   maxLength,
   minLength,
+  pad,
   recipientByIdCorrespondenceUpdate,
   recipientByIdUpdate,
   recipientsCorrespondenceUpdate,

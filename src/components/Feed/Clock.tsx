@@ -1,104 +1,72 @@
 'use client';
 
-import React, { useRef, useEffect, useState } from 'react';
-import Tick from '@pqina/flip';
-import '@pqina/flip/dist/flip.min.css';
+import React, { useEffect, useState } from 'react';
+import { Digit } from '@components/Feed';
+import { formatTime } from '@util/clock';
 
 interface Props {
   earliestSentAtDate?: string;
 }
 
 const Clock: React.FC<Props> = ({ earliestSentAtDate }) => {
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const tickInstanceRef = useRef<any>(null);
-  const [tickValue, setTickValue] = useState<string>();
+  const [scale, setScale] = useState(1);
+  const [timeLeft, setTimeLeft] = useState(() => {
+    const base = earliestSentAtDate ? new Date(earliestSentAtDate) : new Date();
+    const deadline = new Date(base.getTime() + 365 * 24 * 60 * 60 * 1000);
+    return deadline.getTime() - Date.now();
+  });
 
   useEffect(() => {
-    const initTick = (tick: any) => {
-      tickInstanceRef.current = tick;
-    };
-
-    if (containerRef.current) {
-      Tick.DOM.create(containerRef.current, {
-        didInit: initTick,
-      });
-    }
-
-    // Strict mode in development causes unwanted re-renders that destroy the clock.
-
-    return () => {
-      if (tickInstanceRef.current && process.env.NODE_ENV !== 'development') {
-        Tick.DOM.destroy(tickInstanceRef.current);
-        tickInstanceRef.current = null;
+    function handleResize() {
+      const width = window.innerWidth;
+      if (width >= 438) {
+        setScale(1);
+      } else {
+        const minScale = 0.6;
+        const newScale = Math.max(minScale, width / 438);
+        setScale(newScale);
       }
-    };
+    }
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   useEffect(() => {
-    // If there is no earliest sent at date just count down from a year until a letter is written.
+    const interval = setInterval(() => {
+      setTimeLeft((prev) => Math.max(0, prev - 1000));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
-    const baseDate = earliestSentAtDate
-      ? new Date(earliestSentAtDate)
-      : new Date();
-
-    const deadline = new Date(
-      baseDate.getTime() + Tick.helper.duration(1, 'years'),
-    );
-
-    const counter = Tick.count.down(deadline, {
-      format: ['d', 'h', 'm', 's'],
-    });
-
-    counter.onupdate = (val: string) => {
-      setTickValue(val);
-    };
-
-    return () => {
-      counter?.timer?.stop();
-    };
-  }, [earliestSentAtDate]);
-
-  useEffect(() => {
-    if (tickInstanceRef.current && tickValue) {
-      tickInstanceRef.current.value = tickValue;
-    }
-  }, [tickValue]);
+  const { days, hours, minutes, seconds } = formatTime(timeLeft);
+  const labels = ['DAYS', 'HRS', 'MIN', 'SEC'];
+  const values = [days, hours, minutes, seconds];
 
   return (
-    <div className="flex flex-col items-center min-h-[6rem]">
-      <p className="text-lg font-semibold mb-2">Ink Runs Dry In</p>
-      <div
-        className="
-          tick
-          flex justify-center
-          text-2xl
-          sm:text-3xl
-          md:text-4xl
-          lg:text-5xl
-        "
-        ref={containerRef}
-      >
-        <div
-          data-repeat="true"
-          data-layout="horizontal center fit"
-          data-transform="preset(d, h, m, s) -> delay"
-          className="flex gap-5"
-        >
-          <div className="tick-group flex flex-col items-center gap-1">
-            <div
-              data-key="value"
-              data-repeat="true"
-              data-transform="pad(00) -> split -> delay"
-            >
-              <span data-view="flip"></span>
+    <div
+      className="w-full max-w-3xl mx-auto px-4"
+      style={{
+        transform: `scale(${scale})`,
+        transformOrigin: 'top center',
+      }}
+    >
+      <p className="text-center mb-4 text-lg font-semibold text-white font-merriweather select-none">
+        Ink Runs Dry In
+      </p>
+      <div className="flex justify-center gap-x-6 text-center select-none">
+        {values.map((value, i) => (
+          <div key={labels[i]} className="flex flex-col items-center gap-y-2">
+            <div className="flex gap-x-1">
+              {[...value].map((digit, j) => (
+                <Digit key={`${labels[i]}-${j}`} digit={digit} />
+              ))}
             </div>
-            <span
-              data-key="label"
-              data-view="text"
-              className="tick-label text-sm mt-1"
-            ></span>
+            <div className="text-xs text-white uppercase tracking-wide font-merriweather">
+              {labels[i]}
+            </div>
           </div>
-        </div>
+        ))}
       </div>
     </div>
   );

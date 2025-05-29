@@ -1,16 +1,9 @@
 'use client';
 
-import ClockSkeleton from './ClockSkeleton';
 import React, { useEffect, useMemo, useState } from 'react';
-import dynamic from 'next/dynamic';
-import { Card, Completion } from '@components/Feed';
+import { Card, Clock, Completion } from '@components/Feed';
 import { Categories } from '@components/Feed';
 import { useCorrespondence } from '@contexts/CorrespondenceProvider';
-
-const Clock = dynamic(() => import('@components/Feed/Clock'), {
-  ssr: false,
-  loading: () => <ClockSkeleton />,
-});
 
 const Splash = () => {
   const { correspondences, earliestSentAtDate, responseCompletion } =
