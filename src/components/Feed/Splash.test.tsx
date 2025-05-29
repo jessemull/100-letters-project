@@ -15,7 +15,7 @@ jest.mock('@components/Feed', () => {
       <div data-testid="card">{correspondence.title}</div>
     ),
     Categories: () => <div data-testid="categories">Categories</div>,
-    LetterCount: () => <div data-testid="letter-count">Count</div>,
+    Completion: () => <div data-testid="completion">Completion</div>,
     ResponseChart: () => <div data-testid="response-chart">Chart</div>,
     CountDownClock: () => <div data-testid="count-down-clock">Clock</div>,
   };
@@ -69,9 +69,7 @@ describe('Splash Component', () => {
 
     render(<Splash />);
     expect(screen.getByText('The 100 Letters Project')).toBeInTheDocument();
-    expect(screen.getByText('Count')).toBeInTheDocument();
-    expect(screen.getByText('Chart')).toBeInTheDocument();
-    expect(screen.getByText('Clock')).toBeInTheDocument();
+    expect(screen.getByText('Completion')).toBeInTheDocument();
   });
 
   it('Renders only first 3 letters and loads more on click.', () => {
