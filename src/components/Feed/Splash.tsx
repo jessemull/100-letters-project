@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { Card, Clock, Completion } from '@components/Feed';
+import { Card, Clock, ClockSkeleton, Completion } from '@components/Feed';
 import { Categories } from '@components/Feed';
 import { useCorrespondence } from '@contexts/CorrespondenceProvider';
 
@@ -38,9 +38,13 @@ const Splash = () => {
           responseCompletion={responseCompletion}
           letterCount={correspondences.length}
         />
-        {showClock && <Clock earliestSentAtDate={earliestSentAtDate} />}
+        {showClock ? (
+          <Clock earliestSentAtDate={earliestSentAtDate} />
+        ) : (
+          <ClockSkeleton />
+        )}
       </div>
-      <div className="w-full space-y-8">
+      <div className="w-full space-y-4">
         <h2 className="text-2xl font-bold text-center">{`Recent Letters${correspondences.length === 0 ? ' Coming Soon!' : ''}`}</h2>
         {correspondences.length === 0 ? (
           <p className="text-lg text-white text-center md:w-2/3 lg:w-2/3 xl:w-1/2 md:mx-auto">
