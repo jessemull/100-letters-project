@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Digit } from '@components/Feed';
+import { clockLabels } from '@constants/feed';
 import { formatTime } from '@util/clock';
 
 interface Props {
@@ -39,9 +40,10 @@ const Clock: React.FC<Props> = ({ earliestSentAtDate }) => {
     return () => clearInterval(interval);
   }, []);
 
-  const { days, hours, minutes, seconds } = formatTime(timeLeft);
-  const labels = ['DAYS', 'HRS', 'MIN', 'SEC'];
-  const values = [days, hours, minutes, seconds];
+  const { days, hours, minutes, seconds } = useMemo(
+    () => formatTime(timeLeft),
+    [timeLeft],
+  );
 
   return (
     <div
@@ -55,15 +57,18 @@ const Clock: React.FC<Props> = ({ earliestSentAtDate }) => {
         Ink Runs Dry In
       </p>
       <div className="flex justify-center gap-x-6 text-center select-none">
-        {values.map((value, i) => (
-          <div key={labels[i]} className="flex flex-col items-center gap-y-2">
+        {[days, hours, minutes, seconds].map((value, i) => (
+          <div
+            key={clockLabels[i]}
+            className="flex flex-col items-center gap-y-2"
+          >
             <div className="flex gap-x-1">
               {[...value].map((digit, j) => (
-                <Digit key={`${labels[i]}-${j}`} digit={digit} />
+                <Digit key={`${clockLabels[i]}-${j}`} digit={digit} />
               ))}
             </div>
             <div className="text-xs text-white uppercase tracking-wide font-merriweather">
-              {labels[i]}
+              {clockLabels[i]}
             </div>
           </div>
         ))}

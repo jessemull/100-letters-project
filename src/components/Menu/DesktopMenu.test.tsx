@@ -1,8 +1,8 @@
-import { render, fireEvent, screen } from '@testing-library/react';
 import DesktopMenu from '@components/Menu/DesktopMenu';
+import { render, fireEvent, screen } from '@testing-library/react';
 
 jest.mock('@hooks/useSearch', () => ({
-  useSearch: jest.fn(() => []), // or mock return value based on props if needed
+  useSearch: jest.fn(() => []),
 }));
 
 jest.mock('next/navigation', () => ({

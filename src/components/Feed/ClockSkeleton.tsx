@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-
-const labels = ['DAYS', 'HRS', 'MIN', 'SEC'];
+import { clockLabels } from '@constants/feed';
 
 const ClockSkeleton = () => {
   const [scale, setScale] = useState(1);
@@ -35,7 +34,7 @@ const ClockSkeleton = () => {
         Ink Runs Dry In
       </p>
       <div className="flex justify-center gap-x-6 text-center">
-        {labels.map((label) => (
+        {clockLabels.map((label) => (
           <div key={label} className="flex flex-col items-center gap-y-2">
             <div className="flex gap-x-1">
               {[...Array(2)].map((_, i) => (

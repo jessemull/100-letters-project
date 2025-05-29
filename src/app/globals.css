@@ -109,11 +109,3 @@ input:-webkit-autofill::first-line {
   margin: 1rem;
   padding: 0.5rem 0.75rem;
 }
-
-.tick-credits {
-  display: none;
-}
-
-.tick {
-  margin-top: 0;
-}

@@ -1,7 +1,7 @@
-import { renderHook } from '@testing-library/react';
-import { act, waitFor } from '@testing-library/react';
-import { useSearch } from '@hooks/useSearch';
 import { SearchResult } from '@ts-types/search';
+import { act, waitFor } from '@testing-library/react';
+import { renderHook } from '@testing-library/react';
+import { useSearch } from '@hooks/useSearch';
 
 jest.mock('@public/data.json', () => ({
   correspondences: [
@@ -61,7 +61,6 @@ describe('useSearch', () => {
 
     await act(async () => {
       const hook = renderHook(() =>
-        // Use a type not defined in fuseMap keys, e.g., 'unknown'
         useSearch({ type: 'unknown' as any, term: 'anything' }),
       );
       result = hook.result;

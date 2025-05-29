@@ -1,23 +1,23 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
-import { axe } from 'jest-axe';
 import Digit from './Digit';
+import React from 'react';
+import { axe } from 'jest-axe';
+import { render, screen } from '@testing-library/react';
 
 describe('Digit Component', () => {
-  it('renders correctly with a valid digit', () => {
+  it('Renders correctly with a valid digit.', () => {
     render(<Digit digit="3" />);
     const span = screen.getByText('3');
     expect(span).toBeInTheDocument();
   });
 
-  it('renders all digits from 0 to 9', () => {
+  it('Renders all digits from 0 to 9.', () => {
     render(<Digit digit="0" />);
     for (let i = 0; i <= 9; i++) {
       expect(screen.getByText(String(i))).toBeInTheDocument();
     }
   });
 
-  it('applies correct transform style based on digit', () => {
+  it('Applies correct transform style based on digit.', () => {
     render(<Digit digit="5" />);
     const innerSpan = screen.getByText('0').parentElement as HTMLSpanElement;
 
@@ -26,13 +26,13 @@ describe('Digit Component', () => {
     });
   });
 
-  it('has no accessibility violations', async () => {
+  it('Has no accessibility violations.', async () => {
     const { container } = render(<Digit digit="2" />);
     const results = await axe(container);
     expect(results).toHaveNoViolations();
   });
 
-  it('handles invalid digits gracefully (non-numeric)', () => {
+  it('Handles invalid digits gracefully (non-numeric).', () => {
     render(<Digit digit="x" />);
     const innerSpan = screen.getByText('0').parentElement as HTMLSpanElement;
     expect(innerSpan).toHaveStyle({
@@ -40,7 +40,7 @@ describe('Digit Component', () => {
     });
   });
 
-  it('handles edge digits like 0 and 9', () => {
+  it('Handles edge digits like 0 and 9.', () => {
     const { container, rerender } = render(<Digit digit="0" />);
     const span0 = container.querySelector('span span') as HTMLSpanElement;
     expect(span0).toHaveStyle({

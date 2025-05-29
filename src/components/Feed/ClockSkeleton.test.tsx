@@ -1,10 +1,10 @@
 'use client';
 
+import ClockSkeleton from './ClockSkeleton';
 import React, { act } from 'react';
 import { render, screen } from '@testing-library/react';
-import ClockSkeleton from './ClockSkeleton';
 
-describe('ClockSkeleton', () => {
+describe('ClockSkeleton Component', () => {
   const resizeWindow = (width: number) => {
     (window.innerWidth as number) = width;
     window.dispatchEvent(new Event('resize'));
@@ -14,7 +14,7 @@ describe('ClockSkeleton', () => {
     jest.clearAllMocks();
   });
 
-  it('renders all label sections with correct layout', () => {
+  it('Renders all label sections with correct layout.', () => {
     render(<ClockSkeleton />);
 
     expect(screen.getByText(/ink runs dry in/i)).toBeInTheDocument();
@@ -23,7 +23,6 @@ describe('ClockSkeleton', () => {
       expect(screen.getByText(label)).toBeInTheDocument();
     });
 
-    // Find all spans with the digit text
     const digitSpans = screen.getAllByText('8');
     expect(digitSpans).toHaveLength(8);
 
@@ -32,7 +31,7 @@ describe('ClockSkeleton', () => {
     });
   });
 
-  it('scales to 1 when window width >= 438', () => {
+  it('Scales to 1 when window width >= 438.', () => {
     act(() => {
       resizeWindow(500);
     });
@@ -42,7 +41,7 @@ describe('ClockSkeleton', () => {
     expect(root.style.transform).toBe('scale(1)');
   });
 
-  it('scales down when window width < 438 but not below 0.6', () => {
+  it('Scales down when window width < 438 but not below 0.6.', () => {
     act(() => {
       resizeWindow(300);
     });
@@ -53,7 +52,7 @@ describe('ClockSkeleton', () => {
     expect(root.style.transform).toContain(`scale(${expectedScale}`);
   });
 
-  it('updates scale on window resize', () => {
+  it('Updates scale on window resize.', () => {
     const { container } = render(<ClockSkeleton />);
     const root = container.firstChild as HTMLElement;
 
@@ -65,7 +64,7 @@ describe('ClockSkeleton', () => {
     expect(root.style.transform).toContain(`scale(${expectedScale}`);
   });
 
-  it('cleans up resize event listener on unmount', () => {
+  it('Cleans up resize event listener on unmount.', () => {
     const addEventListenerSpy = jest.spyOn(window, 'addEventListener');
     const removeEventListenerSpy = jest.spyOn(window, 'removeEventListener');
 

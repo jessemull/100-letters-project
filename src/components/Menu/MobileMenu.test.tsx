@@ -3,7 +3,7 @@ import { axe } from 'jest-axe';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 
 jest.mock('@hooks/useSearch', () => ({
-  useSearch: jest.fn(() => []), // or mock return value based on props if needed
+  useSearch: jest.fn(() => []),
 }));
 
 jest.mock('next/navigation', () => ({
@@ -112,7 +112,6 @@ describe('MobileMenu', () => {
     expect(screen.getByText('100 Letters Project')).toBeInTheDocument();
     expect(screen.getByAltText('Logo')).toBeInTheDocument();
 
-    // Wrap clicks in waitFor to avoid act warning if onClose triggers async updates
     await waitFor(() => fireEvent.click(screen.getByText('Home')));
     await waitFor(() => fireEvent.click(screen.getByText('About')));
     await waitFor(() => fireEvent.click(screen.getByText('Contact')));
@@ -138,7 +137,6 @@ describe('MobileMenu', () => {
 
     fireEvent.click(screen.getByText('Logout'));
 
-    // wait for async logout and onClose calls
     await waitFor(() => {
       expect(handleLogout).toHaveBeenCalled();
       expect(onClose).toHaveBeenCalled();

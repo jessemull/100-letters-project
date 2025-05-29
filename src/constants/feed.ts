@@ -12,3 +12,5 @@ export const categories = [
   { name: 'Sports', imageUrl: '/category-sports.jpg' },
   { name: 'Technology', imageUrl: '/category-technology.jpg' },
 ];
+
+export const clockLabels = ['DAYS', 'HRS', 'MIN', 'SEC'];
