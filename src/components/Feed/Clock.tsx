@@ -65,7 +65,7 @@ const Clock: React.FC<Props> = ({ earliestSentAtDate }) => {
   }, [tickValue]);
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center min-h-[6rem]">
       <p className="text-lg font-semibold mb-2">Ink Runs Dry In</p>
       <div
         className="

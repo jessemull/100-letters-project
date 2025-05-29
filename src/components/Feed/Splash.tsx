@@ -1,5 +1,6 @@
 'use client';
 
+import ClockSkeleton from './ClockSkeleton';
 import React, { useEffect, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Card, Completion } from '@components/Feed';
@@ -8,7 +9,7 @@ import { useCorrespondence } from '@contexts/CorrespondenceProvider';
 
 const Clock = dynamic(() => import('@components/Feed/Clock'), {
   ssr: false,
-  loading: () => null,
+  loading: () => <ClockSkeleton />,
 });
 
 const Splash = () => {
