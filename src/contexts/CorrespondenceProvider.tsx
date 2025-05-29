@@ -1,62 +1,29 @@
 'use client';
 
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  ReactNode,
-} from 'react';
 import { Correspondence, CorrespondencesMap } from '@ts-types/correspondence';
+import { createContext, useContext, ReactNode } from 'react';
 
-interface CorrespondenceContextType {
+export interface CorrespondenceContextType {
   correspondences: Correspondence[];
   correspondencesById: CorrespondencesMap;
   earliestSentAtDate: string;
   responseCompletion: number;
-  loading: boolean;
 }
 
-const defaultValue: CorrespondenceContextType = {
+export const CorrespondenceContext = createContext<CorrespondenceContextType>({
   correspondences: [],
   correspondencesById: {},
   earliestSentAtDate: '',
-  responseCompletion: 0,
-  loading: true,
-};
-
-export const CorrespondenceContext =
-  createContext<CorrespondenceContextType>(defaultValue);
+  responseCompletion: 0.0,
+});
 
 export const CorrespondenceProvider = ({
   children,
-}: {
-  children: ReactNode;
-}) => {
-  const [correspondences, setCorrespondences] = useState<Correspondence[]>([]);
-  const [correspondencesById, setCorrespondencesById] =
-    useState<CorrespondencesMap>({});
-  const [earliestSentAtDate, setEarliestSentAtDate] = useState('');
-  const [responseCompletion, setResponseCompletion] = useState(0);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function loadData() {
-      const dataModule = await import('../data/data.json');
-      const data = dataModule.default ?? dataModule;
-
-      setCorrespondences((data.correspondences ?? []) as Correspondence[]);
-      setCorrespondencesById(
-        (data.correspondencesById ?? {}) as CorrespondencesMap,
-      );
-      setEarliestSentAtDate(data.earliestSentAtDate ?? '');
-      setResponseCompletion(data.responseCompletion ?? 0);
-      setLoading(false);
-    }
-
-    loadData();
-  }, []);
-
+  correspondences,
+  correspondencesById,
+  earliestSentAtDate,
+  responseCompletion,
+}: { children: ReactNode } & CorrespondenceContextType) => {
   return (
     <CorrespondenceContext.Provider
       value={{
@@ -64,10 +31,9 @@ export const CorrespondenceProvider = ({
         correspondencesById,
         earliestSentAtDate,
         responseCompletion,
-        loading,
       }}
     >
-      {loading ? <div>Loading data...</div> : children}
+      {children}
     </CorrespondenceContext.Provider>
   );
 };

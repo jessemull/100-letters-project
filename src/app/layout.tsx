@@ -1,6 +1,8 @@
 import './globals.css';
 import Script from 'next/script';
+import data from '@public/data.json';
 import { AuthProvider } from '@contexts/AuthProvider';
+import { Correspondence, CorrespondencesMap } from '@ts-types/correspondence';
 import { CorrespondenceProvider } from '@contexts/CorrespondenceProvider';
 import { Merriweather } from 'next/font/google';
 import { DesktopMenuProvider } from '@contexts/DesktopMenuProvider';
@@ -12,6 +14,11 @@ const merriweather = Merriweather({
   variable: '--font-merriweather',
   display: 'swap',
 });
+
+const correspondences = data.correspondences ?? [];
+const earliestSentAtDate = data.earliestSentAtDate ?? '';
+const correspondencesById = data.correspondencesById ?? {};
+const responseCompletion = data.responseCompletion ?? 0;
 
 export const metadata = {
   alternates: {
@@ -71,7 +78,14 @@ export default function RootLayout({
       <body className={`${merriweather.variable} antialiased`}>
         <AuthProvider>
           <DesktopMenuProvider>
-            <CorrespondenceProvider>{children}</CorrespondenceProvider>
+            <CorrespondenceProvider
+              correspondences={correspondences as Correspondence[]}
+              correspondencesById={correspondencesById as CorrespondencesMap}
+              earliestSentAtDate={earliestSentAtDate as string}
+              responseCompletion={responseCompletion as number}
+            >
+              {children}
+            </CorrespondenceProvider>
           </DesktopMenuProvider>
         </AuthProvider>
         <>
