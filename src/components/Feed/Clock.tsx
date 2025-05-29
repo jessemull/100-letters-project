@@ -27,7 +27,7 @@ const Clock: React.FC<Props> = ({ earliestSentAtDate }) => {
     // Strict mode in development causes unwanted re-renders that destroy the clock.
 
     return () => {
-      if (process.env.NODE_ENV !== 'development' && tickInstanceRef.current) {
+      if (tickInstanceRef.current && process.env.NODE_ENV !== 'development') {
         Tick.DOM.destroy(tickInstanceRef.current);
         tickInstanceRef.current = null;
       }
