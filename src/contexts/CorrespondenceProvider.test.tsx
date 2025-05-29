@@ -30,7 +30,7 @@ const TestComponent = () => {
   );
 };
 
-describe.skip('CorrespondenceContext', () => {
+describe('CorrespondenceContext', () => {
   it('Provides correct values to consumers', () => {
     render(
       <CorrespondenceProvider

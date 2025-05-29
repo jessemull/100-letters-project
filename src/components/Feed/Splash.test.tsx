@@ -21,6 +21,7 @@ jest.mock('@components/Feed', () => {
     ClockSkeleton: () => (
       <div data-testid="count-down-clock-skeleton">Clock Skeleton</div>
     ),
+    Digit: () => <div data-testid="count-down-clock-digit">Clock</div>,
   };
 });
 
@@ -40,7 +41,7 @@ jest.mock('@util/feed', () => ({
   calculateCountdown: jest.fn(),
 }));
 
-describe.skip('Splash Component', () => {
+describe('Splash Component', () => {
   beforeEach(() => {
     jest.useFakeTimers();
     jest.clearAllTimers();

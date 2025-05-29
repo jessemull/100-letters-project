@@ -1,5 +1,29 @@
 import { renderHook } from '@testing-library/react';
+import { act, waitFor } from '@testing-library/react';
 import { useSearch } from '@hooks/useSearch';
+import { SearchResult } from '@ts-types/search';
+
+jest.mock('@public/data.json', () => ({
+  correspondences: [
+    {
+      id: 'c1',
+      title: 'First Correspondence',
+      recipient: {
+        firstName: 'Alice',
+        lastName: 'Smith',
+        fullName: 'Alice Smith',
+      },
+      reason: {
+        domain: 'example.com',
+      },
+      letters: [
+        {
+          title: 'Welcome Letter',
+        },
+      ],
+    },
+  ],
+}));
 
 jest.mock('@public/search.json', () => ({
   correspondences: [
@@ -21,49 +45,98 @@ jest.mock('@public/search.json', () => ({
   ],
 }));
 
-describe.skip('useSearch', () => {
-  it('Returns empty array if search term is blank.', () => {
+describe('useSearch', () => {
+  it('Returns empty array if search term is blank.', async () => {
     const { result } = renderHook(() =>
       useSearch({ type: 'correspondences', term: '  ' }),
     );
-    expect(result.current).toEqual([]);
+
+    await waitFor(() => {
+      expect(result.current).toEqual([]);
+    });
   });
 
-  it('Returns correspondence search results.', () => {
-    const { result } = renderHook(() =>
-      useSearch({ type: 'correspondences', term: 'First' }),
-    );
+  it('Returns empty array when fuse is undefined for given type', async () => {
+    let result: { current: SearchResult[] };
 
-    expect(result.current).toEqual([
-      expect.objectContaining({ title: 'First Correspondence' }),
-    ]);
+    await act(async () => {
+      const hook = renderHook(() =>
+        // Use a type not defined in fuseMap keys, e.g., 'unknown'
+        useSearch({ type: 'unknown' as any, term: 'anything' }),
+      );
+      result = hook.result;
+    });
+
+    await waitFor(() => {
+      expect(result.current).toEqual([]);
+    });
   });
 
-  it('Returns recipient search results (matches fullName).', () => {
-    const { result } = renderHook(() =>
-      useSearch({ type: 'recipients', term: 'Alice' }),
-    );
+  it('Returns correspondence search results.', async () => {
+    let result: { current: SearchResult[] };
 
-    expect(result.current).toEqual([
-      expect.objectContaining({ fullName: 'Alice Smith' }),
-    ]);
+    await act(async () => {
+      const hook = renderHook(() =>
+        useSearch({ type: 'correspondences', term: 'First' }),
+      );
+      result = hook.result;
+    });
+
+    await waitFor(() =>
+      expect(result.current).toEqual([
+        expect.objectContaining({ title: 'First Correspondence' }),
+      ]),
+    );
   });
 
-  it('Returns letter search results.', () => {
-    const { result } = renderHook(() =>
-      useSearch({ type: 'letters', term: 'Thank' }),
-    );
+  it('Returns recipient search results (matches fullName).', async () => {
+    let result: { current: SearchResult[] };
 
-    expect(result.current).toEqual([
-      expect.objectContaining({ title: 'Thank You Note' }),
-    ]);
+    await act(async () => {
+      const hook = renderHook(() =>
+        useSearch({ type: 'recipients', term: 'Alice' }),
+      );
+      result = hook.result;
+    });
+
+    await waitFor(() =>
+      expect(result.current).toEqual([
+        expect.objectContaining({ fullName: 'Alice Smith' }),
+      ]),
+    );
   });
 
-  it('Respects the limit parameter.', () => {
-    const { result } = renderHook(() =>
-      useSearch({ type: 'correspondences', term: 'Correspondence', limit: 1 }),
-    );
+  it('Returns letter search results.', async () => {
+    let result: { current: SearchResult[] };
 
-    expect(result.current.length).toBe(1);
+    await act(async () => {
+      const hook = renderHook(() =>
+        useSearch({ type: 'letters', term: 'Thank' }),
+      );
+      result = hook.result;
+    });
+
+    await waitFor(() =>
+      expect(result.current).toEqual([
+        expect.objectContaining({ title: 'Thank You Note' }),
+      ]),
+    );
+  });
+
+  it('Respects the limit parameter.', async () => {
+    let result: { current: SearchResult[] };
+
+    await act(async () => {
+      const hook = renderHook(() =>
+        useSearch({
+          type: 'correspondences',
+          term: 'Correspondence',
+          limit: 1,
+        }),
+      );
+      result = hook.result;
+    });
+
+    await waitFor(() => expect(result.current.length).toBe(1));
   });
 });
