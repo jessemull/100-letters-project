@@ -25,7 +25,7 @@ const Clock: React.FC<Props> = ({ earliestSentAtDate }) => {
     }
 
     return () => {
-      if (tickInstanceRef.current) {
+      if (process.env.NODE_ENV !== 'development' && tickInstanceRef.current) {
         Tick.DOM.destroy(tickInstanceRef.current);
         tickInstanceRef.current = null;
       }

@@ -1,9 +1,12 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
-import { Card, Clock, Completion } from '@components/Feed';
+import dynamic from 'next/dynamic';
+import { Card, Completion } from '@components/Feed';
 import { Categories } from '@components/Feed';
 import { useCorrespondence } from '@contexts/CorrespondenceProvider';
+
+const Clock = dynamic(() => import('@components/Feed/Clock'), { ssr: false });
 
 const Splash = () => {
   const { correspondences, earliestSentAtDate, responseCompletion } =
@@ -25,7 +28,6 @@ const Splash = () => {
             100 Letters, 100 People, 1 Year.
           </h2>
         </div>
-
         <Completion
           responseCompletion={responseCompletion}
           letterCount={correspondences.length}
