@@ -40,13 +40,6 @@ jobs:
           cp public/sitemap.xml out/
           cp public/robots.txt out/
           cp public/sitemap-0.xml out/
-      
-      - name: Cache Static Data
-        uses: actions/upload-artifact@v4
-        with:
-          name: static-data
-          path: src/data
-          retention-days: 1
 
       - name: Archive Build Output
         uses: actions/upload-artifact@v4
@@ -91,12 +84,6 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Restore Static Data
-        uses: actions/download-artifact@v4
-        with:
-          name: static-data
-          path: src/data
-
       - name: Run Jest Tests
         run: npm run test
 
@@ -130,12 +117,6 @@ jobs:
 
       - name: Install Dependencies
         run: npm ci
-
-      - name: Restore Static Data
-        uses: actions/download-artifact@v4
-        with:
-          name: static-data
-          path: src/data
 
       - name: Start Next.js Server Locally
         run: |
