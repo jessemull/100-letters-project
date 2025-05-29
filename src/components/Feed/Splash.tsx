@@ -1,21 +1,33 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Card, Completion } from '@components/Feed';
 import { Categories } from '@components/Feed';
 import { useCorrespondence } from '@contexts/CorrespondenceProvider';
 
-const Clock = dynamic(() => import('@components/Feed/Clock'), { ssr: false });
+const Clock = dynamic(() => import('@components/Feed/Clock'), {
+  ssr: false,
+  loading: () => null,
+});
 
 const Splash = () => {
   const { correspondences, earliestSentAtDate, responseCompletion } =
     useCorrespondence();
   const [numLetterRows, setNumLetterPages] = useState(1);
+  const [showClock, setShowClock] = useState(false);
 
   const showMoreLetters = useMemo(() => {
     return numLetterRows * 3 < correspondences.length;
   }, [correspondences, numLetterRows]);
+
+  useEffect(() => {
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(() => setShowClock(true));
+    } else {
+      setTimeout(() => setShowClock(true), 2000);
+    }
+  }, []);
 
   return (
     <>
@@ -32,7 +44,7 @@ const Splash = () => {
           responseCompletion={responseCompletion}
           letterCount={correspondences.length}
         />
-        <Clock earliestSentAtDate={earliestSentAtDate} />
+        {showClock && <Clock earliestSentAtDate={earliestSentAtDate} />}
       </div>
       <div className="w-full space-y-8">
         <h2 className="text-2xl font-bold text-center">{`Recent Letters${correspondences.length === 0 ? ' Coming Soon!' : ''}`}</h2>
