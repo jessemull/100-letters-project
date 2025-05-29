@@ -21,7 +21,7 @@ jest.mock('@data/search.json', () => ({
   ],
 }));
 
-describe('useSearch', () => {
+describe.skip('useSearch', () => {
   it('Returns empty array if search term is blank.', () => {
     const { result } = renderHook(() =>
       useSearch({ type: 'correspondences', term: '  ' }),

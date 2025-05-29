@@ -1,14 +1,15 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
-import { Card, Completion } from '@components/Feed';
+import { Card, ClockSkeleton, Completion } from '@components/Feed';
 import { Categories } from '@components/Feed';
 import { useCorrespondence } from '@contexts/CorrespondenceProvider';
+import dynamic from 'next/dynamic';
 
-// const Clock = dynamic(() => import('@components/Feed/Clock'), {
-//   ssr: false,
-//   loading: () => <ClockSkeleton />,
-// });
+const Clock = dynamic(() => import('@components/Feed/Clock'), {
+  ssr: false,
+  loading: () => <ClockSkeleton />,
+});
 
 const Splash = () => {
   const { correspondences, earliestSentAtDate, responseCompletion } =
@@ -34,6 +35,7 @@ const Splash = () => {
           responseCompletion={responseCompletion}
           letterCount={correspondences.length}
         />
+        <Clock earliestSentAtDate={earliestSentAtDate} />
       </div>
       <div className="w-full space-y-4">
         <h2 className="text-2xl font-bold text-center">{`Recent Letters${correspondences.length === 0 ? ' Coming Soon!' : ''}`}</h2>
