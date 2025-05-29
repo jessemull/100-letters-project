@@ -1,12 +1,8 @@
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: true,
-});
-
-const nextConfig = {
+const config = {
   output: 'export',
   images: {
     unoptimized: true,
   },
 };
 
-module.exports = withBundleAnalyzer(nextConfig);
+export default config;
