@@ -24,6 +24,8 @@ const Clock: React.FC<Props> = ({ earliestSentAtDate }) => {
       });
     }
 
+    // Strict mode in development causes unwanted re-renders that destroy the clock.
+
     return () => {
       if (process.env.NODE_ENV !== 'development' && tickInstanceRef.current) {
         Tick.DOM.destroy(tickInstanceRef.current);
@@ -33,6 +35,8 @@ const Clock: React.FC<Props> = ({ earliestSentAtDate }) => {
   }, []);
 
   useEffect(() => {
+    // If there is no earliest sent at date just count down from a year until a letter is written.
+
     const baseDate = earliestSentAtDate
       ? new Date(earliestSentAtDate)
       : new Date();

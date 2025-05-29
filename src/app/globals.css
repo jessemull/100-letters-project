@@ -110,14 +110,6 @@ input:-webkit-autofill::first-line {
   padding: 0.5rem 0.75rem;
 }
 
-.transform-style-3d {
-  transform-style: preserve-3d;
-}
-
-.backface-hidden {
-  backface-visibility: hidden;
-}
-
 .tick-credits {
   display: none;
 }

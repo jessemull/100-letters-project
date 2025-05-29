@@ -3,6 +3,12 @@ import { DesktopMenuProvider } from '@contexts/DesktopMenuProvider';
 import { axe } from 'jest-axe';
 import { render, screen } from '@testing-library/react';
 
+jest.mock('@components/Feed', () => {
+  return {
+    Feed: () => <div data-testid="categories">Feed</div>,
+  };
+});
+
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(),
 }));
@@ -22,7 +28,7 @@ describe('HomePage Component', () => {
         <HomePage />
       </DesktopMenuProvider>,
     );
-    expect(screen.getAllByText('100 Letters Project').length).toBe(2);
+    expect(screen.getAllByText('100 Letters Project').length).toBe(1);
     expect(
       screen.getByText('© 2025 100 Letters Project. All rights reserved.'),
     ).toBeInTheDocument();

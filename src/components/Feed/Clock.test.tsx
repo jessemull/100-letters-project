@@ -1,6 +1,6 @@
+import Clock from './Clock';
 import React from 'react';
 import { render, screen, cleanup, act } from '@testing-library/react';
-import Clock from './Clock';
 
 jest.mock('@pqina/flip', () => {
   const mockTimerStop = jest.fn();
