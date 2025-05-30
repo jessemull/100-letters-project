@@ -68,6 +68,23 @@ describe('LetterSearch Component', () => {
     );
   });
 
+  it('Calls on click callback when an item is clicked.', () => {
+    const pushMock = jest.fn();
+    (useRouter as jest.Mock).mockReturnValue({ push: pushMock });
+
+    const onClick = jest.fn();
+
+    render(<LetterSearch onClick={onClick} />);
+
+    const item = screen.getByText('Letter from Alan Turing');
+    fireEvent.click(item);
+
+    expect(pushMock).toHaveBeenCalledWith(
+      '/correspondence?correspondenceId=xyz789&letterId=lmn456',
+    );
+    expect(onClick).toHaveBeenCalled();
+  });
+
   it('Has no accessibility violations.', async () => {
     const { container } = render(<LetterSearch />);
     const results = await axe(container);

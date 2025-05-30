@@ -157,6 +157,28 @@ describe('MobileMenu', () => {
     expect(onClose).toHaveBeenCalled();
   });
 
+  it('Closes when clicking outside the menu.', async () => {
+    const { getByTestId } = render(
+      <div>
+        <button data-testid="outside-button">Outside</button>
+        <MobileMenu
+          isOpen={true}
+          onClose={onClose}
+          isLoggedIn={false}
+          handleLogout={handleLogout}
+        />
+      </div>,
+    );
+
+    const outsideButton = getByTestId('outside-button');
+
+    fireEvent.mouseDown(outsideButton);
+
+    await waitFor(() => {
+      expect(onClose).toHaveBeenCalled();
+    });
+  });
+
   it('Has no accessibility violations.', async () => {
     const { container } = render(
       <MobileMenu

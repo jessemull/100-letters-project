@@ -68,6 +68,23 @@ describe('RecipientSearch', () => {
     );
   });
 
+  it('Calls on click callback when an item is clicked.', () => {
+    const pushMock = jest.fn();
+    (useRouter as jest.Mock).mockReturnValue({ push: pushMock });
+
+    const onClick = jest.fn();
+
+    render(<RecipientSearch onClick={onClick} />);
+
+    const item = screen.getByText('Lovelace, Ada');
+    fireEvent.click(item);
+
+    expect(pushMock).toHaveBeenCalledWith(
+      '/correspondence?correspondenceId=abc123',
+    );
+    expect(onClick).toHaveBeenCalled();
+  });
+
   it('Has no accessibility violations.', async () => {
     const { container } = render(<RecipientSearch />);
     const results = await axe(container);

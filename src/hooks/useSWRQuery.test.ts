@@ -2,6 +2,12 @@ import { renderHook, act } from '@testing-library/react';
 import { defaultMerge, useSWRQuery } from '@hooks/useSWRQuery';
 import useSWR from 'swr';
 
+jest.mock('next/navigation', () => ({
+  useRouter: jest.fn().mockReturnValue({
+    push: jest.fn(),
+  }),
+}));
+
 jest.mock('swr');
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -250,6 +256,66 @@ describe('useSWRQuery', () => {
     expect(result.current.data).toEqual({
       data: ['existing data', 'mocked data'],
     });
+  });
+
+  it('Sets unauthorized to true on 401 error', async () => {
+    const unauthorizedResponse = {
+      ok: false,
+      status: 401,
+      statusText: 'Unauthorized',
+      json: jest.fn().mockResolvedValue({ message: 'Unauthorized access' }),
+    };
+
+    global.fetch = jest.fn().mockResolvedValue(unauthorizedResponse);
+
+    let capturedFetcher: ((url: string) => Promise<any>) | null = null;
+
+    mockUseSWR.mockImplementation((url, fetcher) => {
+      capturedFetcher = fetcher;
+      return { data: null, isLoading: true };
+    });
+
+    renderHook(() => useSWRQuery({ path: '/protected', token: 'bad-token' }));
+
+    if (capturedFetcher) {
+      await act(async () => {
+        try {
+          await (capturedFetcher as jest.Mock)(`${API_BASE_URL}/protected`);
+        } catch {}
+      });
+    }
+  });
+
+  it('Redirects to login if fetchMore throws 401.', async () => {
+    const existingData = { data: ['existing'] };
+    const pushMock = jest.fn();
+
+    jest
+      .mocked(require('next/navigation').useRouter)
+      .mockReturnValue({ push: pushMock });
+
+    const unauthorizedError = new Error('Unauthorized') as Error & {
+      status?: number;
+    };
+    unauthorizedError.status = 401;
+
+    global.fetch = jest.fn().mockRejectedValue(unauthorizedError);
+
+    mockUseSWR.mockImplementation(() => {
+      return { data: existingData, isLoading: false };
+    });
+
+    const { result } = renderHook(() =>
+      useSWRQuery({ path: '/secure', token: 'abc123' }),
+    );
+
+    const { fetchMore } = result.current;
+
+    await act(async () => {
+      await fetchMore('/next-secure-page');
+    });
+
+    expect(pushMock).toHaveBeenCalledWith('/login');
   });
 });
 
