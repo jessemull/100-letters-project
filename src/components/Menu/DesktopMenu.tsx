@@ -8,6 +8,7 @@ import {
   RecipientSearch,
 } from '@components/Menu';
 import { useAuth } from '@contexts/AuthProvider';
+import { useEffect, useRef } from 'react';
 
 const DesktopMenu = ({
   collapsed,
@@ -16,7 +17,23 @@ const DesktopMenu = ({
   collapsed: boolean;
   setCollapsed: (v: boolean) => void;
 }) => {
+  const menuRef = useRef<HTMLDivElement>(null);
   const { isLoggedIn, signOut } = useAuth();
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setCollapsed(true);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [setCollapsed]);
+
   return (
     <aside
       className={`
@@ -26,6 +43,7 @@ const DesktopMenu = ({
         overflow-y-auto
         h-full
       `}
+      ref={menuRef}
     >
       <div className="flex items-center justify-between px-4 py-3 border-b border-white-400">
         {!collapsed && (
@@ -39,7 +57,6 @@ const DesktopMenu = ({
           {collapsed ? <ChevronRight /> : <ChevronLeft />}
         </button>
       </div>
-
       <nav
         aria-label="Desktop Navigation"
         className="flex flex-col gap-4 text-sm"

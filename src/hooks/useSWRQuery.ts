@@ -1,4 +1,7 @@
+'use client';
+
 import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import useSWR, { mutate as globalMutate, SWRConfiguration } from 'swr';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -33,6 +36,8 @@ export function useSWRQuery<T = any>({
 }: UseSWRQueryOptions<T>) {
   const [loadingMore, setLoadingMore] = useState(false);
   const [mergedData, setMergedData] = useState<T>();
+  const [unauthorized, setUnauthorized] = useState(false);
+  const router = useRouter();
 
   const fetcher = useMemo(
     () =>
@@ -63,6 +68,10 @@ export function useSWRQuery<T = any>({
               error.status = res.status;
               error.info = errorBody;
 
+              if (res.status === 401) {
+                setUnauthorized(true);
+              }
+
               throw error;
             }
 
@@ -71,6 +80,12 @@ export function useSWRQuery<T = any>({
         : null,
     [token],
   );
+
+  useEffect(() => {
+    if (unauthorized) {
+      router.push('/login');
+    }
+  }, [unauthorized, router]);
 
   const fullUrl = !skip && token && path ? `${API_BASE_URL}${path}` : null;
 
@@ -102,8 +117,12 @@ export function useSWRQuery<T = any>({
           }, 0);
           return nextData;
         });
-      } catch (err) {
-        console.error('Error fetching more: ', err);
+      } catch (err: any) {
+        if (err?.status === 401) {
+          setUnauthorized(true);
+        } else {
+          console.error('Error fetching more: ', err);
+        }
       } finally {
         setLoadingMore(false);
       }

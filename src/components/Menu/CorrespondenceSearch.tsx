@@ -5,7 +5,11 @@ import { useSearch } from '@hooks/useSearch';
 import { useSearchData } from '@contexts/SearchProvider';
 import { useState } from 'react';
 
-const CorrespondenceSearch = () => {
+interface Props {
+  onClick?: () => void;
+}
+
+const CorrespondenceSearch: React.FC<Props> = ({ onClick }) => {
   const [term, setTerm] = useState('');
 
   const { correspondences } = useSearchData();
@@ -18,6 +22,9 @@ const CorrespondenceSearch = () => {
   const router = useRouter();
 
   const onItemClick = ({ correspondenceId }: CorrespondenceSearchItem) => {
+    if (onClick) {
+      onClick();
+    }
     router.push(`/correspondence?correspondenceId=${correspondenceId}`);
   };
 
