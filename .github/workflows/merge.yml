@@ -41,18 +41,20 @@ jobs:
           cp public/robots.txt out/
           cp public/sitemap-0.xml out/
 
-      - name: Cache Static Data
-        uses: actions/upload-artifact@v4
-        with:
-          name: static-data
-          path: src/data
-          retention-days: 1
-
       - name: Archive Build Output
         uses: actions/upload-artifact@v4
         with:
           name: next-build
           path: out
+          retention-days: 1
+    
+      - name: Archive Static Data
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-json
+          path: |
+            public/data.json
+            public/search.json
           retention-days: 1
 
   test:
@@ -75,8 +77,8 @@ jobs:
       - name: Restore Static Data
         uses: actions/download-artifact@v4
         with:
-          name: static-data
-          path: src/data
+          name: public-json
+          path: public
 
       - name: Run Jest Tests
         run: npm run test

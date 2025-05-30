@@ -1,14 +1,15 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
-import {
-  Card,
-  CountDownClock,
-  LetterCount,
-  ResponseChart,
-} from '@components/Feed';
+import { Card, ClockSkeleton, Completion } from '@components/Feed';
 import { Categories } from '@components/Feed';
 import { useCorrespondence } from '@contexts/CorrespondenceProvider';
+import dynamic from 'next/dynamic';
+
+const Clock = dynamic(() => import('@components/Feed/Clock'), {
+  ssr: false,
+  loading: () => <ClockSkeleton />,
+});
 
 const Splash = () => {
   const { correspondences, earliestSentAtDate, responseCompletion } =
@@ -21,13 +22,22 @@ const Splash = () => {
 
   return (
     <>
-      <div className="text-center space-y-2">
-        <h1 className="text-4xl font-bold">The 100 Letters Project</h1>
-        <LetterCount count={correspondences.length} />
-        <ResponseChart responseCompletion={responseCompletion} />
-        <CountDownClock earliestSentAtDate={earliestSentAtDate} />
+      <div className="text-center space-y-4">
+        <div className="pb-4">
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">
+            The 100 Letters Project
+          </h1>
+          <h2 className="text-md md:text-lg font-medium">
+            100 Letters, 100 People, 1 Year.
+          </h2>
+        </div>
+        <Completion
+          responseCompletion={responseCompletion}
+          letterCount={correspondences.length}
+        />
+        <Clock earliestSentAtDate={earliestSentAtDate} />
       </div>
-      <div className="w-full space-y-8">
+      <div className="w-full space-y-4">
         <h2 className="text-2xl font-bold text-center">{`Recent Letters${correspondences.length === 0 ? ' Coming Soon!' : ''}`}</h2>
         {correspondences.length === 0 ? (
           <p className="text-lg text-white text-center md:w-2/3 lg:w-2/3 xl:w-1/2 md:mx-auto">

@@ -1,5 +1,9 @@
-import { render, fireEvent, screen } from '@testing-library/react';
 import DesktopMenu from '@components/Menu/DesktopMenu';
+import { render, fireEvent, screen } from '@testing-library/react';
+
+jest.mock('@hooks/useSearch', () => ({
+  useSearch: jest.fn(() => []),
+}));
 
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn().mockReturnValue({
@@ -12,6 +16,25 @@ jest.mock('@contexts/AuthProvider', () => ({
     isLoggedIn: false,
     signOut: jest.fn(),
   }),
+}));
+
+jest.mock('@components/Menu/RecipientSearch', () => ({
+  __esModule: true,
+  default: () => (
+    <div data-testid="mock-recipient-search">Recipient Search</div>
+  ),
+}));
+
+jest.mock('@components/Menu/LetterSearch', () => ({
+  __esModule: true,
+  default: () => <div data-testid="mock-letter-search">Letter Search</div>,
+}));
+
+jest.mock('@components/Menu/CorrespondenceSearch', () => ({
+  __esModule: true,
+  default: () => (
+    <div data-testid="mock-correspondence-search">Correspondence Search</div>
+  ),
 }));
 
 describe('DesktopMenu', () => {

@@ -2,10 +2,33 @@ import { MobileMenu } from '@components/Menu';
 import { axe } from 'jest-axe';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 
+jest.mock('@hooks/useSearch', () => ({
+  useSearch: jest.fn(() => []),
+}));
+
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn().mockReturnValue({
     push: jest.fn(),
   }),
+}));
+
+jest.mock('@components/Menu/RecipientSearch', () => ({
+  __esModule: true,
+  default: () => (
+    <div data-testid="mock-recipient-search">Recipient Search</div>
+  ),
+}));
+
+jest.mock('@components/Menu/LetterSearch', () => ({
+  __esModule: true,
+  default: () => <div data-testid="mock-letter-search">Letter Search</div>,
+}));
+
+jest.mock('@components/Menu/CorrespondenceSearch', () => ({
+  __esModule: true,
+  default: () => (
+    <div data-testid="mock-correspondence-search">Correspondence Search</div>
+  ),
 }));
 
 jest.mock('next/link', () => {
@@ -76,7 +99,7 @@ describe('MobileMenu', () => {
     expect(container.firstChild).toBeNull();
   });
 
-  it('Renders with logged-out state and closes on all links.', () => {
+  it('Renders with logged-out state and closes on all links.', async () => {
     render(
       <MobileMenu
         isOpen={true}
@@ -89,10 +112,10 @@ describe('MobileMenu', () => {
     expect(screen.getByText('100 Letters Project')).toBeInTheDocument();
     expect(screen.getByAltText('Logo')).toBeInTheDocument();
 
-    fireEvent.click(screen.getByText('Home'));
-    fireEvent.click(screen.getByText('About'));
-    fireEvent.click(screen.getByText('Contact'));
-    fireEvent.click(screen.getByText('Login'));
+    await waitFor(() => fireEvent.click(screen.getByText('Home')));
+    await waitFor(() => fireEvent.click(screen.getByText('About')));
+    await waitFor(() => fireEvent.click(screen.getByText('Contact')));
+    await waitFor(() => fireEvent.click(screen.getByText('Login')));
 
     expect(onClose).toHaveBeenCalledTimes(4);
   });
@@ -109,17 +132,18 @@ describe('MobileMenu', () => {
 
     expect(screen.getByText('Admin')).toBeInTheDocument();
 
-    fireEvent.click(screen.getByText('Admin'));
+    await waitFor(() => fireEvent.click(screen.getByText('Admin')));
     expect(onClose).toHaveBeenCalled();
 
     fireEvent.click(screen.getByText('Logout'));
+
     await waitFor(() => {
       expect(handleLogout).toHaveBeenCalled();
       expect(onClose).toHaveBeenCalled();
     });
   });
 
-  it('Closes when X button is clicked.', () => {
+  it('Closes when X button is clicked.', async () => {
     render(
       <MobileMenu
         isOpen={true}
@@ -129,7 +153,7 @@ describe('MobileMenu', () => {
       />,
     );
     const closeButton = screen.getByLabelText('Close Menu');
-    fireEvent.click(closeButton);
+    await waitFor(() => fireEvent.click(closeButton));
     expect(onClose).toHaveBeenCalled();
   });
 

@@ -181,7 +181,7 @@ async function authenticateUser() {
       responseCompletion,
     };
 
-    const dataDir = path.join(__dirname, '../src/data');
+    const dataDir = path.join(__dirname, '../public');
     fs.mkdirSync(dataDir, { recursive: true });
 
     const outputPath = path.join(dataDir, 'data.json');

@@ -1,6 +1,6 @@
 import './globals.css';
 import Script from 'next/script';
-import data from '@data/data.json';
+import data from '@public/data.json';
 import { AuthProvider } from '@contexts/AuthProvider';
 import { Correspondence, CorrespondencesMap } from '@ts-types/correspondence';
 import { CorrespondenceProvider } from '@contexts/CorrespondenceProvider';
