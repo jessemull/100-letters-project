@@ -10,6 +10,9 @@ export type SearchOptions = {
 
 export type CorrespondenceSearchItem = {
   correspondenceId: string;
+  reason: {
+    domain: string;
+  };
   title: string;
 };
 
