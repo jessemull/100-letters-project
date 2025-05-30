@@ -106,11 +106,19 @@ const CorrespondenceNavigator = () => {
           </div>
           <div className="w-full aspect-[4/3] relative rounded-2xl overflow-hidden shadow-md max-w-full">
             <Image
+              onClick={() => setIsLightboxOpen(true)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setIsLightboxOpen(true);
+                }
+              }}
+              role="button"
+              tabIndex={0}
               src={selectedImage?.url || '/missing.jpg'}
               alt="Selected letter"
               fill
-              className="object-cover"
-              priority
+              className="object-cover cursor-pointer outline-none"
             />
             <button
               onClick={() => setIsLightboxOpen(true)}
@@ -155,13 +163,13 @@ const CorrespondenceNavigator = () => {
               </span>
             ),
             iconZoomIn: () => (
-              <ZoomIn className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-white hover:text-gray-300 transition-colors duration-200" />
+              <ZoomIn className="w-6 h-6 text-white hover:text-gray-300 transition-colors duration-200" />
             ),
             iconZoomOut: () => (
-              <ZoomOut className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-white hover:text-gray-300 transition-colors duration-200" />
+              <ZoomOut className="w-6 h-6 text-white hover:text-gray-300 transition-colors duration-200" />
             ),
             iconClose: () => (
-              <X className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-white hover:text-gray-300 transition-colors duration-200" />
+              <X className="w-6 h-6 text-white hover:text-gray-300 transition-colors duration-200" />
             ),
           }}
           zoom={{
