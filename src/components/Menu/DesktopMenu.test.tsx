@@ -48,7 +48,7 @@ describe('DesktopMenu', () => {
     expect(setCollapsed).toHaveBeenCalledWith(true);
   });
 
-  it('Calls setCollapsed(true) when clicking outside the menu', () => {
+  it('Calls setCollapsed(true) when clicking outside the menu.', () => {
     const setCollapsed = jest.fn();
     render(
       <>
