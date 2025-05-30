@@ -50,7 +50,7 @@ const Categories: React.FC<Props> = ({ desktopCols = 6 }) => {
           >
             <Image
               src={cat.imageUrl}
-              alt={cat.name}
+              alt=""
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-300"
               priority={index === 0}
