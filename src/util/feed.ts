@@ -11,3 +11,6 @@ export const calculateCountdown = (targetDate: Date) => {
 
   return { days, hours, minutes, seconds };
 };
+
+export const titleCase = (str: string) =>
+  str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();

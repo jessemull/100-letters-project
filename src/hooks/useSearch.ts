@@ -32,6 +32,7 @@ export function useSearch({
         correspondenceData as SearchAllItem[],
         {
           threshold: 0.3,
+          isCaseSensitive: false,
           keys: [
             { name: 'letters.title', weight: 0.2 },
             { name: 'reason.domain', weight: 0.15 },
