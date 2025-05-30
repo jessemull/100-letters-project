@@ -265,7 +265,7 @@ const CorrespondenceForm = () => {
   }, [error]);
 
   return isLoading || authenticating ? (
-    <div className="w-full h-full flex items-center justify-center">
+    <div className="pt-32 lg:pt-64 flex items-center justify-center">
       <Progress color="white" size={16} />
     </div>
   ) : (
