@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { mutate as globalMutate } from 'swr';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -64,6 +65,15 @@ export function useSWRMutation<Body, Response = unknown, Params = unknown>(
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [response, setResponse] = useState<Response | null>(null);
+  const [unauthorized, setUnauthorized] = useState(false);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    if (unauthorized) {
+      router.push('/login');
+    }
+  }, [unauthorized, router]);
 
   const mutate = useCallback(
     async ({
@@ -120,6 +130,10 @@ export function useSWRMutation<Body, Response = unknown, Params = unknown>(
               typeof errorBody === 'string' ? errorBody : errorMessage;
           }
 
+          if (res.status === 401) {
+            setUnauthorized(true);
+          }
+
           setError(errorMessage);
           onError?.({
             error: errorMessage,
@@ -144,6 +158,7 @@ export function useSWRMutation<Body, Response = unknown, Params = unknown>(
         if (data) {
           setResponse(data);
           onSuccess?.({ response: data, path: finalPath, body, params });
+
           if (cache && cache.length > 0) {
             cache.forEach(({ key, onUpdate }) => {
               if (onUpdate) {

@@ -66,6 +66,23 @@ describe('CorrespondenceSearch Component', () => {
     );
   });
 
+  it('Calls on click callback when an item is clicked.', () => {
+    const pushMock = jest.fn();
+    (useRouter as jest.Mock).mockReturnValue({ push: pushMock });
+
+    const onClick = jest.fn();
+
+    render(<CorrespondenceSearch onClick={onClick} />);
+
+    const item = screen.getByText('Letter to Ada Lovelace');
+    fireEvent.click(item);
+
+    expect(pushMock).toHaveBeenCalledWith(
+      '/correspondence?correspondenceId=abc123',
+    );
+    expect(onClick).toHaveBeenCalled();
+  });
+
   it('Has no accessibility violations.', async () => {
     const { container } = render(<CorrespondenceSearch />);
     const results = await axe(container);

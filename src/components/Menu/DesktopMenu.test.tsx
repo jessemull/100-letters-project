@@ -47,4 +47,19 @@ describe('DesktopMenu', () => {
 
     expect(setCollapsed).toHaveBeenCalledWith(true);
   });
+
+  it('Calls setCollapsed(true) when clicking outside the menu.', () => {
+    const setCollapsed = jest.fn();
+    render(
+      <>
+        <DesktopMenu collapsed={false} setCollapsed={setCollapsed} />
+        <div data-testid="outside-element">Outside Element</div>
+      </>,
+    );
+
+    const outsideElement = screen.getByTestId('outside-element');
+    fireEvent.mouseDown(outsideElement);
+
+    expect(setCollapsed).toHaveBeenCalledWith(true);
+  });
 });

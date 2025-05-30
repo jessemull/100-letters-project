@@ -5,7 +5,11 @@ import { useSearch } from '@hooks/useSearch';
 import { useSearchData } from '@contexts/SearchProvider';
 import { useState } from 'react';
 
-const LetterSearch = () => {
+interface Props {
+  onClick?: () => void;
+}
+
+const LetterSearch: React.FC<Props> = ({ onClick }) => {
   const [term, setTerm] = useState('');
 
   const { letters } = useSearchData();
@@ -18,6 +22,9 @@ const LetterSearch = () => {
   }) as LetterSearchItem[];
 
   const onItemClick = ({ correspondenceId, letterId }: LetterSearchItem) => {
+    if (onClick) {
+      onClick();
+    }
     router.push(
       `/correspondence?correspondenceId=${correspondenceId}&letterId=${letterId}`,
     );

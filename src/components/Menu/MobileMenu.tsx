@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { FC } from 'react';
+import { FC, useEffect, useRef } from 'react';
 import {
   CorrespondenceSearch,
   LetterSearch,
@@ -24,19 +24,36 @@ const MobileMenu: FC<MobileMenuProps> = ({
   isLoggedIn,
   handleLogout,
 }) => {
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [onClose]);
+
   if (!isOpen) return null;
 
   return (
     <motion.div
       className={`
-      fixed top-0 left-0 h-full bg-gray-900 text-white z-50
-      w-full sm:w-[50%] md:w-[50%] max-w-md
-      overflow-y-auto lg:hidden
-    `}
+        fixed top-0 left-0 h-full bg-gray-900 text-white z-50
+        w-full sm:w-[50%] md:w-[50%] max-w-md
+        overflow-y-auto lg:hidden
+      `}
       initial={{ x: '-100%' }}
       animate={{ x: 0 }}
       exit={{ x: '-100%' }}
       transition={{ type: 'tween' }}
+      ref={menuRef}
     >
       <div
         className="flex justify-between items-center px-4 py-3 border-b border-gray-700"
@@ -63,15 +80,15 @@ const MobileMenu: FC<MobileMenuProps> = ({
       </nav>
       <div className="flex flex-col mt-4">
         <div className="px-4">
-          <RecipientSearch />
+          <RecipientSearch onClick={onClose} />
         </div>
         <hr className="border-t border-white w-full my-4" />
         <div className="px-4">
-          <LetterSearch />
+          <LetterSearch onClick={onClose} />
         </div>
         <hr className="border-t border-white w-full my-4" />
         <div className="px-4">
-          <CorrespondenceSearch />
+          <CorrespondenceSearch onClick={onClose} />
         </div>
       </div>
     </motion.div>

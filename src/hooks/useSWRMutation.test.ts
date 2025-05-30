@@ -1,6 +1,12 @@
 import { renderHook, act } from '@testing-library/react';
 import { useSWRMutation } from '@hooks/useSWRMutation';
 
+jest.mock('next/navigation', () => ({
+  useRouter: jest.fn().mockReturnValue({
+    push: jest.fn(),
+  }),
+}));
+
 const mockFetch = jest.fn();
 global.fetch = mockFetch;
 
@@ -415,6 +421,45 @@ describe('useSWRMutation', () => {
         method: 'POST',
       }),
     );
+  });
+
+  it('Sets unauthorized and redirects to /login on 401 response.', async () => {
+    const mockPush = jest.fn();
+
+    jest.mock('next/navigation', () => ({
+      useRouter: () => ({
+        push: mockPush,
+      }),
+    }));
+
+    const useRouter = require('next/navigation').useRouter;
+    useRouter.mockReturnValue({ push: mockPush });
+
+    const { result } = renderHook(() =>
+      useSWRMutation({
+        method: 'POST',
+        path: '/mock-path',
+        onError: jest.fn(),
+      }),
+    );
+
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 401,
+      statusText: 'Unauthorized',
+      json: async () => ({ message: 'Unauthorized access' }),
+      text: async () => 'Unauthorized access',
+      headers: { get: () => 'application/json' },
+    });
+
+    await act(async () => {
+      await result.current.mutate({ path: '/mock-path' });
+    });
+
+    await Promise.resolve();
+
+    expect(mockPush).toHaveBeenCalledWith('/login');
+    expect(result.current.error).toBe('Unauthorized access');
   });
 
   it('Falls back to res.text() and uses string error message if res.json fails.', async () => {
