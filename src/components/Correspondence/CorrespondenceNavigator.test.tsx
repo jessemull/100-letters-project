@@ -246,6 +246,27 @@ describe('CorrespondenceNavigator Component', () => {
     expect(screen.queryByText('Close')).toBeNull();
   });
 
+  it('Opens lightbox when image is clicked.', () => {
+    render(<CorrespondenceNavigator />);
+    const image = screen.getByRole('button', { name: /selected letter/i });
+    fireEvent.click(image);
+    expect(screen.getByTestId('mock-lightbox')).toBeInTheDocument();
+  });
+
+  it('Opens lightbox when pressing Enter or Space on the image.', () => {
+    render(<CorrespondenceNavigator />);
+    const image = screen.getByRole('button', { name: /selected letter/i });
+
+    fireEvent.keyDown(image, { key: 'Enter' });
+    expect(screen.getByTestId('mock-lightbox')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('close-button'));
+    expect(screen.queryByTestId('mock-lightbox')).not.toBeInTheDocument();
+
+    fireEvent.keyDown(image, { key: ' ' });
+    expect(screen.getByTestId('mock-lightbox')).toBeInTheDocument();
+  });
+
   it('Has no accessibility violations.', async () => {
     const { container } = render(<CorrespondenceNavigator />);
     const results = await axe(container);

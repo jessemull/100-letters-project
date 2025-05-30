@@ -43,7 +43,7 @@ const LetterSelectorHorizontal: React.FC<Props> = ({
   return (
     <div className="flex flex-col max-w-full">
       <h1 className="text-3xl font-extrabold tracking-tight text-white drop-shadow-lg mb-4">
-        Letters
+        Letters <span className="tabular-nums">({letters.length})</span>
       </h1>
       <div className="flex items-center space-x-1 overflow-hidden">
         <button
