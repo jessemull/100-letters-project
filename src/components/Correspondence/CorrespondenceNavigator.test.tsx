@@ -260,7 +260,7 @@ describe('CorrespondenceNavigator Component', () => {
     fireEvent.keyDown(image, { key: 'Enter' });
     expect(screen.getByTestId('mock-lightbox')).toBeInTheDocument();
 
-    fireEvent.click(screen.getByTestId('close-button')); // close lightbox
+    fireEvent.click(screen.getByTestId('close-button'));
     expect(screen.queryByTestId('mock-lightbox')).not.toBeInTheDocument();
 
     fireEvent.keyDown(image, { key: ' ' });
