@@ -54,6 +54,15 @@ jobs:
           name: next-build
           path: out
           retention-days: 1
+      
+      - name: Archive Static Data
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-json
+          path: |
+            public/data.json
+            public/search.json
+          retention-days: 1
 
   test:
     name: Run Unit Tests
@@ -71,6 +80,15 @@ jobs:
 
       - name: Install Dependencies
         run: npm ci
+
+      - name: Archive Static Data
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-json
+          path: |
+            public/data.json
+            public/search.json
+          retention-days: 1
 
       - name: Run Jest Tests
         run: npm run test
