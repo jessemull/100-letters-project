@@ -22,7 +22,7 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => {
         className="min-h-screen fixed inset-0 -z-10 bg-cover bg-center"
         style={{
           backgroundImage:
-            "linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), url('/images/background.webp')",
+            "linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), url('/background.webp')",
           backgroundAttachment: 'fixed',
         }}
       />
