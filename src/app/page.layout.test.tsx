@@ -1,6 +1,6 @@
+import PageLayout from './page.layout';
 import { DesktopMenuContext } from '@contexts/DesktopMenuProvider';
 import { render, screen } from '@testing-library/react';
-import PageLayout from './page.layout';
 
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn().mockReturnValue({
@@ -31,7 +31,7 @@ jest.mock('@components/Menu/CorrespondenceSearch', () => ({
   ),
 }));
 
-describe('PageLayout', () => {
+describe('PageLayout Component', () => {
   it('Collapses menu.', () => {
     render(
       <DesktopMenuContext.Provider

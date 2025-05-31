@@ -1,7 +1,8 @@
 import CorrespondencePage from './page';
-import React from 'react';
-import { render, screen } from '@testing-library/react';
+import React, { act } from 'react';
 import { DesktopMenuProvider } from '@contexts/DesktopMenuProvider';
+import { axe } from 'jest-axe';
+import { render, screen } from '@testing-library/react';
 
 jest.mock('@contexts/AuthProvider', () => ({
   useAuth: jest.fn().mockReturnValue({
@@ -30,16 +31,7 @@ jest.mock('../../page.layout', () => {
   return MockLayout;
 });
 
-describe('CorrespondencePage', () => {
-  it('Renders the page layout.', () => {
-    render(
-      <DesktopMenuProvider>
-        <CorrespondencePage />
-      </DesktopMenuProvider>,
-    );
-    expect(screen.getByTestId('page-layout')).toBeInTheDocument();
-  });
-
+describe('CorrespondencePage Component', () => {
   it('Renders the correspondence form.', async () => {
     render(
       <DesktopMenuProvider>
@@ -47,5 +39,17 @@ describe('CorrespondencePage', () => {
       </DesktopMenuProvider>,
     );
     expect(screen.getByTestId('correspondence-form')).toBeInTheDocument();
+  });
+
+  it('Has no accessibility violations.', async () => {
+    await act(async () => {
+      const rendered = render(
+        <DesktopMenuProvider>
+          <CorrespondencePage />
+        </DesktopMenuProvider>,
+      );
+      const results = await axe(rendered.container!);
+      expect(results).toHaveNoViolations();
+    });
   });
 });

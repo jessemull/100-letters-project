@@ -1,12 +1,12 @@
-const fs = require('fs');
 const crypto = require('crypto');
+const fs = require('fs');
 
 const getSignedCookies = () => {
   try {
-    const key = process.env.CLOUDFRONT_PRIVATE_KEY;
-    const privateKeyPath = process.env.CLOUDFRONT_PRIVATE_KEY_PATH;
-    const keyPairId = process.env.CLOUDFRONT_KEY_PAIR_ID;
     const domain = process.env.CLOUDFRONT_DOMAIN;
+    const key = process.env.CLOUDFRONT_PRIVATE_KEY;
+    const keyPairId = process.env.CLOUDFRONT_KEY_PAIR_ID;
+    const privateKeyPath = process.env.CLOUDFRONT_PRIVATE_KEY_PATH;
 
     const privateKey = key || fs.readFileSync(privateKeyPath, 'utf8');
 
