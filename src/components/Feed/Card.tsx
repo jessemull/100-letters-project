@@ -34,7 +34,7 @@ const Card: React.FC<Props> = ({ correspondence, loading, priority }) => {
       className="rounded-xl overflow-hidden shadow-lg text-black font-merriweather cursor-pointer transform transition duration-200 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white"
     >
       <Image
-        src={letters[0]?.imageURLs[0]?.urlThumbnail || '/missing.jpg'}
+        src={letters[0]?.imageURLs[0]?.urlThumbnail || '/images/alt-image.jpg'}
         alt={letters[0]?.title || 'Letter Image'}
         width={400}
         height={250}

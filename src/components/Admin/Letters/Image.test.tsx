@@ -33,7 +33,7 @@ describe('Image Component', () => {
     fireEvent.error(img);
 
     const updatedImg = screen.getByAltText('Test image') as HTMLImageElement;
-    expect(updatedImg.src).toContain('missing.jpg');
+    expect(updatedImg.src).toContain('alt-image.jpg');
   });
 
   it('Has no accessibility violations.', async () => {

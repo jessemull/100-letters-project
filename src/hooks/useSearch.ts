@@ -23,8 +23,8 @@ export function useSearch({
 
   useEffect(() => {
     async function loadSearchData() {
-      const dataModule = await import('@public/data.json');
-      const searchIndexModule = await import('@public/search.json');
+      const dataModule = await import('@public/data/data.json');
+      const searchIndexModule = await import('@public/data/search.json');
 
       const { correspondences: correspondenceData } = dataModule;
 

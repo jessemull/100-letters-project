@@ -53,8 +53,8 @@ jobs:
         with:
           name: public-json
           path: |
-            public/data.json
-            public/search.json
+            public/data/data.json
+            public/data/search.json
           retention-days: 1
 
   lint:

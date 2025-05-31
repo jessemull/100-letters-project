@@ -19,7 +19,7 @@ export interface ImageProps {
 const Image = ({
   alt,
   className,
-  fallbackSrc = '/missing.jpg',
+  fallbackSrc = '/images/alt-image.jpg',
   fill,
   height,
   priority,
