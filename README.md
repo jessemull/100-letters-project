@@ -144,7 +144,7 @@ To clone the repository, install dependencies, and run the project locally follo
 
 4. Set environment variables:
 
-   The development server has a predev script that will check for static data loaded during the build at public/data.json. If the file is missing, the script will fetch the data required to run the application. The predev script uses machine user credentials to grab a cognito token using the following environment variables set in a `.env.test` and `.env.production` files in the root of the project:
+   The development server has a predev script that will check for static data loaded during the build at public/data/data.json. If the file is missing, the script will fetch the data required to run the application. The predev script uses machine user credentials to grab a cognito token using the following environment variables set in a `.env.test` and `.env.production` files in the root of the project:
 
    ```
    COGNITO_USER_POOL_USERNAME=cognito-user-pool-username
@@ -375,7 +375,7 @@ COGNITO_USER_POOL_USERNAME=cognito-user-pool-username
 
 ### Pre-build Script
 
-The pre-build script generates a cognito token using machine user credentials, fetches the read data and writes to a static file public/data.json.
+The pre-build script generates a cognito token using machine user credentials, fetches the read data and writes to a static file public/data/data.json.
 
 To run the pre-build script:
 
@@ -409,7 +409,7 @@ NODE_ENV=production npm run build
 
 ### Building The Development Server
 
-The development server has a predev script that will check for static data loaded during the build at public/data.json. If the file is missing, the script will fetch the data and write it. The predev script uses machine user credentials to grab a cognito token.
+The development server has a predev script that will check for static data loaded during the build at public/data/data.json. If the file is missing, the script will fetch the data and write it. The predev script uses machine user credentials to grab a cognito token.
 
 The following environment variables must be set in `.env.test` and `env.production` files in the root of the project:
 

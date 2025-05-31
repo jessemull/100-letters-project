@@ -1,7 +1,7 @@
 import RecipientPage from '@pages/admin/recipient/page';
+import { DesktopMenuProvider } from '@contexts/DesktopMenuProvider';
 import { axe } from 'jest-axe';
 import { render, screen, act } from '@testing-library/react';
-import { DesktopMenuProvider } from '@contexts/DesktopMenuProvider';
 
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn().mockReturnValue({
@@ -61,7 +61,7 @@ jest.mock('@hooks/useForm', () => {
   };
 });
 
-describe('RecipientPage', () => {
+describe('RecipientPage Component', () => {
   it('Renders recipient page.', async () => {
     await act(async () => {
       render(
@@ -74,15 +74,13 @@ describe('RecipientPage', () => {
   });
 
   it('Has no accessibility violations.', async () => {
-    let container: HTMLElement;
     await act(async () => {
       const rendered = render(
         <DesktopMenuProvider>
           <RecipientPage />
         </DesktopMenuProvider>,
       );
-      container = rendered.container;
-      const results = await axe(container!);
+      const results = await axe(rendered.container!);
       expect(results).toHaveNoViolations();
     });
   });

@@ -1,7 +1,8 @@
 import LetterPage from './page';
-import React from 'react';
+import React, { act } from 'react';
 import { render, screen } from '@testing-library/react';
 import { DesktopMenuProvider } from '@contexts/DesktopMenuProvider';
+import { axe } from 'jest-axe';
 
 jest.mock('@contexts/AuthProvider', () => ({
   useAuth: jest.fn().mockReturnValue({
@@ -40,16 +41,7 @@ jest.mock('@components/Form', () => {
   return { Progress };
 });
 
-describe('LetterPage', () => {
-  it('Renders the page layout.', () => {
-    render(
-      <DesktopMenuProvider>
-        <LetterPage />
-      </DesktopMenuProvider>,
-    );
-    expect(screen.getByTestId('page-layout')).toBeInTheDocument();
-  });
-
+describe('LetterPage Component', () => {
   it('Renders the letter form.', async () => {
     render(
       <DesktopMenuProvider>
@@ -57,5 +49,17 @@ describe('LetterPage', () => {
       </DesktopMenuProvider>,
     );
     expect(screen.getByTestId('letter-form')).toBeInTheDocument();
+  });
+
+  it('Has no accessibility violations.', async () => {
+    await act(async () => {
+      const rendered = render(
+        <DesktopMenuProvider>
+          <LetterPage />
+        </DesktopMenuProvider>,
+      );
+      const results = await axe(rendered.container!);
+      expect(results).toHaveNoViolations();
+    });
   });
 });

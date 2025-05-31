@@ -1,7 +1,7 @@
 import ContactPage from '@pages/contact/page';
+import { DesktopMenuProvider } from '@contexts/DesktopMenuProvider';
 import { axe } from 'jest-axe';
 import { render, screen, act } from '@testing-library/react';
-import { DesktopMenuProvider } from '@contexts/DesktopMenuProvider';
 
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn().mockReturnValue({

@@ -4,20 +4,20 @@ import data from '@public/data/data.json';
 import { AuthProvider } from '@contexts/AuthProvider';
 import { Correspondence, CorrespondencesMap } from '@ts-types/correspondence';
 import { CorrespondenceProvider } from '@contexts/CorrespondenceProvider';
-import { Merriweather } from 'next/font/google';
 import { DesktopMenuProvider } from '@contexts/DesktopMenuProvider';
+import { Merriweather } from 'next/font/google';
 
 const merriweather = Merriweather({
-  subsets: ['latin'],
-  weight: ['400'],
-  style: ['normal', 'italic'],
-  variable: '--font-merriweather',
   display: 'swap',
+  style: ['normal', 'italic'],
+  subsets: ['latin'],
+  variable: '--font-merriweather',
+  weight: ['400'],
 });
 
 const correspondences = data.correspondences ?? [];
-const earliestSentAtDate = data.earliestSentAtDate ?? '';
 const correspondencesById = data.correspondencesById ?? {};
+const earliestSentAtDate = data.earliestSentAtDate ?? '';
 const responseCompletion = data.responseCompletion ?? 0;
 
 export const metadata = {
@@ -62,14 +62,14 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link
-          rel="preconnect"
-          href="https://www.googletagmanager.com"
           crossOrigin="anonymous"
+          href="https://www.googletagmanager.com"
+          rel="preconnect"
         />
         <link
-          rel="preconnect"
-          href="https://www.google-analytics.com"
           crossOrigin="anonymous"
+          href="https://www.google-analytics.com"
+          rel="preconnect"
         />
         <meta name="description" content="100 letters, 100 people, 1 year." />
         <meta property="og:title" content="100 Letters Project" />
@@ -95,11 +95,11 @@ export default function RootLayout({
           />
           <Script id="google-analytics" strategy="afterInteractive">
             {`
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){window.dataLayer.push(arguments);}
-                gtag('js', new Date());
-                gtag('config', '${NEXT_PUBLIC_GA_TRACKING_ID}');
-              `}
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){window.dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${NEXT_PUBLIC_GA_TRACKING_ID}');
+            `}
           </Script>
         </>
       </body>
