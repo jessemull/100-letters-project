@@ -3,7 +3,7 @@ import { debounce, throttle } from '@util/debounce';
 jest.useFakeTimers();
 
 describe('debounce', () => {
-  it('should delay execution until after wait time has passed since the last call', () => {
+  it('Should delay execution until after wait time has passed since the last call.', () => {
     const fn = jest.fn();
     const debounced = debounce(fn, 1000);
 
@@ -18,7 +18,7 @@ describe('debounce', () => {
     expect(fn).toHaveBeenCalledWith('b');
   });
 
-  it('should reset the timer with each call', () => {
+  it('Should reset the timer with each call.', () => {
     const fn = jest.fn();
     const debounced = debounce(fn, 500);
 
@@ -35,7 +35,7 @@ describe('debounce', () => {
 });
 
 describe('throttle', () => {
-  it('should call immediately on first invocation and ignore subsequent ones during limit', () => {
+  it('Should call immediately on first invocation and ignore subsequent ones during limit.', () => {
     const fn = jest.fn();
     const throttled = throttle(fn, 1000);
 
@@ -51,7 +51,7 @@ describe('throttle', () => {
     expect(fn).toHaveBeenCalledWith('d');
   });
 
-  it('should only call the function once within the limit time', () => {
+  it('Should only call the function once within the limit time.', () => {
     const fn = jest.fn();
     const throttled = throttle(fn, 500);
 

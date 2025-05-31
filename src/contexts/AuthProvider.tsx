@@ -33,34 +33,34 @@ const COOKIE_KEY = '100_letters_cognito_access_token';
 const DEFAULT_ERROR_MESSAGE = 'Error signing in. Please try again.';
 
 export interface AuthContextType {
-  token: string | null;
-  loading: boolean;
   isLoggedIn: boolean;
-  user: any | null;
+  loading: boolean;
   signIn: (
     username: string,
     password: string,
   ) => Promise<{ isSignedIn: boolean }>;
   signOut: () => void;
+  token: string | null;
+  user: any | null;
 }
 
 export const defaultSignIn = async () => ({ isSignedIn: false });
 export const defaultSignOut = () => {};
 
 export const AuthContext = createContext<AuthContextType>({
-  token: null,
-  loading: true,
   isLoggedIn: false,
-  user: null,
+  loading: true,
   signIn: defaultSignIn,
   signOut: defaultSignOut,
+  token: null,
+  user: null,
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState<any | null>(null);
+  const [loading, setLoading] = useState(true);
   const [token, setToken] = useState<string | null>(null);
+  const [user, setUser] = useState<any | null>(null);
 
   const router = useRouter();
 
@@ -160,7 +160,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ token, loading, isLoggedIn, user, signIn, signOut }}
+      value={{ isLoggedIn, loading, signIn, signOut, token, user }}
     >
       {children}
     </AuthContext.Provider>
