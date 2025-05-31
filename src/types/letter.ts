@@ -43,7 +43,7 @@ export type LetterImage = {
   view: View;
 };
 
-export interface Letter {
+export type Letter = {
   correspondenceId: string;
   description?: string;
   imageURLs: LetterImage[];
@@ -55,7 +55,7 @@ export interface Letter {
   text: string;
   title: string;
   type: LetterType;
-}
+};
 
 export type LetterCreateInput = {
   correspondenceId: string;

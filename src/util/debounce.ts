@@ -1,29 +1,30 @@
-export function debounce<T extends (...args: any[]) => void>(
+export const debounce = <T extends (...args: any[]) => void>(
   callback: T,
   delay: number,
-): (...args: Parameters<T>) => void {
+): ((...args: Parameters<T>) => void) => {
   let timer: NodeJS.Timeout;
-  return function (...args: Parameters<T>) {
+  return (...args: Parameters<T>) => {
     clearTimeout(timer);
     timer = setTimeout(() => {
       callback(...args);
     }, delay);
   };
-}
+};
 
-export function throttle<T extends (...args: any[]) => any>(
+export const throttle = <T extends (...args: any[]) => any>(
   func: T,
   limit: number,
-): (...args: Parameters<T>) => void {
-  let inThrottle: boolean;
+): ((...args: Parameters<T>) => void) => {
+  let inThrottle = false;
   let lastResult: ReturnType<T> | undefined;
-  return function (...args: Parameters<T>): void {
+  return (...args: Parameters<T>): void => {
     if (!inThrottle) {
       inThrottle = true;
-      setTimeout(() => (inThrottle = false), limit);
+      setTimeout(() => {
+        inThrottle = false;
+      }, limit);
       lastResult = func(...args);
-      return lastResult;
     }
     return lastResult;
   };
-}
+};

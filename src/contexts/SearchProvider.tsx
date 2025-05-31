@@ -1,18 +1,8 @@
 'use client';
 
 import searchIndex from '@public/data/search.json';
-import {
-  CorrespondenceSearchItem,
-  LetterSearchItem,
-  RecipientSearchItem,
-} from '@ts-types/search';
+import { SearchContextType } from '@ts-types/context';
 import { createContext, useContext, ReactNode } from 'react';
-
-export interface SearchContextType {
-  correspondences: CorrespondenceSearchItem[];
-  recipients: RecipientSearchItem[];
-  letters: LetterSearchItem[];
-}
 
 export const SearchContext = createContext<SearchContextType>({
   correspondences: [],

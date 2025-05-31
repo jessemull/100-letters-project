@@ -36,7 +36,6 @@ import {
   lettersUpdate,
 } from '@util/cache';
 import { formatLetterDates } from '@util/letter';
-import { required } from '@util/validators';
 import { toDateTimeLocal } from '@util/date-time';
 import { useAuth } from '@contexts/AuthProvider';
 import { useDeleteUpload } from '@hooks/useDeleteUpload';
@@ -45,59 +44,14 @@ import { useForm } from '@hooks/useForm';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSWRMutation } from '@hooks/useSWRMutation';
 import { useSWRQuery } from '@hooks/useSWRQuery';
-
-const methodOptions = [
-  { label: 'Digital', value: LetterMethod.DIGITAL },
-  { label: 'Handwritten', value: LetterMethod.HANDWRITTEN },
-  { label: 'Printed', value: LetterMethod.PRINTED },
-  { label: 'Typed', value: LetterMethod.TYPED },
-  { label: 'Other', value: LetterMethod.OTHER },
-];
-
-const typeOptions = [
-  { label: 'Email', value: LetterType.EMAIL },
-  { label: 'Mail', value: LetterType.MAIL },
-  { label: 'SMS', value: LetterType.SMS },
-  { label: 'Other', value: LetterType.OTHER },
-];
-
-const statusOptions = [
-  { label: 'Pending', value: Status.PENDING },
-  { label: 'Responded', value: Status.RESPONDED },
-  { label: 'Sent', value: Status.SENT },
-  { label: 'Received', value: Status.RECEIVED },
-];
-
-export const viewOptions = [
-  { label: 'Letter Front', value: View.LETTER_FRONT },
-  { label: 'Letter Back', value: View.LETTER_BACK },
-  { label: 'Envelope Front', value: View.ENVELOPE_FRONT },
-  { label: 'Envelope Back', value: View.ENVELOPE_BACK },
-  { label: 'Other', value: View.OTHER },
-];
-
-const initial: Letter = {
-  correspondenceId: '',
-  description: '',
-  imageURLs: [],
-  letterId: '',
-  method: LetterMethod.HANDWRITTEN,
-  receivedAt: '',
-  sentAt: '',
-  status: Status.PENDING,
-  text: '',
-  title: '',
-  type: LetterType.MAIL,
-};
-
-const validators = {
-  correspondenceId: [required('Correspondence ID required')],
-  method: [required('Method required')],
-  status: [required('Status required')],
-  text: [required('Text required')],
-  title: [required('Title required')],
-  type: [required('Type required')],
-};
+import {
+  initialLetterValues,
+  letterMethodOptions,
+  letterStatusOptions,
+  letterTypeOptions,
+  letterValidators,
+  letterViewOptions,
+} from '@constants/letter';
 
 const LetterForm = () => {
   const [caption, setCaption] = useState<string>('');
@@ -179,8 +133,8 @@ const LetterForm = () => {
 
   const { errors, isDirty, onSubmit, updateField, values, setValues } =
     useForm<Letter>({
-      initial,
-      validators,
+      initial: initialLetterValues,
+      validators: letterValidators,
     });
 
   const {
@@ -440,7 +394,7 @@ const LetterForm = () => {
             onChange={({ target: { value } }) =>
               updateField('type', value as LetterType)
             }
-            options={typeOptions}
+            options={letterTypeOptions}
             placeholder="Type"
             value={values.type || ''}
           />
@@ -451,7 +405,7 @@ const LetterForm = () => {
             onChange={({ target: { value } }) =>
               updateField('method', value as LetterMethod)
             }
-            options={methodOptions}
+            options={letterMethodOptions}
             placeholder="Method"
             value={values.method || ''}
           />
@@ -462,7 +416,7 @@ const LetterForm = () => {
             onChange={({ target: { value } }) =>
               updateField('status', value as Status)
             }
-            options={statusOptions}
+            options={letterStatusOptions}
             placeholder="Status"
             value={values.status || ''}
           />
@@ -536,7 +490,7 @@ const LetterForm = () => {
                     setView={setView}
                     uploadImage={uploadImage}
                     view={view}
-                    viewOptions={viewOptions}
+                    viewOptions={letterViewOptions}
                   />
                 ) : (
                   <Button

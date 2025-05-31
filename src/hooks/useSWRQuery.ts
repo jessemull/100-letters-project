@@ -1,85 +1,64 @@
 'use client';
 
-import useSWR, { mutate as globalMutate, SWRConfiguration } from 'swr';
+import useSWR, { mutate as globalMutate } from 'swr';
+import { UseSWRQueryOptions } from '@ts-types/hooks';
+import { defaultMerge } from '@util/cache';
 import { useRouter } from 'next/navigation';
 import { useState, useCallback, useEffect, useMemo } from 'react';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
-interface UseSWRQueryOptions<T> {
-  config?: SWRConfiguration;
-  merge?: (prev: unknown | null, page: unknown) => T;
-  path: string | null;
-  skip?: boolean;
-  token: string | null;
-}
-
-export function defaultMerge<T>(prev: unknown | null, page: unknown) {
-  if (!prev) {
-    return page as T;
-  }
-  return {
-    ...(page as T),
-    data: [
-      ...(prev as { data: unknown[] }).data,
-      ...(page as { data: unknown[] }).data,
-    ],
-  } as T;
-}
-
-export function useSWRQuery<T = any>({
+export const useSWRQuery = <T = any>({
   path,
   token,
   config,
   skip = false,
   merge = defaultMerge<T>,
-}: UseSWRQueryOptions<T>) {
+}: UseSWRQueryOptions<T>) => {
   const [loadingMore, setLoadingMore] = useState(false);
   const [mergedData, setMergedData] = useState<T>();
   const [unauthorized, setUnauthorized] = useState(false);
   const router = useRouter();
 
-  const fetcher = useMemo(
-    () =>
-      token
-        ? async (url: string) => {
-            const res = await fetch(url, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
-              },
-            });
+  const fetcher = useMemo(() => {
+    if (!token) return null;
 
-            if (!res.ok) {
-              let errorBody;
-              try {
-                errorBody = await res.json();
-              } catch {
-                errorBody = { message: res.statusText };
-              }
+    return async (url: string) => {
+      const res = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
 
-              const error = new Error(
-                errorBody?.message || `Error ${res.status}: ${res.statusText}`,
-              ) as Error & {
-                status?: number;
-                info?: any;
-              };
+      if (!res.ok) {
+        let errorBody;
+        try {
+          errorBody = await res.json();
+        } catch {
+          errorBody = { message: res.statusText };
+        }
 
-              error.status = res.status;
-              error.info = errorBody;
+        const error = new Error(
+          errorBody?.message || `Error ${res.status}: ${res.statusText}`,
+        ) as Error & {
+          status?: number;
+          info?: any;
+        };
 
-              if (res.status === 401) {
-                setUnauthorized(true);
-              }
+        error.status = res.status;
+        error.info = errorBody;
 
-              throw error;
-            }
+        if (res.status === 401) {
+          setUnauthorized(true);
+        }
 
-            return res.json();
-          }
-        : null,
-    [token],
-  );
+        throw error;
+      }
+
+      return res.json();
+    };
+  }, [token]);
 
   useEffect(() => {
     if (unauthorized) {
@@ -138,4 +117,4 @@ export function useSWRQuery<T = any>({
     fetchMore,
     mutate,
   };
-}
+};

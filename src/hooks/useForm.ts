@@ -9,11 +9,11 @@ import {
 import { get, set, flattenValidators } from '@util/form';
 import { useState, useMemo } from 'react';
 
-export function useForm<T extends FormData>({
+export const useForm = <T extends FormData>({
   initial,
   validators: nestedValidators,
   validateOnInit = false,
-}: UseFormOptions<T>) {
+}: UseFormOptions<T>) => {
   const [values, _setValues] = useState<T>(initial);
   const [errors, setErrors] = useState<Partial<Record<DeepKeys<T>, string[]>>>(
     {},
@@ -114,4 +114,4 @@ export function useForm<T extends FormData>({
     updateField,
     values,
   };
-}
+};

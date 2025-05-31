@@ -1,14 +1,7 @@
 'use client';
 
-import { Correspondence, CorrespondencesMap } from '@ts-types/correspondence';
+import { CorrespondenceContextType } from '@ts-types/context';
 import { createContext, useContext, ReactNode } from 'react';
-
-export interface CorrespondenceContextType {
-  correspondences: Correspondence[];
-  correspondencesById: CorrespondencesMap;
-  earliestSentAtDate: string;
-  responseCompletion: number;
-}
 
 export const CorrespondenceContext = createContext<CorrespondenceContextType>({
   correspondences: [],

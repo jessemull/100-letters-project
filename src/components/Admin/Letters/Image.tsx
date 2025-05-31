@@ -4,15 +4,15 @@ import NextImage from 'next/image';
 import React, { useState } from 'react';
 
 export interface ImageProps {
-  src: string;
   alt: string;
-  fallbackSrc?: string;
-  height?: number | `${number}` | undefined;
   className?: string;
-  priority?: boolean;
+  fallbackSrc?: string;
   fill?: boolean;
+  height?: number | `${number}` | undefined;
   loading?: string;
+  priority?: boolean;
   sizes?: string;
+  src: string;
   width?: number | `${number}` | undefined;
 }
 
@@ -28,7 +28,6 @@ const Image = ({
   width,
 }: ImageProps) => {
   const [imgSrc, setImgSrc] = useState(src);
-
   return (
     <NextImage
       alt={alt}

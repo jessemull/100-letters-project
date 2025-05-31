@@ -46,7 +46,7 @@ const mockMutate = jest.fn();
 const useSWRQuery = require('@hooks/useSWRQuery').useSWRQuery;
 const useSWRMutation = require('@hooks/useSWRMutation').useSWRMutation;
 
-describe('RecipientsTab', () => {
+describe('RecipientsTab Component', () => {
   const mockRecipient: Recipient = RecipientFactory.build();
 
   beforeEach(() => {

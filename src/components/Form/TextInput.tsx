@@ -1,7 +1,7 @@
 import React, { useMemo, forwardRef } from 'react';
 import { ChangeEvent, ElementType } from 'react';
 
-interface TextInputProps {
+interface Props {
   label?: string;
   IconEnd?: ElementType;
   IconStart?: ElementType;
@@ -17,7 +17,7 @@ interface TextInputProps {
   value: string;
 }
 
-const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
+const TextInput = forwardRef<HTMLInputElement, Props>(
   (
     {
       label,

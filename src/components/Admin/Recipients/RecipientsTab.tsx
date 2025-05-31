@@ -8,12 +8,12 @@ import {
 import { ConfirmationModal, showToast } from '@components/Form';
 import { Progress } from '@components/Form';
 import { RecipientItem } from '@components/Admin';
+import { deleteRecipientUpdate } from '@util/cache';
 import { useAuth } from '@contexts/AuthProvider';
+import { useInView } from 'react-intersection-observer';
 import { useRouter } from 'next/navigation';
 import { useSWRMutation } from '@hooks/useSWRMutation';
 import { useSWRQuery } from '@hooks/useSWRQuery';
-import { useInView } from 'react-intersection-observer';
-import { deleteRecipientUpdate } from '@util/cache';
 
 interface Props {
   search: string;

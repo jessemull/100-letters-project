@@ -14,3 +14,9 @@ export const categories = [
 ];
 
 export const clockLabels = ['DAYS', 'HRS', 'MIN', 'SEC'];
+
+export const clockRadius = 36;
+
+export const clockCircumference = 2 * Math.PI * clockRadius;
+
+export const searchItemsPerPage = 12;

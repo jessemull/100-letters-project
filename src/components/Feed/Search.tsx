@@ -2,18 +2,17 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { Card } from '@components/Feed';
+import { Correspondence } from '@ts-types/correspondence';
 import { Progress } from '@components/Form';
 import { SearchAllItem } from '@ts-types/search';
-import { useInView } from 'react-intersection-observer';
+import { searchItemsPerPage } from '@constants/feed';
 import { useCorrespondence } from '@contexts/CorrespondenceProvider';
-import { Correspondence } from '@ts-types/correspondence';
+import { useInView } from 'react-intersection-observer';
 
 interface Props {
   results: SearchAllItem[];
   term: string;
 }
-
-const ITEMS_PER_PAGE = 12;
 
 const Search: React.FC<Props> = ({ results, term }) => {
   const [page, setPage] = useState(1);
@@ -31,13 +30,13 @@ const Search: React.FC<Props> = ({ results, term }) => {
 
   useEffect(() => {
     setPage(1);
-    setVisibleItems(items.slice(0, ITEMS_PER_PAGE));
+    setVisibleItems(items.slice(0, searchItemsPerPage));
   }, [items]);
 
   useEffect(() => {
     if (inView && visibleItems.length < items.length) {
       const nextPage = page + 1;
-      const nextItems = items.slice(0, nextPage * ITEMS_PER_PAGE);
+      const nextItems = items.slice(0, nextPage * searchItemsPerPage);
       setVisibleItems(nextItems);
       setPage(nextPage);
     }

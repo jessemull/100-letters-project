@@ -1,11 +1,11 @@
 import RecipientForm from './RecipientForm';
+import showToast from '../../Form/Toast';
 import { axe } from 'jest-axe';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { useAuth } from '@contexts/AuthProvider';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSWRMutation } from '@hooks/useSWRMutation';
 import { useSWRQuery } from '@hooks/useSWRQuery';
-import showToast from '../../Form/Toast';
 
 jest.mock('@contexts/AuthProvider', () => ({
   useAuth: jest.fn(),
@@ -29,7 +29,7 @@ jest.mock('../../Form/Toast', () => ({
   default: jest.fn(),
 }));
 
-describe('RecipientForm', () => {
+describe('RecipientForm Component', () => {
   const mockMutate = jest.fn();
 
   beforeEach(() => {

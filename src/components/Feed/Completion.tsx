@@ -1,14 +1,12 @@
 'use client';
 
 import React, { useMemo } from 'react';
+import { clockCircumference, clockRadius } from '@constants/feed';
 
 interface Props {
   letterCount: number;
   responseCompletion: number;
 }
-
-const RADIUS = 36;
-const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
 const Completion: React.FC<Props> = ({ responseCompletion, letterCount }) => {
   const progress = useMemo(
@@ -16,7 +14,7 @@ const Completion: React.FC<Props> = ({ responseCompletion, letterCount }) => {
     [responseCompletion],
   );
   const strokeDashoffset = useMemo(
-    () => CIRCUMFERENCE * (1 - progress),
+    () => clockCircumference * (1 - progress),
     [progress],
   );
   return (
@@ -26,7 +24,7 @@ const Completion: React.FC<Props> = ({ responseCompletion, letterCount }) => {
         <circle
           cx="50"
           cy="50"
-          r={RADIUS}
+          r={clockRadius}
           stroke="#444"
           strokeWidth="8"
           fill="none"
@@ -34,11 +32,11 @@ const Completion: React.FC<Props> = ({ responseCompletion, letterCount }) => {
         <circle
           cx="50"
           cy="50"
-          r={RADIUS}
+          r={clockRadius}
           stroke="#4ade80"
           strokeWidth="8"
           fill="none"
-          strokeDasharray={CIRCUMFERENCE}
+          strokeDasharray={clockCircumference}
           strokeDashoffset={strokeDashoffset}
           strokeLinecap="round"
           style={{ transition: 'stroke-dashoffset 0.5s ease' }}

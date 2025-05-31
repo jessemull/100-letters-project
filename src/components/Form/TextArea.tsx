@@ -1,6 +1,6 @@
 import React, { ChangeEvent } from 'react';
 
-interface TextAreaProps {
+interface Props {
   id: string;
   label?: string;
   value: string;
@@ -9,7 +9,7 @@ interface TextAreaProps {
   errors?: string | string[];
 }
 
-const TextArea: React.FC<TextAreaProps> = ({
+const TextArea: React.FC<Props> = ({
   id,
   label,
   value,

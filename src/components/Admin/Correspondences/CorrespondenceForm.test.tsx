@@ -20,7 +20,7 @@ jest.mock('next/navigation', () => ({
   useRouter: jest.fn(),
   useSearchParams: jest.fn(),
 }));
-describe('CorrespondenceForm', () => {
+describe('CorrespondenceForm Component', () => {
   beforeEach(() => {
     (useAuth as jest.Mock).mockReturnValue({
       loading: false,

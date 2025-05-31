@@ -4,7 +4,7 @@ import { View } from '@ts-types/letter';
 import { axe } from 'jest-axe';
 import { fireEvent, render, screen } from '@testing-library/react';
 
-describe('AddImageItem', () => {
+describe('AddImageItem Component', () => {
   const defaultProps = {
     caption: 'Test caption',
     disableUploadButton: false,

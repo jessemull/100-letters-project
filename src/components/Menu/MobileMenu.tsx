@@ -11,14 +11,14 @@ import { FC, useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-interface MobileMenuProps {
+interface Props {
   handleLogout: () => Promise<void>;
   isLoggedIn: boolean;
   isOpen: boolean;
   onClose: () => void;
 }
 
-const MobileMenu: FC<MobileMenuProps> = ({
+const MobileMenu: FC<Props> = ({
   isOpen,
   onClose,
   isLoggedIn,

@@ -2,10 +2,8 @@
 
 import Link from 'next/link';
 import { Home, Info, Mail, Shield, LogIn, LogOut } from 'lucide-react';
+import { baseMenuClass, iconMenuClass } from '@constants/menu';
 import { useMemo } from 'react';
-
-const baseClass = 'flex items-center hover:text-gray-400 transition-colors';
-const iconClass = 'h-5 w-5 shrink-0';
 
 interface Props {
   isLoggedIn: boolean;
@@ -26,7 +24,7 @@ const MenuNavItems: React.FC<Props> = ({
   );
 
   const linkClass = useMemo(
-    () => `${baseClass} ${collapsedClass}`,
+    () => `${baseMenuClass} ${collapsedClass}`,
     [collapsedClass],
   );
 
@@ -42,7 +40,7 @@ const MenuNavItems: React.FC<Props> = ({
         onClick={handleNavClick}
         className={linkClass}
       >
-        <Home className={iconClass} />
+        <Home className={iconMenuClass} />
         {!collapsed ? <span>Home</span> : <span className="sr-only">Home</span>}
       </Link>
       <Link
@@ -51,7 +49,7 @@ const MenuNavItems: React.FC<Props> = ({
         onClick={handleNavClick}
         className={linkClass}
       >
-        <Info className={iconClass} />
+        <Info className={iconMenuClass} />
         {!collapsed ? (
           <span>About</span>
         ) : (
@@ -64,7 +62,7 @@ const MenuNavItems: React.FC<Props> = ({
         onClick={handleNavClick}
         className={linkClass}
       >
-        <Mail className={iconClass} />
+        <Mail className={iconMenuClass} />
         {!collapsed ? (
           <span>Contact</span>
         ) : (
@@ -78,7 +76,7 @@ const MenuNavItems: React.FC<Props> = ({
           onClick={handleNavClick}
           className={linkClass}
         >
-          <Shield className={iconClass} />
+          <Shield className={iconMenuClass} />
           {!collapsed ? (
             <span>Admin</span>
           ) : (
@@ -90,9 +88,9 @@ const MenuNavItems: React.FC<Props> = ({
         <button
           aria-label="Logout"
           onClick={handleLogout}
-          className={`${baseClass} ${collapsed ? 'justify-center' : 'space-x-3 justify-start'}`}
+          className={`${baseMenuClass} ${collapsed ? 'justify-center' : 'space-x-3 justify-start'}`}
         >
-          <LogOut className={iconClass} />
+          <LogOut className={iconMenuClass} />
           {!collapsed ? (
             <span>Logout</span>
           ) : (
@@ -106,7 +104,7 @@ const MenuNavItems: React.FC<Props> = ({
           onClick={handleNavClick}
           className={linkClass}
         >
-          <LogIn className={iconClass} />
+          <LogIn className={iconMenuClass} />
           {!collapsed ? (
             <span>Login</span>
           ) : (

@@ -12,45 +12,17 @@ import {
   Progress,
   showToast,
 } from '@components/Form';
-import { required } from '@util/validators';
+import {
+  initialRecipientValues,
+  recipientValidators,
+} from '@constants/recipients';
+import { recipientByIdUpdate, recipientsUpdate } from '@util/cache';
 import { useAuth } from '@contexts/AuthProvider';
+import { useEffect } from 'react';
 import { useForm } from '@hooks/useForm';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSWRMutation } from '@hooks/useSWRMutation';
 import { useSWRQuery } from '@hooks/useSWRQuery';
-import { useEffect } from 'react';
-import { recipientByIdUpdate, recipientsUpdate } from '@util/cache';
-
-const initial: Recipient = {
-  address: {
-    city: '',
-    country: '',
-    postalCode: '',
-    state: '',
-    street: '',
-  },
-  description: '',
-  firstName: '',
-  lastName: '',
-  occupation: '',
-  organization: '',
-  recipientId: '',
-};
-
-const validators = {
-  address: {
-    city: [required('City required')],
-    country: [required('Country required')],
-    postalCode: [required('Postal code required')],
-    state: [required('State required')],
-    street: [required('Street required')],
-  },
-  description: [required('Description required')],
-  firstName: [required('First name required')],
-  lastName: [required('Last name required')],
-  occupation: [required('Occupation required')],
-  organization: [required('Organization required')],
-};
 
 const RecipientForm = () => {
   const router = useRouter();
@@ -73,8 +45,8 @@ const RecipientForm = () => {
 
   const { errors, isDirty, onSubmit, updateField, values, setValues } =
     useForm<Recipient>({
-      initial,
-      validators,
+      initial: initialRecipientValues,
+      validators: recipientValidators,
     });
 
   const { mutate, isLoading: isUpdating } = useSWRMutation<

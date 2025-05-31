@@ -4,7 +4,7 @@ import { RecipientFactory } from '@factories/recipient';
 import { axe } from 'jest-axe';
 import { render, screen, fireEvent } from '@testing-library/react';
 
-describe('RecipientItem', () => {
+describe('RecipientItem Commponent', () => {
   const mockRecipient = RecipientFactory.build();
 
   const onEditMock = jest.fn();

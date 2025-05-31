@@ -1,12 +1,12 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { axe } from 'jest-axe';
 import { LetterFactory } from '@factories/letter';
 import { LetterItem } from '@components/Admin';
+import { axe } from 'jest-axe';
+import { render, screen, fireEvent } from '@testing-library/react';
 
 const mockLetter = LetterFactory.build();
 
-describe('LetterItem', () => {
+describe('LetterItem Component', () => {
   it('Renders the title and a truncated version of the letter text.', () => {
     render(
       <LetterItem data={mockLetter} onEdit={jest.fn()} onDelete={jest.fn()} />,
@@ -49,7 +49,6 @@ describe('LetterItem', () => {
     const { container } = render(
       <LetterItem data={mockLetter} onEdit={jest.fn()} onDelete={jest.fn()} />,
     );
-
     const results = await axe(container);
     expect(results).toHaveNoViolations();
   });

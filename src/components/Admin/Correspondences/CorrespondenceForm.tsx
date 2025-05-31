@@ -19,7 +19,6 @@ import {
 } from '@ts-types/correspondence';
 import { DeleteLetterParams, DeleteLetterResponse } from '@ts-types/letter';
 import { LetterItem } from '../Letters';
-import { required } from '@util/validators';
 import { useAuth } from '@contexts/AuthProvider';
 import { useEffect, useState } from 'react';
 import { useForm } from '@hooks/useForm';
@@ -36,71 +35,12 @@ import {
   recipientByIdCorrespondenceUpdate,
   recipientsCorrespondenceUpdate,
 } from '@util/cache';
-
-const impactOptions = [
-  { label: 'Low', value: Impact.LOW },
-  { label: 'Medium', value: Impact.MEDIUM },
-  { label: 'High', value: Impact.HIGH },
-];
-
-const statusOptions = [
-  { label: 'Completed', value: Status.COMPLETED },
-  { label: 'Pending', value: Status.PENDING },
-  { label: 'Responded', value: Status.RESPONDED },
-  { label: 'Unsent', value: Status.UNSENT },
-];
-
-const initial: CorrespondenceUpdate = {
-  correspondenceId: '',
-  letters: [],
-  recipient: {
-    address: {
-      city: '',
-      country: '',
-      postalCode: '',
-      state: '',
-      street: '',
-    },
-    description: '',
-    firstName: '',
-    lastName: '',
-    occupation: '',
-    organization: '',
-    recipientId: '',
-  },
-  recipientId: '',
-  reason: {
-    description: '',
-    domain: '',
-    impact: Impact.HIGH,
-  },
-  status: Status.UNSENT,
-  title: '',
-};
-
-const validators = {
-  reason: {
-    description: [required('Description required')],
-    domain: [required('Domain required')],
-    impact: [required('Impact required')],
-  },
-  recipient: {
-    address: {
-      city: [required('City required')],
-      country: [required('Country required')],
-      postalCode: [required('Postal code required')],
-      state: [required('State required')],
-      street: [required('Street required')],
-    },
-    description: [required('Description required')],
-    firstName: [required('First name required')],
-    lastName: [required('Last name required')],
-    occupation: [required('Occupation required')],
-    organization: [required('Organization required')],
-  },
-  status: [required('Status required')],
-  title: [required('Title required')],
-};
+import {
+  correspondenceImpactOptions,
+  correspondenceStatusOptions,
+  correspondenceValidators,
+  initialCorrespondenceValues,
+} from '@constants/correspondence';
 
 const CorrespondenceForm = () => {
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
@@ -123,8 +63,8 @@ const CorrespondenceForm = () => {
 
   const { errors, isDirty, onSubmit, updateField, values, setValues } =
     useForm<CorrespondenceUpdate>({
-      initial,
-      validators,
+      initial: initialCorrespondenceValues,
+      validators: correspondenceValidators,
     });
 
   const { isLoading: isDeleting, mutate: deleteLetter } = useSWRMutation<
@@ -292,7 +232,7 @@ const CorrespondenceForm = () => {
             onChange={({ target: { value } }) =>
               updateField('status', value as Status)
             }
-            options={statusOptions}
+            options={correspondenceStatusOptions}
             value={values.status}
           />
         </div>
@@ -316,7 +256,7 @@ const CorrespondenceForm = () => {
             onChange={({ target: { value } }) =>
               updateField('reason.impact', value as Impact)
             }
-            options={impactOptions}
+            options={correspondenceImpactOptions}
             value={values.reason.impact}
           />
           <TextArea

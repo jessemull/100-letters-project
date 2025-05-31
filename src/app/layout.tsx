@@ -52,11 +52,11 @@ export const metadata = {
 
 const NEXT_PUBLIC_GA_TRACKING_ID = process.env.NEXT_PUBLIC_GA_TRACKING_ID;
 
-export default function RootLayout({
-  children,
-}: Readonly<{
+interface Props {
   children: React.ReactNode;
-}>) {
+}
+
+const RootLayout: React.FC<Props> = ({ children }) => {
   return (
     <html lang="en">
       <head>
@@ -105,4 +105,6 @@ export default function RootLayout({
       </body>
     </html>
   );
-}
+};
+
+export default RootLayout;
