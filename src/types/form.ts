@@ -2,7 +2,7 @@ export type Validator = (value: any) => string | null;
 
 export type FormData = Record<string, any>;
 
-type Prev = [never, 0, 1, 2, 3, 4, 5];
+export type Prev = [never, 0, 1, 2, 3, 4, 5];
 
 export type DeepKeys<T, D extends number = 5> = [D] extends [never]
   ? never
@@ -42,3 +42,12 @@ export type UseFormOptions<T> = {
   validators: PathValidator<T> | NestedValidatorObject<T>;
   validateOnInit?: boolean;
 };
+
+export type Option = {
+  label: string;
+  value: string;
+};
+
+export type ButtonVariant = 'default' | 'light' | 'outline';
+
+export type ToastType = 'success' | 'error';

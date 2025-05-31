@@ -1,11 +1,7 @@
 import React, { ChangeEvent, ElementType, useMemo } from 'react';
+import { Option } from '@ts-types/form';
 
-interface Option {
-  label: string;
-  value: string;
-}
-
-interface SelectProps {
+interface Props {
   className?: string;
   IconEnd?: ElementType;
   IconStart?: ElementType;
@@ -20,7 +16,7 @@ interface SelectProps {
   value: string;
 }
 
-const Select: React.FC<SelectProps> = ({
+const Select: React.FC<Props> = ({
   className,
   IconEnd,
   IconStart,

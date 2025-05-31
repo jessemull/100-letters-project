@@ -5,6 +5,7 @@ import {
   correspondencesDeleteUpdate,
   correspondencesLetterUpdate,
   correspondencesUpdate,
+  defaultMerge,
   deleteCorrespondenceLetterUpdate,
   deleteCorrespondenceRecipientUpdate,
   deleteCorrespondenceUpdate,
@@ -293,5 +294,78 @@ describe('Update Functions', () => {
 
   it('Deletes letter by ID.', () => {
     expect(letterByIdDeleteUpdate()).toBeNull();
+  });
+});
+
+describe('Default Merge', () => {
+  it('Returns the page when prev is null.', () => {
+    const prev = null;
+    const page = { data: [1, 2, 3] };
+
+    const result = defaultMerge(prev, page);
+
+    expect(result).toEqual(page);
+  });
+
+  it('Merges data when prev contains empty data array.', () => {
+    const prev = { data: [] };
+    const page = { data: [1, 2, 3] };
+
+    const result = defaultMerge(prev, page);
+
+    expect(result).toEqual({ data: [1, 2, 3] });
+  });
+
+  it('Merges data when prev contains data and page contains additional data.', () => {
+    const prev = { data: [1, 2] };
+    const page = { data: [3, 4, 5] };
+
+    const result = defaultMerge(prev, page);
+
+    expect(result).toEqual({ data: [1, 2, 3, 4, 5] });
+  });
+
+  it('Merges nested data correctly when prev and page have nested data arrays.', () => {
+    const prev = {
+      data: [
+        { id: 1, value: 'a' },
+        { id: 2, value: 'b' },
+      ],
+    };
+    const page = {
+      data: [
+        { id: 3, value: 'c' },
+        { id: 4, value: 'd' },
+      ],
+    };
+
+    const result = defaultMerge(prev, page);
+
+    expect(result).toEqual({
+      data: [
+        { id: 1, value: 'a' },
+        { id: 2, value: 'b' },
+        { id: 3, value: 'c' },
+        { id: 4, value: 'd' },
+      ],
+    });
+  });
+
+  it('Handles cases where the page contains no data.', () => {
+    const prev = { data: [1, 2, 3] };
+    const page = { data: [] };
+
+    const result = defaultMerge(prev, page);
+
+    expect(result).toEqual({ data: [1, 2, 3] });
+  });
+
+  it('Handles when both prev and page are null.', () => {
+    const prev = null;
+    const page = null;
+
+    const result = defaultMerge(prev, page);
+
+    expect(result).toEqual(null);
   });
 });

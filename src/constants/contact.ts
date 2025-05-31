@@ -1,6 +1,6 @@
 import { isEmail, maxLength, required } from '@util/validators';
 
-export const defaultError = 'Something went wrong! Please try again.';
+export const defaultContactError = 'Something went wrong! Please try again.';
 
 export const initialContactValues = {
   email: '',

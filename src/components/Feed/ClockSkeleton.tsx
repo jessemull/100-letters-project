@@ -7,7 +7,7 @@ const ClockSkeleton = () => {
   const [scale, setScale] = useState(1);
 
   useEffect(() => {
-    function handleResize() {
+    const handleResize = () => {
       const width = window.innerWidth;
       if (width >= 438) {
         setScale(1);
@@ -16,7 +16,7 @@ const ClockSkeleton = () => {
         const newScale = Math.max(minScale, width / 438);
         setScale(newScale);
       }
-    }
+    };
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);

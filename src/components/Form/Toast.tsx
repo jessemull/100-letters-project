@@ -1,8 +1,7 @@
 import React from 'react';
+import { ToastType } from '@ts-types/form';
 import { X, OctagonAlert, CircleCheckBig } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-
-type ToastType = 'success' | 'error';
 
 const showToast = ({ type, message }: { type: ToastType; message: string }) => {
   toast.custom((t) => (

@@ -1,14 +1,10 @@
 'use client';
 
-import React, { useState, useMemo, useEffect, useRef } from 'react';
 import Progress from './Progress';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
+import { Option } from '@ts-types/form';
 
-interface Option {
-  label: string;
-  value: string;
-}
-
-interface AutoSelectProps {
+interface Props {
   errors?: string | string[];
   id: string;
   label?: string;
@@ -19,7 +15,7 @@ interface AutoSelectProps {
   value: string;
 }
 
-const AutoSelect: React.FC<AutoSelectProps> = ({
+const AutoSelect: React.FC<Props> = ({
   errors,
   id,
   label,

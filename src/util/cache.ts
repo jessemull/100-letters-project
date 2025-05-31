@@ -408,3 +408,16 @@ export const deleteRecipientUpdate = ({
     ),
   };
 };
+
+export const defaultMerge = <T>(prev: unknown | null, page: unknown): T => {
+  if (!prev) {
+    return page as T;
+  }
+  return {
+    ...(page as T),
+    data: [
+      ...(prev as { data: unknown[] }).data,
+      ...(page as { data: unknown[] }).data,
+    ],
+  } as T;
+};

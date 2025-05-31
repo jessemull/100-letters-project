@@ -10,6 +10,7 @@ import React, {
   ReactNode,
 } from 'react';
 import { Amplify } from 'aws-amplify';
+import { AuthContextType } from '@ts-types/context';
 import { showToast } from '@components/Form';
 import {
   getCurrentUser,
@@ -18,6 +19,7 @@ import {
   signOut as amplifySignOut,
 } from '@aws-amplify/auth';
 import { useRouter } from 'next/navigation';
+import { authCookieKey, defaultAuthError } from '@constants/context';
 
 Amplify.configure({
   Auth: {
@@ -28,21 +30,6 @@ Amplify.configure({
     },
   },
 });
-
-const COOKIE_KEY = '100_letters_cognito_access_token';
-const DEFAULT_ERROR_MESSAGE = 'Error signing in. Please try again.';
-
-export interface AuthContextType {
-  isLoggedIn: boolean;
-  loading: boolean;
-  signIn: (
-    username: string,
-    password: string,
-  ) => Promise<{ isSignedIn: boolean }>;
-  signOut: () => void;
-  token: string | null;
-  user: any | null;
-}
 
 export const defaultSignIn = async () => ({ isSignedIn: false });
 export const defaultSignOut = () => {};
@@ -68,7 +55,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsLoggedIn(false);
     setUser(null);
     setToken(null);
-    cookies.remove(COOKIE_KEY);
+    cookies.remove(authCookieKey);
   };
 
   const getAccessToken = useCallback(async (): Promise<string | null> => {
@@ -89,7 +76,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(currentUser);
       setToken(accessToken);
       setIsLoggedIn(true);
-      cookies.set(COOKIE_KEY, accessToken, {
+      cookies.set(authCookieKey, accessToken, {
         expires: 1,
         secure: true,
         sameSite: 'Strict',
@@ -112,7 +99,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const { isSignedIn } = await amplifySignIn({ username, password });
     if (!isSignedIn) {
       resetAuthState();
-      throw new Error(DEFAULT_ERROR_MESSAGE);
+      throw new Error(defaultAuthError);
     }
     await initializeSession();
     return { isSignedIn };
@@ -135,7 +122,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
           if (newToken !== token) {
             setToken(newToken);
-            cookies.set(COOKIE_KEY, newToken, {
+            cookies.set(authCookieKey, newToken, {
               expires: 1,
               secure: true,
               sameSite: 'Strict',

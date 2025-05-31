@@ -51,7 +51,7 @@ describe('throttle', () => {
     expect(fn).toHaveBeenCalledWith('d');
   });
 
-  it('Should only call the function once within the limit time.', () => {
+  it('Should only call throttle once within the limit time.', () => {
     const fn = jest.fn();
     const throttled = throttle(fn, 500);
 

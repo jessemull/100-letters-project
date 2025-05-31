@@ -9,7 +9,7 @@ import {
 } from '@ts-types/contact';
 import { LazyRecaptcha } from '@components/Contact';
 import {
-  defaultError,
+  defaultContactError,
   initialContactValues,
   contactValidators,
 } from '@constants/contact';
@@ -39,7 +39,7 @@ const Contact = () => {
     method: 'POST',
     path: '/contact',
     onError: () => {
-      setError(defaultError);
+      setError(defaultContactError);
     },
     onSuccess: () => {
       setSuccess(true);
@@ -63,7 +63,7 @@ const Contact = () => {
         });
         /* eslint-disable-next-line unused-imports/no-unused-vars */
       } catch (e) {
-        setError(defaultError);
+        setError(defaultContactError);
       }
     });
   };

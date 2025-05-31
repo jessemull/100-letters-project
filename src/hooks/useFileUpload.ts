@@ -5,12 +5,7 @@ import {
   SignedURL,
   SignedURLResponse,
 } from '@ts-types/uploads';
-import {
-  Letter,
-  LetterFormResponse,
-  LetterMimeType,
-  View,
-} from '@ts-types/letter';
+import { Letter, LetterFormResponse, LetterMimeType } from '@ts-types/letter';
 import {
   correspondenceByIdLetterUpdate,
   correspondencesLetterUpdate,
@@ -20,15 +15,14 @@ import {
 import { formatLetterDates } from '@util/letter';
 import { useSWRMutation } from './useSWRMutation';
 import { useState } from 'react';
+import { UseFileUpload } from '@ts-types/hooks';
 
-export interface UseFileUpload {
-  caption?: string;
-  letter: Letter;
-  token: string | null;
-  view: View;
-}
-
-export function useFileUpload({ caption, letter, token, view }: UseFileUpload) {
+export const useFileUpload = ({
+  caption,
+  letter,
+  token,
+  view,
+}: UseFileUpload) => {
   const [error, setError] = useState<string>('');
   const [isUploading, setIsUploading] = useState(false);
 
@@ -142,13 +136,13 @@ export function useFileUpload({ caption, letter, token, view }: UseFileUpload) {
         message,
         imageURL: newImageURL,
       };
-    } catch (error) {
+    } catch (err) {
       let message = 'File upload error!';
 
-      if (error instanceof Error) {
-        message = error.message;
-      } else if (typeof error === 'string') {
-        message = error;
+      if (err instanceof Error) {
+        message = err.message;
+      } else if (typeof err === 'string') {
+        message = err;
       }
 
       setError(message);
@@ -161,4 +155,4 @@ export function useFileUpload({ caption, letter, token, view }: UseFileUpload) {
     isUploading,
     uploadFile,
   };
-}
+};

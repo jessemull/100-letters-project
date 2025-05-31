@@ -8,21 +8,19 @@ import {
   SearchAllItem,
   SearchOptions,
   SearchResult,
-  SearchType,
 } from '@ts-types/search';
+import { FuseMap } from '@ts-types/hooks';
 import { useState, useEffect, useMemo } from 'react';
 
-type FuseMap = Record<SearchType, Fuse<any>>;
-
-export function useSearch({
+export const useSearch = ({
   type,
   term,
   limit = 100,
-}: SearchOptions): SearchResult[] {
+}: SearchOptions): SearchResult[] => {
   const [fuseMap, setFuseMap] = useState<FuseMap | null>(null);
 
   useEffect(() => {
-    async function loadSearchData() {
+    const loadSearchData = async () => {
       const dataModule = await import('@public/data/data.json');
       const searchIndexModule = await import('@public/data/search.json');
 
@@ -66,7 +64,7 @@ export function useSearch({
       });
 
       setFuseMap({ all, correspondences, recipients, letters });
-    }
+    };
 
     loadSearchData();
   }, []);
@@ -84,4 +82,4 @@ export function useSearch({
   }, [type, term, limit, fuseMap]);
 
   return results;
-}
+};

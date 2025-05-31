@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
+import { ButtonVariant } from '@ts-types/form';
 import { Progress } from '@components/Form';
-
-type ButtonVariant = 'default' | 'light' | 'outline';
 
 interface ButtonProps {
   disabled?: boolean;

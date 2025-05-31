@@ -1,14 +1,10 @@
 'use client';
 
+import { DesktopMenuContextType } from '@ts-types/context';
 import { createContext, useContext, useState } from 'react';
 
-type DesktopMenuProvider = {
-  collapsed: boolean;
-  setCollapsed: (value: boolean) => void;
-};
-
 export const DesktopMenuContext = createContext<
-  DesktopMenuProvider | undefined
+  DesktopMenuContextType | undefined
 >(undefined);
 
 export const DesktopMenuProvider = ({

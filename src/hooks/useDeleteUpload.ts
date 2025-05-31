@@ -13,7 +13,7 @@ import { formatLetterDates } from '@util/letter';
 import { useSWRMutation } from './useSWRMutation';
 import { useState } from 'react';
 
-export function useDeleteUpload({ letter, token }: UseDeleteUpload) {
+export const useDeleteUpload = ({ letter, token }: UseDeleteUpload) => {
   const [error, setError] = useState<string>('');
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -82,13 +82,13 @@ export function useDeleteUpload({ letter, token }: UseDeleteUpload) {
         message,
         imageURLs,
       };
-    } catch (error) {
+    } catch (err) {
       let message = 'File upload error!';
 
-      if (error instanceof Error) {
-        message = error.message;
-      } else if (typeof error === 'string') {
-        message = error;
+      if (err instanceof Error) {
+        message = err.message;
+      } else if (typeof err === 'string') {
+        message = err;
       }
 
       setError(message);
@@ -101,4 +101,4 @@ export function useDeleteUpload({ letter, token }: UseDeleteUpload) {
     isDeleting,
     deleteFile,
   };
-}
+};

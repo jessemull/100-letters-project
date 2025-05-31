@@ -1,57 +1,15 @@
 'use client';
 
+import { MutateArgs, UseAuthorizedMutationOptions } from '@ts-types/hooks';
 import { mutate as globalMutate } from 'swr';
 import { useRouter } from 'next/navigation';
 import { useState, useCallback, useEffect } from 'react';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
-type Method = 'POST' | 'PUT' | 'DELETE';
-
-interface Cache<Body, Params, Response = unknown> {
-  key: string;
-  onUpdate?: (args: {
-    key: string;
-    prev: unknown;
-    body?: Body;
-    params?: Params;
-    response?: Response;
-  }) => unknown;
-}
-
-interface UseAuthorizedMutationOptions<Body, Response, Params> {
-  cache?: Cache<Body, Params, Response>[];
-  method?: Method;
-  token?: string | null;
-  path?: string;
-  url?: string;
-  onError?: (args: {
-    error: string;
-    status?: number;
-    info?: any;
-    path: string;
-    body?: Body;
-    params?: Params;
-  }) => void;
-  onSuccess?: (args: {
-    response: Response;
-    path: string;
-    body?: Body;
-    params?: Params;
-  }) => void;
-}
-
-interface MutateArgs<Body, Params> {
-  path?: string;
-  body?: Body;
-  params?: Params;
-  headers?: HeadersInit;
-  url?: string;
-}
-
-export function useSWRMutation<Body, Response = unknown, Params = unknown>(
+export const useSWRMutation = <Body, Response = unknown, Params = unknown>(
   options: UseAuthorizedMutationOptions<Body, Response, Params>,
-) {
+) => {
   const {
     cache,
     method = 'POST',
@@ -203,4 +161,4 @@ export function useSWRMutation<Body, Response = unknown, Params = unknown>(
   );
 
   return { error, isLoading, mutate, response };
-}
+};

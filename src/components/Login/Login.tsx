@@ -4,28 +4,14 @@ import React, { useEffect, useState } from 'react';
 import { Button, TextInput } from '@components/Form';
 import { Eye, EyeOff, User, Lock } from 'lucide-react';
 import { LoginForm } from '@ts-types/login';
-import { maxLength, required } from '@util/validators';
+import {
+  defaultLoginError,
+  initialLoginValues,
+  loginValidators,
+} from '@constants/login';
 import { useAuth } from '@contexts/AuthProvider';
 import { useForm } from '@hooks/useForm';
 import { useRouter } from 'next/navigation';
-
-const DEFAULT_ERROR_MESSAGE = 'Error signing in. Please try again.';
-
-const initial = {
-  password: '',
-  username: '',
-};
-
-const validators = {
-  password: [
-    required('Please enter a password'),
-    maxLength(150, 'Maximum password length exceeded'),
-  ],
-  username: [
-    required('Please enter a user name'),
-    maxLength(150, 'Maximum user name length exceeded'),
-  ],
-};
 
 const Login = () => {
   const [networkError, setNetworkError] = useState('');
@@ -43,7 +29,10 @@ const Login = () => {
     onSubmit,
     updateField,
     values,
-  } = useForm<LoginForm>({ initial, validators });
+  } = useForm<LoginForm>({
+    initial: initialLoginValues,
+    validators: loginValidators,
+  });
 
   useEffect(() => {
     setNetworkError('');
@@ -62,7 +51,7 @@ const Login = () => {
         await signIn(username, password);
         router.push('/');
       } catch (error) {
-        const msg = (error as Error).message || DEFAULT_ERROR_MESSAGE;
+        const msg = (error as Error).message || defaultLoginError;
         setNetworkError(msg);
       } finally {
         setLoading(false);

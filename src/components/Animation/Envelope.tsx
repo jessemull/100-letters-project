@@ -2,18 +2,12 @@
 
 import { AnimatePresence, motion } from 'framer-motion';
 import { Heart } from '@components/Animation';
+import { heartsConfig } from '@constants/animation';
 import { useState, useEffect, useMemo } from 'react';
 
 interface EnvelopeProps {
   width?: number;
 }
-
-const heartsConfig = [
-  { delay: 1.5, baseOffsetY: 0.15, baseSize: 24 },
-  { delay: 0, baseOffsetY: 0.4, baseSize: 32 },
-  { delay: 2, baseOffsetY: 0.05, baseSize: 36 },
-  { delay: 1, baseOffsetY: 0.25, baseSize: 24 },
-];
 
 const Envelope: React.FC<EnvelopeProps> = ({ width }) => {
   const [flapZIndex, setFlapZIndex] = useState(30);
