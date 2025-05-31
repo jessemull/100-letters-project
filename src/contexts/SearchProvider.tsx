@@ -1,6 +1,6 @@
 'use client';
 
-import searchIndex from '@public/search.json';
+import searchIndex from '@public/data/search.json';
 import {
   CorrespondenceSearchItem,
   LetterSearchItem,

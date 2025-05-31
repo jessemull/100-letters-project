@@ -53,8 +53,8 @@ jobs:
         with:
           name: public-json
           path: |
-            public/data.json
-            public/search.json
+            public/data/data.json
+            public/data/search.json
           retention-days: 1
 
   lint:
@@ -97,7 +97,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: public-json
-          path: public
+          path: public/data
 
       - name: Run Jest Tests
         run: npm run test
@@ -137,7 +137,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: public-json
-          path: public
+          path: public/data
 
       - name: Start Next.js Server Locally
         run: |

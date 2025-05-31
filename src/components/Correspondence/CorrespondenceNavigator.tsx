@@ -115,7 +115,7 @@ const CorrespondenceNavigator = () => {
               }}
               role="button"
               tabIndex={0}
-              src={selectedImage?.url || '/missing.jpg'}
+              src={selectedImage?.url || '/images/alt-image.jpg'}
               alt="Selected letter"
               fill
               className="object-cover cursor-pointer outline-none"

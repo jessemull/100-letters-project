@@ -3,7 +3,7 @@ import { act, waitFor } from '@testing-library/react';
 import { renderHook } from '@testing-library/react';
 import { useSearch } from '@hooks/useSearch';
 
-jest.mock('@public/data.json', () => ({
+jest.mock('@public/data/data.json', () => ({
   correspondences: [
     {
       id: 'c1',
@@ -25,7 +25,7 @@ jest.mock('@public/data.json', () => ({
   ],
 }));
 
-jest.mock('@public/search.json', () => ({
+jest.mock('@public/data/search.json', () => ({
   correspondences: [
     { id: 'c1', title: 'First Correspondence' },
     { id: 'c2', title: 'Second Correspondence' },

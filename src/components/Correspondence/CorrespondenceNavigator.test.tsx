@@ -161,7 +161,7 @@ describe('CorrespondenceNavigator Component', () => {
     );
   });
 
-  it('Falls back to /missing.jpg if selected image is undefined.', () => {
+  it('Falls back to /images/alt-image.jpg if selected image is undefined.', () => {
     const noImageCorrespondence = {
       letters: [{ letterId: 'a', imageURLs: [] }],
     };
@@ -173,7 +173,7 @@ describe('CorrespondenceNavigator Component', () => {
     render(<CorrespondenceNavigator />);
     expect(screen.getByAltText('Selected letter')).toHaveAttribute(
       'src',
-      '/_next/image?url=%2Fmissing.jpg&w=3840&q=75',
+      '/_next/image?url=%2Fimages%2Falt-image.jpg&w=3840&q=75',
     );
   });
 
