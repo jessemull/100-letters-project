@@ -1,8 +1,6 @@
-// __tests__/Feed.test.tsx
-
 import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
-import Feed from '@components/Feed/Feed'; // Adjust path based on your structure
+import Feed from '@components/Feed/Feed';
 import { useSearch } from '@hooks/useSearch';
 import { axe } from 'jest-axe';
 

@@ -36,7 +36,6 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => {
             justify-center lg:justify-start
             items-center lg:items-stretch
             p-4 sm:p-6 lg:p-0 md:p-8
-            min-h-[calc(100vh-56px-56px-32px)]
             sm:min-h-[calc(100vh-56px-56px-24px)]
             min-h-[calc(100vh-56px-56px-16px)]
           `}

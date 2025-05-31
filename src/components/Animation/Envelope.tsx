@@ -99,11 +99,10 @@ const Envelope: React.FC<EnvelopeProps> = ({ width }) => {
 
         {showLetter && (
           <motion.div
-            className="absolute bg-white border shadow-lg rounded-md flex items-center justify-center z-10"
+            className="top-[30%] absolute bg-white border shadow-lg rounded-md flex items-center justify-center z-10"
             style={{
               width: `${size.width * 0.7}px`,
               height: `${size.height * 0.6}px`,
-              top: '30%',
             }}
             initial={{ y: 0, opacity: 0 }}
             animate={{

@@ -7,10 +7,7 @@ interface Props {
 }
 
 const Digit: React.FC<Props> = ({ digit }) => (
-  <span
-    className="inline-block w-8 h-12 rounded bg-white/10 border border-white/15 text-white font-merriweather font-semibold text-2xl overflow-hidden"
-    style={{ lineHeight: '48px' }}
-  >
+  <span className="inline-block w-8 h-12 rounded bg-white/10 border border-white/15 text-white font-merriweather font-semibold text-2xl overflow-hidden leading-[48px]">
     <span
       className="transition-transform duration-300 ease-in-out block"
       style={{
@@ -20,7 +17,8 @@ const Digit: React.FC<Props> = ({ digit }) => (
       {[...Array(10).keys()].map((n) => (
         <div
           key={n}
-          style={{ height: '3rem', lineHeight: '3rem', textAlign: 'center' }}
+          className="h-12 leading-12 text-center"
+          style={{ lineHeight: '3rem' }}
         >
           {n}
         </div>

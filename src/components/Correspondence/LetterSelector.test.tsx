@@ -35,7 +35,7 @@ describe('LetterSelector Component', () => {
 
   beforeAll(() => {
     Element.prototype.scrollIntoView = jest.fn();
-    Element.prototype.scrollTo = jest.fn(); // ← Add this line
+    Element.prototype.scrollTo = jest.fn();
   });
 
   beforeEach(() => {
@@ -54,9 +54,9 @@ describe('LetterSelector Component', () => {
     const sentDate = new Date('2023-01-01').toLocaleDateString('en-US');
     const receivedDate = new Date('2023-02-01').toLocaleDateString('en-US');
 
-    expect(screen.getByText(sentDate)).toBeInTheDocument(); // sentAt
-    expect(screen.getByText(receivedDate)).toBeInTheDocument(); // receivedAt
-    expect(screen.getByText('No Date')).toBeInTheDocument(); // neither
+    expect(screen.getByText(sentDate)).toBeInTheDocument();
+    expect(screen.getByText(receivedDate)).toBeInTheDocument();
+    expect(screen.getByText('No Date')).toBeInTheDocument();
   });
 
   it('Highlights the selected letter.', () => {
@@ -87,7 +87,7 @@ describe('LetterSelector Component', () => {
       <LetterSelector letters={letters} selected={1} onSelect={mockOnSelect} />,
     );
 
-    const upButton = screen.getAllByRole('button')[0]; // First button is the up arrow
+    const upButton = screen.getAllByRole('button')[0];
     fireEvent.click(upButton);
     expect(mockOnSelect).toHaveBeenCalledWith(0);
   });

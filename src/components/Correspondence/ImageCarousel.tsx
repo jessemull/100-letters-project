@@ -1,4 +1,3 @@
-// src/components/Correspondence/ImageCarousel.tsx
 import Image from 'next/image';
 import React, { useRef } from 'react';
 import { Letter, LetterImage } from '@ts-types/letter';
