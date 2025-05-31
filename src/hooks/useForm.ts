@@ -1,5 +1,3 @@
-import { useState, useMemo } from 'react';
-import { get, set, flattenValidators } from '@util/form';
 import {
   DeepKeys,
   DeepValue,
@@ -8,6 +6,8 @@ import {
   NestedValidatorObject,
   Validator,
 } from '@ts-types/form';
+import { get, set, flattenValidators } from '@util/form';
+import { useState, useMemo } from 'react';
 
 export function useForm<T extends FormData>({
   initial,

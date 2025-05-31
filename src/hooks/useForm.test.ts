@@ -1,10 +1,10 @@
+import { Validator } from '@ts-types/form';
 import { renderHook, act } from '@testing-library/react';
 import { useForm } from '@hooks/useForm';
-import { Validator } from '@ts-types/form';
 
 type TestForm = {
-  email: string;
   age: number;
+  email: string;
 };
 
 const required: Validator = (value) => (value ? null : 'Required');

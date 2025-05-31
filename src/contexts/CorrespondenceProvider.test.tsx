@@ -10,6 +10,7 @@ import { render, screen } from '@testing-library/react';
 
 const mockCorrespondences: Correspondence[] =
   CorrespondenceFactory.buildList(2);
+
 const mockCorrespondencesById = mockCorrespondences.reduce(
   (acc, correspondence) => {
     acc[correspondence.correspondenceId] = correspondence;
@@ -17,6 +18,7 @@ const mockCorrespondencesById = mockCorrespondences.reduce(
   },
   {} as CorrespondencesMap,
 );
+
 const mockDate = new Date().toISOString();
 
 const TestComponent = () => {

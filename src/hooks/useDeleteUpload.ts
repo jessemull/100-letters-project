@@ -1,5 +1,6 @@
 'use client';
 
+import { DeleteFile, UseDeleteUpload } from '@ts-types/hooks';
 import { FileUploadResponse } from '@ts-types/uploads';
 import { Letter, LetterFormResponse, LetterImage } from '@ts-types/letter';
 import {
@@ -11,15 +12,6 @@ import {
 import { formatLetterDates } from '@util/letter';
 import { useSWRMutation } from './useSWRMutation';
 import { useState } from 'react';
-
-export interface UseDeleteUpload {
-  letter: Letter;
-  token: string | null;
-}
-
-export interface DeleteFile {
-  imageId: string;
-}
 
 export function useDeleteUpload({ letter, token }: UseDeleteUpload) {
   const [error, setError] = useState<string>('');

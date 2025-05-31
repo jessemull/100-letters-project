@@ -1,6 +1,6 @@
-import { renderHook, act } from '@testing-library/react';
-import { defaultMerge, useSWRQuery } from '@hooks/useSWRQuery';
 import useSWR from 'swr';
+import { defaultMerge, useSWRQuery } from '@hooks/useSWRQuery';
+import { renderHook, act } from '@testing-library/react';
 
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn().mockReturnValue({
@@ -258,7 +258,7 @@ describe('useSWRQuery', () => {
     });
   });
 
-  it('Sets unauthorized to true on 401 error', async () => {
+  it('Sets unauthorized to true on 401 error.', async () => {
     const unauthorizedResponse = {
       ok: false,
       status: 401,
@@ -320,7 +320,7 @@ describe('useSWRQuery', () => {
 });
 
 describe('defaultMerge', () => {
-  it('Returns the page when prev is null', () => {
+  it('Returns the page when prev is null.', () => {
     const prev = null;
     const page = { data: [1, 2, 3] };
 
@@ -329,7 +329,7 @@ describe('defaultMerge', () => {
     expect(result).toEqual(page);
   });
 
-  it('Merges data when prev contains empty data array', () => {
+  it('Merges data when prev contains empty data array.', () => {
     const prev = { data: [] };
     const page = { data: [1, 2, 3] };
 
@@ -338,7 +338,7 @@ describe('defaultMerge', () => {
     expect(result).toEqual({ data: [1, 2, 3] });
   });
 
-  it('Merges data when prev contains data and page contains additional data', () => {
+  it('Merges data when prev contains data and page contains additional data.', () => {
     const prev = { data: [1, 2] };
     const page = { data: [3, 4, 5] };
 
@@ -347,7 +347,7 @@ describe('defaultMerge', () => {
     expect(result).toEqual({ data: [1, 2, 3, 4, 5] });
   });
 
-  it('Merges nested data correctly when prev and page have nested data arrays', () => {
+  it('Merges nested data correctly when prev and page have nested data arrays.', () => {
     const prev = {
       data: [
         { id: 1, value: 'a' },
@@ -373,7 +373,7 @@ describe('defaultMerge', () => {
     });
   });
 
-  it('Handles cases where the page contains no data', () => {
+  it('Handles cases where the page contains no data.', () => {
     const prev = { data: [1, 2, 3] };
     const page = { data: [] };
 
@@ -382,7 +382,7 @@ describe('defaultMerge', () => {
     expect(result).toEqual({ data: [1, 2, 3] });
   });
 
-  it('Handles when both prev and page are null', () => {
+  it('Handles when both prev and page are null.', () => {
     const prev = null;
     const page = null;
 

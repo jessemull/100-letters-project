@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { mutate as globalMutate } from 'swr';
+import { useRouter } from 'next/navigation';
+import { useState, useCallback, useEffect } from 'react';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
