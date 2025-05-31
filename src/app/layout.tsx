@@ -18,7 +18,6 @@ const merriweather = Merriweather({
 const correspondences = data.correspondences ?? [];
 const correspondencesById = data.correspondencesById ?? {};
 const earliestSentAtDate = data.earliestSentAtDate ?? '';
-const responseCompletion = data.responseCompletion ?? 0;
 
 export const metadata = {
   alternates: {
@@ -82,7 +81,6 @@ const RootLayout: React.FC<Props> = ({ children }) => {
               correspondences={correspondences as Correspondence[]}
               correspondencesById={correspondencesById as CorrespondencesMap}
               earliestSentAtDate={earliestSentAtDate as string}
-              responseCompletion={responseCompletion as number}
             >
               {children}
             </CorrespondenceProvider>

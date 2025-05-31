@@ -59,7 +59,6 @@ describe('Splash Component', () => {
       { correspondenceId: '4', title: 'Letter 4' },
     ],
     earliestSentAtDate: new Date().toISOString(),
-    responseCompletion: 0.825,
   };
 
   it('Renders header and correct stats.', async () => {

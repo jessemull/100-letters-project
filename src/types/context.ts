@@ -21,7 +21,6 @@ export type CorrespondenceContextType = {
   correspondences: Correspondence[];
   correspondencesById: CorrespondencesMap;
   earliestSentAtDate: string;
-  responseCompletion: number;
 };
 
 export type DesktopMenuContextType = {

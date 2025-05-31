@@ -7,7 +7,6 @@ export const CorrespondenceContext = createContext<CorrespondenceContextType>({
   correspondences: [],
   correspondencesById: {},
   earliestSentAtDate: '',
-  responseCompletion: 0.0,
 });
 
 export const CorrespondenceProvider = ({
@@ -15,7 +14,6 @@ export const CorrespondenceProvider = ({
   correspondences,
   correspondencesById,
   earliestSentAtDate,
-  responseCompletion,
 }: { children: ReactNode } & CorrespondenceContextType) => {
   return (
     <CorrespondenceContext.Provider
@@ -23,7 +21,6 @@ export const CorrespondenceProvider = ({
         correspondences,
         correspondencesById,
         earliestSentAtDate,
-        responseCompletion,
       }}
     >
       {children}

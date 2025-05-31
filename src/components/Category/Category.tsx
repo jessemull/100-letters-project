@@ -60,7 +60,7 @@ const Category = () => {
           value={term}
         />
         {showCategoryHeader && (
-          <h2 className="text-3xl md:text-4xl font-bold">
+          <h2 className="text-2xl md:text-3xl font-semibold text-center">
             Explore {titleCase(category)} Letters
           </h2>
         )}
