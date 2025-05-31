@@ -48,7 +48,7 @@ describe('ClockSkeleton Component', () => {
 
     const { container } = render(<ClockSkeleton />);
     const root = container.firstChild as HTMLElement;
-    const expectedScale = Math.max(0.6, 300 / 438).toFixed(5); // precision match
+    const expectedScale = Math.max(0.6, 300 / 438).toFixed(5);
     expect(root.style.transform).toContain(`scale(${expectedScale}`);
   });
 
@@ -57,7 +57,7 @@ describe('ClockSkeleton Component', () => {
     const root = container.firstChild as HTMLElement;
 
     act(() => {
-      resizeWindow(400); // triggers scale change
+      resizeWindow(400);
     });
 
     const expectedScale = Math.max(0.6, 400 / 438).toFixed(5);

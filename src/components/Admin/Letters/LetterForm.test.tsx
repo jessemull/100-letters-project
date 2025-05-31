@@ -741,9 +741,6 @@ describe('LetterForm', () => {
     await act(async () => {
       fireEvent.click(screen.getByRole('button', { name: 'Upload Image +' }));
     });
-
-    // Optionally wait for UI update after upload
-    // expect(await screen.findByText('Uploaded!')).toBeInTheDocument();
   });
 
   it('Should handle file upload errors.', async () => {

@@ -33,7 +33,7 @@ describe('calculateCountdown', () => {
   });
 
   it('Calculates correct days/hours/minutes/seconds.', () => {
-    const target = new Date('2025-05-19T01:02:03Z'); // +1d 1h 2m 3s
+    const target = new Date('2025-05-19T01:02:03Z');
     expect(calculateCountdown(target)).toEqual({
       days: 1,
       hours: 1,
