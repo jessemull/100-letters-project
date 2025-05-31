@@ -16,6 +16,7 @@ jest.mock('@components/Feed', () => ({
       {correspondence.title}
     </div>
   ),
+  Categories: () => <div data-testid="categories">Categories</div>,
 }));
 
 jest.mock('@components/Form', () => ({
