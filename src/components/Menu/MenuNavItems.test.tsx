@@ -35,25 +35,6 @@ describe('MenuNavItems Component', () => {
     expect(screen.getByText('Home')).toBeInTheDocument();
   });
 
-  // it('Renders only icons when collapsed is true.', () => {
-  //   render(
-  //     <MenuNavItems
-  //       isLoggedIn={true}
-  //       handleLogout={handleLogout}
-  //       collapsed={true}
-  //       onNavigate={jest.fn()}
-  //     />,
-  //   );
-
-  //   expect(screen.queryByText('Home')).not.toBeInTheDocument();
-  //   expect(screen.queryByText('About')).not.toBeInTheDocument();
-  //   expect(screen.queryByText('Contact')).not.toBeInTheDocument();
-  //   expect(screen.queryByText('Admin')).not.toBeInTheDocument();
-  //   expect(screen.queryByText('Logout')).not.toBeInTheDocument();
-  //   expect(screen.queryByText('Home')).not.toBeInTheDocument();
-  //   expect(screen.queryByText('Logout')).not.toBeInTheDocument();
-  // });
-
   it('Has no accessibility violations.', async () => {
     const { container } = render(
       <MenuNavItems
