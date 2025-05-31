@@ -2,6 +2,7 @@ export * from './contact';
 export * from './correspondence';
 export * from './feed';
 export * from './form';
+export * from './hooks';
 export * from './letter';
 export * from './login';
 export * from './recipients';
