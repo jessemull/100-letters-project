@@ -2,6 +2,7 @@
 
 import ClockSkeleton from './ClockSkeleton';
 import React, { act } from 'react';
+import { axe } from 'jest-axe';
 import { render, screen } from '@testing-library/react';
 
 describe('ClockSkeleton Component', () => {
@@ -79,5 +80,11 @@ describe('ClockSkeleton Component', () => {
       'resize',
       expect.any(Function),
     );
+  });
+
+  it('Has no accessibility violations.', async () => {
+    const { container } = render(<ClockSkeleton />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

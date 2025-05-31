@@ -1,7 +1,7 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { axe } from 'jest-axe';
 import { Select } from '@components/Form';
+import { axe } from 'jest-axe';
+import { render, screen, fireEvent } from '@testing-library/react';
 
 const handleChangeMock = jest.fn();
 const handleIconStartClick = jest.fn();
@@ -14,7 +14,7 @@ const options = [
 
 const IconMock = ({ ...props }: any) => <svg {...props} />;
 
-describe('Select', () => {
+describe('Select Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });

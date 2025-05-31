@@ -7,16 +7,18 @@ import { useMemo } from 'react';
 const baseClass = 'flex items-center hover:text-gray-400 transition-colors';
 const iconClass = 'h-5 w-5 shrink-0';
 
-const MenuNavItems = ({
-  isLoggedIn,
-  handleLogout,
-  collapsed,
-  onNavigate = () => {},
-}: {
+interface Props {
   isLoggedIn: boolean;
   handleLogout: () => void;
   collapsed: boolean;
   onNavigate?: () => void;
+}
+
+const MenuNavItems: React.FC<Props> = ({
+  collapsed,
+  handleLogout,
+  isLoggedIn,
+  onNavigate = () => {},
 }) => {
   const collapsedClass = useMemo(
     () => (collapsed ? 'justify-center' : 'space-x-3 justify-start'),
@@ -41,7 +43,7 @@ const MenuNavItems = ({
         className={linkClass}
       >
         <Home className={iconClass} />
-        {!collapsed && <span>Home</span>}
+        {!collapsed ? <span>Home</span> : <span className="sr-only">Home</span>}
       </Link>
       <Link
         aria-label="About"
@@ -50,7 +52,11 @@ const MenuNavItems = ({
         className={linkClass}
       >
         <Info className={iconClass} />
-        {!collapsed && <span>About</span>}
+        {!collapsed ? (
+          <span>About</span>
+        ) : (
+          <span className="sr-only">About</span>
+        )}
       </Link>
       <Link
         aria-label="Contact"
@@ -59,7 +65,11 @@ const MenuNavItems = ({
         className={linkClass}
       >
         <Mail className={iconClass} />
-        {!collapsed && <span>Contact</span>}
+        {!collapsed ? (
+          <span>Contact</span>
+        ) : (
+          <span className="sr-only">Contact</span>
+        )}
       </Link>
       {isLoggedIn && (
         <Link
@@ -69,7 +79,11 @@ const MenuNavItems = ({
           className={linkClass}
         >
           <Shield className={iconClass} />
-          {!collapsed && <span>Admin</span>}
+          {!collapsed ? (
+            <span>Admin</span>
+          ) : (
+            <span className="sr-only">Admin</span>
+          )}
         </Link>
       )}
       {isLoggedIn ? (
@@ -79,7 +93,11 @@ const MenuNavItems = ({
           className={`${baseClass} ${collapsed ? 'justify-center' : 'space-x-3 justify-start'}`}
         >
           <LogOut className={iconClass} />
-          {!collapsed && <span>Logout</span>}
+          {!collapsed ? (
+            <span>Logout</span>
+          ) : (
+            <span className="sr-only">Logout</span>
+          )}
         </button>
       ) : (
         <Link
@@ -89,7 +107,11 @@ const MenuNavItems = ({
           className={linkClass}
         >
           <LogIn className={iconClass} />
-          {!collapsed && <span>Login</span>}
+          {!collapsed ? (
+            <span>Login</span>
+          ) : (
+            <span className="sr-only">Login</span>
+          )}
         </Link>
       )}
     </>

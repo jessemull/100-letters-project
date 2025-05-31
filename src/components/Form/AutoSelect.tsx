@@ -89,7 +89,6 @@ const AutoSelect: React.FC<AutoSelectProps> = ({
           {label}
         </label>
       )}
-
       <input
         className="w-full h-12 rounded-full bg-white/25 border border-white text-white text-base placeholder-white/70 focus:outline-none px-4"
         data-testid={id}
@@ -99,7 +98,6 @@ const AutoSelect: React.FC<AutoSelectProps> = ({
         placeholder={placeholder}
         value={inputValue}
       />
-
       {isFocused && (
         <ul className="absolute z-10 w-full bg-white/90 mt-1 rounded-md text-black shadow-lg max-h-60 overflow-auto">
           {loading ? (
@@ -123,7 +121,6 @@ const AutoSelect: React.FC<AutoSelectProps> = ({
           )}
         </ul>
       )}
-
       {errorsArray.length > 0 && (
         <ul className="pl-4 mt-2 list-none text-red-400 text-base">
           {errorsArray.map((error) => (

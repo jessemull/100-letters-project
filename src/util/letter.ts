@@ -18,3 +18,10 @@ export const formatLetterDates = (values: Letter): Letter => {
 
   return formatted;
 };
+
+export const getLetterDate = (letter: Letter) => {
+  if (letter.sentAt) return new Date(letter.sentAt).toLocaleDateString();
+  if (letter.receivedAt)
+    return new Date(letter.receivedAt).toLocaleDateString();
+  return 'No Date';
+};

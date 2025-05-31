@@ -18,7 +18,6 @@ const TextArea: React.FC<TextAreaProps> = ({
   errors,
 }) => {
   const errorsArray = Array.isArray(errors) ? errors : errors ? [errors] : [];
-
   return (
     <div className="relative w-full">
       {label && (

@@ -1,20 +1,24 @@
-import { render, screen, fireEvent } from '@testing-library/react';
 import SearchSection from './SearchSection';
 import { axe } from 'jest-axe';
+import { render, screen, fireEvent } from '@testing-library/react';
 
 interface Item {
   name: string;
 }
 
-describe('SearchSection', () => {
+describe('SearchSection Component', () => {
   const title = 'Test Items';
+
   const allData: Item[] = Array.from({ length: 25 }, (_, i) => ({
     name: `Item ${i + 1}`,
   }));
+
   const results: Item[] = [{ name: 'Result 1' }, { name: 'Result 2' }];
+
   const renderItem = (item: Item) => (
     <span data-testid="list-item">{item.name}</span>
   );
+
   const setTerm = jest.fn();
 
   beforeEach(() => {
@@ -98,22 +102,6 @@ describe('SearchSection', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('Has no accessibility violations.', async () => {
-    const { container } = render(
-      <SearchSection
-        title={title}
-        data={allData}
-        onItemClick={jest.fn()}
-        results={[]}
-        renderItem={renderItem}
-        setTerm={setTerm}
-        term=""
-      />,
-    );
-    const results = await axe(container);
-    expect(results).toHaveNoViolations();
-  });
-
   it('Does not render search input or list when isOpen is false.', () => {
     render(
       <SearchSection
@@ -177,5 +165,21 @@ describe('SearchSection', () => {
 
     expect(onItemClick).toHaveBeenCalledTimes(1);
     expect(onItemClick).toHaveBeenCalledWith(allData[0]);
+  });
+
+  it('Has no accessibility violations.', async () => {
+    const { container } = render(
+      <SearchSection
+        title={title}
+        data={allData}
+        onItemClick={jest.fn()}
+        results={[]}
+        renderItem={renderItem}
+        setTerm={setTerm}
+        term=""
+      />,
+    );
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

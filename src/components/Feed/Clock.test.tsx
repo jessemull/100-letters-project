@@ -1,5 +1,6 @@
 import Clock from '@components/Feed/Clock';
 import React from 'react';
+import { axe } from 'jest-axe';
 import { render, screen, act } from '@testing-library/react';
 
 jest.mock('@components/Feed', () => ({
@@ -51,5 +52,14 @@ describe('Clock Component', () => {
 
     const digits = screen.getAllByText(/\d/);
     expect(digits.length).toBeGreaterThan(0);
+  });
+
+  it('Has no accessibility violations.', async () => {
+    jest.useRealTimers();
+    const { container } = render(
+      <Clock earliestSentAtDate="2020-01-01T00:00:00Z" />,
+    );
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

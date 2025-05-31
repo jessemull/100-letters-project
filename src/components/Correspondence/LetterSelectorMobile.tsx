@@ -1,19 +1,13 @@
 import React, { ChangeEvent } from 'react';
 import { Letter } from '@ts-types/letter';
 import { Select } from '@components/Form';
+import { getLetterDate } from '@util/letter';
 
 interface Props {
   letters: Letter[];
   selected: number;
   onSelect: (index: number) => void;
 }
-
-const getLetterDate = (letter: Letter) => {
-  if (letter.sentAt) return new Date(letter.sentAt).toLocaleDateString();
-  if (letter.receivedAt)
-    return new Date(letter.receivedAt).toLocaleDateString();
-  return 'No Date';
-};
 
 const LetterSelectorMobile: React.FC<Props> = ({
   letters,

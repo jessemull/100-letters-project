@@ -13,7 +13,6 @@ const ImageCarousel: React.FC<Props> = ({ letter, onClick, selected }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { onMouseDown, onMouseMove, onMouseUpOrLeave, shouldCancelClick } =
     useDrag(containerRef as React.RefObject<HTMLDivElement>);
-
   return (
     <div
       ref={containerRef}

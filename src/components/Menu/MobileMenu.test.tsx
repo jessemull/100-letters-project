@@ -78,7 +78,7 @@ jest.mock('next/link', () => {
   return mockLink;
 });
 
-describe('MobileMenu', () => {
+describe('MobileMenu Component', () => {
   const handleLogout = jest.fn(() => Promise.resolve());
   const onClose = jest.fn();
 

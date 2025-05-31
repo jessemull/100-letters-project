@@ -5,7 +5,7 @@ import { ComingSoon } from '@components/ComingSoon';
 import { Envelope } from '@components/Animation';
 import { useResizeDetector } from 'react-resize-detector';
 
-const Feed = () => {
+const About = () => {
   const { width, ref } = useResizeDetector();
   return (
     <div
@@ -20,4 +20,4 @@ const Feed = () => {
   );
 };
 
-export default Feed;
+export default About;

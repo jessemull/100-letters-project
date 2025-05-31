@@ -1,17 +1,17 @@
 'use client';
 
-import { useState, useCallback, useEffect, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
 import useSWR, { mutate as globalMutate, SWRConfiguration } from 'swr';
+import { useRouter } from 'next/navigation';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 interface UseSWRQueryOptions<T> {
-  path: string | null;
-  token: string | null;
   config?: SWRConfiguration;
-  skip?: boolean;
   merge?: (prev: unknown | null, page: unknown) => T;
+  path: string | null;
+  skip?: boolean;
+  token: string | null;
 }
 
 export function defaultMerge<T>(prev: unknown | null, page: unknown) {

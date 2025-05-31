@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
 import { Envelope } from '@components/Animation';
+import { axe } from 'jest-axe';
 import { render, screen, waitFor, act } from '@testing-library/react';
 
 jest.mock('framer-motion', () => ({
@@ -18,7 +19,6 @@ describe('Envelope Component', () => {
   });
 
   afterEach(() => {
-    jest.runOnlyPendingTimers();
     jest.useRealTimers();
   });
 
@@ -36,6 +36,7 @@ describe('Envelope Component', () => {
     });
 
     expect(screen.getByTestId('envelope')).toBeInTheDocument();
+    jest.runOnlyPendingTimers();
   });
 
   it('Triggers animations and renders messages after timeouts', async () => {
@@ -49,6 +50,7 @@ describe('Envelope Component', () => {
       expect(screen.getByTestId('msg-100')).toBeInTheDocument();
       expect(screen.getByTestId('msg-letters')).toBeInTheDocument();
     });
+    jest.runOnlyPendingTimers();
   });
 
   it.each([
@@ -68,11 +70,13 @@ describe('Envelope Component', () => {
 
     const msg = await screen.findByTestId('msg-100');
     expect(msg.parentElement).toHaveClass(expectedClass);
+    jest.runOnlyPendingTimers();
   });
 
   it('Does not render envelope if width is undefined.', () => {
     const { container } = render(<Envelope />);
     expect(container.firstChild).toBeNull();
+    jest.runOnlyPendingTimers();
   });
 
   it('Calculates newWidth as 0.3 * width when width < 768 but >= 640.', async () => {
@@ -85,5 +89,13 @@ describe('Envelope Component', () => {
     const envelope = await screen.findByTestId('envelope');
 
     expect(envelope.firstChild).toHaveStyle({ width: '210px' });
+    jest.runOnlyPendingTimers();
+  });
+
+  it('Has no accessibility violations.', async () => {
+    jest.useRealTimers();
+    const { container } = renderWithWidth(700);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

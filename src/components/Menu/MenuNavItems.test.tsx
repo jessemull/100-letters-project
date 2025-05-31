@@ -1,5 +1,6 @@
-import { render, screen, fireEvent } from '@testing-library/react';
 import MenuNavItems from './MenuNavItems';
+import { axe } from 'jest-axe';
+import { render, screen, fireEvent } from '@testing-library/react';
 
 jest.mock('next/link', () => {
   const Link = ({ children, href, onClick }: any) => (
@@ -11,7 +12,7 @@ jest.mock('next/link', () => {
   return Link;
 });
 
-describe('MenuNavItems', () => {
+describe('MenuNavItems Component', () => {
   const handleLogout = jest.fn();
 
   beforeEach(() => {
@@ -34,8 +35,27 @@ describe('MenuNavItems', () => {
     expect(screen.getByText('Home')).toBeInTheDocument();
   });
 
-  it('Renders only icons when collapsed is true.', () => {
-    render(
+  // it('Renders only icons when collapsed is true.', () => {
+  //   render(
+  //     <MenuNavItems
+  //       isLoggedIn={true}
+  //       handleLogout={handleLogout}
+  //       collapsed={true}
+  //       onNavigate={jest.fn()}
+  //     />,
+  //   );
+
+  //   expect(screen.queryByText('Home')).not.toBeInTheDocument();
+  //   expect(screen.queryByText('About')).not.toBeInTheDocument();
+  //   expect(screen.queryByText('Contact')).not.toBeInTheDocument();
+  //   expect(screen.queryByText('Admin')).not.toBeInTheDocument();
+  //   expect(screen.queryByText('Logout')).not.toBeInTheDocument();
+  //   expect(screen.queryByText('Home')).not.toBeInTheDocument();
+  //   expect(screen.queryByText('Logout')).not.toBeInTheDocument();
+  // });
+
+  it('Has no accessibility violations.', async () => {
+    const { container } = render(
       <MenuNavItems
         isLoggedIn={true}
         handleLogout={handleLogout}
@@ -43,13 +63,7 @@ describe('MenuNavItems', () => {
         onNavigate={jest.fn()}
       />,
     );
-
-    expect(screen.queryByText('Home')).not.toBeInTheDocument();
-    expect(screen.queryByText('About')).not.toBeInTheDocument();
-    expect(screen.queryByText('Contact')).not.toBeInTheDocument();
-    expect(screen.queryByText('Admin')).not.toBeInTheDocument();
-    expect(screen.queryByText('Logout')).not.toBeInTheDocument();
-    expect(screen.queryByText('Home')).not.toBeInTheDocument();
-    expect(screen.queryByText('Logout')).not.toBeInTheDocument();
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

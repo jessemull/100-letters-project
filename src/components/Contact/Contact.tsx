@@ -7,35 +7,13 @@ import {
   ContactFormBody,
   ContactFormResponse,
 } from '@ts-types/contact';
-import { isEmail, maxLength, required } from '@util/validators';
 import { LazyRecaptcha } from '@components/Contact';
+import { defaultError, initialValues, validators } from '@constants/contact';
 import { useForm } from '@hooks/useForm';
 import { useRouter } from 'next/navigation';
 import { useSWRMutation } from '@hooks/useSWRMutation';
 
 const CAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_CAPTCHA_SITE_KEY as string;
-
-const defaultErrorMessage = 'Something went wrong! Please try again.';
-
-const initial = {
-  email: '',
-  firstName: '',
-  lastName: '',
-  message: '',
-};
-
-const validators = {
-  firstName: [required('Please enter a first name')],
-  lastName: [required('Please enter a last name')],
-  email: [
-    required('Please enter an e-mail address'),
-    isEmail('Please enter a valid e-mail address'),
-  ],
-  message: [
-    required('Please enter a message'),
-    maxLength(1500, 'Length must be less than 1500 characters'),
-  ],
-};
 
 const Contact = () => {
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
@@ -45,7 +23,7 @@ const Contact = () => {
   const router = useRouter();
 
   const { errors, isDirty, onSubmit, updateField, values } =
-    useForm<ContactForm>({ initial, validators });
+    useForm<ContactForm>({ initial: initialValues, validators });
 
   const { mutate, isLoading } = useSWRMutation<
     ContactFormBody,
@@ -54,7 +32,7 @@ const Contact = () => {
     method: 'POST',
     path: '/contact',
     onError: () => {
-      setError(defaultErrorMessage);
+      setError(defaultError);
     },
     onSuccess: () => {
       setSuccess(true);
@@ -78,7 +56,7 @@ const Contact = () => {
         });
         /* eslint-disable-next-line unused-imports/no-unused-vars */
       } catch (e) {
-        setError(defaultErrorMessage);
+        setError(defaultError);
       }
     });
   };

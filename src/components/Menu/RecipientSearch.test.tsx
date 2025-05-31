@@ -53,7 +53,7 @@ jest.mock('@components/Menu/SearchSection', () => ({
   default: (props: any) => <MockSearchSection {...props} />,
 }));
 
-describe('RecipientSearch', () => {
+describe('RecipientSearch Component', () => {
   it('Calls router.push with correct query when a recipient is clicked.', () => {
     const pushMock = jest.fn();
     (useRouter as jest.Mock).mockReturnValue({ push: pushMock });
