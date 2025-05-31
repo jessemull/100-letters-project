@@ -2,24 +2,21 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { Card, Categories } from '@components/Feed';
-import { Correspondence } from '@ts-types/correspondence';
+import { CorrespondenceCard } from '@ts-types/correspondence';
 import { Progress } from '@components/Form';
-import { SearchAllItem } from '@ts-types/search';
 import { searchItemsPerPage } from '@constants/feed';
 import { useCorrespondence } from '@contexts/CorrespondenceProvider';
 import { useInView } from 'react-intersection-observer';
 
 interface Props {
-  results: SearchAllItem[];
+  results: CorrespondenceCard[];
   term: string;
 }
 
 const Search: React.FC<Props> = ({ results, term }) => {
   const [page, setPage] = useState(1);
   const [ref, inView] = useInView({ threshold: 0 });
-  const [visibleItems, setVisibleItems] = useState<
-    SearchAllItem[] | Correspondence[]
-  >([]);
+  const [visibleItems, setVisibleItems] = useState<CorrespondenceCard[]>([]);
 
   const { correspondences } = useCorrespondence();
 

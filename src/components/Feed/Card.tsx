@@ -1,12 +1,12 @@
 'use client';
 
 import React from 'react';
-import { Correspondence } from '@ts-types/correspondence';
+import { CorrespondenceCard } from '@ts-types/correspondence';
 import { Image } from '@components/Admin/Letters';
 import { useRouter } from 'next/navigation';
 
 interface Props {
-  correspondence: Correspondence;
+  correspondence: CorrespondenceCard;
   loading?: string;
   priority?: boolean;
 }

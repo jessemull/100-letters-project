@@ -149,7 +149,7 @@ async function authenticateUser() {
     );
 
     const fullNameCorrespondences = correspondences.map((correspondence) => {
-      const recipient = correspondence.recipient || {};
+      const { address, ...recipient } = correspondence.recipient || {};
       return {
         ...correspondence,
         recipient: {
@@ -162,7 +162,15 @@ async function authenticateUser() {
 
     const correspondencesById = correspondences.reduce(
       (acc, correspondence) => {
-        acc[correspondence.correspondenceId] = correspondence;
+        const { address, ...recipient } = correspondence.recipient || {};
+        acc[correspondence.correspondenceId] = {
+          ...correspondence,
+          recipient: {
+            ...recipient,
+            fullName:
+              `${recipient.firstName || ''} ${recipient.lastName || ''}`.trim(),
+          },
+        };
         return acc;
       },
       {},

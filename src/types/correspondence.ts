@@ -132,4 +132,10 @@ export type CreateOrUpdateCorrespondenceInput = {
   letters: LetterUpdateInput[];
 };
 
-export type CorrespondencesMap = { [correspondenceId: string]: Correspondence };
+export type CorrespondencesMap = {
+  [correspondenceId: string]: CorrespondenceCard;
+};
+
+export type CorrespondenceCard = Omit<Correspondence, 'recipient'> & {
+  recipient: Omit<Recipient, 'address'> & { fullName: string };
+};

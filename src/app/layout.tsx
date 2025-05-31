@@ -2,7 +2,10 @@ import './globals.css';
 import Script from 'next/script';
 import data from '@public/data/data.json';
 import { AuthProvider } from '@contexts/AuthProvider';
-import { Correspondence, CorrespondencesMap } from '@ts-types/correspondence';
+import {
+  CorrespondenceCard,
+  CorrespondencesMap,
+} from '@ts-types/correspondence';
 import { CorrespondenceProvider } from '@contexts/CorrespondenceProvider';
 import { DesktopMenuProvider } from '@contexts/DesktopMenuProvider';
 import { Merriweather } from 'next/font/google';
@@ -78,7 +81,7 @@ const RootLayout: React.FC<Props> = ({ children }) => {
         <AuthProvider>
           <DesktopMenuProvider>
             <CorrespondenceProvider
-              correspondences={correspondences as Correspondence[]}
+              correspondences={correspondences as CorrespondenceCard[]}
               correspondencesById={correspondencesById as CorrespondencesMap}
               earliestSentAtDate={earliestSentAtDate as string}
             >
