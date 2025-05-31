@@ -41,7 +41,7 @@ const mockCorrespondence = {
       dateSent: '2025-01-01',
       imageURLs: [
         {
-          urlThumbnail: '/images/thumbnail.jpg',
+          urlThumbnail: '/thumbnail.jpg',
         },
       ],
     },
