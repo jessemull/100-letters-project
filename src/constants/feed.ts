@@ -1,6 +1,6 @@
 export const categories = [
-  { name: 'Celebrities', imageUrl: '/category-celebrities.jpg' },
   { name: 'Comedy', imageUrl: '/category-comedy.jpg' },
+  { name: 'Entertainment', imageUrl: '/category-entertainment.jpg' },
   { name: 'Family', imageUrl: '/category-family.jpg' },
   { name: 'Food', imageUrl: '/category-food.jpg' },
   { name: 'Friends', imageUrl: '/category-friends.jpg' },

@@ -1,7 +1,8 @@
 import Contact from '@components/Contact/Contact';
 import { act, fireEvent, render, screen } from '@testing-library/react';
-import { useRouter } from 'next/navigation';
+import { axe } from 'jest-axe';
 import { useForm } from '@hooks/useForm';
+import { useRouter } from 'next/navigation';
 import { useSWRMutation } from '@hooks/useSWRMutation';
 
 jest.mock('@hooks/useForm', () => ({
@@ -228,5 +229,11 @@ describe('Contact Component', () => {
     expect(
       screen.getByText('Please enter a valid e-mail address'),
     ).toBeInTheDocument();
+  });
+
+  it('Has no accessibility violations.', async () => {
+    const { container } = render(<Contact />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

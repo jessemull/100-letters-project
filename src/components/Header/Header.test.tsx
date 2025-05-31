@@ -76,19 +76,6 @@ describe('Header Component', () => {
     expect(screen.getByTestId('login-icon')).toBeInTheDocument();
   });
 
-  it('Has no accessibility errors.', async () => {
-    (useAuth as jest.Mock).mockReturnValue({
-      isLoggedIn: false,
-      signOut: jest.fn(),
-    });
-
-    await act(async () => {
-      const { container } = render(<Header />);
-      const results = await axe(container);
-      expect(results).toHaveNoViolations();
-    });
-  });
-
   it('Opens menu when the button is clicked (on mobile).', async () => {
     (useAuth as jest.Mock).mockReturnValue({
       isLoggedIn: false,
@@ -179,6 +166,19 @@ describe('Header Component', () => {
 
     await waitFor(() => {
       expect(screen.queryByTestId('mobile-menu')).not.toBeInTheDocument();
+    });
+  });
+
+  it('Has no accessibility errors.', async () => {
+    (useAuth as jest.Mock).mockReturnValue({
+      isLoggedIn: false,
+      signOut: jest.fn(),
+    });
+
+    await act(async () => {
+      const { container } = render(<Header />);
+      const results = await axe(container);
+      expect(results).toHaveNoViolations();
     });
   });
 });

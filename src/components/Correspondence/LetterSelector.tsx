@@ -1,13 +1,7 @@
 import { Letter } from '@ts-types/letter';
 import { StepBack, StepForward } from 'lucide-react';
+import { getLetterDate } from '@util/letter';
 import { useRef, useEffect } from 'react';
-
-const getLetterDate = (letter: Letter) => {
-  if (letter.sentAt) return new Date(letter.sentAt).toLocaleDateString();
-  if (letter.receivedAt)
-    return new Date(letter.receivedAt).toLocaleDateString();
-  return 'No Date';
-};
 
 interface Props {
   letters: Letter[];

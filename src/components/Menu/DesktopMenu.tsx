@@ -10,13 +10,12 @@ import {
 import { useAuth } from '@contexts/AuthProvider';
 import { useEffect, useRef } from 'react';
 
-const DesktopMenu = ({
-  collapsed,
-  setCollapsed,
-}: {
+interface Props {
   collapsed: boolean;
   setCollapsed: (v: boolean) => void;
-}) => {
+}
+
+const DesktopMenu: React.FC<Props> = ({ collapsed, setCollapsed }) => {
   const menuRef = useRef<HTMLDivElement>(null);
   const { isLoggedIn, signOut } = useAuth();
 

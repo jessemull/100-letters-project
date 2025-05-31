@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Description, Dialog, DialogTitle } from '@headlessui/react';
 import { Button } from '@components/Form';
+import { Description, Dialog, DialogTitle } from '@headlessui/react';
 
 interface ConfirmationModalProps {
   cancelText?: string;

@@ -3,7 +3,7 @@
 import { ChevronDown, ChevronUp, Search, X } from 'lucide-react';
 import { useState, ReactNode } from 'react';
 
-interface SearchSectionProps<T> {
+interface Props<T> {
   data: T[];
   onItemClick: (item: T) => void;
   renderItem: (item: T) => ReactNode;
@@ -21,7 +21,7 @@ function SearchSection<T>({
   setTerm,
   term,
   title,
-}: SearchSectionProps<T>) {
+}: Props<T>) {
   const [isOpen, setIsOpen] = useState(true);
   const [itemsToShowCount, setItemsToShowCount] = useState(10);
 

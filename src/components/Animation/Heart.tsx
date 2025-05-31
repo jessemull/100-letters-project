@@ -2,19 +2,14 @@ import React from 'react';
 import { Heart as HeartIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-interface HeartProps {
+interface Props {
   delay: number;
   envelopeHeight: number;
   offsetY: number;
   size: number;
 }
 
-const Heart: React.FC<HeartProps> = ({
-  delay,
-  envelopeHeight,
-  offsetY,
-  size,
-}) => {
+const Heart: React.FC<Props> = ({ delay, envelopeHeight, offsetY, size }) => {
   return (
     <motion.div
       className="z-12"

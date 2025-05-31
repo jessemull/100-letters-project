@@ -14,7 +14,7 @@ jest.mock('react-hot-toast', () => {
   };
 });
 
-describe('showToast', () => {
+describe('Toast Component', () => {
   const mockToastCustom = toast.custom as jest.Mock;
   const mockToastDismiss = toast.dismiss as jest.Mock;
 

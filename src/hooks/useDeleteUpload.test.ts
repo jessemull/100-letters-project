@@ -1,6 +1,6 @@
+import { Letter } from '@ts-types/letter';
 import { renderHook, act } from '@testing-library/react';
 import { useDeleteUpload } from '@hooks/useDeleteUpload';
-import { Letter } from '@ts-types/letter';
 
 jest.mock('@util/letter', () => ({
   formatLetterDates: jest.fn((letter) => letter),

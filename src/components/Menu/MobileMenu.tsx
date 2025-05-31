@@ -1,13 +1,13 @@
 'use client';
 
 import Image from 'next/image';
-import { FC, useEffect, useRef } from 'react';
 import {
   CorrespondenceSearch,
   LetterSearch,
   MenuNavItems,
   RecipientSearch,
 } from '@components/Menu';
+import { FC, useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 import { motion } from 'framer-motion';
 

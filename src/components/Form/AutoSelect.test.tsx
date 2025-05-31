@@ -11,7 +11,7 @@ const options = [
 
 const onChangeMock = jest.fn();
 
-describe('AutoSelect', () => {
+describe('AutoSelect Componentn', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });

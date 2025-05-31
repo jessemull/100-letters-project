@@ -2,7 +2,7 @@ import { TextArea } from '@components/Form';
 import { axe } from 'jest-axe';
 import { render, screen, fireEvent } from '@testing-library/react';
 
-describe('TextArea', () => {
+describe('TextArea Component', () => {
   const handleChangeMock = jest.fn();
 
   beforeEach(() => {

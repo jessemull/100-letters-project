@@ -25,8 +25,8 @@ describe('CorrespondenceNotFound Component', () => {
 
   it('Renders heading and button.', () => {
     render(<CorrespondenceNotFound />);
-
     expect(screen.getByText('Correspondence not found.')).toBeInTheDocument();
+
     const button = screen.getByTestId('go-home');
     expect(button).toBeInTheDocument();
     expect(button).toHaveTextContent('Go Home');

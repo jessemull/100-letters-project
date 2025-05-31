@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { Card, ClockSkeleton, Completion } from '@components/Feed';
 import { Categories } from '@components/Feed';
 import { useCorrespondence } from '@contexts/CorrespondenceProvider';
-import dynamic from 'next/dynamic';
 
 const Clock = dynamic(() => import('@components/Feed/Clock'), {
   ssr: false,

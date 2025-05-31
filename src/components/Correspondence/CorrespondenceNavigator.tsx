@@ -3,6 +3,8 @@
 import Carousel from './ImageCarousel';
 import CorrespondenceDetails from './CorrespondenceDetails';
 import Image from 'next/image';
+import Lightbox from 'yet-another-react-lightbox';
+import Zoom from 'yet-another-react-lightbox/plugins/zoom';
 import { Correspondence } from '@ts-types/correspondence';
 import {
   CorrespondenceNotFound,
@@ -23,8 +25,6 @@ import {
 import { useEffect, useMemo, useState } from 'react';
 import { useCorrespondence } from '@contexts/CorrespondenceProvider';
 import { useSearchParams } from 'next/navigation';
-import Lightbox from 'yet-another-react-lightbox';
-import Zoom from 'yet-another-react-lightbox/plugins/zoom';
 import 'yet-another-react-lightbox/styles.css';
 
 const CorrespondenceNavigator = () => {

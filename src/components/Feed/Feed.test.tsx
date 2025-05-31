@@ -1,8 +1,8 @@
-import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
 import Feed from '@components/Feed/Feed';
-import { useSearch } from '@hooks/useSearch';
+import React from 'react';
 import { axe } from 'jest-axe';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { useSearch } from '@hooks/useSearch';
 
 jest.mock('@hooks/useSearch', () => ({
   useSearch: jest.fn(),

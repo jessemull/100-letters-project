@@ -11,7 +11,6 @@ const LetterDetails: React.FC<Props> = ({ letter }) => (
     <p className="text-white/90 text-lg mb-1 break-words overflow-hidden">
       {letter.title}
     </p>
-
     {letter.sentAt && (
       <p className="text-white/70 italic mb-1">
         {`Sent: ${new Date(letter.sentAt).toLocaleDateString()}`}

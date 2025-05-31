@@ -8,7 +8,6 @@ import { render, screen, fireEvent } from '@testing-library/react';
 
 const TestComponent = () => {
   const { collapsed, setCollapsed } = useDesktopMenu();
-
   return (
     <div>
       <p>Collapsed: {collapsed ? 'true' : 'false'}</p>

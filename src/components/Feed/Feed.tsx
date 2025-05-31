@@ -3,9 +3,9 @@
 import React, { useEffect, useState } from 'react';
 import { Search, Splash } from '@components/Feed';
 import { SearchAllItem } from '@ts-types/search';
+import { SearchIcon, X } from 'lucide-react';
 import { TextInput } from '@components/Form';
 import { useSearch } from '@hooks/useSearch';
-import { SearchIcon, X } from 'lucide-react';
 
 const Feed = () => {
   const [term, setTerm] = useState('');

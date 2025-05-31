@@ -1,4 +1,5 @@
 import DesktopMenu from '@components/Menu/DesktopMenu';
+import { axe } from 'jest-axe';
 import { render, fireEvent, screen } from '@testing-library/react';
 
 jest.mock('@hooks/useSearch', () => ({
@@ -37,7 +38,7 @@ jest.mock('@components/Menu/CorrespondenceSearch', () => ({
   ),
 }));
 
-describe('DesktopMenu', () => {
+describe('DesktopMenu Component', () => {
   it('Calls setCollapsed when toggle button is clicked.', () => {
     const setCollapsed = jest.fn();
     render(<DesktopMenu collapsed={false} setCollapsed={setCollapsed} />);
@@ -61,5 +62,13 @@ describe('DesktopMenu', () => {
     fireEvent.mouseDown(outsideElement);
 
     expect(setCollapsed).toHaveBeenCalledWith(true);
+  });
+
+  it('Has no accessibility violations.', async () => {
+    const { container } = render(
+      <DesktopMenu collapsed={false} setCollapsed={jest.fn()} />,
+    );
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });
