@@ -21,20 +21,37 @@ jest.mock('@contexts/AuthProvider', () => ({
 
 jest.mock('@components/Menu/RecipientSearch', () => ({
   __esModule: true,
-  default: () => (
-    <div data-testid="mock-recipient-search">Recipient Search</div>
+  default: ({ onClick }: { onClick: () => void }) => (
+    <button data-testid="mock-recipient-search" onClick={onClick}>
+      Recipient Search
+    </button>
   ),
 }));
 
 jest.mock('@components/Menu/LetterSearch', () => ({
   __esModule: true,
-  default: () => <div data-testid="mock-letter-search">Letter Search</div>,
+  default: ({ onClick }: { onClick: () => void }) => (
+    <button data-testid="mock-letter-search" onClick={onClick}>
+      Letter Search
+    </button>
+  ),
 }));
 
 jest.mock('@components/Menu/CorrespondenceSearch', () => ({
   __esModule: true,
-  default: () => (
-    <div data-testid="mock-correspondence-search">Correspondence Search</div>
+  default: ({ onClick }: { onClick: () => void }) => (
+    <button data-testid="mock-correspondence-search" onClick={onClick}>
+      Correspondence Search
+    </button>
+  ),
+}));
+
+jest.mock('@components/Menu/MenuNavItems', () => ({
+  __esModule: true,
+  default: ({ onNavigate }: { onNavigate: () => void }) => (
+    <button data-testid="mock-menu-nav-items" onClick={onNavigate}>
+      Menu Nav Items
+    </button>
   ),
 }));
 
@@ -60,6 +77,48 @@ describe('DesktopMenu Component', () => {
 
     const outsideElement = screen.getByTestId('outside-element');
     fireEvent.mouseDown(outsideElement);
+
+    expect(setCollapsed).toHaveBeenCalledWith(true);
+  });
+
+  it('Calls setCollapsed(true) when RecipientSearch is clicked.', () => {
+    const setCollapsed = jest.fn();
+    render(<DesktopMenu collapsed={false} setCollapsed={setCollapsed} />);
+
+    const recipientSearch = screen.getByTestId('mock-recipient-search');
+    fireEvent.click(recipientSearch);
+
+    expect(setCollapsed).toHaveBeenCalledWith(true);
+  });
+
+  it('Calls setCollapsed(true) when LetterSearch is clicked.', () => {
+    const setCollapsed = jest.fn();
+    render(<DesktopMenu collapsed={false} setCollapsed={setCollapsed} />);
+
+    const letterSearch = screen.getByTestId('mock-letter-search');
+    fireEvent.click(letterSearch);
+
+    expect(setCollapsed).toHaveBeenCalledWith(true);
+  });
+
+  it('Calls setCollapsed(true) when CorrespondenceSearch is clicked.', () => {
+    const setCollapsed = jest.fn();
+    render(<DesktopMenu collapsed={false} setCollapsed={setCollapsed} />);
+
+    const correspondenceSearch = screen.getByTestId(
+      'mock-correspondence-search',
+    );
+    fireEvent.click(correspondenceSearch);
+
+    expect(setCollapsed).toHaveBeenCalledWith(true);
+  });
+
+  it('Calls setCollapsed(true) when MenuNavItems onNavigate is called.', () => {
+    const setCollapsed = jest.fn();
+    render(<DesktopMenu collapsed={false} setCollapsed={setCollapsed} />);
+
+    const menuNavItems = screen.getByTestId('mock-menu-nav-items');
+    fireEvent.click(menuNavItems);
 
     expect(setCollapsed).toHaveBeenCalledWith(true);
   });

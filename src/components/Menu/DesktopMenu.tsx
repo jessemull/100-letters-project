@@ -65,20 +65,21 @@ const DesktopMenu: React.FC<Props> = ({ collapsed, setCollapsed }) => {
             isLoggedIn={isLoggedIn}
             handleLogout={signOut}
             collapsed={collapsed}
+            onNavigate={() => setCollapsed(true)}
           />
         </div>
         {!collapsed && (
           <div className="flex flex-col mt-4">
             <div className="px-4">
-              <RecipientSearch />
+              <RecipientSearch onClick={() => setCollapsed(true)} />
             </div>
             <hr className="border-t border-white w-full my-4" />
             <div className="px-4">
-              <LetterSearch />
+              <LetterSearch onClick={() => setCollapsed(true)} />
             </div>
             <hr className="border-t border-white w-full my-4" />
             <div className="px-4">
-              <CorrespondenceSearch />
+              <CorrespondenceSearch onClick={() => setCollapsed(true)} />
             </div>
           </div>
         )}
