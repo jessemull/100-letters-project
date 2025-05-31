@@ -31,11 +31,11 @@ import {
   letterByIdUpdate,
   lettersUpdate,
 } from '@util/cache';
+import 'yet-another-react-lightbox/styles.css';
 import { formatLetterDates } from '@util/letter';
+import { letterViewOptions, letterViewToLabel } from '@constants/letter';
 import { useAuth } from '@contexts/AuthProvider';
 import { useSWRMutation } from '@hooks/useSWRMutation';
-import { viewOptions } from './LetterForm';
-import 'yet-another-react-lightbox/styles.css';
 
 interface Props {
   data: LetterImage;
@@ -43,14 +43,6 @@ interface Props {
   letter: Letter;
   onUpdateImage: (imageURLs: LetterImage[]) => void;
 }
-
-const viewToLabel = {
-  [View.LETTER_FRONT]: 'Letter Front',
-  [View.LETTER_BACK]: 'Letter Back',
-  [View.ENVELOPE_FRONT]: 'Envelope Front',
-  [View.ENVELOPE_BACK]: 'Envelope Back',
-  [View.OTHER]: 'Other',
-};
 
 const ImageItem = ({ data, deleteImage, letter, onUpdateImage }: Props) => {
   const [caption, setCaption] = useState<string>('');
@@ -156,7 +148,7 @@ const ImageItem = ({ data, deleteImage, letter, onUpdateImage }: Props) => {
               <div className="flex-1 flex justify-between items-center">
                 <div>
                   <h3 className="font-semibold text-lg text-white">
-                    {viewToLabel[data?.view]}
+                    {letterViewToLabel[data?.view]}
                   </h3>
                   <p className="text-sm text-gray-300">
                     {data?.caption
@@ -216,7 +208,7 @@ const ImageItem = ({ data, deleteImage, letter, onUpdateImage }: Props) => {
                       onChange={({ target: { value } }) =>
                         setView(value as View)
                       }
-                      options={viewOptions}
+                      options={letterViewOptions}
                       placeholder="Choose a view"
                       value={view}
                     />

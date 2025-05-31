@@ -3,9 +3,9 @@ import React from 'react';
 import showToast from '@components/Form/Toast';
 import { AuthContextType } from '@contexts/AuthProvider';
 import { LettersTab } from '@components/Admin';
+import { axe } from 'jest-axe';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { useRouter } from 'next/navigation';
-import { axe } from 'jest-axe';
 
 jest.mock('react-intersection-observer', () => ({
   useInView: jest.fn(() => ({
@@ -45,7 +45,7 @@ const mockPush = jest.fn();
 const mockMutate = jest.fn();
 const testLetter = { letterId: '1', title: 'Test Letter' };
 
-describe('LettersTab', () => {
+describe('LettersTab Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (AuthProvider.useAuth as jest.Mock).mockReturnValue({

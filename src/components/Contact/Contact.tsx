@@ -8,7 +8,11 @@ import {
   ContactFormResponse,
 } from '@ts-types/contact';
 import { LazyRecaptcha } from '@components/Contact';
-import { defaultError, initialValues, validators } from '@constants/contact';
+import {
+  defaultError,
+  initialContactValues,
+  contactValidators,
+} from '@constants/contact';
 import { useForm } from '@hooks/useForm';
 import { useRouter } from 'next/navigation';
 import { useSWRMutation } from '@hooks/useSWRMutation';
@@ -23,7 +27,10 @@ const Contact = () => {
   const router = useRouter();
 
   const { errors, isDirty, onSubmit, updateField, values } =
-    useForm<ContactForm>({ initial: initialValues, validators });
+    useForm<ContactForm>({
+      initial: initialContactValues,
+      validators: contactValidators,
+    });
 
   const { mutate, isLoading } = useSWRMutation<
     ContactFormBody,

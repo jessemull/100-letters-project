@@ -46,7 +46,7 @@ const renderWithAuth = (overrides = {}) => {
   (usePathname as jest.Mock).mockReturnValue('/admin');
 };
 
-describe('Admin', () => {
+describe('Admin Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });

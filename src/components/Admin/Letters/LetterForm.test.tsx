@@ -1,6 +1,7 @@
 import { Letter, View } from '@ts-types/letter';
 import { LetterForm } from '@components/Admin';
 import { LetterImageFactory } from '@factories/letter';
+import { act } from 'react';
 import { axe } from 'jest-axe';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { showToast } from '@components/Form';
@@ -10,7 +11,6 @@ import { useFileUpload } from '@hooks/useFileUpload';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSWRMutation } from '@hooks/useSWRMutation';
 import { useSWRQuery } from '@hooks/useSWRQuery';
-import { act } from 'react';
 
 jest.mock('@contexts/AuthProvider', () => ({
   useAuth: jest.fn(),
@@ -37,7 +37,7 @@ jest.mock('../../Form/Toast', () => ({
 jest.mock('@hooks/useDeleteUpload');
 jest.mock('@hooks/useFileUpload');
 
-describe('LetterForm', () => {
+describe('LetterForm Component', () => {
   const pushMock = jest.fn();
   const backMock = jest.fn();
 
@@ -1238,7 +1238,6 @@ describe('LetterForm', () => {
 
   it('Has no accessibility violations.', async () => {
     const { container } = render(<LetterForm />);
-
     const results = await axe(container);
     expect(results).toHaveNoViolations();
   });

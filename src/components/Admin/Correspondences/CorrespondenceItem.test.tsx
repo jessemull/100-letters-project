@@ -6,7 +6,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 
 const mockCorrespondence = CorrespondenceFactory.build();
 
-describe('CorrespondenceItem', () => {
+describe('CorrespondenceItem Component', () => {
   let consoleSpy: jest.SpyInstance;
 
   beforeEach(() => {

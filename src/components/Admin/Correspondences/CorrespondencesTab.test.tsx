@@ -47,7 +47,7 @@ const testCorrespondence = {
   title: 'Test Correspondence',
 };
 
-describe('CorrespondencesTab', () => {
+describe('CorrespondencesTab Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (AuthProvider.useAuth as jest.Mock).mockReturnValue({
