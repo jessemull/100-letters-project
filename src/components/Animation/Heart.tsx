@@ -26,7 +26,7 @@ const Heart: React.FC<Props> = ({ delay, envelopeHeight, offsetY, size }) => {
         delay: delay,
       }}
     >
-      <HeartIcon color="red" fill="red" size={size} />
+      <HeartIcon color="#fb3e71" fill="#fb3e71" size={size} />
     </motion.div>
   );
 };
