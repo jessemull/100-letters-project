@@ -9,29 +9,9 @@ import {
 } from '@components/Admin';
 import { Search, ChevronDown } from 'lucide-react';
 import { Tab, TabList, TabPanel, TabPanels, TabGroup } from '@headlessui/react';
+import { adminTabs } from '@constants/admin';
 import { debounce } from '@util/debounce';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-
-const tabs = [
-  {
-    createRoute: '/admin/correspondence',
-    key: 'correspondences',
-    label: 'Correspondences',
-    placeholder: 'Search by title...',
-  },
-  {
-    createRoute: '/admin/letter',
-    key: 'letters',
-    label: 'Letters',
-    placeholder: 'Search by title...',
-  },
-  {
-    createRoute: '/admin/recipient',
-    key: 'recipients',
-    label: 'Recipients',
-    placeholder: 'Search by last name...',
-  },
-];
 
 const Admin = () => {
   const searchParams = useSearchParams();
@@ -40,7 +20,7 @@ const Admin = () => {
 
   const tabParam = searchParams.get('tab');
   const initialTabIndex = Math.max(
-    tabs.findIndex((t) => t.key === tabParam),
+    adminTabs.findIndex((t) => t.key === tabParam),
     0,
   );
 
@@ -48,13 +28,13 @@ const Admin = () => {
   const [search, setSearch] = useState('');
   const [searchInput, setSearchInput] = useState('');
 
-  const activeTab = tabs[selectedIndex];
+  const activeTab = adminTabs[selectedIndex];
 
   const handleTabChange = (index: number) => {
     setSearch('');
     setSearchInput('');
     setSelectedIndex(index);
-    const newTab = tabs[index].key;
+    const newTab = adminTabs[index].key;
     const newUrl = `${pathname}?tab=${newTab}`;
     router.replace(newUrl);
   };
@@ -87,7 +67,7 @@ const Admin = () => {
               onChange={(e) => handleTabChange(Number(e.target.value))}
               className="w-full h-12 rounded-full bg-white/25 border border-white text-white text-base placeholder-white/70 px-4 pr-10 focus:outline-none appearance-none"
             >
-              {tabs.map((tab, idx) => (
+              {adminTabs.map((tab, idx) => (
                 <option key={tab.key} value={idx} className="text-black">
                   {tab.label}
                 </option>
@@ -101,11 +81,11 @@ const Admin = () => {
         <TabGroup selectedIndex={selectedIndex} onChange={handleTabChange}>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4 sm:gap-0">
             <TabList className="hidden sm:flex space-x-2 border-b border-white">
-              {tabs.map((tab) => (
+              {adminTabs.map((tab) => (
                 <Tab
                   className={`px-4 py-2 font-semibold text-lg rounded-t-md transition
                     ${
-                      tab.key === tabs[selectedIndex].key
+                      tab.key === adminTabs[selectedIndex].key
                         ? 'text-white border-b-2 border-white'
                         : 'text-white/70 hover:text-white'
                     }`}

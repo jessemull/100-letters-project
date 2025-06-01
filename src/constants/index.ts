@@ -1,3 +1,4 @@
+export * from './admin';
 export * from './animation';
 export * from './contact';
 export * from './context';
