@@ -78,7 +78,7 @@ const Contact = () => {
   };
 
   return (
-    <div className="p-8 flex items-center justify-center items-center md:pt-16 md:pb-16">
+    <div className="p-4 md:p-8 flex items-center justify-center items-center md:pt-16 md:pb-16">
       {success ? (
         <div className="w-3/4 flex flex-col items-center justify-center space-y-4 md:space-y-6">
           <p className="w-full text-white text-xl text-center">

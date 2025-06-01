@@ -12,6 +12,10 @@ export default {
       fontFamily: {
         merriweather: ['Merriweather', 'serif'],
       },
+      screens: {
+        'sm-tablet': '500px',
+        'md-tablet': '650px',
+      },
     },
   },
   plugins: [],
