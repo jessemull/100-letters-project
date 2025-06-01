@@ -2,16 +2,16 @@
 
 import React, { useEffect, useState } from 'react';
 import { Search, Splash } from '@components/Feed';
-import { SearchAllItem } from '@ts-types/search';
 import { SearchIcon, X } from 'lucide-react';
 import { TextInput } from '@components/Form';
 import { useSearch } from '@hooks/useSearch';
+import { CorrespondenceCard } from '@ts-types/correspondence';
 
 const Feed = () => {
   const [term, setTerm] = useState('');
   const [showSearch, setShowSearch] = useState(false);
 
-  const results = useSearch({ type: 'all', term }) as SearchAllItem[];
+  const results = useSearch({ type: 'all', term }) as CorrespondenceCard[];
 
   useEffect(() => {
     if (term && !showSearch) {
@@ -30,7 +30,7 @@ const Feed = () => {
   }, []);
 
   return (
-    <div className="relative flex flex-col items-center text-white min-h-screen py-4 lg:py-12 px-4 font-merriweather w-full">
+    <div className="relative flex flex-col items-center text-white min-h-screen py-4 md:py-8 lg:py-12 px-4 font-merriweather w-full">
       <div className="relative z-10 w-full max-w-6xl flex flex-col items-center space-y-8 md:space-y-12">
         <TextInput
           id="search-all"

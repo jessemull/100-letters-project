@@ -2,12 +2,12 @@
 
 import React, { useEffect, useState } from 'react';
 import { Search } from '@components/Feed';
-import { SearchAllItem } from '@ts-types/search';
 import { SearchIcon, X } from 'lucide-react';
 import { TextInput } from '@components/Form';
 import { titleCase } from '@util/feed';
 import { useSearch } from '@hooks/useSearch';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { CorrespondenceCard } from '@ts-types/correspondence';
 
 const Category = () => {
   const router = useRouter();
@@ -20,7 +20,7 @@ const Category = () => {
   const results = useSearch({
     type: 'all',
     term: category && !term ? category : term,
-  }) as SearchAllItem[];
+  }) as CorrespondenceCard[];
 
   const showCategoryHeader = category && !term;
 
@@ -60,7 +60,7 @@ const Category = () => {
           value={term}
         />
         {showCategoryHeader && (
-          <h2 className="text-3xl md:text-4xl font-bold">
+          <h2 className="text-2xl md:text-3xl font-semibold text-center">
             Explore {titleCase(category)} Letters
           </h2>
         )}

@@ -40,7 +40,7 @@ const Header = () => {
           <Link href="/" className="text-2xl whitespace-nowrap md:pr-4">
             100 Letters Project
           </Link>
-          <nav className="hidden md:flex space-x-7">
+          <nav className="hidden lg:flex space-x-7">
             <Link href="/" className="hover:text-gray-400">
               Home
             </Link>

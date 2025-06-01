@@ -5,12 +5,12 @@ import {
   CorrespondenceSearchItem,
   LetterSearchItem,
   RecipientSearchItem,
-  SearchAllItem,
   SearchOptions,
   SearchResult,
 } from '@ts-types/search';
 import { FuseMap } from '@ts-types/hooks';
 import { useState, useEffect, useMemo } from 'react';
+import { CorrespondenceCard } from '@ts-types/correspondence';
 
 export const useSearch = ({
   type,
@@ -26,8 +26,8 @@ export const useSearch = ({
 
       const { correspondences: correspondenceData } = dataModule;
 
-      const all = new Fuse<SearchAllItem>(
-        correspondenceData as SearchAllItem[],
+      const all = new Fuse<CorrespondenceCard>(
+        correspondenceData as CorrespondenceCard[],
         {
           threshold: 0.3,
           isCaseSensitive: false,

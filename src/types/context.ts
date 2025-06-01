@@ -1,4 +1,4 @@
-import { Correspondence, CorrespondencesMap } from './correspondence';
+import { CorrespondenceCard, CorrespondencesMap } from './correspondence';
 import {
   CorrespondenceSearchItem,
   LetterSearchItem,
@@ -18,10 +18,9 @@ export type AuthContextType = {
 };
 
 export type CorrespondenceContextType = {
-  correspondences: Correspondence[];
+  correspondences: CorrespondenceCard[];
   correspondencesById: CorrespondencesMap;
   earliestSentAtDate: string;
-  responseCompletion: number;
 };
 
 export type DesktopMenuContextType = {

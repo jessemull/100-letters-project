@@ -39,7 +39,6 @@ describe('CorrespondenceContext', () => {
         correspondences={mockCorrespondences}
         correspondencesById={mockCorrespondencesById}
         earliestSentAtDate={mockDate}
-        responseCompletion={0.1}
       >
         <TestComponent />
       </CorrespondenceProvider>,
@@ -55,7 +54,6 @@ describe('CorrespondenceContext', () => {
         correspondences={[]}
         correspondencesById={mockCorrespondencesById}
         earliestSentAtDate={mockDate}
-        responseCompletion={0.1}
       >
         <TestComponent />
       </CorrespondenceProvider>,
@@ -76,7 +74,6 @@ describe('CorrespondenceContext', () => {
         correspondences={mockCorrespondences}
         correspondencesById={mockCorrespondencesById}
         earliestSentAtDate={mockDate}
-        responseCompletion={0.1}
       >
         <TestComponent />
       </CorrespondenceProvider>,

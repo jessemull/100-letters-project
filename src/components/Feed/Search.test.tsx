@@ -1,6 +1,6 @@
 import React from 'react';
 import Search from '@components/Feed/Search';
-import { SearchAllItem } from '@ts-types/search';
+import { CorrespondenceCard } from '@ts-types/correspondence';
 import { axe } from 'jest-axe';
 import { render, screen } from '@testing-library/react';
 import { useCorrespondence } from '@contexts/CorrespondenceProvider';
@@ -16,6 +16,7 @@ jest.mock('@components/Feed', () => ({
       {correspondence.title}
     </div>
   ),
+  Categories: () => <div data-testid="categories">Categories</div>,
 }));
 
 jest.mock('@components/Form', () => ({
@@ -55,7 +56,7 @@ describe('Search Component', () => {
   it('Renders cards from results when term is present.', () => {
     render(
       <Search
-        results={correspondenceData as SearchAllItem[]}
+        results={correspondenceData as CorrespondenceCard[]}
         term="some search"
       />,
     );
@@ -79,7 +80,7 @@ describe('Search Component', () => {
 
     render(
       <Search
-        results={[...correspondenceData, ...extraItems] as SearchAllItem[]}
+        results={[...correspondenceData, ...extraItems] as CorrespondenceCard[]}
         term="some"
       />,
     );
@@ -93,19 +94,21 @@ describe('Search Component', () => {
       title: `Letter ${i + 1}`,
     }));
 
-    render(<Search results={longList as SearchAllItem[]} term="search" />);
+    render(<Search results={longList as CorrespondenceCard[]} term="search" />);
     const cards = screen.getAllByTestId('card');
     expect(cards.length).toBeGreaterThan(12);
   });
 
   it('Does not render Progress when all items are visible.', () => {
-    render(<Search results={correspondenceData as SearchAllItem[]} term="" />);
+    render(
+      <Search results={correspondenceData as CorrespondenceCard[]} term="" />,
+    );
     expect(screen.queryByTestId('progress')).not.toBeInTheDocument();
   });
 
   it('Has no accessibility violations.', async () => {
     const { container } = render(
-      <Search results={correspondenceData as SearchAllItem[]} term="" />,
+      <Search results={correspondenceData as CorrespondenceCard[]} term="" />,
     );
     const results = await axe(container);
     expect(results).toHaveNoViolations();

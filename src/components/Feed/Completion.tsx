@@ -5,14 +5,10 @@ import { clockCircumference, clockRadius } from '@constants/feed';
 
 interface Props {
   letterCount: number;
-  responseCompletion: number;
 }
 
-const Completion: React.FC<Props> = ({ responseCompletion, letterCount }) => {
-  const progress = useMemo(
-    () => Math.min(Math.max(responseCompletion, 0), 1),
-    [responseCompletion],
-  );
+const Completion: React.FC<Props> = ({ letterCount }) => {
+  const progress = useMemo(() => letterCount / 100, [letterCount]);
   const strokeDashoffset = useMemo(
     () => clockCircumference * (1 - progress),
     [progress],

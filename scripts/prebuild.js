@@ -78,16 +78,6 @@ async function authenticateUser() {
     const correspondences = await fetchAllPages('correspondence', token);
     const letters = await fetchAllPages('letter', token);
 
-    const completedStatuses = ['COMPLETED', 'RESPONDED'];
-
-    const respondedCount = correspondences.filter((c) =>
-      completedStatuses.includes(c.status),
-    ).length;
-
-    const totalCount = correspondences.length;
-
-    const responseCompletion = totalCount > 0 ? respondedCount / totalCount : 0;
-
     const sentDates = letters
       .map((letter) => new Date(letter.sentAt))
       .filter((date) => !isNaN(date.getTime()));
@@ -159,7 +149,7 @@ async function authenticateUser() {
     );
 
     const fullNameCorrespondences = correspondences.map((correspondence) => {
-      const recipient = correspondence.recipient || {};
+      const { address, ...recipient } = correspondence.recipient || {};
       return {
         ...correspondence,
         recipient: {
@@ -172,7 +162,15 @@ async function authenticateUser() {
 
     const correspondencesById = correspondences.reduce(
       (acc, correspondence) => {
-        acc[correspondence.correspondenceId] = correspondence;
+        const { address, ...recipient } = correspondence.recipient || {};
+        acc[correspondence.correspondenceId] = {
+          ...correspondence,
+          recipient: {
+            ...recipient,
+            fullName:
+              `${recipient.firstName || ''} ${recipient.lastName || ''}`.trim(),
+          },
+        };
         return acc;
       },
       {},
@@ -182,7 +180,6 @@ async function authenticateUser() {
       correspondences: fullNameCorrespondences,
       correspondencesById,
       earliestSentAtDate,
-      responseCompletion,
     };
 
     const dataDir = path.join(__dirname, '../public/data');

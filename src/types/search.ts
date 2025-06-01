@@ -1,5 +1,3 @@
-import { Correspondence } from './correspondence';
-
 export type SearchType = 'all' | 'letters' | 'recipients' | 'correspondences';
 
 export type SearchOptions = {
@@ -21,10 +19,6 @@ export type RecipientSearchItem = {
   firstName: string;
   lastName: string;
   fullName: string;
-};
-
-export type SearchAllItem = Omit<Correspondence, 'recipient'> & {
-  recipient: Correspondence['recipient'] & { fullName: string };
 };
 
 export type LetterSearchItem = {
