@@ -26,7 +26,6 @@ describe('generateHearts', () => {
     const count = baseHeartConfig.length * 2 + 1;
     const result = generateHearts(count);
     for (let i = 0; i < count; i++) {
-      const expectedBase = baseHeartConfig[i % baseHeartConfig.length];
       expect(typeof result[i].delay).toBe('number');
       expect(typeof result[i].baseOffsetX).toBe('number');
       expect(typeof result[i].baseOffsetY).toBe('number');

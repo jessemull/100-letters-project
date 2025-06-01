@@ -6,11 +6,7 @@ import { HeartIcon } from 'lucide-react';
 import { heartsConfig } from '@constants/animation';
 import { useState, useEffect, useMemo } from 'react';
 
-interface EnvelopeProps {
-  width?: number;
-}
-
-const Envelope: React.FC<EnvelopeProps> = ({ width }) => {
+const Envelope = () => {
   const [flapZIndex, setFlapZIndex] = useState(30);
   const [isReady, setIsReady] = useState(false);
   const [showLetter, setShowLetter] = useState(false);
@@ -18,26 +14,28 @@ const Envelope: React.FC<EnvelopeProps> = ({ width }) => {
   const [size, setSize] = useState({ width: 320, height: 224, flap: 120 });
   const [startAnimation, setStartAnimation] = useState(false);
 
-  useEffect(() => {
-    if (!width) return;
-
+  const updateSizeByWidth = (width: number) => {
     let newWidth;
-
-    if (width > 1024) {
-      newWidth = 200;
-    } else if (width > 500) {
-      newWidth = 150;
-    } else {
-      newWidth = 100;
-    }
+    if (width > 1024) newWidth = 200;
+    else if (width > 500) newWidth = 150;
+    else newWidth = 100;
 
     const height = newWidth * (224 / 320);
     const flap = newWidth * (120 / 320);
 
     setSize({ width: newWidth, height, flap });
-
     setIsReady(true);
-  }, [width]);
+  };
+
+  useEffect(() => {
+    updateSizeByWidth(window.innerWidth);
+
+    const handleResize = () => updateSizeByWidth(window.innerWidth);
+
+    window.addEventListener('resize', handleResize);
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     if (!isReady) return;
