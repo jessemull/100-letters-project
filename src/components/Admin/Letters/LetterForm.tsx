@@ -334,12 +334,12 @@ const LetterForm = () => {
   }, [file]);
 
   return isLoading || authenticating || singleCorrespondenceIsLoading ? (
-    <div className="w-full h-full flex items-center justify-center">
+    <div className="pt-32 lg:pt-64 flex items-center justify-center">
       <Progress color="white" size={16} />
     </div>
   ) : (
     <>
-      <div className="p-6 md:p-12 w-full max-w-3xl mx-auto space-y-6">
+      <div className="p-6 w-full max-w-3xl mx-auto space-y-6 md:pt-16 md:pb-16">
         <div>
           <h1 className="text-3xl font-semibold text-white">Letter Form</h1>
           {values.correspondenceId && (

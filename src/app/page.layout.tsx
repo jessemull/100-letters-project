@@ -28,12 +28,11 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => {
       <Header />
       <div className="flex flex-1 h-[calc(100vh-56px)] overflow-hidden">
         <aside
-          aria-label="Desktop Menu"
           className={`hidden lg:block ${sidebarWidth} text-white sticky top-[56px] h-[calc(100vh-56px)] z-20`}
           data-testid="menu-width"
         >
           <div
-            className="h-full overflow-y-auto"
+            className="h-full overflow-y-auto overflow-x-hidden"
             style={{ scrollbarGutter: 'stable' }}
           >
             <SearchProvider>

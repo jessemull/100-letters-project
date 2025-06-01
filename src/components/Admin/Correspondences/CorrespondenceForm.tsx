@@ -209,7 +209,7 @@ const CorrespondenceForm = () => {
       <Progress color="white" size={16} />
     </div>
   ) : (
-    <div className="p-6 md:p-12 w-full max-w-3xl mx-auto space-y-6">
+    <div className="p-6 w-full max-w-3xl mx-auto space-y-6 md:pt-16 md:pb-16">
       <div>
         <h1 className="text-3xl font-semibold text-white">
           Correspondence Form
