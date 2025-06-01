@@ -74,7 +74,7 @@ const Admin = () => {
   }, [searchInput, debouncedSetSearch]);
 
   return (
-    <div className="flex-1 flex w-full h-full text-white font-merriweather min-h-screen">
+    <div className="flex-1 flex w-full h-full text-white font-merriweather min-h-screen md:pt-4 md:pb-4">
       <div className="w-full py-4 px-4 flex flex-col h-full">
         <div className="sm:hidden mb-6 sm:mb-4">
           <label htmlFor="tab-select" className="sr-only">
