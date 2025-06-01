@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Heart } from '@components/Animation';
 import { heartsConfig } from '@constants/animation';
 import { useState, useEffect, useMemo } from 'react';
+import { HeartIcon } from 'lucide-react';
 
 interface EnvelopeProps {
   width?: number;
@@ -13,26 +14,21 @@ const Envelope: React.FC<EnvelopeProps> = ({ width }) => {
   const [flapZIndex, setFlapZIndex] = useState(30);
   const [isReady, setIsReady] = useState(false);
   const [showLetter, setShowLetter] = useState(false);
-  const [showText, setShowText] = useState(false);
+  const [showHeart, setShowHeart] = useState(false);
   const [size, setSize] = useState({ width: 320, height: 224, flap: 120 });
   const [startAnimation, setStartAnimation] = useState(false);
-  const [textSize, setTextSize] = useState('text-4xl');
 
   useEffect(() => {
     if (!width) return;
 
-    let newWidth = Math.max(width * 0.2, 110);
+    let newWidth;
 
-    if (width < 640) {
-      newWidth = width * 0.65;
-    } else if (width < 768) {
-      newWidth = width * 0.3;
-    } else if (width < 1024) {
-      newWidth = width * 0.25;
-    } else if (width < 1280) {
-      newWidth = width * 0.25;
+    if (width > 1024) {
+      newWidth = 200;
+    } else if (width > 500) {
+      newWidth = 150;
     } else {
-      newWidth = width * 0.175;
+      newWidth = 100;
     }
 
     const height = newWidth * (224 / 320);
@@ -40,24 +36,6 @@ const Envelope: React.FC<EnvelopeProps> = ({ width }) => {
 
     setSize({ width: newWidth, height, flap });
 
-    let newTextSize = 'text-4xl';
-    const thresholds = [
-      { max: 320 * 0.25, className: 'text-xs' },
-      { max: 480 * 0.25, className: 'text-sm' },
-      { max: 640 * 0.25, className: 'text-lg' },
-      { max: 768 * 0.25, className: 'text-xl' },
-      { max: 1024 * 0.25, className: 'text-2xl' },
-      { max: 1280 * 0.25, className: 'text-3xl' },
-    ];
-
-    for (const threshold of thresholds) {
-      if (newWidth < threshold.max) {
-        newTextSize = threshold.className;
-        break;
-      }
-    }
-
-    setTextSize(newTextSize);
     setIsReady(true);
   }, [width]);
 
@@ -68,7 +46,7 @@ const Envelope: React.FC<EnvelopeProps> = ({ width }) => {
       setTimeout(() => setStartAnimation(true), 500),
       setTimeout(() => setShowLetter(true), 800),
       setTimeout(() => setFlapZIndex(5), 1000),
-      setTimeout(() => setShowText(true), 1200),
+      setTimeout(() => setShowHeart(true), 1200),
     ];
 
     return () => timers.forEach(clearTimeout);
@@ -135,16 +113,23 @@ const Envelope: React.FC<EnvelopeProps> = ({ width }) => {
           transition={{ duration: 0.8 }}
         />
 
-        {showText && (
+        {showHeart && (
           <motion.div
-            className={`absolute flex flex-col items-center justify-center ${textSize} font-bold z-40 font-merriweather text-midnight`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 2.5 }}
+            className="absolute bottom-[20%] z-40 flex items-center justify-center"
+            style={{
+              width: `${size.width * 0.4}px`,
+              height: `${size.width * 0.4}px`,
+            }}
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1.2 }}
           >
-            <div data-testid="msg-100">100</div>
-            <div data-testid="msg-letters">Letters</div>
-            <div data-testid="msg-project">Project</div>
+            <HeartIcon
+              color="#fb3e71"
+              data-testid="envelope-heart"
+              fill="#fb3e71"
+              size={size.width * 0.7}
+            />
           </motion.div>
         )}
       </motion.div>

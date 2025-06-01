@@ -8,10 +8,17 @@ import { useResizeDetector } from 'react-resize-detector';
 const About = () => {
   const { width, ref } = useResizeDetector();
   return (
-    <div ref={ref} className="p-8 md:py-16">
-      <div className="relative flex flex-col flex-1 items-center justify-center space-y-8 z-10 min-h-[500px]">
-        <Envelope width={width} />
-        <ComingSoon />
+    <div ref={ref} className="flex justify-center p-8 md:p-16 lg:p-24">
+      <div className="w-full max-w-6xl space-y-8">
+        <h2 className="font-merriweather text-white text-2xl md:text-3xl font-semibold text-center">
+          Coming Soon...
+        </h2>
+        <div className="flex flex-col items-center justify-center space-y-8">
+          <Envelope width={width} />
+          <div className="w-full max-w-5xl text-center">
+            <ComingSoon />
+          </div>
+        </div>
       </div>
     </div>
   );

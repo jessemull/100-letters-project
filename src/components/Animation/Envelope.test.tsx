@@ -47,35 +47,40 @@ describe('Envelope Component', () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByTestId('msg-100')).toBeInTheDocument();
-      expect(screen.getByTestId('msg-letters')).toBeInTheDocument();
+      expect(screen.getByTestId('envelope-heart')).toBeInTheDocument();
     });
-    jest.runOnlyPendingTimers();
-  });
-
-  it.each([
-    [100, 'text-xs'],
-    [150, 'text-sm'],
-    [200, 'text-lg'],
-    [300, 'text-2xl'],
-    [400, 'text-3xl'],
-    [1500, 'text-3xl'],
-    [3000, 'text-4xl'],
-  ])('Sets correct text size at width %i', async (width, expectedClass) => {
-    renderWithWidth(width);
-
-    act(() => {
-      jest.advanceTimersByTime(3500);
-    });
-
-    const msg = await screen.findByTestId('msg-100');
-    expect(msg.parentElement).toHaveClass(expectedClass);
     jest.runOnlyPendingTimers();
   });
 
   it('Does not render envelope if width is undefined.', () => {
     const { container } = render(<Envelope />);
     expect(container.firstChild).toBeNull();
+    jest.runOnlyPendingTimers();
+  });
+
+  it('Calculates newWidth as 200 when width > 1024.', async () => {
+    renderWithWidth(1300);
+
+    act(() => {
+      jest.advanceTimersByTime(3500);
+    });
+
+    const envelope = await screen.findByTestId('envelope');
+    expect(envelope.firstChild).toHaveStyle({ width: '200px' });
+
+    jest.runOnlyPendingTimers();
+  });
+
+  it('Calculates newWidth as 100 when width <= 500.', async () => {
+    renderWithWidth(400);
+
+    act(() => {
+      jest.advanceTimersByTime(3500);
+    });
+
+    const envelope = await screen.findByTestId('envelope');
+    expect(envelope.firstChild).toHaveStyle({ width: '100px' });
+
     jest.runOnlyPendingTimers();
   });
 
@@ -88,7 +93,7 @@ describe('Envelope Component', () => {
 
     const envelope = await screen.findByTestId('envelope');
 
-    expect(envelope.firstChild).toHaveStyle({ width: '210px' });
+    expect(envelope.firstChild).toHaveStyle({ width: '150px' });
     jest.runOnlyPendingTimers();
   });
 
