@@ -52,7 +52,7 @@ const Search: React.FC<Props> = ({ results, term }) => {
 
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full mt-8">
+      <div className="grid grid-cols-1 sm-tablet:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full mt-8">
         {visibleItems.map((correspondence, idx) => (
           <Card
             correspondence={correspondence}
