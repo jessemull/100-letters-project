@@ -5,6 +5,7 @@ import { Heart } from '@components/Animation';
 import { HeartIcon } from 'lucide-react';
 import { heartsConfig } from '@constants/animation';
 import { useState, useEffect, useMemo } from 'react';
+import { Progress } from '@components/Form';
 
 const Envelope = () => {
   const [flapZIndex, setFlapZIndex] = useState(30);
@@ -52,11 +53,16 @@ const Envelope = () => {
 
   const scaleFactor = useMemo(() => size.width / 287.8, [size.width]);
 
-  if (!isReady) return null;
+  if (!isReady)
+    return (
+      <div className="flex items-center justify-center h-[108px] md:h-[161px] lg:h-[215px]">
+        <Progress color="white" size={16} />
+      </div>
+    );
 
   const letterWidth = size.width * 0.7;
   const letterHeight = size.height * 0.6;
-
+  console.log(size.height + size.flap);
   return (
     <div
       className="relative flex flex-col items-center justify-end"
