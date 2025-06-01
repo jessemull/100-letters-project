@@ -22,7 +22,7 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => {
         style={{
           backgroundImage:
             "linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), url('/background.webp')",
-          backgroundAttachment: 'fixed',
+          backgroundAttachment: 'scroll',
         }}
       />
       <Header />
