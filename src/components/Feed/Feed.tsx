@@ -30,7 +30,7 @@ const Feed = () => {
   }, []);
 
   return (
-    <div className="relative flex flex-col items-center text-white min-h-screen py-4 lg:py-12 px-4 font-merriweather w-full">
+    <div className="relative flex flex-col items-center text-white min-h-screen py-4 md:py-8 lg:py-12 px-4 font-merriweather w-full">
       <div className="relative z-10 w-full max-w-6xl flex flex-col items-center space-y-8 md:space-y-12">
         <TextInput
           id="search-all"

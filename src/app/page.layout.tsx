@@ -10,57 +10,45 @@ import { useMemo } from 'react';
 
 const PageLayout = ({ children }: { children: React.ReactNode }) => {
   const { collapsed, setCollapsed } = useDesktopMenu();
-
   const sidebarWidth = useMemo(
     () => (collapsed ? 'w-16' : 'w-80'),
     [collapsed],
   );
 
   return (
-    <div className="flex flex-col min-h-screen relative">
+    <div className="relative h-screen w-screen overflow-hidden flex flex-col">
       <div
-        className="min-h-screen fixed inset-0 -z-10 bg-cover bg-center"
+        className="fixed inset-0 -z-10 bg-cover bg-center"
         style={{
           backgroundImage:
             "linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), url('/background.webp')",
           backgroundAttachment: 'fixed',
         }}
       />
-      <div className="relative z-10 flex flex-col min-h-screen">
-        <Header />
-        <main
-          role="main"
-          className={`
-            flex flex-1 w-full
-            flex-col lg:flex-row
-            justify-center lg:justify-start
-            items-center lg:items-stretch
-            p-4 sm:p-6 lg:p-0 md:p-8
-            sm:min-h-[calc(100vh-56px-56px-24px)]
-            min-h-[calc(100vh-56px-56px-16px)]
-          `}
+      <Header />
+      <div className="flex flex-1 h-[calc(100vh-56px)] overflow-hidden">
+        <aside
+          aria-label="Desktop Menu"
+          className={`hidden lg:block ${sidebarWidth} text-white sticky top-[56px] h-[calc(100vh-56px)] z-20`}
+          data-testid="menu-width"
         >
           <div
-            className={`hidden lg:block ${sidebarWidth} text-white`}
-            data-testid="menu-width"
+            className="h-full overflow-y-auto"
+            style={{ scrollbarGutter: 'stable' }}
           >
-            <div className="flex flex-col h-screen sticky top-0">
-              <div
-                className="flex-1 overflow-y-auto overflow-x-hidden"
-                style={{ scrollbarGutter: 'stable' }}
-              >
-                <SearchProvider>
-                  <DesktopMenu
-                    collapsed={collapsed}
-                    setCollapsed={setCollapsed}
-                  />
-                </SearchProvider>
-              </div>
-            </div>
+            <SearchProvider>
+              <DesktopMenu collapsed={collapsed} setCollapsed={setCollapsed} />
+            </SearchProvider>
           </div>
-          <div className="flex-1 w-full px-0 lg:px-8">{children}</div>
+        </aside>
+        <main className="flex-1 w-full overflow-y-auto overflow-x-hidden">
+          <div className="flex flex-col min-h-[calc(100vh-56px)] justify-between">
+            <div className="pr-2 pl-2 pt-3 pb-3 md:p-0 md:px-8">
+              <div className="flex-1">{children}</div>
+            </div>
+            <Footer />
+          </div>
         </main>
-        <Footer />
       </div>
       <Toaster position="top-center" />
     </div>

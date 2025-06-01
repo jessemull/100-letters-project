@@ -72,12 +72,14 @@ const Login = () => {
   };
 
   return (
-    <div className="p-8 flex items-center justify-center items-center w-full h-full">
-      <div className="w-full sm:w-full md:w-1/2 lg:w-1/3 xl:w-1/5 flex flex-col justify-center items-center space-y-6">
+    <div className="p-8 flex items-center justify-center items-center md:pt-16 md:pb-16">
+      <div className="w-full sm:w-full md:w-1/2 lg:w-1/3 xl:w-1/5 flex flex-col justify-center items-center space-y-4">
+        <h1 className="self-start text-white text-3xl font-semibold">Login</h1>
         <TextInput
           IconStart={Lock}
           errors={inputErrors.username}
           id="username-text-input"
+          label="Username"
           onChange={({ target: { value } }) => updateField('username', value)}
           placeholder="Username"
           type="text"
@@ -88,6 +90,7 @@ const Login = () => {
           IconStart={User}
           errors={inputErrors.password}
           id="password-text-input"
+          label="Password"
           onChange={({ target: { value } }) => updateField('password', value)}
           onIconEndClick={toggleVisibility}
           placeholder="Password"
@@ -97,14 +100,19 @@ const Login = () => {
         {networkError && (
           <div className="w-full text-red-400 text-base">{networkError}</div>
         )}
-        <Button
-          disabled={!isValid || !isDirty || Object.keys(inputErrors).length > 0}
-          id="sign-in-submit-button"
-          loading={loading}
-          onClick={handleSignIn}
-          value="Sign In"
-        />
-        <Button id="cancel-button" onClick={handleCancel} value="Cancel" />
+        <div className="w-full pt-2 space-y-5">
+          <Button
+            disabled={
+              !isValid || !isDirty || Object.keys(inputErrors).length > 0
+            }
+            id="sign-in-submit-button"
+            loading={loading}
+            onClick={handleSignIn}
+            value="Sign In"
+          />
+          <Button id="cancel-button" onClick={handleCancel} value="Cancel" />
+        </div>
+
         {isLoggedIn && (
           <div className="flex justify-end w-full text-md -translate-y-1">
             <button

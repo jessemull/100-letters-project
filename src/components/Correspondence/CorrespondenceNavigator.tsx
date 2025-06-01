@@ -74,7 +74,7 @@ const CorrespondenceNavigator = () => {
   }));
 
   return (
-    <div className="font-merriweather max-w-7xl mx-auto px-4 py-4 md:py-16">
+    <div className="font-merriweather max-w-7xl mx-auto py-4 px-4 md:px-0 md:py-12">
       <div className="flex flex-col md:flex-row md:gap-8 items-start">
         <div className="flex-1 space-y-6 text-white min-w-0 order-1 md:order-2">
           <CorrespondenceDetails correspondence={correspondence} />
@@ -133,12 +133,12 @@ const CorrespondenceNavigator = () => {
             onClick={(idx) => setSelectedImageIndex(idx)}
             selected={selectedImageIndex}
           />
-          <div className="pt-5 block md:hidden">
+          <div className="pt-2 lg:pt-5 block md:hidden">
             <LetterDetails letter={selectedLetter} />
           </div>
         </div>
       </div>
-      <div className="mt-8">
+      <div className="mt-6 lg:mt-8">
         <LetterText letter={selectedLetter} />
       </div>
       {isLightboxOpen && (

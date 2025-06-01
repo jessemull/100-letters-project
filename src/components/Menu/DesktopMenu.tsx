@@ -8,7 +8,6 @@ import {
   RecipientSearch,
 } from '@components/Menu';
 import { useAuth } from '@contexts/AuthProvider';
-import { useEffect, useRef } from 'react';
 
 interface Props {
   collapsed: boolean;
@@ -16,25 +15,9 @@ interface Props {
 }
 
 const DesktopMenu: React.FC<Props> = ({ collapsed, setCollapsed }) => {
-  const menuRef = useRef<HTMLDivElement>(null);
   const { isLoggedIn, signOut } = useAuth();
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setCollapsed(true);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [setCollapsed]);
-
   return (
-    <aside
+    <div
       className={`
         hidden font-merriweather backdrop-blur-md lg:flex flex-col text-white transition-all bg-white/20 duration-300
         ${collapsed ? 'w-16' : 'w-80'}
@@ -42,7 +25,6 @@ const DesktopMenu: React.FC<Props> = ({ collapsed, setCollapsed }) => {
         overflow-y-auto
         h-full
       `}
-      ref={menuRef}
     >
       <div className="flex items-center justify-between px-4 py-3 border-b border-white-400">
         {!collapsed && (
@@ -84,7 +66,7 @@ const DesktopMenu: React.FC<Props> = ({ collapsed, setCollapsed }) => {
           </div>
         )}
       </nav>
-    </aside>
+    </div>
   );
 };
 

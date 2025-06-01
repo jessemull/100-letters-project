@@ -78,7 +78,7 @@ const Contact = () => {
   };
 
   return (
-    <div className="p-8 flex items-center justify-center items-center w-full h-full">
+    <div className="p-8 flex items-center justify-center items-center md:pt-16 md:pb-16">
       {success ? (
         <div className="w-3/4 flex flex-col items-center justify-center space-y-4 md:space-y-6">
           <p className="w-full text-white text-xl text-center">
@@ -94,6 +94,7 @@ const Contact = () => {
           <TextInput
             errors={errors.firstName || undefined}
             id="firstName"
+            label="First Name"
             onChange={({ target: { value } }) =>
               updateField('firstName', value)
             }
@@ -104,6 +105,7 @@ const Contact = () => {
           <TextInput
             errors={errors.lastName || undefined}
             id="lastName"
+            label="Last Name"
             onChange={({ target: { value } }) => updateField('lastName', value)}
             placeholder="Last Name"
             type="text"
@@ -112,6 +114,7 @@ const Contact = () => {
           <TextInput
             errors={errors.email ? errors.email[0] : undefined}
             id="email"
+            label="Email"
             onChange={({ target: { value } }) => updateField('email', value)}
             placeholder="Email"
             type="email"
@@ -120,6 +123,7 @@ const Contact = () => {
           <TextArea
             errors={error || errors.message || undefined}
             id="message"
+            label="Message"
             onChange={({ target: { value } }) => updateField('message', value)}
             placeholder="Write your message here..."
             value={values.message}
