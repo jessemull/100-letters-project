@@ -2,9 +2,9 @@
 
 import { AnimatePresence, motion } from 'framer-motion';
 import { Heart } from '@components/Animation';
+import { HeartIcon } from 'lucide-react';
 import { heartsConfig } from '@constants/animation';
 import { useState, useEffect, useMemo } from 'react';
-import { HeartIcon } from 'lucide-react';
 
 interface EnvelopeProps {
   width?: number;
@@ -56,6 +56,9 @@ const Envelope: React.FC<EnvelopeProps> = ({ width }) => {
 
   if (!isReady) return null;
 
+  const letterWidth = size.width * 0.7;
+  const letterHeight = size.height * 0.6;
+
   return (
     <div
       className="relative flex flex-col items-center justify-end"
@@ -68,37 +71,38 @@ const Envelope: React.FC<EnvelopeProps> = ({ width }) => {
         transition={{ duration: 0.8 }}
       >
         <div className="absolute top-0 left-0 w-full h-full shadow-lg rounded-b-md z-20 bg-gradient-to-b from-yellow-400 to-yellow-500" />
-
         {showLetter && (
           <motion.div
-            className="top-[30%] absolute bg-white border shadow-lg rounded-md flex items-center justify-center z-10"
+            className="top-[30%] absolute bg-white border shadow-lg rounded-md flex items-center justify-center z-10 overflow-visible"
             style={{
-              width: `${size.width * 0.7}px`,
-              height: `${size.height * 0.6}px`,
+              width: `${letterWidth}px`,
+              height: `${letterHeight}px`,
             }}
             initial={{ y: 0, opacity: 0 }}
             animate={{
-              y: `calc(-${size.height * 0.6}px - ${size.flap / 8}px)`,
+              y: `calc(-${letterHeight}px - ${size.flap / 8}px)`,
               opacity: 1,
             }}
             transition={{ duration: 0.8 }}
           >
-            <div className="flex justify-between">
+            <div className="relative w-full h-full">
               <AnimatePresence>
-                {heartsConfig.map(({ delay, baseOffsetY, baseSize }, index) => (
-                  <Heart
-                    key={`heart-${index}`}
-                    delay={delay}
-                    offsetY={baseOffsetY * scaleFactor}
-                    size={baseSize * scaleFactor}
-                    envelopeHeight={size.height}
-                  />
-                ))}
+                {heartsConfig.map(
+                  ({ delay, baseOffsetY, baseOffsetX, baseSize }, index) => (
+                    <Heart
+                      key={`heart-${index}`}
+                      delay={delay}
+                      offsetY={baseOffsetY * letterHeight}
+                      offsetX={baseOffsetX * letterWidth}
+                      size={baseSize * scaleFactor}
+                      envelopeHeight={size.height}
+                    />
+                  ),
+                )}
               </AnimatePresence>
             </div>
           </motion.div>
         )}
-
         <motion.div
           className="absolute top-0 left-0 w-0 h-0 border-l-transparent border-r-transparent border-t-yellow-500 origin-top"
           style={{
@@ -115,7 +119,7 @@ const Envelope: React.FC<EnvelopeProps> = ({ width }) => {
 
         {showHeart && (
           <motion.div
-            className="absolute bottom-[20%] z-40 flex items-center justify-center"
+            className="absolute bottom-[22%] z-40 flex items-center justify-center"
             style={{
               width: `${size.width * 0.4}px`,
               height: `${size.width * 0.4}px`,
