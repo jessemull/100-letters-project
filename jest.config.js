@@ -36,7 +36,6 @@ const customJestConfig = {
     '^@public/(.*)$': '<rootDir>/public/$1',
     '^@ts-types/(.*)$': '<rootDir>/src/types/$1',
     '^@util/(.*)$': '<rootDir>/src/util/$1',
-    '^react-resize-detector$': '<rootDir>/__mocks__/react-resize-detector.js',
   },
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   testEnvironment: 'jest-environment-jsdom',

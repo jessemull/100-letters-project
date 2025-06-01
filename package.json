@@ -21,7 +21,6 @@
     "react-google-recaptcha": "^3.1.0",
     "react-hot-toast": "^2.5.2",
     "react-intersection-observer": "^9.16.0",
-    "react-resize-detector": "^12.0.2",
     "swr": "^2.3.3",
     "yet-another-react-lightbox": "^3.23.2"
   },

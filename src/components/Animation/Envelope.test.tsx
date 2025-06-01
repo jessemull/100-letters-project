@@ -22,26 +22,32 @@ describe('Envelope Component', () => {
     jest.useRealTimers();
   });
 
-  const renderWithWidth = (width: number) => {
-    return render(<Envelope width={width} />);
+  const setWindowWidth = (width: number) => {
+    Object.defineProperty(window, 'innerWidth', {
+      writable: true,
+      configurable: true,
+      value: width,
+    });
+    window.dispatchEvent(new Event('resize'));
   };
 
-  it('Renders the envelope container', async () => {
+  const renderWithWidth = async (width: number) => {
+    setWindowWidth(width);
     await act(async () => {
-      renderWithWidth(1024);
+      render(<Envelope />);
     });
-
     await act(async () => {
       jest.runOnlyPendingTimers();
     });
+  };
 
+  it('Renders the envelope container.', async () => {
+    await renderWithWidth(1024);
     expect(screen.getByTestId('envelope')).toBeInTheDocument();
-    jest.runOnlyPendingTimers();
   });
 
-  it('Triggers animations and renders messages after timeouts', async () => {
-    renderWithWidth(1024);
-
+  it('Triggers animations and renders messages after timeouts.', async () => {
+    await renderWithWidth(1024);
     act(() => {
       jest.advanceTimersByTime(3500);
     });
@@ -49,58 +55,45 @@ describe('Envelope Component', () => {
     await waitFor(() => {
       expect(screen.getByTestId('envelope-heart')).toBeInTheDocument();
     });
-    jest.runOnlyPendingTimers();
   });
 
-  it('Does not render envelope if width is undefined.', () => {
-    const { container } = render(<Envelope />);
-    expect(container.firstChild).toBeNull();
-    jest.runOnlyPendingTimers();
+  it('Sets correct width to 200 when window width > 1024.', async () => {
+    await renderWithWidth(1200);
+    const container = screen.getByTestId('envelope').firstChild as HTMLElement;
+    expect(container).toHaveStyle({ width: '200px' });
   });
 
-  it('Calculates newWidth as 200 when width > 1024.', async () => {
-    renderWithWidth(1300);
+  it('Sets correct width to 150 when window width is between 501 and 1024.', async () => {
+    await renderWithWidth(700);
+    const container = screen.getByTestId('envelope').firstChild as HTMLElement;
+    expect(container).toHaveStyle({ width: '150px' });
+  });
 
-    act(() => {
-      jest.advanceTimersByTime(3500);
+  it('Sets correct width to 100 when window width <= 500.', async () => {
+    await renderWithWidth(400);
+    const container = screen.getByTestId('envelope').firstChild as HTMLElement;
+    expect(container).toHaveStyle({ width: '100px' });
+  });
+
+  it('Responds to window resize after mount.', async () => {
+    await renderWithWidth(1200);
+    let container = screen.getByTestId('envelope').firstChild as HTMLElement;
+    expect(container).toHaveStyle({ width: '200px' });
+
+    await act(() => {
+      setWindowWidth(400);
     });
 
-    const envelope = await screen.findByTestId('envelope');
-    expect(envelope.firstChild).toHaveStyle({ width: '200px' });
-
-    jest.runOnlyPendingTimers();
-  });
-
-  it('Calculates newWidth as 100 when width <= 500.', async () => {
-    renderWithWidth(400);
-
-    act(() => {
-      jest.advanceTimersByTime(3500);
+    await waitFor(() => {
+      container = screen.getByTestId('envelope').firstChild as HTMLElement;
+      expect(container).toHaveStyle({ width: '100px' });
     });
-
-    const envelope = await screen.findByTestId('envelope');
-    expect(envelope.firstChild).toHaveStyle({ width: '100px' });
-
-    jest.runOnlyPendingTimers();
-  });
-
-  it('Calculates newWidth as 0.3 * width when width < 768 but >= 640.', async () => {
-    renderWithWidth(700);
-
-    act(() => {
-      jest.advanceTimersByTime(3500);
-    });
-
-    const envelope = await screen.findByTestId('envelope');
-
-    expect(envelope.firstChild).toHaveStyle({ width: '150px' });
-    jest.runOnlyPendingTimers();
   });
 
   it('Has no accessibility violations.', async () => {
     jest.useRealTimers();
-    const { container } = renderWithWidth(700);
-    const results = await axe(container);
+    await renderWithWidth(700);
+    const results = await axe(screen.getByTestId('envelope'));
     expect(results).toHaveNoViolations();
   });
 });
