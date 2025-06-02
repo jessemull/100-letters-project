@@ -11,9 +11,9 @@ const LetterText: React.FC<Props> = ({ letter }) => (
       <h1 className="text-3xl font-extrabold tracking-tight text-white drop-shadow-lg break-words overflow-hidden">
         {letter.title}
       </h1>
-      <p className="italic text-white/80 break-words overflow-hidden">
+      <div className="text-white/90 whitespace-pre-line break-words overflow-hidden">
         {letter.text}
-      </p>
+      </div>
     </div>
   </div>
 );
