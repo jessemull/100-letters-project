@@ -44,7 +44,7 @@ const Splash = () => {
             to 100 individuals.
           </p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+          <div className="grid grid-cols-1 sm-tablet:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
             {correspondences
               .slice(0, numLetterRows * 3)
               .map((correspondence, idx) => (

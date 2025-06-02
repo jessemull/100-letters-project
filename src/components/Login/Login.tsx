@@ -72,8 +72,8 @@ const Login = () => {
   };
 
   return (
-    <div className="p-8 flex items-center justify-center items-center md:pt-16 md:pb-16">
-      <div className="w-full sm:w-full md:w-1/2 lg:w-1/3 xl:w-1/5 flex flex-col justify-center items-center space-y-4">
+    <div className="p-4 flex items-center justify-center items-center md:pt-16 md:pb-16">
+      <div className="w-full sm:w-full sm-tablet:w-4/5 md-tablet:w-1/2 md:w-1/2 lg:w-1/3 xl:w-1/5 flex flex-col justify-center items-center space-y-4">
         <h1 className="self-start text-white text-3xl font-semibold">Login</h1>
         <TextInput
           IconStart={Lock}
