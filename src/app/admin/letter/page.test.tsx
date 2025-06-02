@@ -32,13 +32,19 @@ jest.mock('../../page.layout', () => {
 });
 
 jest.mock('@components/Form', () => {
-  const Progress = ({ size, color }: { size: number; color: string }) => (
+  const SuspenseProgress = ({
+    size,
+    color,
+  }: {
+    size: number;
+    color: string;
+  }) => (
     <div data-testid="progress" data-size={size} data-color={color}>
       Loading...
     </div>
   );
-  Progress.displayName = 'MockProgress';
-  return { Progress };
+  SuspenseProgress.displayName = 'MockProgress';
+  return { SuspenseProgress };
 });
 
 describe('LetterPage Component', () => {

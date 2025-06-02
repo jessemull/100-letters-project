@@ -3,6 +3,7 @@ import Button from './Button';
 import ConfirmationModal from './ConfirmationModal';
 import Progress from './Progress';
 import Select from './Select';
+import SuspenseProgress from './SuspenseProgress';
 import TextArea from './TextArea';
 import TextInput from './TextInput';
 import showToast from './Toast';
@@ -15,5 +16,6 @@ export {
   TextArea,
   TextInput,
   Select,
+  SuspenseProgress,
   showToast,
 };
