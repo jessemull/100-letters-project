@@ -92,8 +92,8 @@ describe('Envelope Component', () => {
 
   it('Has no accessibility violations.', async () => {
     jest.useRealTimers();
-    await renderWithWidth(700);
-    const results = await axe(screen.getByTestId('envelope'));
+    const { container } = render(<Envelope />);
+    const results = await axe(container);
     expect(results).toHaveNoViolations();
   });
 });

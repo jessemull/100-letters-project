@@ -44,8 +44,7 @@ describe('CorrespondenceForm Component', () => {
 
     expect(screen.getByLabelText(/title/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/status/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/domain/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/impact/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/category/i)).toBeInTheDocument();
     expect(screen.getAllByLabelText(/description/i).length).toBeGreaterThan(0);
     expect(screen.getByLabelText(/first name/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/last name/i)).toBeInTheDocument();
@@ -73,14 +72,11 @@ describe('CorrespondenceForm Component', () => {
     fireEvent.change(screen.getByLabelText(/title/i), {
       target: { value: 'Test Title' },
     });
-    fireEvent.change(screen.getByLabelText(/domain/i), {
-      target: { value: 'Domain' },
+    fireEvent.change(screen.getByLabelText(/category/i), {
+      target: { value: 'COMEDY' },
     });
     fireEvent.change(screen.getByLabelText(/status/i), {
       target: { value: 'UNSENT' },
-    });
-    fireEvent.change(screen.getByLabelText(/impact/i), {
-      target: { value: 'HIGH' },
     });
     fireEvent.change(descriptions[0], { target: { value: 'Description...' } });
     fireEvent.change(screen.getByLabelText(/first name/i), {
@@ -136,8 +132,8 @@ describe('CorrespondenceForm Component', () => {
     fireEvent.change(screen.getByLabelText(/title/i), {
       target: { value: 'Test Title' },
     });
-    fireEvent.change(screen.getByLabelText(/domain/i), {
-      target: { value: 'Domain' },
+    fireEvent.change(screen.getByLabelText(/category/i), {
+      target: { value: 'COMEDY' },
     });
     fireEvent.change(descriptions[0], { target: { value: 'Description...' } });
     fireEvent.change(screen.getByLabelText(/first name/i), {
@@ -198,8 +194,8 @@ describe('CorrespondenceForm Component', () => {
     fireEvent.change(screen.getByLabelText(/title/i), {
       target: { value: 'Test Title' },
     });
-    fireEvent.change(screen.getByLabelText(/domain/i), {
-      target: { value: 'Domain' },
+    fireEvent.change(screen.getByLabelText(/category/i), {
+      target: { value: 'COMEDY' },
     });
     fireEvent.change(descriptions[0], { target: { value: 'Description...' } });
     fireEvent.change(screen.getByLabelText(/first name/i), {
@@ -273,9 +269,8 @@ describe('CorrespondenceForm Component', () => {
             description: 'description',
             status: 'RESPONDED',
             reason: {
+              category: 'TECHNOLOGY',
               description: 'description',
-              domain: 'domain',
-              impact: 'HIGH',
             },
             title: 'title',
           },
@@ -320,9 +315,8 @@ describe('CorrespondenceForm Component', () => {
             description: 'description',
             status: 'RESPONDED',
             reason: {
+              category: 'TECHNOLOGY',
               description: 'description',
-              domain: 'domain',
-              impact: 'HIGH',
             },
             title: 'title',
           },
@@ -368,9 +362,8 @@ describe('CorrespondenceForm Component', () => {
             description: 'description',
             status: 'RESPONDED',
             reason: {
+              category: 'TECHNOLOGY',
               description: 'description',
-              domain: 'domain',
-              impact: 'HIGH',
             },
             title: 'title',
           },
@@ -418,9 +411,8 @@ describe('CorrespondenceForm Component', () => {
             description: 'description',
             status: 'RESPONDED',
             reason: {
+              category: 'TECHNOLOGY',
               description: 'description',
-              domain: 'domain',
-              impact: 'HIGH',
             },
             title: 'title',
           },
@@ -456,9 +448,8 @@ describe('CorrespondenceForm Component', () => {
             description: 'description',
             status: 'RESPONDED',
             reason: {
+              category: 'TECHNOLOGY',
               description: 'description',
-              domain: 'domain',
-              impact: 'HIGH',
             },
             title: 'title',
           },
@@ -493,9 +484,8 @@ describe('CorrespondenceForm Component', () => {
             description: 'description',
             status: 'RESPONDED',
             reason: {
+              category: 'TECHNOLOGY',
               description: 'description',
-              domain: 'domain',
-              impact: 'HIGH',
             },
             title: 'title',
           },

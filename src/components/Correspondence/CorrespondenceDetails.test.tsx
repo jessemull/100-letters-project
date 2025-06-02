@@ -9,7 +9,7 @@ describe('CorrespondenceDetails Component', () => {
     title: 'Letter to Ada Lovelace',
     reason: {
       description: 'For pioneering work in computing.',
-      domain: 'Computer Science',
+      category: 'Technology',
     },
     letters: [],
     recipient: {
@@ -17,7 +17,7 @@ describe('CorrespondenceDetails Component', () => {
     },
   } as unknown as Correspondence;
 
-  it('Renders the correspondence title, reason description, and domain.', () => {
+  it('Renders the correspondence title, reason description, and category.', () => {
     render(<CorrespondenceDetails correspondence={mockCorrespondence} />);
 
     expect(
@@ -26,7 +26,7 @@ describe('CorrespondenceDetails Component', () => {
     expect(
       screen.getByText(/for pioneering work in computing\./i),
     ).toBeInTheDocument();
-    expect(screen.getByText(/domain: computer science/i)).toBeInTheDocument();
+    expect(screen.getByText(/category: technology/i)).toBeInTheDocument();
   });
 
   it('Has no accessibility violations.', async () => {

@@ -10,11 +10,11 @@ import {
   showToast,
 } from '@components/Form';
 import {
+  Category,
   CorrespondenceFormResponse,
   CorrespondenceUpdate,
   CreateOrUpdateCorrespondenceInput,
   GetCorrespondenceByIdResponse,
-  Impact,
   Status,
 } from '@ts-types/correspondence';
 import { DeleteLetterParams, DeleteLetterResponse } from '@ts-types/letter';
@@ -36,7 +36,7 @@ import {
   recipientsCorrespondenceUpdate,
 } from '@util/cache';
 import {
-  correspondenceImpactOptions,
+  correspondenceCategoryOptions,
   correspondenceStatusOptions,
   correspondenceValidators,
   initialCorrespondenceValues,
@@ -238,26 +238,15 @@ const CorrespondenceForm = () => {
         </div>
         <div className="space-y-4 pt-6">
           <h2 className="text-xl font-semibold text-white">Reason</h2>
-          <TextInput
-            errors={errors['reason.domain']}
-            id="domain"
-            label="Domain"
-            onChange={({ target: { value } }) =>
-              updateField('reason.domain', value)
-            }
-            placeholder="Domain"
-            value={values.reason.domain}
-            type="text"
-          />
           <Select
-            errors={errors['reason.impact']}
-            id="impact"
-            label="Impact"
+            errors={errors['reason.category']}
+            id="category"
+            label="Category"
             onChange={({ target: { value } }) =>
-              updateField('reason.impact', value as Impact)
+              updateField('reason.category', value as Category)
             }
-            options={correspondenceImpactOptions}
-            value={values.reason.impact}
+            options={correspondenceCategoryOptions}
+            value={values.reason?.category}
           />
           <TextArea
             errors={errors['reason.description']}

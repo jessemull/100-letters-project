@@ -8,8 +8,8 @@ describe('RecipientDetails Component', () => {
     correspondenceId: 'abc123',
     title: 'Letter to Marie Curie',
     reason: {
+      category: 'SCIENCE',
       description: 'Her pioneering work in radioactivity inspired me.',
-      domain: 'Science',
     },
     recipient: {
       firstName: 'Marie',

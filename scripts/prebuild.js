@@ -95,7 +95,7 @@ async function authenticateUser() {
     for (const correspondence of correspondences) {
       const {
         correspondenceId,
-        reason: { domain },
+        reason: { category },
         title: correspondenceTitle,
         recipient,
         letters,
@@ -104,7 +104,7 @@ async function authenticateUser() {
       searchData.correspondences.push({
         correspondenceId,
         reason: {
-          domain,
+          category,
         },
         title: correspondenceTitle,
       });

@@ -62,7 +62,7 @@ const Envelope = () => {
 
   const letterWidth = size.width * 0.7;
   const letterHeight = size.height * 0.6;
-  console.log(size.height + size.flap);
+
   return (
     <div
       className="relative flex flex-col items-center justify-end"

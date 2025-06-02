@@ -33,7 +33,7 @@ export const useSearch = ({
           isCaseSensitive: false,
           keys: [
             { name: 'letters.title', weight: 0.2 },
-            { name: 'reason.domain', weight: 0.15 },
+            { name: 'reason.category', weight: 0.15 },
             { name: 'recipient.firstName', weight: 0.1 },
             { name: 'recipient.fullName', weight: 0.15 },
             { name: 'recipient.lastName', weight: 0.1 },

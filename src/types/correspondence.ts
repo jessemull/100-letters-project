@@ -6,16 +6,24 @@ import {
   RecipientUpdateInput,
 } from './recipients';
 
-export enum Impact {
-  LOW = 'LOW',
-  MEDIUM = 'MEDIUM',
-  HIGH = 'HIGH',
+export enum Category {
+  COMEDY = 'COMEDY',
+  ENTERTAINMENT = 'ENTERTAINMENT',
+  FAMILY = 'FAMILY',
+  FOOD = 'FOOD',
+  FRIENDS = 'FRIENDS',
+  JOURNALISM = 'JOURNALISM',
+  LITERATURE = 'LITERATURE',
+  MENTORS = 'MENTORS',
+  MUSIC = 'MUSIC',
+  SCIENCE = 'SCIENCE',
+  SPORTS = 'SPORTS',
+  TECHNOLOGY = 'TECHNOLOGY',
 }
 
 export type Reason = {
+  category: Category;
   description: string;
-  domain: string;
-  impact: Impact;
 };
 
 export enum Status {
