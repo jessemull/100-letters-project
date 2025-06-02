@@ -3,11 +3,11 @@
 import PageLayout from '../page.layout';
 import React, { Suspense } from 'react';
 import { CorrespondenceNavigator } from '@components/Correspondence';
-import { Progress } from '@components/Form';
+import { SuspenseProgress } from '@components/Form';
 
 const CorrespondencePage = () => (
   <PageLayout>
-    <Suspense fallback={<Progress size={16} color="white" />}>
+    <Suspense fallback={<SuspenseProgress />}>
       <CorrespondenceNavigator />
     </Suspense>
   </PageLayout>

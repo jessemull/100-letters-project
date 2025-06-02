@@ -2,14 +2,14 @@
 
 import PageLayout from '@pages/page.layout';
 import React, { Suspense } from 'react';
-import { Progress } from '@components/Form';
 import { ProtectedRoute } from '@components/Protected';
 import { RecipientForm } from '@components/Admin';
+import { SuspenseProgress } from '@components/Form';
 
 const RecipientPage = () => (
   <PageLayout>
     <ProtectedRoute>
-      <Suspense fallback={<Progress size={16} color="white" />}>
+      <Suspense fallback={<SuspenseProgress />}>
         <RecipientForm />
       </Suspense>
     </ProtectedRoute>
