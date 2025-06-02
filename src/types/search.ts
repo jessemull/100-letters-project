@@ -9,7 +9,7 @@ export type SearchOptions = {
 export type CorrespondenceSearchItem = {
   correspondenceId: string;
   reason: {
-    domain: string;
+    category: string;
   };
   title: string;
 };

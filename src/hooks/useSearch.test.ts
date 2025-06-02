@@ -14,7 +14,7 @@ jest.mock('@public/data/data.json', () => ({
         fullName: 'Alice Smith',
       },
       reason: {
-        domain: 'example.com',
+        category: 'TECHNOLOGY',
       },
       letters: [
         {
