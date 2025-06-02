@@ -4,15 +4,12 @@ import React from 'react';
 import clsx from 'clsx';
 import { Image } from '@components/Admin/Letters';
 import { categories } from '@constants/feed';
-import { useRouter } from 'next/navigation';
 
 interface Props {
   desktopCols?: 6 | 4 | 3;
 }
 
 const Categories: React.FC<Props> = ({ desktopCols = 6 }) => {
-  const router = useRouter();
-
   const gridColsClass = clsx(
     'grid',
     'grid-cols-2',
@@ -26,7 +23,8 @@ const Categories: React.FC<Props> = ({ desktopCols = 6 }) => {
   );
 
   const onClick = (category: string) => {
-    router.push(`/category?category=${category}`);
+    const newUrl = `/category?category=${encodeURIComponent(category)}`;
+    window.location.href = newUrl;
   };
 
   return (
