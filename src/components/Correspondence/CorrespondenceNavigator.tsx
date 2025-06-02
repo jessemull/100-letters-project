@@ -83,7 +83,7 @@ const CorrespondenceNavigator = () => {
             <LetterDetails letter={selectedLetter} />
           </div>
         </div>
-        <div className="flex-1 space-y-4 min-w-0 w-full order-2 md:order-1">
+        <div className="flex-1 md:mt-0 min-w-0 w-full order-2 md:order-1">
           <div className="hidden lg:block">
             <LetterSelector
               letters={correspondence.letters}
@@ -94,7 +94,7 @@ const CorrespondenceNavigator = () => {
               }}
             />
           </div>
-          <div className="block lg:hidden">
+          <div className="block md:mt-0 lg:hidden">
             <LetterSelectorMobile
               letters={correspondence.letters}
               selected={selectedLetterIndex}
@@ -104,7 +104,7 @@ const CorrespondenceNavigator = () => {
               }}
             />
           </div>
-          <div className="w-full aspect-[4/3] relative rounded-2xl overflow-hidden shadow-md max-w-full">
+          <div className="w-full aspect-[4/3] relative rounded-2xl overflow-hidden shadow-md max-w-full mb-4">
             <Image
               onClick={() => setIsLightboxOpen(true)}
               onKeyDown={(e) => {
