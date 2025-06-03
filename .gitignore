@@ -61,3 +61,5 @@ public/sitemap.xml
 
 # cypres
 /cypress
+# Sentry Config File
+.env.sentry-build-plugin
