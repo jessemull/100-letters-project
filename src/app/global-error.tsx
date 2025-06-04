@@ -20,10 +20,10 @@ const GlobalError: React.FC<Props> = ({ error }) => {
           <div className="text-black mb-6 flex justify-center">
             <AlertTriangle className="w-[20vw] h-[20vw] max-w-[160px] max-h-[160px]" />
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-black mb-4">
+          <h1 className="text-2xl md:text-3xl font-bold text-black mb-4">
             Something Went Wrong!
           </h1>
-          <p className="text-md md:text-lg text-black mb-6">
+          <p className="text-sm md:text-md text-black mb-6">
             We’ve logged the issue. Please refresh to try again.
           </p>
           <Link
