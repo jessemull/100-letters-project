@@ -1,37 +1,41 @@
 'use client';
 
-import React, { useEffect } from 'react';
 import * as Sentry from '@sentry/nextjs';
 import Link from 'next/link';
+import React, { useEffect } from 'react';
 import { AlertTriangle } from 'lucide-react';
 
-export default function GlobalError({
-  error,
-}: {
+interface Props {
   error: Error & { digest?: string };
-}) {
+}
+
+const GlobalError: React.FC<Props> = ({ error }) => {
   useEffect(() => {
     Sentry.captureException(error);
   }, [error]);
   return (
     <html lang="en">
       <body className="min-h-screen flex items-center justify-center bg-gray-100 px-4 text-center font-merriweather">
-        <div className="text-black mb-6 flex justify-center">
-          <AlertTriangle className="w-[20vw] h-[20vw] max-w-[160px] max-h-[160px]" />
+        <div className="flex flex-col items-center max-w-xl w-full">
+          <div className="text-black mb-6 flex justify-center">
+            <AlertTriangle className="w-[20vw] h-[20vw] max-w-[160px] max-h-[160px]" />
+          </div>
+          <h1 className="text-3xl md:text-4xl font-bold text-black mb-4">
+            Something Went Wrong!
+          </h1>
+          <p className="text-md md:text-lg text-black mb-6">
+            We’ve logged the issue. Please refresh to try again.
+          </p>
+          <Link
+            href="/"
+            className="text-gray-900 text-2xl hover:underline transition-colors"
+          >
+            Home
+          </Link>
         </div>
-        <h1 className="text-3xl md:text-4xl font-bold text-black mb-4">
-          Something Went Wrong!
-        </h1>
-        <p className="text-md md:text-lg text-black mb-6">
-          We’ve logged the issue. Please refresh to try again.
-        </p>
-        <Link
-          href="/"
-          className="text-gray-900 text-2xl hover:underline transition-colors"
-        >
-          Home
-        </Link>
       </body>
     </html>
   );
-}
+};
+
+export default GlobalError;
