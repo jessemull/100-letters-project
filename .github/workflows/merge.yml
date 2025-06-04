@@ -34,6 +34,10 @@ jobs:
           COGNITO_USER_POOL_USERNAME: ${{ secrets.COGNITO_USER_POOL_USERNAME_DEV }}
           NEXT_PUBLIC_GA_TRACKING_ID: ${{ secrets.GA_TRACKING_ID_DEV }}
           NEXT_PUBLIC_CAPTCHA_SITE_KEY: ${{ secrets.NEXT_PUBLIC_CAPTCHA_SITE_KEY }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_AUTH_TOKEN_SOURCE_MAPS: ${{ secrets.SENTRY_AUTH_TOKEN_SOURCE_MAPS }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
 
       - name: Copy Sitemap and Robots Files
         run: |
