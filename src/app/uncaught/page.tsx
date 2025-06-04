@@ -1,13 +1,12 @@
 'use client';
 
-import GlobalError from '../global-error';
 import React, { useEffect } from 'react';
 
 const UncaughtPage = () => {
   useEffect(() => {
-    throw new Error('Test error from ErrorTestPage');
+    throw new Error('Testing uncaught error!');
   }, []);
-  return <GlobalError error={new Error('WONTONS')} />;
+  return <div>Error Test</div>;
 };
 
 export default UncaughtPage;

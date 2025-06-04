@@ -27,7 +27,7 @@ const GlobalError: React.FC<Props> = ({ error }) => {
           <h1 className="text-xl md:text-2xl font-bold text-black mb-4">
             Something Went Wrong!
           </h1>
-          <p className="text-md md:text-lg text-black mb-6">
+          <p className="text-md md:text-lg font-bold text-black mb-6">
             We’ve logged the issue. Please refresh to try again.
           </p>
           <Link
