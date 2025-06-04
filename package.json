@@ -91,7 +91,7 @@
     "build": "NODE_ENV=${NODE_ENV:-test} next build",
     "commit": "git-cz",
     "coverage:open": "open ./coverage/lcov-report/index.html",
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "e2e": "cypress run",
     "export": "next export",
     "format": "prettier --write .",

@@ -3,7 +3,7 @@
 import * as Sentry from '@sentry/nextjs';
 import Link from 'next/link';
 import React, { useEffect } from 'react';
-import { AlertTriangle } from 'lucide-react';
+import { MailX } from 'lucide-react';
 
 interface Props {
   error: Error & { digest?: string };
@@ -18,9 +18,13 @@ const GlobalError: React.FC<Props> = ({ error }) => {
       <body className="min-h-screen flex items-center justify-center bg-gray-100 px-4 text-center font-merriweather">
         <div className="flex flex-col items-center max-w-xl w-full">
           <div className="text-black mb-6 flex justify-center">
-            <AlertTriangle className="w-[20vw] h-[20vw] max-w-[160px] max-h-[160px]" />
+            <MailX
+              stroke="#CD1C18"
+              strokeWidth="1"
+              className="w-[20vw] h-[20vw] max-w-[160px] max-h-[160px]"
+            />
           </div>
-          <h1 className="text-2xl md:text-3xl font-bold text-black mb-4">
+          <h1 className="text-xl md:text-2xl font-bold text-black mb-4">
             Something Went Wrong!
           </h1>
           <p className="text-md md:text-lg text-black mb-6">
