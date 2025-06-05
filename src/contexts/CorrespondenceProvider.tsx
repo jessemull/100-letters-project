@@ -1,31 +1,73 @@
 'use client';
 
-import { CorrespondenceContextType } from '@ts-types/context';
-import { createContext, useContext, ReactNode } from 'react';
+import bootstrap from '@public/data/bootstrap.json';
+import {
+  CorrespondenceCard,
+  CorrespondencesMap,
+} from '@ts-types/correspondence';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from 'react';
 
-export const CorrespondenceContext = createContext<CorrespondenceContextType>({
-  correspondences: [],
-  correspondencesById: {},
-  earliestSentAtDate: '',
+const { correspondences: initialCorrespondences } = bootstrap;
+
+export const CorrespondenceContext = createContext({
+  correspondences: [] as CorrespondenceCard[],
+  correspondencesById: {} as CorrespondencesMap,
+  loading: true,
 });
+
+export const useCorrespondence = () => useContext(CorrespondenceContext);
+
+// We include the first three correspondences, count and date as part of the bundle. Then lazy load the rest to improve performance and keep the bundle size minimal.
 
 export const CorrespondenceProvider = ({
   children,
-  correspondences,
-  correspondencesById,
-  earliestSentAtDate,
-}: { children: ReactNode } & CorrespondenceContextType) => {
+}: {
+  children: ReactNode;
+}) => {
+  const [correspondences, setCorrespondences] = useState<CorrespondenceCard[]>(
+    initialCorrespondences as CorrespondenceCard[],
+  );
+  const [correspondencesById, setCorrespondencesById] =
+    useState<CorrespondencesMap>({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (correspondences.length > 3) {
+      setLoading(false);
+      return;
+    }
+
+    const fetchData = async () => {
+      try {
+        const res = await fetch('/data/data.json');
+        const data = await res.json();
+        setCorrespondences(data.correspondences ?? []);
+        setCorrespondencesById(data.correspondencesById ?? {});
+      } catch (err) {
+        console.error('Failed to load correspondence data: ', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [correspondences.length]);
+
   return (
     <CorrespondenceContext.Provider
       value={{
         correspondences,
         correspondencesById,
-        earliestSentAtDate,
+        loading,
       }}
     >
       {children}
     </CorrespondenceContext.Provider>
   );
 };
-
-export const useCorrespondence = () => useContext(CorrespondenceContext);

@@ -18,7 +18,7 @@ module.exports = {
     collect: {
       numberOfRuns: 3,
       settings: {
-        throttlingMethod: 'devtools',
+        throttlingMethod: 'simulate',
         throttling: {
           rttMs: 40,
           throughputKbps: 10240,

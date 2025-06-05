@@ -1,6 +1,8 @@
 import { withSentryConfig } from '@sentry/nextjs';
+import withBundleAnalyzer from '@next/bundle-analyzer';
+import type { NextConfig } from 'next';
 
-const config = {
+const baseConfig: NextConfig = {
   output: 'export',
   productionBrowserSourceMaps: true,
   images: {
@@ -8,7 +10,11 @@ const config = {
   },
 };
 
-export default withSentryConfig(config, {
+const withAnalyzer = withBundleAnalyzer({
+  enabled: false,
+});
+
+export default withSentryConfig(withAnalyzer(baseConfig), {
   automaticVercelMonitors: true,
   disableLogger: true,
   org: '100-letters-project',

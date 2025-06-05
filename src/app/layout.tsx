@@ -1,11 +1,7 @@
 import './globals.css';
 import Script from 'next/script';
-import data from '@public/data/data.json';
 import { AuthProvider } from '@contexts/AuthProvider';
-import {
-  CorrespondenceCard,
-  CorrespondencesMap,
-} from '@ts-types/correspondence';
+
 import { CorrespondenceProvider } from '@contexts/CorrespondenceProvider';
 import { DesktopMenuProvider } from '@contexts/DesktopMenuProvider';
 import { Merriweather } from 'next/font/google';
@@ -17,10 +13,6 @@ const merriweather = Merriweather({
   variable: '--font-merriweather',
   weight: ['400'],
 });
-
-const correspondences = data.correspondences ?? [];
-const correspondencesById = data.correspondencesById ?? {};
-const earliestSentAtDate = data.earliestSentAtDate ?? '';
 
 export const metadata = {
   alternates: {
@@ -80,13 +72,7 @@ const RootLayout: React.FC<Props> = ({ children }) => {
       <body className={`${merriweather.variable} antialiased`}>
         <AuthProvider>
           <DesktopMenuProvider>
-            <CorrespondenceProvider
-              correspondences={correspondences as CorrespondenceCard[]}
-              correspondencesById={correspondencesById as CorrespondencesMap}
-              earliestSentAtDate={earliestSentAtDate as string}
-            >
-              {children}
-            </CorrespondenceProvider>
+            <CorrespondenceProvider>{children}</CorrespondenceProvider>
           </DesktopMenuProvider>
         </AuthProvider>
         <>
