@@ -147,7 +147,7 @@ jobs:
       - name: Start Next.js Server Locally
         run: |
           nohup npm run dev &
-          sleep 10
+          npx wait-on http://localhost:3000
         env:
           NEXT_PUBLIC_API_URL: ${{ secrets.API_URL_DEV }}
           NEXT_PUBLIC_COGNITO_USER_POOL_ID: ${{ secrets.COGNITO_USER_POOL_ID_DEV }}
