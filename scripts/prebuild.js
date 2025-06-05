@@ -10,10 +10,10 @@ const {
   InitiateAuthCommand,
 } = require('@aws-sdk/client-cognito-identity-provider');
 
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+const password = process.env.COGNITO_USER_POOL_PASSWORD;
 const userPoolWebClientId = process.env.NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID;
 const username = process.env.COGNITO_USER_POOL_USERNAME;
-const password = process.env.COGNITO_USER_POOL_PASSWORD;
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 const client = new CognitoIdentityProviderClient({ region: 'us-west-2' });
 

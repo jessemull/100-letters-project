@@ -17,6 +17,9 @@ const customJestConfig = {
     '/src/hooks/index.ts',
     '/src/types/',
     '/src/util/index.ts',
+    'src/instrumentation-client.ts',
+    'src/instrumentation.ts',
+    'src/app/global-error.tsx',
   ],
   coverageReporters: ['json', 'lcov', 'text', 'clover'],
   coverageThreshold: {

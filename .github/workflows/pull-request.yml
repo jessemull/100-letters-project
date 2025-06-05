@@ -34,6 +34,11 @@ jobs:
           COGNITO_USER_POOL_USERNAME: ${{ secrets.COGNITO_USER_POOL_USERNAME_DEV }}
           NEXT_PUBLIC_GA_TRACKING_ID: ${{ secrets.GA_TRACKING_ID_DEV }}
           NEXT_PUBLIC_CAPTCHA_SITE_KEY: ${{ secrets.NEXT_PUBLIC_CAPTCHA_SITE_KEY }}
+          NEXT_PUBLIC_SENTRY_ENVIRONMENT: ${{ secrets.SENTRY_ENVIRONMENT_DEV }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_AUTH_TOKEN_SOURCE_MAPS: ${{ secrets.SENTRY_AUTH_TOKEN_SOURCE_MAPS }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
 
       - name: Copy Sitemap and Robots Files
         run: |
@@ -142,7 +147,7 @@ jobs:
       - name: Start Next.js Server Locally
         run: |
           nohup npm run dev &
-          sleep 10
+          npx wait-on http://localhost:3000
         env:
           NEXT_PUBLIC_API_URL: ${{ secrets.API_URL_DEV }}
           NEXT_PUBLIC_COGNITO_USER_POOL_ID: ${{ secrets.COGNITO_USER_POOL_ID_DEV }}
