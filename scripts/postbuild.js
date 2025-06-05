@@ -2,7 +2,7 @@ const { execSync } = require('child_process');
 
 let path = '.env.local';
 
-switch (process.env.SENTRY_ENVIRONMENT) {
+switch (process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT) {
   case 'production':
     path = '.env.production';
     break;
@@ -17,7 +17,7 @@ switch (process.env.SENTRY_ENVIRONMENT) {
 require('dotenv').config({ path });
 
 (async () => {
-  const env = process.env.SENTRY_ENVIRONMENT;
+  const env = process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT;
 
   if (!env || env === 'development') {
     console.log('Skipping source map upload due to development environment...');
