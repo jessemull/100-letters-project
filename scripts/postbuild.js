@@ -14,9 +14,7 @@ switch (process.env.SENTRY_ENVIRONMENT) {
     break;
 }
 
-require('dotenv').config({
-  path,
-});
+require('dotenv').config({ path });
 
 (async () => {
   const env = process.env.SENTRY_ENVIRONMENT;
@@ -51,7 +49,7 @@ require('dotenv').config({
       { stdio: 'inherit' },
     );
     execSync(
-      `npx sentry-cli ${tokenFlag} releases --org ${SENTRY_ORG} --project ${SENTRY_PROJECT} files ${release} upload-sourcemaps .next --url-prefix "~/_next" --validate`,
+      `npx sentry-cli ${tokenFlag} releases --org ${SENTRY_ORG} --project ${SENTRY_PROJECT} files ${release} upload-sourcemaps .next --url-prefix "~/_next" --validate --ignore-file .sentryignore`,
       { stdio: 'inherit' },
     );
     execSync(

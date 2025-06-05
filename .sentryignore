@@ -1,0 +1,11 @@
+# Ignore server-side rendered stuff
+.next/server
+
+# Ignore known files like polyfills and webpack runtime
+.next/static/chunks/polyfills-*.js
+.next/static/chunks/webpack-*.js
+.next/static/*/_ssgManifest.js
+.next/static/*/_buildManifest.js
+
+# Ignore CSS source map artifacts if source content is missing
+.next/static/css/*
