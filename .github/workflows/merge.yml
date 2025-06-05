@@ -221,10 +221,13 @@ jobs:
           CLOUDFRONT_KEY_PAIR_ID: ${{ secrets.CLOUDFRONT_KEY_PAIR_ID }}
           CLOUDFRONT_PRIVATE_KEY: ${{ secrets.CLOUDFRONT_PRIVATE_KEY }}
 
+      - name: Warm Up Proxy
+        run: curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/
+
       - name: Run Lighthouse Tests
         id: lighthouse
         run: |
-          NODE_ENV=test npx lhci autorun
+          NODE_ENV=test npx lhci autorun --chrome-flags="--headless --disable-gpu --no-sandbox"
         continue-on-error: true
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
