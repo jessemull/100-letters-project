@@ -207,7 +207,7 @@ async function authenticateUser() {
 
     console.log(`Data successfully written to ${outputPath}`);
     console.log(`Search index successfully written to ${searchPath}`);
-    console.log(`Bootstrap data successfully written to ${bootstrapData}`);
+    console.log(`Bootstrap data successfully written to ${bootstrapPath}`);
   } catch (error) {
     console.error('Error loading data: ', error);
     process.exit(1);
