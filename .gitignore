@@ -44,6 +44,7 @@ next-env.d.ts
 .lighthouseci/
 
 # static data for next export and seo files
+public/data/bootstrap.json
 public/data/data.json
 public/data/search.json
 public/robots.txt

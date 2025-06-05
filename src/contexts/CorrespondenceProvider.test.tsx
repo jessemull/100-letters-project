@@ -92,7 +92,7 @@ describe('CorrespondenceContext', () => {
     });
   });
 
-  it('Provides correct values to consumers', async () => {
+  it('Provides correct values to consumers.', async () => {
     await act(async () => {
       render(
         <CorrespondenceProvider>
@@ -106,7 +106,7 @@ describe('CorrespondenceContext', () => {
     );
   });
 
-  it('Uses default values when no props are passed', async () => {
+  it('Uses default values when no props are passed.', async () => {
     await act(async () => {
       render(
         <CorrespondenceProvider>
@@ -120,7 +120,7 @@ describe('CorrespondenceContext', () => {
     );
   });
 
-  it('Provides default values', () => {
+  it('Provides default values,', () => {
     expect(CorrespondenceContext).toBeDefined();
   });
 
@@ -140,7 +140,7 @@ describe('CorrespondenceContext', () => {
     expect(results).toHaveNoViolations();
   });
 
-  it('Handles default fallback values for fetch', async () => {
+  it('Handles default fallback values for fetch.', async () => {
     (global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
       json: async () => ({
@@ -166,7 +166,7 @@ describe('CorrespondenceContext', () => {
     );
   });
 
-  it('Logs error when fetch fails', async () => {
+  it('Logs error when fetch fails.', async () => {
     const mockError = new Error('Network error');
     jest.spyOn(console, 'error').mockImplementation(() => {});
     (global.fetch as jest.Mock).mockRejectedValueOnce(mockError);
