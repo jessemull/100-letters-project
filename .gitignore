@@ -59,7 +59,11 @@ public/sitemap.xml
 # ignore coverage everywhere
 **/dist
 
-# cypres
+# cypress
 /cypress
-# Sentry Config File
+
+# sentry config file
 .env.sentry-build-plugin
+
+# next analyzer
+/analyze
