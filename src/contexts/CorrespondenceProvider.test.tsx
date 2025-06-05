@@ -2,9 +2,10 @@ import {
   CorrespondenceContext,
   CorrespondenceProvider,
   useCorrespondence,
-} from './index';
+} from '@contexts/CorrespondenceProvider';
 import { axe } from 'jest-axe';
 import { render, screen, act } from '@testing-library/react';
+import React from 'react';
 
 jest.mock('@public/data/bootstrap.json', () => ({
   correspondences: [
@@ -39,12 +40,13 @@ jest.mock('@public/data/bootstrap.json', () => ({
 }));
 
 const TestComponent = () => {
-  const { correspondences } = useCorrespondence();
+  const { correspondences, loading } = useCorrespondence();
   return (
     <div>
       <div data-testid="correspondence-count">
         Correspondences: {correspondences.length}
       </div>
+      <div data-testid="loading">{loading ? 'Loading' : 'Loaded'}</div>
     </div>
   );
 };
@@ -84,10 +86,7 @@ describe('CorrespondenceContext', () => {
           },
         ],
         correspondencesById: {
-          '1': { id: '1', title: 'Intro Letter' },
-          '2': { id: '2', title: 'Second Letter' },
-          '3': { id: '3', title: 'Third Letter' },
-          '4': { id: '4', title: 'Fourth Letter' },
+          '5': { id: '5', title: 'New Letter' },
         },
       }),
     });
@@ -139,5 +138,56 @@ describe('CorrespondenceContext', () => {
 
     const results = await axe(container!);
     expect(results).toHaveNoViolations();
+  });
+
+  it('Handles default fallback values for fetch', async () => {
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        correspondences: undefined,
+        correspondencesById: undefined,
+      }),
+    });
+
+    jest.mock('@public/data/bootstrap.json', () => ({
+      correspondences: [],
+    }));
+
+    await act(async () => {
+      render(
+        <CorrespondenceProvider>
+          <TestComponent />
+        </CorrespondenceProvider>,
+      );
+    });
+
+    expect(screen.getByTestId('correspondence-count')).toHaveTextContent(
+      'Correspondences: 3',
+    );
+  });
+
+  it('Logs error when fetch fails', async () => {
+    const mockError = new Error('Network error');
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+    (global.fetch as jest.Mock).mockRejectedValueOnce(mockError);
+
+    jest.mock('@public/data/bootstrap.json', () => ({
+      correspondences: [],
+    }));
+
+    await act(async () => {
+      render(
+        <CorrespondenceProvider>
+          <TestComponent />
+        </CorrespondenceProvider>,
+      );
+    });
+
+    expect(console.error).toHaveBeenCalledWith(
+      'Failed to load correspondence data: ',
+      mockError,
+    );
+
+    (console.error as jest.Mock).mockRestore();
   });
 });

@@ -86,7 +86,7 @@ describe('useSearch', () => {
     });
   });
 
-  it('Returns empty array when fuse is undefined for given type', async () => {
+  it('Returns empty array when fuse is undefined for given type.', async () => {
     let result: { current: SearchResult[] };
 
     await act(async () => {
@@ -167,5 +167,94 @@ describe('useSearch', () => {
     });
 
     await waitFor(() => expect(result.current.length).toBe(1));
+  });
+
+  it('Logs error when fetch fails.', async () => {
+    const error = new Error('Fetch failed');
+
+    (global.fetch as jest.Mock).mockImplementationOnce(() =>
+      Promise.reject(error),
+    );
+
+    const consoleErrorSpy = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
+
+    renderHook(() => useSearch({ type: 'correspondences', term: 'test' }));
+
+    await waitFor(() => {
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        'Failed to load search data:',
+        error,
+      );
+    });
+
+    consoleErrorSpy.mockRestore();
+
+    (global.fetch as jest.Mock).mockImplementation((url: string) => {
+      if (url.endsWith('data.json')) {
+        return Promise.resolve({
+          ok: true,
+          json: () =>
+            Promise.resolve({
+              correspondences: [
+                {
+                  id: 'c1',
+                  title: 'First Correspondence',
+                  recipient: {
+                    firstName: 'Alice',
+                    lastName: 'Smith',
+                    fullName: 'Alice Smith',
+                  },
+                  reason: { category: 'TECHNOLOGY' },
+                  letters: [{ title: 'Thank You Note' }],
+                },
+                {
+                  id: 'c2',
+                  title: 'Second Correspondence',
+                  recipient: {
+                    firstName: 'Bob',
+                    lastName: 'Jones',
+                    fullName: 'Bob Jones',
+                  },
+                  reason: { category: 'SCIENCE' },
+                  letters: [{ title: 'Welcome Letter' }],
+                },
+              ],
+            }),
+        });
+      }
+      if (url.endsWith('search.json')) {
+        return Promise.resolve({
+          ok: true,
+          json: () =>
+            Promise.resolve({
+              correspondences: [
+                { id: 'c1', title: 'First Correspondence' },
+                { id: 'c2', title: 'Second Correspondence' },
+              ],
+              recipients: [
+                {
+                  id: 'r1',
+                  firstName: 'Alice',
+                  lastName: 'Smith',
+                  fullName: 'Alice Smith',
+                },
+                {
+                  id: 'r2',
+                  firstName: 'Bob',
+                  lastName: 'Jones',
+                  fullName: 'Bob Jones',
+                },
+              ],
+              letters: [
+                { id: 'l1', title: 'Thank You Note' },
+                { id: 'l2', title: 'Welcome Letter' },
+              ],
+            }),
+        });
+      }
+      return Promise.reject(new Error('Unknown fetch URL'));
+    });
   });
 });

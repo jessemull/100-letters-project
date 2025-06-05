@@ -1,17 +1,17 @@
 'use client';
 
-import bootstrap from '@public/data/bootstrap.json';
-import {
-  CorrespondenceCard,
-  CorrespondencesMap,
-} from '@ts-types/correspondence';
-import {
+import React, {
   createContext,
   useContext,
   useEffect,
   useState,
   ReactNode,
 } from 'react';
+import bootstrap from '@public/data/bootstrap.json';
+import {
+  CorrespondenceCard,
+  CorrespondencesMap,
+} from '@ts-types/correspondence';
 
 const { correspondences: initialCorrespondences } = bootstrap;
 
@@ -38,11 +38,6 @@ export const CorrespondenceProvider = ({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (correspondences.length > 3) {
-      setLoading(false);
-      return;
-    }
-
     const fetchData = async () => {
       try {
         const res = await fetch('/data/data.json');
