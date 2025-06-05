@@ -97,7 +97,7 @@
     "format": "prettier --write .",
     "lighthouse": "lhci autorun",
     "lint": "next lint --fix",
-    "postbuild": "next-sitemap",
+    "postbuild": "next-sitemap && node ./scripts/postbuild.js",
     "prebuild": "NODE_ENV=${NODE_ENV:-test} node ./scripts/prebuild.js",
     "predev": "npm run prebuild -- --no-refresh",
     "prepare": "husky install",
