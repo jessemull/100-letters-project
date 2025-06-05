@@ -10,6 +10,10 @@ const PORT = 8080;
 const CLOUDFRONT_DOMAIN = process.env.CLOUDFRONT_DOMAIN;
 const COOKIE_TTL = 60 * 60 * 1000;
 
+app.get('/healthcheck', (req, res) => {
+  res.status(200).send('OK');
+});
+
 app.use(cookieParser());
 
 app.use((req, res, next) => {
