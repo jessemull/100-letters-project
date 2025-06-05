@@ -19,11 +19,11 @@ module.exports = {
       numberOfRuns: 3,
       settings: {
         throttlingMethod: 'simulate',
-        throttling: {
-          rttMs: 40,
-          throughputKbps: 10240,
-          cpuSlowdownMultiplier: 1,
-        },
+        // throttling: {
+        //   rttMs: 40,
+        //   throughputKbps: 10240,
+        //   cpuSlowdownMultiplier: 1,
+        // },
       },
       startServer: async () => {
         const execa = await import('execa');
