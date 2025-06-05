@@ -3,6 +3,12 @@ import { DesktopMenuProvider } from '@contexts/DesktopMenuProvider';
 import { axe } from 'jest-axe';
 import { render, screen } from '@testing-library/react';
 
+jest.mock('@contexts/SearchProvider', () => ({
+  SearchProvider: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  ),
+}));
+
 jest.mock('@components/Feed', () => {
   return {
     Feed: () => <div data-testid="categories">Feed</div>,

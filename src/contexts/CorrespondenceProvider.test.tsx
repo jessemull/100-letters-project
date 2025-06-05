@@ -1,25 +1,42 @@
-import { Correspondence, CorrespondencesMap } from '@ts-types/correspondence';
 import {
   CorrespondenceContext,
   CorrespondenceProvider,
   useCorrespondence,
 } from './index';
-import { CorrespondenceFactory } from '@factories/correspondence';
 import { axe } from 'jest-axe';
-import { render, screen } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 
-const mockCorrespondences: Correspondence[] =
-  CorrespondenceFactory.buildList(2);
-
-const mockCorrespondencesById = mockCorrespondences.reduce(
-  (acc, correspondence) => {
-    acc[correspondence.correspondenceId] = correspondence;
-    return acc;
-  },
-  {} as CorrespondencesMap,
-);
-
-const mockDate = new Date().toISOString();
+jest.mock('@public/data/bootstrap.json', () => ({
+  correspondences: [
+    {
+      id: '1',
+      title: 'Intro Letter',
+      recipient: {
+        firstName: 'Alice',
+        lastName: 'Smith',
+        fullName: 'Alice Smith',
+      },
+    },
+    {
+      id: '2',
+      title: 'Second Letter',
+      recipient: {
+        firstName: 'Bob',
+        lastName: 'Jones',
+        fullName: 'Bob Jones',
+      },
+    },
+    {
+      id: '3',
+      title: 'Third Letter',
+      recipient: {
+        firstName: 'Carol',
+        lastName: 'White',
+        fullName: 'Carol White',
+      },
+    },
+  ],
+}));
 
 const TestComponent = () => {
   const { correspondences } = useCorrespondence();
@@ -33,34 +50,74 @@ const TestComponent = () => {
 };
 
 describe('CorrespondenceContext', () => {
-  it('Provides correct values to consumers', () => {
-    render(
-      <CorrespondenceProvider
-        correspondences={mockCorrespondences}
-        correspondencesById={mockCorrespondencesById}
-        earliestSentAtDate={mockDate}
-      >
-        <TestComponent />
-      </CorrespondenceProvider>,
-    );
+  beforeEach(() => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        correspondences: [
+          {
+            id: '1',
+            title: 'Intro Letter',
+            recipient: {
+              firstName: 'Alice',
+              lastName: 'Smith',
+              fullName: 'Alice Smith',
+            },
+          },
+          {
+            id: '2',
+            title: 'Second Letter',
+            recipient: {
+              firstName: 'Bob',
+              lastName: 'Jones',
+              fullName: 'Bob Jones',
+            },
+          },
+          {
+            id: '3',
+            title: 'Third Letter',
+            recipient: {
+              firstName: 'Carol',
+              lastName: 'White',
+              fullName: 'Carol White',
+            },
+          },
+        ],
+        correspondencesById: {
+          '1': { id: '1', title: 'Intro Letter' },
+          '2': { id: '2', title: 'Second Letter' },
+          '3': { id: '3', title: 'Third Letter' },
+          '4': { id: '4', title: 'Fourth Letter' },
+        },
+      }),
+    });
+  });
+
+  it('Provides correct values to consumers', async () => {
+    await act(async () => {
+      render(
+        <CorrespondenceProvider>
+          <TestComponent />
+        </CorrespondenceProvider>,
+      );
+    });
+
     expect(screen.getByTestId('correspondence-count')).toHaveTextContent(
-      'Correspondences: 2',
+      'Correspondences: 3',
     );
   });
 
-  it('Uses default values when no props are passed', () => {
-    render(
-      <CorrespondenceProvider
-        correspondences={[]}
-        correspondencesById={mockCorrespondencesById}
-        earliestSentAtDate={mockDate}
-      >
-        <TestComponent />
-      </CorrespondenceProvider>,
-    );
+  it('Uses default values when no props are passed', async () => {
+    await act(async () => {
+      render(
+        <CorrespondenceProvider>
+          <TestComponent />
+        </CorrespondenceProvider>,
+      );
+    });
 
     expect(screen.getByTestId('correspondence-count')).toHaveTextContent(
-      'Correspondences: 0',
+      'Correspondences: 3',
     );
   });
 
@@ -69,16 +126,18 @@ describe('CorrespondenceContext', () => {
   });
 
   it('Has no accessibility errors.', async () => {
-    const { container } = render(
-      <CorrespondenceProvider
-        correspondences={mockCorrespondences}
-        correspondencesById={mockCorrespondencesById}
-        earliestSentAtDate={mockDate}
-      >
-        <TestComponent />
-      </CorrespondenceProvider>,
-    );
-    const results = await axe(container);
+    let container: HTMLElement;
+
+    await act(async () => {
+      const result = render(
+        <CorrespondenceProvider>
+          <TestComponent />
+        </CorrespondenceProvider>,
+      );
+      container = result.container;
+    });
+
+    const results = await axe(container!);
     expect(results).toHaveNoViolations();
   });
 });

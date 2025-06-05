@@ -3,47 +3,77 @@ import { act, waitFor } from '@testing-library/react';
 import { renderHook } from '@testing-library/react';
 import { useSearch } from '@hooks/useSearch';
 
-jest.mock('@public/data/data.json', () => ({
-  correspondences: [
-    {
-      id: 'c1',
-      title: 'First Correspondence',
-      recipient: {
-        firstName: 'Alice',
-        lastName: 'Smith',
-        fullName: 'Alice Smith',
-      },
-      reason: {
-        category: 'TECHNOLOGY',
-      },
-      letters: [
-        {
-          title: 'Welcome Letter',
-        },
-      ],
-    },
-  ],
-}));
+global.fetch = jest.fn().mockImplementation((url: string) => {
+  if (url.endsWith('data.json')) {
+    return Promise.resolve({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          correspondences: [
+            {
+              id: 'c1',
+              title: 'First Correspondence',
+              recipient: {
+                firstName: 'Alice',
+                lastName: 'Smith',
+                fullName: 'Alice Smith',
+              },
+              reason: {
+                category: 'TECHNOLOGY',
+              },
+              letters: [{ title: 'Thank You Note' }],
+            },
+            {
+              id: 'c2',
+              title: 'Second Correspondence',
+              recipient: {
+                firstName: 'Bob',
+                lastName: 'Jones',
+                fullName: 'Bob Jones',
+              },
+              reason: {
+                category: 'SCIENCE',
+              },
+              letters: [{ title: 'Welcome Letter' }],
+            },
+          ],
+        }),
+    });
+  }
 
-jest.mock('@public/data/search.json', () => ({
-  correspondences: [
-    { id: 'c1', title: 'First Correspondence' },
-    { id: 'c2', title: 'Second Correspondence' },
-  ],
-  recipients: [
-    {
-      id: 'r1',
-      firstName: 'Alice',
-      lastName: 'Smith',
-      fullName: 'Alice Smith',
-    },
-    { id: 'r2', firstName: 'Bob', lastName: 'Jones', fullName: 'Bob Jones' },
-  ],
-  letters: [
-    { id: 'l1', title: 'Welcome Letter' },
-    { id: 'l2', title: 'Thank You Note' },
-  ],
-}));
+  if (url.endsWith('search.json')) {
+    return Promise.resolve({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          correspondences: [
+            { id: 'c1', title: 'First Correspondence' },
+            { id: 'c2', title: 'Second Correspondence' },
+          ],
+          recipients: [
+            {
+              id: 'r1',
+              firstName: 'Alice',
+              lastName: 'Smith',
+              fullName: 'Alice Smith',
+            },
+            {
+              id: 'r2',
+              firstName: 'Bob',
+              lastName: 'Jones',
+              fullName: 'Bob Jones',
+            },
+          ],
+          letters: [
+            { id: 'l1', title: 'Thank You Note' },
+            { id: 'l2', title: 'Welcome Letter' },
+          ],
+        }),
+    });
+  }
+
+  return Promise.reject(new Error('Unknown fetch URL'));
+});
 
 describe('useSearch', () => {
   it('Returns empty array if search term is blank.', async () => {
