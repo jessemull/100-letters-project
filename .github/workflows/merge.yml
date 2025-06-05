@@ -190,7 +190,7 @@ jobs:
       - name: Start Proxy Server
         run: |
           NODE_ENV=test nohup npm run proxy &
-          npx wait-on http://localhost:8080//healthcheck
+          npx wait-on http://localhost:8080/healthcheck
         continue-on-error: true
         env:
           CLOUDFRONT_DOMAIN: ${{ secrets.CLOUDFRONT_DOMAIN }}
@@ -214,7 +214,7 @@ jobs:
       - name: Start Proxy Server
         run: |
           NODE_ENV=test nohup npm run proxy &
-          npx wait-on http://localhost:8080//healthcheck
+          npx wait-on http://localhost:8080/healthcheck
         continue-on-error: true
         env:
           CLOUDFRONT_DOMAIN: ${{ secrets.CLOUDFRONT_DOMAIN }}
