@@ -90,7 +90,7 @@ async function authenticateUser() {
 
     const earliestSentAtDate = sentDates.length
       ? new Date(Math.min(...sentDates)).toISOString()
-      : null;
+      : new Date().toISOString();
 
     const searchData = {
       correspondences: [],
