@@ -1,6 +1,5 @@
 'use client';
 
-import cookies from 'js-cookie';
 import React, {
   createContext,
   useContext,
@@ -9,29 +8,27 @@ import React, {
   useCallback,
   ReactNode,
 } from 'react';
-import { Amplify } from 'aws-amplify';
+import cookies from 'js-cookie';
 import { AuthContextType } from '@ts-types/context';
-import { showToast } from '@components/Form';
 import {
-  getCurrentUser,
-  fetchAuthSession,
-  signIn as amplifySignIn,
-  signOut as amplifySignOut,
-} from '@aws-amplify/auth';
-import { useRouter } from 'next/navigation';
+  CognitoUserPool,
+  CognitoUser,
+  AuthenticationDetails,
+  CognitoUserSession,
+} from 'amazon-cognito-identity-js';
 import { authCookieKey, defaultAuthError } from '@constants/context';
+import { showToast } from '@components/Form';
+import { useRouter } from 'next/navigation';
 
-Amplify.configure({
-  Auth: {
-    Cognito: {
-      userPoolId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID as string,
-      userPoolClientId: process.env
-        .NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID as string,
-    },
-  },
-});
+const poolData = {
+  UserPoolId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID as string,
+  ClientId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID as string,
+};
+
+const userPool = new CognitoUserPool(poolData);
 
 export const defaultSignIn = async () => ({ isSignedIn: false });
+
 export const defaultSignOut = () => {};
 
 export const AuthContext = createContext<AuthContextType>({
@@ -43,11 +40,30 @@ export const AuthContext = createContext<AuthContextType>({
   user: null,
 });
 
+const getCurrentUser = (): Promise<CognitoUser | null> => {
+  return new Promise((resolve) => {
+    const user = userPool.getCurrentUser();
+    resolve(user || null);
+  });
+};
+
+const getSession = (user: CognitoUser): Promise<CognitoUserSession> => {
+  return new Promise((resolve, reject) => {
+    user.getSession((err: any, session: CognitoUserSession | null) => {
+      if (err || !session || !session.isValid()) {
+        reject(err || new Error('Invalid session'));
+      } else {
+        resolve(session);
+      }
+    });
+  });
+};
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState<string | null>(null);
-  const [user, setUser] = useState<any | null>(null);
+  const [user, setUser] = useState<CognitoUser | null>(null);
 
   const router = useRouter();
 
@@ -58,24 +74,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     cookies.remove(authCookieKey);
   };
 
-  const getAccessToken = useCallback(async (): Promise<string | null> => {
-    try {
-      const session = await fetchAuthSession();
-      return session.tokens?.accessToken?.toString() || null;
-    } catch {
-      return null;
-    }
-  }, []);
-
   const initializeSession = useCallback(async () => {
     try {
       const currentUser = await getCurrentUser();
-      const accessToken = await getAccessToken();
-      if (!accessToken) throw new Error('Missing access token!');
+      if (!currentUser) throw new Error('No current user');
+
+      const session = await getSession(currentUser);
+      const accessToken = session.getAccessToken().getJwtToken();
 
       setUser(currentUser);
       setToken(accessToken);
       setIsLoggedIn(true);
+
       cookies.set(authCookieKey, accessToken, {
         expires: 1,
         secure: true,
@@ -86,7 +96,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  }, [getAccessToken]);
+  }, []);
 
   useEffect(() => {
     initializeSession();
@@ -96,18 +106,41 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     username: string,
     password: string,
   ): Promise<{ isSignedIn: boolean }> => {
-    const { isSignedIn } = await amplifySignIn({ username, password });
-    if (!isSignedIn) {
-      resetAuthState();
-      throw new Error(defaultAuthError);
-    }
-    await initializeSession();
-    return { isSignedIn };
+    return new Promise((resolve, reject) => {
+      const authDetails = new AuthenticationDetails({
+        Username: username,
+        Password: password,
+      });
+      const cognitoUser = new CognitoUser({
+        Username: username,
+        Pool: userPool,
+      });
+      cognitoUser.authenticateUser(authDetails, {
+        onSuccess: async (session) => {
+          const accessToken = session.getAccessToken().getJwtToken();
+          setUser(cognitoUser);
+          setToken(accessToken);
+          setIsLoggedIn(true);
+          cookies.set(authCookieKey, accessToken, {
+            expires: 1,
+            secure: true,
+            sameSite: 'Strict',
+          });
+          resolve({ isSignedIn: true });
+        },
+        onFailure: (err) => {
+          resetAuthState();
+          reject(err || new Error(defaultAuthError));
+        },
+      });
+    });
   };
 
   const signOut = async () => {
-    await amplifySignOut();
-    resetAuthState();
+    if (user) user.signOut();
+    setTimeout(() => {
+      resetAuthState();
+    }, 100);
   };
 
   useEffect(() => {
@@ -116,7 +149,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const interval = setInterval(
       async () => {
         try {
-          const newToken = await getAccessToken();
+          if (!user) throw new Error('No user for session refresh');
+
+          const session = await getSession(user);
+          const newToken = session.getAccessToken().getJwtToken();
 
           if (!newToken) throw new Error('No token!');
 
@@ -143,7 +179,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     );
 
     return () => clearInterval(interval);
-  }, [getAccessToken, router, token, isLoggedIn]);
+  }, [user, token, isLoggedIn, router]);
 
   return (
     <AuthContext.Provider

@@ -2,9 +2,14 @@
 
 import PageLayout from '@pages/page.layout';
 import React, { Suspense } from 'react';
-import { Admin } from '@components/Admin';
+import dynamic from 'next/dynamic';
 import { ProtectedRoute } from '@components/Protected';
 import { SuspenseProgress } from '@components/Form';
+
+const Admin = dynamic(() => import('@components/Admin/Admin'), {
+  ssr: false,
+  loading: () => <SuspenseProgress />,
+});
 
 const AdminPage = () => (
   <PageLayout>
