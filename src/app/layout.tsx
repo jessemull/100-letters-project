@@ -55,16 +55,6 @@ const RootLayout: React.FC<Props> = ({ children }) => {
     <html lang="en">
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-        <link
-          crossOrigin="anonymous"
-          href="https://www.googletagmanager.com"
-          rel="preconnect"
-        />
-        <link
-          crossOrigin="anonymous"
-          href="https://www.google-analytics.com"
-          rel="preconnect"
-        />
         <meta name="description" content="100 letters, 100 people, 1 year." />
         <meta property="og:title" content="100 Letters Project" />
         <meta property="og:image" content="/og-image.png" />
@@ -76,15 +66,16 @@ const RootLayout: React.FC<Props> = ({ children }) => {
           </DesktopMenuProvider>
         </AuthProvider>
         <>
-          <Script
-            src={`https://www.googletagmanager.com/gtag/js?id=${NEXT_PUBLIC_GA_TRACKING_ID}`}
-            strategy="lazyOnload"
-          />
-          <Script id="ga-init" strategy="lazyOnload">
+          <Script id="gtag-load" strategy="afterInteractive">
             {`
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               window.requestIdleCallback(() => {
+                const script = document.createElement('script');
+                script.src = 'https://www.googletagmanager.com/gtag/js?id=${NEXT_PUBLIC_GA_TRACKING_ID}';
+                script.async = true;
+                document.head.appendChild(script);
+
                 gtag('js', new Date());
                 gtag('config', '${NEXT_PUBLIC_GA_TRACKING_ID}', {
                   page_path: window.location.pathname,
