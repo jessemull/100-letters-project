@@ -47,7 +47,7 @@ const getCurrentUser = (): Promise<CognitoUser | null> => {
   });
 };
 
-const getSession = (user: CognitoUser): Promise<CognitoUserSession> => {
+export const getSession = (user: CognitoUser): Promise<CognitoUserSession> => {
   return new Promise((resolve, reject) => {
     user.getSession((err: any, session: CognitoUserSession | null) => {
       if (err || !session || !session.isValid()) {
@@ -57,6 +57,56 @@ const getSession = (user: CognitoUser): Promise<CognitoUserSession> => {
       }
     });
   });
+};
+
+export const startSessionRefreshInterval = ({
+  isLoggedIn,
+  user,
+  token,
+  setToken,
+  resetAuthState,
+  router,
+}: {
+  isLoggedIn: boolean;
+  user: CognitoUser | null;
+  token: string | null;
+  setToken: (token: string) => void;
+  resetAuthState: () => void;
+  router: ReturnType<typeof useRouter>;
+}) => {
+  if (!isLoggedIn) return undefined;
+
+  const interval = setInterval(
+    async () => {
+      try {
+        if (!user) throw new Error('No user for session refresh');
+
+        const session = await getSession(user);
+        const newToken = session.getAccessToken().getJwtToken();
+
+        if (!newToken) throw new Error('No token!');
+
+        if (newToken !== token) {
+          setToken(newToken);
+          cookies.set(authCookieKey, newToken, {
+            expires: 1,
+            secure: true,
+            sameSite: 'Strict',
+          });
+        }
+      } catch {
+        setTimeout(() => resetAuthState(), 100);
+        router.push('/login');
+        showToast({
+          message: 'User session has expired. Please log in again!',
+          type: 'error',
+        });
+      }
+    },
+    55 * 60 * 1000,
+  );
+
+  return interval;
 };
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -144,41 +194,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   useEffect(() => {
-    if (!isLoggedIn) return;
+    const interval = startSessionRefreshInterval({
+      isLoggedIn,
+      user,
+      token,
+      setToken,
+      resetAuthState,
+      router,
+    });
 
-    const interval = setInterval(
-      async () => {
-        try {
-          if (!user) throw new Error('No user for session refresh');
-
-          const session = await getSession(user);
-          const newToken = session.getAccessToken().getJwtToken();
-
-          if (!newToken) throw new Error('No token!');
-
-          if (newToken !== token) {
-            setToken(newToken);
-            cookies.set(authCookieKey, newToken, {
-              expires: 1,
-              secure: true,
-              sameSite: 'Strict',
-            });
-          }
-        } catch {
-          setTimeout(() => {
-            resetAuthState();
-          }, 100);
-          router.push('/login');
-          showToast({
-            message: 'User session has expired. Please log in again!',
-            type: 'error',
-          });
-        }
-      },
-      55 * 60 * 1000,
-    );
-
-    return () => clearInterval(interval);
+    return () => {
+      if (interval) clearInterval(interval);
+    };
   }, [user, token, isLoggedIn, router]);
 
   return (

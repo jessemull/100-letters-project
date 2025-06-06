@@ -31,4 +31,19 @@ describe('ProtectedRoute Component', () => {
 
     expect(replaceMock).toHaveBeenCalledWith('/forbidden');
   });
+
+  it('Returns null when authenticating is true.', () => {
+    (useAuth as jest.Mock).mockReturnValue({
+      isLoggedIn: false,
+      loading: true,
+    });
+
+    const { container } = render(
+      <ProtectedRoute>
+        <div data-testid="protected-content">Secret Stuff</div>
+      </ProtectedRoute>,
+    );
+
+    expect(container).toBeEmptyDOMElement();
+  });
 });
