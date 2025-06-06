@@ -34,10 +34,10 @@ const ClockSkeleton = () => {
         Ink Runs Dry In
       </p>
       <div className="flex justify-center gap-x-6 text-center">
-        {clockLabels.map((label) => (
+        {clockLabels.map((label, idx) => (
           <div key={label} className="flex flex-col items-center gap-y-2">
             <div className="flex gap-x-1">
-              {[...Array(2)].map((_, i) => (
+              {[...Array(idx === 0 ? 3 : 2)].map((_, i) => (
                 <div
                   key={`${label}-${i}`}
                   className="w-8 h-12 rounded bg-white/10 border border-white/15 flex items-center justify-center font-merriweather font-semibold text-2xl leading-[48px] text-white"
