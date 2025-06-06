@@ -2,7 +2,7 @@
 
 import React from 'react';
 import clsx from 'clsx';
-import { Image } from '@components/Admin/Letters';
+import { Image } from '@components/Image';
 import { categories } from '@constants/feed';
 
 interface Props {

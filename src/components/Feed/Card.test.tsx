@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import React from 'react';
 import { Card } from '@components/Feed';
-import { Correspondence } from '@ts-types/correspondence';
+import { Correspondence, CorrespondenceCard } from '@ts-types/correspondence';
 import { axe } from 'jest-axe';
 import { fireEvent, render, screen } from '@testing-library/react';
 
@@ -11,7 +11,7 @@ jest.mock('next/navigation', () => ({
   }),
 }));
 
-jest.mock('@components/Admin/Letters', () => ({
+jest.mock('@components/Image', () => ({
   Image: ({ src, alt }: { src: string; alt: string }) => (
     <Image
       src={src}
@@ -50,7 +50,11 @@ const mockCorrespondence = {
 
 describe('Card Commponent', () => {
   it('Renders the title, recipient, and reason.', () => {
-    render(<Card correspondence={mockCorrespondence} />);
+    render(
+      <Card
+        correspondence={mockCorrespondence as unknown as CorrespondenceCard}
+      />,
+    );
     expect(screen.getByText('Letter to Alan Turing')).toBeInTheDocument();
     expect(screen.getByText('Turing, Alan')).toBeInTheDocument();
     expect(
@@ -59,7 +63,11 @@ describe('Card Commponent', () => {
   });
 
   it('Uses the first image thumbnail URL as the image src.', () => {
-    render(<Card correspondence={mockCorrespondence} />);
+    render(
+      <Card
+        correspondence={mockCorrespondence as unknown as CorrespondenceCard}
+      />,
+    );
     const img = screen.getByTestId('card-image') as HTMLImageElement;
     expect(img.alt).toBe('First Letter');
   });
@@ -69,21 +77,33 @@ describe('Card Commponent', () => {
       ...mockCorrespondence,
       letters: [],
     };
-    render(<Card correspondence={modifiedCorrespondence} />);
+    render(
+      <Card
+        correspondence={modifiedCorrespondence as unknown as CorrespondenceCard}
+      />,
+    );
     const img = screen.getByTestId('card-image') as HTMLImageElement;
     expect(img.alt).toBe('Letter Image');
   });
 
   it('Accepts and passes loading and priority props to the Image component.', () => {
     render(
-      <Card correspondence={mockCorrespondence} loading="lazy" priority />,
+      <Card
+        correspondence={mockCorrespondence as unknown as CorrespondenceCard}
+        loading="lazy"
+        priority
+      />,
     );
     const img = screen.getByTestId('card-image');
     expect(img).toBeInTheDocument();
   });
 
   it('Has the correct outer class for layout and hover styling.', () => {
-    const { container } = render(<Card correspondence={mockCorrespondence} />);
+    const { container } = render(
+      <Card
+        correspondence={mockCorrespondence as unknown as CorrespondenceCard}
+      />,
+    );
     const cardDiv = container.querySelector('div');
     expect(cardDiv?.className).toMatch(/rounded-xl/);
     expect(cardDiv?.className).toMatch(/hover:scale/);
@@ -95,7 +115,11 @@ describe('Card Commponent', () => {
       push: pushMock,
     });
 
-    render(<Card correspondence={mockCorrespondence} />);
+    render(
+      <Card
+        correspondence={mockCorrespondence as unknown as CorrespondenceCard}
+      />,
+    );
     const card = screen.getByRole('button');
 
     fireEvent.keyDown(card, { key: 'Enter', code: 'Enter', charCode: 13 });
@@ -111,7 +135,11 @@ describe('Card Commponent', () => {
   });
 
   it('Has no accessibility violations.', async () => {
-    const { container } = render(<Card correspondence={mockCorrespondence} />);
+    const { container } = render(
+      <Card
+        correspondence={mockCorrespondence as unknown as CorrespondenceCard}
+      />,
+    );
     const results = await axe(container);
     expect(results).toHaveNoViolations();
   });

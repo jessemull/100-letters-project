@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { CorrespondenceCard } from '@ts-types/correspondence';
-import { Image } from '@components/Admin/Letters';
+import { Image } from '@components/Image';
 import { useRouter } from 'next/navigation';
 
 interface Props {
