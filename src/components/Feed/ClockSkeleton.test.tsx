@@ -25,7 +25,7 @@ describe('ClockSkeleton Component', () => {
     });
 
     const digitSpans = screen.getAllByText('8');
-    expect(digitSpans).toHaveLength(8);
+    expect(digitSpans).toHaveLength(9);
 
     digitSpans.forEach((span) => {
       expect(span).toHaveClass('opacity-0');
