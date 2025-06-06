@@ -1,24 +1,53 @@
 'use client';
 
-import searchIndex from '@public/data/search.json';
-import { SearchContextType } from '@ts-types/context';
-import { createContext, useContext, ReactNode } from 'react';
+import { SearchContextType, SearchData } from '@ts-types/context';
+import {
+  createContext,
+  useContext,
+  ReactNode,
+  useEffect,
+  useState,
+} from 'react';
 
 export const SearchContext = createContext<SearchContextType>({
   correspondences: [],
   recipients: [],
   letters: [],
+  loading: true,
 });
 
 export const SearchProvider = ({ children }: { children: ReactNode }) => {
+  const [searchData, setSearchData] = useState<SearchData>({
+    correspondences: [],
+    recipients: [],
+    letters: [],
+  });
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadSearchData = async () => {
+      try {
+        const res = await fetch('/data/search.json');
+        const data = await res.json();
+
+        setSearchData({
+          correspondences: data.correspondences ?? [],
+          recipients: data.recipients ?? [],
+          letters: data.letters ?? [],
+        });
+      } catch (err) {
+        console.error('Failed to load search.json:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadSearchData();
+  }, []);
+
   return (
-    <SearchContext.Provider
-      value={{
-        correspondences: searchIndex.correspondences,
-        recipients: searchIndex.recipients,
-        letters: searchIndex.letters,
-      }}
-    >
+    <SearchContext.Provider value={{ ...searchData, loading }}>
       {children}
     </SearchContext.Provider>
   );

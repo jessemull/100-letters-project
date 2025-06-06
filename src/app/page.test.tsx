@@ -21,6 +21,12 @@ jest.mock('next/link', () => {
   return MockLink;
 });
 
+jest.mock('@contexts/SearchProvider', () => ({
+  SearchProvider: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  ),
+}));
+
 describe('HomePage Component', () => {
   it('Renders homepage.', () => {
     render(

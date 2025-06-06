@@ -8,6 +8,13 @@ jest.mock('yet-another-react-lightbox/plugins/zoom', () => ({
   default: () => 'MockedZoomPlugin',
 }));
 
+global.fetch = jest.fn(() =>
+  Promise.resolve({
+    ok: true,
+    json: () => Promise.resolve({}),
+  }),
+) as jest.Mock;
+
 global.IntersectionObserver = jest.fn(() => ({
   disconnect: jest.fn(),
   observe: jest.fn(),

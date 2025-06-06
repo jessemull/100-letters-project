@@ -2,6 +2,12 @@ import PageLayout from './page.layout';
 import { DesktopMenuContext } from '@contexts/DesktopMenuProvider';
 import { render, screen } from '@testing-library/react';
 
+jest.mock('@contexts/SearchProvider', () => ({
+  SearchProvider: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  ),
+}));
+
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn().mockReturnValue({
     push: jest.fn(),

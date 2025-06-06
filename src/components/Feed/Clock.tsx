@@ -1,43 +1,43 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import bootstrap from '@public/data/bootstrap.json';
 import { Digit } from '@components/Feed';
 import { clockLabels } from '@constants/feed';
 import { formatTime } from '@util/clock';
+import { useEffect, useMemo, useState } from 'react';
 
-interface Props {
-  earliestSentAtDate?: string;
-}
+const CLOCK_WIDTH_PX = 438;
+const MIN_SCALE = 0.6;
+const MS_IN_YEAR = 365 * 24 * 60 * 60 * 1000;
 
-const Clock: React.FC<Props> = ({ earliestSentAtDate }) => {
+const baseDate = new Date(bootstrap.earliestSentAtDate);
+const deadline = new Date(baseDate.getTime() + MS_IN_YEAR);
+
+const Clock = () => {
   const [scale, setScale] = useState(1);
-  const [timeLeft, setTimeLeft] = useState(() => {
-    const base = earliestSentAtDate ? new Date(earliestSentAtDate) : new Date();
-    const deadline = new Date(base.getTime() + 365 * 24 * 60 * 60 * 1000);
-    return deadline.getTime() - Date.now();
-  });
+  const [timeLeft, setTimeLeft] = useState(
+    () => deadline.getTime() - Date.now(),
+  );
 
   useEffect(() => {
-    const handleResize = () => {
+    const updateScale = () => {
       const width = window.innerWidth;
-      if (width >= 438) {
-        setScale(1);
-      } else {
-        const minScale = 0.6;
-        const newScale = Math.max(minScale, width / 438);
-        setScale(newScale);
-      }
+      setScale(
+        width >= CLOCK_WIDTH_PX
+          ? 1
+          : Math.max(MIN_SCALE, width / CLOCK_WIDTH_PX),
+      );
     };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    updateScale();
+    window.addEventListener('resize', updateScale);
+    return () => window.removeEventListener('resize', updateScale);
   }, []);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setTimeLeft((prev) => Math.max(0, prev - 1000));
+    const timer = setInterval(() => {
+      setTimeLeft(Math.max(0, deadline.getTime() - Date.now()));
     }, 1000);
-    return () => clearInterval(interval);
+    return () => clearInterval(timer);
   }, []);
 
   const { days, hours, minutes, seconds } = useMemo(
@@ -48,10 +48,7 @@ const Clock: React.FC<Props> = ({ earliestSentAtDate }) => {
   return (
     <div
       className="w-full max-w-3xl mx-auto px-4"
-      style={{
-        transform: `scale(${scale})`,
-        transformOrigin: 'top center',
-      }}
+      style={{ transform: `scale(${scale})`, transformOrigin: 'top center' }}
     >
       <p className="text-center mb-4 text-lg font-semibold text-white font-merriweather select-none">
         Ink Runs Dry In

@@ -12,7 +12,7 @@ const Clock = dynamic(() => import('@components/Feed/Clock'), {
 });
 
 const Splash = () => {
-  const { correspondences, earliestSentAtDate } = useCorrespondence();
+  const { correspondences } = useCorrespondence();
   const [numLetterRows, setNumLetterPages] = useState(1);
 
   const showMoreLetters = useMemo(() => {
@@ -30,8 +30,8 @@ const Splash = () => {
             100 Letters, 100 People, 1 Year.
           </h2>
         </div>
-        <Completion letterCount={correspondences.length} />
-        <Clock earliestSentAtDate={earliestSentAtDate} />
+        <Completion />
+        <Clock />
       </div>
       <div className="w-full space-y-4">
         <h2 className="text-2xl font-bold text-center">{`Recent Letters${correspondences.length === 0 ? ' Coming Soon!' : ''}`}</h2>

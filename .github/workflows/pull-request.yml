@@ -58,6 +58,7 @@ jobs:
         with:
           name: public-json
           path: |
+            public/data/bootstrap.json
             public/data/data.json
             public/data/search.json
           retention-days: 1

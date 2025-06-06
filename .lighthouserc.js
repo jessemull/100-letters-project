@@ -5,6 +5,11 @@ const urls = {
   test: 'http://localhost:8080',
 };
 
+const throttling = {
+  production: 'simulate',
+  test: 'simulate'
+}
+
 module.exports = {
   ci: {
     assert: {
@@ -18,12 +23,7 @@ module.exports = {
     collect: {
       numberOfRuns: 3,
       settings: {
-        throttlingMethod: 'devtools',
-        throttling: {
-          rttMs: 40,
-          throughputKbps: 10240,
-          cpuSlowdownMultiplier: 1,
-        },
+        throttlingMethod: throttling[process.env.NODE_ENV] || 'devtools',
       },
       startServer: async () => {
         const execa = await import('execa');

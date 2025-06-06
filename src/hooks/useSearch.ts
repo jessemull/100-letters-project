@@ -21,14 +21,18 @@ export const useSearch = ({
 
   useEffect(() => {
     const loadSearchData = async () => {
-      const dataModule = await import('@public/data/data.json');
-      const searchIndexModule = await import('@public/data/search.json');
+      try {
+        const [dataRes, searchRes] = await Promise.all([
+          fetch('/data/data.json'),
+          fetch('/data/search.json'),
+        ]);
 
-      const { correspondences: correspondenceData } = dataModule;
+        const dataModule = await dataRes.json();
+        const searchIndexModule = await searchRes.json();
 
-      const all = new Fuse<CorrespondenceCard>(
-        correspondenceData as CorrespondenceCard[],
-        {
+        const { correspondences: correspondenceData } = dataModule;
+
+        const all = new Fuse<CorrespondenceCard>(correspondenceData ?? [], {
           threshold: 0.3,
           isCaseSensitive: false,
           keys: [
@@ -39,31 +43,36 @@ export const useSearch = ({
             { name: 'recipient.lastName', weight: 0.1 },
             { name: 'title', weight: 0.3 },
           ],
-        },
-      );
+        });
 
-      const correspondences = new Fuse<CorrespondenceSearchItem>(
-        searchIndexModule.correspondences,
-        {
-          keys: ['title'],
-          threshold: 0.3,
-        },
-      );
+        const correspondences = new Fuse<CorrespondenceSearchItem>(
+          searchIndexModule.correspondences ?? [],
+          {
+            keys: ['title'],
+            threshold: 0.3,
+          },
+        );
 
-      const recipients = new Fuse<RecipientSearchItem>(
-        searchIndexModule.recipients,
-        {
-          keys: ['firstName', 'lastName', 'fullName'],
-          threshold: 0.3,
-        },
-      );
+        const recipients = new Fuse<RecipientSearchItem>(
+          searchIndexModule.recipients ?? [],
+          {
+            keys: ['firstName', 'lastName', 'fullName'],
+            threshold: 0.3,
+          },
+        );
 
-      const letters = new Fuse<LetterSearchItem>(searchIndexModule.letters, {
-        keys: ['title'],
-        threshold: 0.3,
-      });
+        const letters = new Fuse<LetterSearchItem>(
+          searchIndexModule.letters ?? [],
+          {
+            keys: ['title'],
+            threshold: 0.3,
+          },
+        );
 
-      setFuseMap({ all, correspondences, recipients, letters });
+        setFuseMap({ all, correspondences, recipients, letters });
+      } catch (err) {
+        console.error('Failed to load search data:', err);
+      }
     };
 
     loadSearchData();

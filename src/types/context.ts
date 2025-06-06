@@ -28,7 +28,9 @@ export type DesktopMenuContextType = {
   setCollapsed: (value: boolean) => void;
 };
 
-export type SearchContextType = {
+export type SearchContextType = SearchData & { loading: boolean };
+
+export type SearchData = {
   correspondences: CorrespondenceSearchItem[];
   recipients: RecipientSearchItem[];
   letters: LetterSearchItem[];

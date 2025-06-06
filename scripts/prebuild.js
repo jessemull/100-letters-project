@@ -75,8 +75,14 @@ async function authenticateUser() {
 
     const token = response.AuthenticationResult.AccessToken;
 
-    const correspondences = await fetchAllPages('correspondence', token);
-    const letters = await fetchAllPages('letter', token);
+    const [unsorted, letters] = await Promise.all([
+      fetchAllPages('correspondence', token),
+      fetchAllPages('letter', token),
+    ]);
+
+    const correspondences = unsorted.sort(
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
+    );
 
     const sentDates = letters
       .map((letter) => new Date(letter.sentAt))
@@ -179,7 +185,12 @@ async function authenticateUser() {
     const data = {
       correspondences: fullNameCorrespondences,
       correspondencesById,
+    };
+
+    const bootstrapData = {
+      correspondences: fullNameCorrespondences.slice(0, 3),
       earliestSentAtDate,
+      totalCorrespondences: fullNameCorrespondences.length,
     };
 
     const dataDir = path.join(__dirname, '../public/data');
@@ -191,8 +202,12 @@ async function authenticateUser() {
     const searchPath = path.join(dataDir, 'search.json');
     fs.writeFileSync(searchPath, JSON.stringify(searchData, null, 2));
 
+    const bootstrapPath = path.join(dataDir, 'bootstrap.json');
+    fs.writeFileSync(bootstrapPath, JSON.stringify(bootstrapData, null, 2));
+
     console.log(`Data successfully written to ${outputPath}`);
     console.log(`Search index successfully written to ${searchPath}`);
+    console.log(`Bootstrap data successfully written to ${bootstrapPath}`);
   } catch (error) {
     console.error('Error loading data: ', error);
     process.exit(1);
