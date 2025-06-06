@@ -10,6 +10,7 @@ import { useMemo } from 'react';
 
 const PageLayout = ({ children }: { children: React.ReactNode }) => {
   const { collapsed, setCollapsed } = useDesktopMenu();
+
   const sidebarWidth = useMemo(
     () => (collapsed ? 'w-16' : 'w-80'),
     [collapsed],
