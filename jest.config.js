@@ -39,6 +39,7 @@ const customJestConfig = {
     '^@public/(.*)$': '<rootDir>/public/$1',
     '^@ts-types/(.*)$': '<rootDir>/src/types/$1',
     '^@util/(.*)$': '<rootDir>/src/util/$1',
+    '^@pages/(.*)$': '<rootDir>/src/app/$1',
   },
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   testEnvironment: 'jest-environment-jsdom',

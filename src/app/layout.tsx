@@ -77,15 +77,19 @@ const RootLayout: React.FC<Props> = ({ children }) => {
         </AuthProvider>
         <>
           <Script
-            strategy="afterInteractive"
             src={`https://www.googletagmanager.com/gtag/js?id=${NEXT_PUBLIC_GA_TRACKING_ID}`}
+            strategy="lazyOnload"
           />
-          <Script id="google-analytics" strategy="afterInteractive">
+          <Script id="ga-init" strategy="lazyOnload">
             {`
               window.dataLayer = window.dataLayer || [];
-              function gtag(){window.dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', '${NEXT_PUBLIC_GA_TRACKING_ID}');
+              function gtag(){dataLayer.push(arguments);}
+              window.requestIdleCallback(() => {
+                gtag('js', new Date());
+                gtag('config', '${NEXT_PUBLIC_GA_TRACKING_ID}', {
+                  page_path: window.location.pathname,
+                });
+              });
             `}
           </Script>
         </>

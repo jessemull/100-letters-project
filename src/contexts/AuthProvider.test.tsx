@@ -1,74 +1,97 @@
+'use client';
+
 import React from 'react';
+import { render, act, screen } from '@testing-library/react';
 import {
   AuthContext,
   AuthProvider,
   defaultSignIn,
   defaultSignOut,
   useAuth,
+  getSession,
+  startSessionRefreshInterval,
 } from '@contexts/AuthProvider';
-import {
-  getCurrentUser,
-  fetchAuthSession,
-  signIn as amplifySignIn,
-} from '@aws-amplify/auth';
-import { render, screen, waitFor, act } from '@testing-library/react';
-import { showToast } from '@components/Form';
+import cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
+import { showToast } from '@components/Form';
+
+// Avoid typescript mock errors.
+
+const { __mocks__ } = require('amazon-cognito-identity-js');
+
+const { mSession, mUser, mUserPool } = __mocks__;
+
+jest.useFakeTimers();
+jest.spyOn(global, 'setInterval');
+
+jest.mock('js-cookie', () => ({
+  set: jest.fn(),
+  get: jest.fn(),
+  remove: jest.fn(),
+}));
 
 jest.mock('@components/Form', () => ({
   showToast: jest.fn(),
 }));
 
 jest.mock('next/navigation', () => ({
-  useRouter: jest.fn().mockReturnValue({
-    push: jest.fn(),
-  }),
+  useRouter: jest.fn(),
 }));
-
-jest.mock('@aws-amplify/auth', () => ({
-  getCurrentUser: jest.fn(),
-  fetchAuthSession: jest.fn(),
-  signIn: jest.fn(),
-  signOut: jest.fn(),
-}));
-
-const mockUser = { username: 'testUser' };
-const mockSession = {
-  tokens: {
-    accessToken: {
-      toString: jest.fn(() => 'mockAccessToken'),
-    },
-  },
-};
 
 const TestComponent = () => {
-  const { isLoggedIn, token, user, signIn, signOut } = useAuth();
-
-  const handleClick = async () => {
-    try {
-      await signIn('testUser', 'password');
-    } catch (e) {} // eslint-disable-line unused-imports/no-unused-vars
-  };
-
+  const { isLoggedIn, loading, signIn, signOut, token } = useAuth();
   return (
     <div>
-      <div data-testid="access-token">{token || 'No Token'}</div>
-      <div data-testid="is-logged-in">{isLoggedIn ? 'Yes' : 'No'}</div>
-      <div data-testid="user">{user ? user.username : 'No User'}</div>
-      <button onClick={handleClick}>Sign In</button>
-      <button onClick={signOut}>Sign Out</button>
+      <span data-testid="status">{isLoggedIn ? 'LoggedIn' : 'LoggedOut'}</span>
+      <span data-testid="loading">{loading ? 'Loading' : 'Loaded'}</span>
+      <span data-testid="token">{token}</span>
+      <button onClick={() => signIn('user', 'pass')}>SignIn</button>
+      <button onClick={() => signOut()}>SignOut</button>
     </div>
   );
 };
 
 describe('AuthProvider', () => {
+  const push = jest.fn();
+
   beforeEach(() => {
     jest.clearAllMocks();
+
+    (useRouter as jest.Mock).mockReturnValue({ push });
+
+    mUserPool.getCurrentUser.mockReturnValue(mUser);
+    mUser.getSession.mockImplementation((cb: any) => cb(null, mSession));
+
+    const { CognitoUser } = require('amazon-cognito-identity-js');
+
+    CognitoUser.mockImplementation(() => ({
+      authenticateUser: (_authDetails: unknown, callbacks: any) =>
+        callbacks.onSuccess(mSession),
+      signOut: jest.fn(),
+    }));
+
+    mSession.getAccessToken = () => ({
+      getJwtToken: () => 'fake-jwt-token',
+    });
   });
 
-  it('Provides default values when unauthenticated.', async () => {
-    (getCurrentUser as jest.Mock).mockRejectedValue(new Error('Failed'));
-    (fetchAuthSession as jest.Mock).mockRejectedValue(new Error('Failed'));
+  it('Initializes session successfully.', async () => {
+    await act(async () => {
+      render(
+        <AuthProvider>
+          <TestComponent />
+        </AuthProvider>,
+      );
+    });
+
+    expect(screen.getByTestId('status')).toHaveTextContent('LoggedIn');
+    expect(screen.getByTestId('loading')).toHaveTextContent('Loaded');
+    expect(screen.getByTestId('token')).toHaveTextContent('fake-jwt-token');
+    expect(cookies.set).toHaveBeenCalled();
+  });
+
+  it('Handles missing user during init.', async () => {
+    mUserPool.getCurrentUser.mockReturnValue(null as any);
 
     await act(async () => {
       render(
@@ -78,34 +101,12 @@ describe('AuthProvider', () => {
       );
     });
 
-    expect(screen.getByTestId('access-token')).toHaveTextContent('No Token');
-    expect(screen.getByTestId('is-logged-in')).toHaveTextContent('No');
-    expect(screen.getByTestId('user')).toHaveTextContent('No User');
+    expect(screen.getByTestId('status')).toHaveTextContent('LoggedOut');
+    expect(screen.getByTestId('loading')).toHaveTextContent('Loaded');
+    expect(cookies.remove).toHaveBeenCalled();
   });
 
-  it('Sets user and accessToken when authenticated on mount.', async () => {
-    (getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
-    (fetchAuthSession as jest.Mock).mockResolvedValue(mockSession);
-
-    render(
-      <AuthProvider>
-        <TestComponent />
-      </AuthProvider>,
-    );
-
-    await waitFor(() => {
-      expect(screen.getByTestId('access-token')).toHaveTextContent(
-        'mockAccessToken',
-      );
-      expect(screen.getByTestId('is-logged-in')).toHaveTextContent('Yes');
-      expect(screen.getByTestId('user')).toHaveTextContent('testUser');
-    });
-  });
-
-  it('Sets accessToken to null if fetching session fails.', async () => {
-    (getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
-    (fetchAuthSession as jest.Mock).mockRejectedValue(new Error('Failed'));
-
+  it('Signs in correctly and stores token.', async () => {
     await act(async () => {
       render(
         <AuthProvider>
@@ -114,15 +115,53 @@ describe('AuthProvider', () => {
       );
     });
 
-    expect(screen.getByTestId('access-token')).toHaveTextContent('No Token');
-    expect(screen.getByTestId('is-logged-in')).toHaveTextContent('No');
-    expect(screen.getByTestId('user')).toHaveTextContent('No User');
+    await act(async () => {
+      screen.getByText('SignIn').click();
+    });
+
+    expect(screen.getByTestId('status')).toHaveTextContent('LoggedIn');
+    expect(cookies.set).toHaveBeenCalled();
   });
 
-  it('Sets accessToken to null if fetching session returns bad data.', async () => {
-    (getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
-    (fetchAuthSession as jest.Mock).mockResolvedValue({});
+  it('Handles sign-in failure and uses default error.', async () => {
+    const { CognitoUser } = require('amazon-cognito-identity-js');
 
+    CognitoUser.mockImplementation(() => ({
+      authenticateUser: (_authDetails: unknown, callbacks: any) =>
+        callbacks.onFailure(null),
+      signOut: jest.fn(),
+    }));
+
+    let signInFunc: (
+      username: string,
+      password: string,
+    ) => Promise<{ isSignedIn: boolean }> = () =>
+      new Promise(() => ({ isSignedIn: false }));
+
+    const HookCapture = () => {
+      const auth = useAuth();
+      signInFunc = auth.signIn;
+      return null;
+    };
+
+    await act(async () => {
+      render(
+        <AuthProvider>
+          <HookCapture />
+        </AuthProvider>,
+      );
+    });
+
+    await act(async () => {
+      await expect(signInFunc('', '')).rejects.toThrow(
+        'Error signing in. Please try again.',
+      );
+    });
+
+    expect(cookies.remove).toHaveBeenCalled();
+  });
+
+  it('Signs out and clears state.', async () => {
     await act(async () => {
       render(
         <AuthProvider>
@@ -131,262 +170,59 @@ describe('AuthProvider', () => {
       );
     });
 
-    expect(screen.getByTestId('access-token')).toHaveTextContent('No Token');
-    expect(screen.getByTestId('is-logged-in')).toHaveTextContent('No');
-    expect(screen.getByTestId('user')).toHaveTextContent('No User');
-  });
-
-  it('Handles sign-in correctly.', async () => {
-    (amplifySignIn as jest.Mock).mockResolvedValue({ isSignedIn: true });
-    (getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
-    (fetchAuthSession as jest.Mock).mockResolvedValue(mockSession);
-
-    render(
-      <AuthProvider>
-        <TestComponent />
-      </AuthProvider>,
-    );
+    mUser.signOut = jest.fn();
 
     await act(async () => {
-      screen.getByText('Sign In').click();
+      screen.getByText('SignOut').click();
+      jest.advanceTimersByTime(120);
     });
 
-    await waitFor(() => {
-      expect(screen.getByTestId('access-token')).toHaveTextContent(
-        'mockAccessToken',
-      );
-      expect(screen.getByTestId('is-logged-in')).toHaveTextContent('Yes');
-      expect(screen.getByTestId('user')).toHaveTextContent('testUser');
-    });
+    expect(mUser.signOut).toHaveBeenCalled();
+    expect(cookies.remove).toHaveBeenCalled();
+    expect(screen.getByTestId('status')).toHaveTextContent('LoggedOut');
   });
 
-  it('Handles bad data on sign-in correctly.', async () => {
-    (amplifySignIn as jest.Mock).mockResolvedValue({ isSignedIn: true });
-    (getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
-    (fetchAuthSession as jest.Mock).mockResolvedValue({});
-
-    render(
-      <AuthProvider>
-        <TestComponent />
-      </AuthProvider>,
-    );
-
-    await act(async () => {
-      screen.getByText('Sign In').click();
-    });
-
-    await waitFor(() => {
-      expect(screen.getByTestId('access-token')).toHaveTextContent('No Token');
-      expect(screen.getByTestId('is-logged-in')).toHaveTextContent('No');
-      expect(screen.getByTestId('user')).toHaveTextContent('No User');
-    });
-  });
-
-  it('Handles sign-in failure.', async () => {
-    (amplifySignIn as jest.Mock).mockResolvedValue({ isSignedIn: false });
-    (getCurrentUser as jest.Mock).mockResolvedValue({});
-    (fetchAuthSession as jest.Mock).mockResolvedValue({});
-
-    render(
-      <AuthProvider>
-        <TestComponent />
-      </AuthProvider>,
-    );
-
-    await act(async () => {
-      screen.getByText('Sign In').click();
-    });
-
-    await act(async () => {
-      await waitFor(() => {
-        expect(screen.getByTestId('access-token')).toHaveTextContent(
-          'No Token',
-        );
-      });
-    });
-  });
-
-  it('Handles and sets default values.', async () => {
-    const signIn = await defaultSignIn();
-    const signOut = defaultSignOut();
-    expect(signIn).toEqual({ isSignedIn: false });
-    expect(signOut).toBeUndefined();
+  it('Has correct default exports for signIn, signOut, and AuthContext.', async () => {
+    const signInResult = await defaultSignIn();
+    expect(signInResult).toEqual({ isSignedIn: false });
+    expect(defaultSignOut).not.toThrow();
     expect(AuthContext).toBeDefined();
   });
 
-  it('Handles sign-out correctly.', async () => {
-    (getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
-    (fetchAuthSession as jest.Mock).mockResolvedValue(mockSession);
+  it('Rejects when getSession callback returns err, null session, or invalid session.', async () => {
+    const userWithErr = {
+      getSession: jest.fn((cb: any) => cb(new Error('Session error'), null)),
+    };
+    const userWithNullSession = {
+      getSession: jest.fn((cb: any) => cb(null, null)),
+    };
+    const invalidSession = {
+      isValid: jest.fn(() => false),
+    };
+    const userWithInvalidSession = {
+      getSession: jest.fn((cb: any) => cb(null, invalidSession)),
+    };
 
-    render(
-      <AuthProvider>
-        <TestComponent />
-      </AuthProvider>,
+    await expect(getSession(userWithErr as any)).rejects.toThrow(
+      'Session error',
     );
-
-    await waitFor(() => {
-      expect(screen.getByTestId('access-token')).toHaveTextContent(
-        'mockAccessToken',
-      );
-      expect(screen.getByTestId('is-logged-in')).toHaveTextContent('Yes');
-      expect(screen.getByTestId('user')).toHaveTextContent('testUser');
-    });
-
-    (getCurrentUser as jest.Mock).mockResolvedValue(null);
-    (fetchAuthSession as jest.Mock).mockResolvedValue({});
-
-    await act(async () => {
-      screen.getByText('Sign Out').click();
-    });
-
-    await waitFor(() => {
-      expect(screen.getByTestId('access-token')).toHaveTextContent('No Token');
-      expect(screen.getByTestId('is-logged-in')).toHaveTextContent('No');
-      expect(screen.getByTestId('user')).toHaveTextContent('No User');
-    });
+    await expect(getSession(userWithNullSession as any)).rejects.toThrow(
+      'Invalid session',
+    );
+    await expect(getSession(userWithInvalidSession as any)).rejects.toThrow(
+      'Invalid session',
+    );
   });
 
-  it('Handles authentication check failure.', async () => {
-    (getCurrentUser as jest.Mock).mockRejectedValue(new Error('Failed'));
-    (fetchAuthSession as jest.Mock).mockRejectedValue(new Error('Failed'));
-
-    render(
-      <AuthProvider>
-        <TestComponent />
-      </AuthProvider>,
+  it('Interval throws no token message.', async () => {
+    mUser.getSession.mockImplementation((cb: any) =>
+      cb(null, {
+        getAccessToken: () => ({
+          getJwtToken: () => null,
+        }),
+        isValid: () => true,
+      }),
     );
-
-    await waitFor(() => {
-      expect(screen.getByTestId('access-token')).toHaveTextContent('No Token');
-      expect(screen.getByTestId('is-logged-in')).toHaveTextContent('No');
-      expect(screen.getByTestId('user')).toHaveTextContent('No User');
-    });
-  });
-
-  it('Triggers logout and toast when no token is returned in interval.', async () => {
-    jest.useFakeTimers();
-
-    const mockPush = jest.fn();
-    (useRouter as jest.Mock).mockReturnValue({
-      push: mockPush,
-    });
-    (getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
-    (fetchAuthSession as jest.Mock)
-      .mockResolvedValueOnce(mockSession)
-      .mockResolvedValueOnce({});
-
-    render(
-      <AuthProvider>
-        <TestComponent />
-      </AuthProvider>,
-    );
-
-    await waitFor(() =>
-      expect(screen.getByTestId('is-logged-in')).toHaveTextContent('Yes'),
-    );
-
-    act(() => {
-      jest.advanceTimersByTime(55 * 60 * 1000);
-    });
-
-    await waitFor(() => {
-      expect(mockPush).toHaveBeenCalledWith('/login');
-      expect(showToast).toHaveBeenCalledWith({
-        message: 'User session has expired. Please log in again!',
-        type: 'error',
-      });
-    });
-
-    jest.useRealTimers();
-  });
-
-  it('Updates token if a new one is returned during interval.', async () => {
-    jest.useFakeTimers();
-
-    (getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
-    (fetchAuthSession as jest.Mock)
-      .mockResolvedValueOnce(mockSession)
-      .mockResolvedValueOnce({
-        tokens: {
-          accessToken: {
-            toString: jest.fn(() => 'newMockToken'),
-          },
-        },
-      });
-
-    render(
-      <AuthProvider>
-        <TestComponent />
-      </AuthProvider>,
-    );
-
-    await waitFor(() =>
-      expect(screen.getByTestId('access-token')).toHaveTextContent(
-        'mockAccessToken',
-      ),
-    );
-
-    act(() => {
-      jest.advanceTimersByTime(55 * 60 * 1000);
-    });
-
-    await waitFor(() =>
-      expect(screen.getByTestId('access-token')).toHaveTextContent(
-        'newMockToken',
-      ),
-    );
-
-    jest.useRealTimers();
-  });
-
-  it('Does nothing if the token is unchanged during interval.', async () => {
-    jest.useFakeTimers();
-
-    const mockPush = jest.fn();
-    (useRouter as jest.Mock).mockReturnValue({
-      push: mockPush,
-    });
-    (getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
-    (fetchAuthSession as jest.Mock).mockResolvedValue(mockSession);
-
-    render(
-      <AuthProvider>
-        <TestComponent />
-      </AuthProvider>,
-    );
-
-    await waitFor(() =>
-      expect(screen.getByTestId('access-token')).toHaveTextContent(
-        'mockAccessToken',
-      ),
-    );
-
-    act(() => {
-      jest.advanceTimersByTime(55 * 60 * 1000);
-    });
-
-    await waitFor(() =>
-      expect(screen.getByTestId('access-token')).toHaveTextContent(
-        'mockAccessToken',
-      ),
-    );
-
-    expect(mockPush).not.toHaveBeenCalled();
-    expect(showToast).not.toHaveBeenCalled();
-
-    jest.useRealTimers();
-  });
-
-  it('Handles session expiration and calls resetAuthState via setTimeout.', async () => {
-    jest.useFakeTimers();
-
-    (getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
-    (fetchAuthSession as jest.Mock)
-      .mockResolvedValueOnce(mockSession)
-      .mockRejectedValueOnce(new Error('Token fetch failed'));
-
-    const pushMock = jest.fn();
-    (useRouter as jest.Mock).mockReturnValue({ push: pushMock });
 
     await act(async () => {
       render(
@@ -396,28 +232,105 @@ describe('AuthProvider', () => {
       );
     });
 
-    expect(screen.getByTestId('is-logged-in')).toHaveTextContent('Yes');
+    await act(() => {
+      jest.runOnlyPendingTimers();
+      return Promise.resolve();
+    });
 
-    act(() => {
+    expect(push).toHaveBeenCalledWith('/login');
+    expect(showToast).toHaveBeenCalled();
+  });
+});
+
+describe('startSessionRefreshInterval', () => {
+  const resetAuthState = jest.fn();
+  const push = jest.fn();
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    (useRouter as jest.Mock).mockReturnValue({ push });
+  });
+
+  it('Throws error if no user is provided.', async () => {
+    startSessionRefreshInterval({
+      isLoggedIn: true,
+      user: null,
+      token: 'abc',
+      setToken: jest.fn(),
+      resetAuthState,
+      router: useRouter(),
+    });
+
+    await act(() => {
       jest.advanceTimersByTime(55 * 60 * 1000);
+      return Promise.resolve();
     });
 
-    await waitFor(() => {
-      expect(showToast).toHaveBeenCalledWith({
-        message: 'User session has expired. Please log in again!',
-        type: 'error',
-      });
-      expect(pushMock).toHaveBeenCalledWith('/login');
+    expect(push).toHaveBeenCalledWith('/login');
+    expect(showToast).toHaveBeenCalledWith(
+      expect.objectContaining({ message: expect.stringContaining('expired') }),
+    );
+  });
+
+  it('Updates token if new token differs.', async () => {
+    const setToken = jest.fn();
+
+    const user = {
+      getSession: (cb: any) =>
+        cb(null, {
+          getAccessToken: () => ({
+            getJwtToken: () => 'new-token',
+          }),
+          isValid: () => true,
+        }),
+    };
+
+    startSessionRefreshInterval({
+      isLoggedIn: true,
+      user: user as any,
+      token: 'old-token',
+      setToken,
+      resetAuthState,
+      router: useRouter(),
     });
 
-    act(() => {
-      jest.advanceTimersByTime(100);
+    await act(() => {
+      jest.runOnlyPendingTimers();
+      return Promise.resolve();
     });
 
-    await waitFor(() => {
-      expect(screen.getByTestId('is-logged-in')).toHaveTextContent('No');
+    expect(setToken).toHaveBeenCalledWith('new-token');
+    expect(cookies.set).toHaveBeenCalledWith(
+      expect.anything(),
+      'new-token',
+      expect.anything(),
+    );
+  });
+
+  it('Triggers catch block and resets auth state on thrown error.', async () => {
+    const setToken = jest.fn();
+    const user = {
+      getSession: () => {
+        throw new Error('oops');
+      },
+    };
+
+    startSessionRefreshInterval({
+      isLoggedIn: true,
+      user: user as any,
+      token: 'existing-token',
+      setToken,
+      resetAuthState,
+      router: useRouter(),
     });
 
-    jest.useRealTimers();
+    await act(() => {
+      jest.runOnlyPendingTimers();
+      return Promise.resolve();
+    });
+
+    expect(resetAuthState).toHaveBeenCalled();
+    expect(push).toHaveBeenCalledWith('/login');
+    expect(showToast).toHaveBeenCalled();
   });
 });

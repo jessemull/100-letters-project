@@ -1,6 +1,5 @@
 'use client';
 
-import Image from './Image';
 import React, { useEffect, useState } from 'react';
 import Lightbox from 'yet-another-react-lightbox';
 import Zoom from 'yet-another-react-lightbox/plugins/zoom';
@@ -19,6 +18,7 @@ import {
   ZoomIn,
   ZoomOut,
 } from 'lucide-react';
+import { Image } from '@components/Image';
 import {
   Letter,
   LetterFormResponse,

@@ -5,10 +5,9 @@
     }
   },
   "dependencies": {
-    "@aws-amplify/auth": "^6.12.1",
     "@headlessui/react": "^2.2.1",
     "@sentry/nextjs": "^9.25.1",
-    "aws-amplify": "^6.14.1",
+    "amazon-cognito-identity-js": "^6.3.15",
     "dlv": "^1.1.3",
     "dset": "^3.1.4",
     "framer-motion": "^12.6.2",
@@ -90,7 +89,7 @@
   "private": true,
   "scripts": {
     "bastion": "node ./scripts/connect.js",
-    "build": "NODE_ENV=${NODE_ENV:-test} next build",
+    "build": "NODE_ENV=${NODE_ENV:-test} ANALYZE=true next build",
     "commit": "git-cz",
     "coverage:open": "open ./coverage/lcov-report/index.html",
     "dev": "next dev",

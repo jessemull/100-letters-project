@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image } from '@components/Admin/Letters';
+import { Image } from '@components/Image';
 import { ImageProps } from './Image';
 import { axe } from 'jest-axe';
 import { render, screen, fireEvent } from '@testing-library/react';
