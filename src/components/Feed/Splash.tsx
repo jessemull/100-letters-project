@@ -21,17 +21,17 @@ const Splash = () => {
 
   return (
     <>
-      <div className="text-center space-y-4">
-        <div className="pb-4">
-          <h1 className="text-3xl md:text-4xl font-bold mb-2">
-            The 100 Letters Project
-          </h1>
-          <h2 className="text-md md:text-lg font-medium">
-            100 Letters, 100 People, 1 Year.
-          </h2>
+      <div className="text-center space-y-2">
+        <h1 className="text-3xl md:text-4xl font-bold">
+          The 100 Letters Project
+        </h1>
+        <h2 className="text-md md:text-lg font-medium">
+          100 Letters, 100 People, 1 Year.
+        </h2>
+        <div className="pt-6 space-y-4">
+          <Completion />
+          <Clock />
         </div>
-        <Completion />
-        <Clock />
       </div>
       <div className="w-full space-y-4">
         <h2 className="text-2xl font-bold text-center">{`Recent Letters${correspondences.length === 0 ? ' Coming Soon!' : ''}`}</h2>
