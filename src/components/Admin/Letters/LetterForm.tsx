@@ -52,6 +52,7 @@ import {
   letterValidators,
   letterViewOptions,
 } from '@constants/letter';
+import CorrespondenceHeader from './CorrespondenceHeader';
 
 const LetterForm = () => {
   const [caption, setCaption] = useState<string>('');
@@ -95,7 +96,6 @@ const LetterForm = () => {
       data: { correspondence: { correspondenceId: '' } },
     },
     error: singleCorrespondenceError,
-    isLoading: singleCorrespondenceIsLoading,
   } = useSWRQuery<GetCorrespondenceByIdResponse>({
     config: { shouldRetryOnError: false },
     path: `/correspondence/${data?.correspondenceId || correspondenceId}`,
@@ -308,32 +308,26 @@ const LetterForm = () => {
 
   const correspondenceLabel = useMemo(() => {
     const correspondence =
-      !letterId && !correspondenceId
-        ? correspondenceMap[values.correspondenceId]
-        : (singleCorrespondence?.data
-            ?.correspondence as unknown as Correspondence);
+      correspondenceMap[values.correspondenceId] ||
+      (singleCorrespondence?.data?.correspondence as
+        | Correspondence
+        | undefined);
 
-    const recipient = correspondence?.recipient || {
-      lastName: 'No Last Name',
-      firstName: 'No First Name',
-    };
+    if (!correspondence || !correspondence.recipient || !correspondence.title) {
+      return null;
+    }
 
-    const title = correspondence?.title || 'No Title';
+    const recipient = correspondence.recipient;
+    const title = correspondence.title;
 
     return `${recipient.lastName}, ${recipient.firstName} - ${title}`.trim();
-  }, [
-    correspondenceMap,
-    letterId,
-    correspondenceId,
-    singleCorrespondence,
-    values.correspondenceId,
-  ]);
+  }, [correspondenceMap, values.correspondenceId, singleCorrespondence]);
 
   const disableUploadButton = useMemo(() => {
     return !Boolean(file);
   }, [file]);
 
-  return isLoading || authenticating || singleCorrespondenceIsLoading ? (
+  return isLoading || authenticating ? (
     <div className="pt-32 lg:pt-64 flex items-center justify-center">
       <Progress color="white" size={16} />
     </div>
@@ -343,7 +337,7 @@ const LetterForm = () => {
         <div>
           <h1 className="text-3xl font-semibold text-white">Letter Form</h1>
           {values.correspondenceId && (
-            <h3 className="text-white text-lg">{correspondenceLabel}</h3>
+            <CorrespondenceHeader label={correspondenceLabel} />
           )}
         </div>
         <h2 className="text-xl font-semibold text-white">Letter Info</h2>

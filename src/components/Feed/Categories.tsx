@@ -54,8 +54,8 @@ const Categories: React.FC<Props> = ({ desktopCols = 6 }) => {
               priority={index === 0}
               loading={index === 0 ? 'eager' : undefined}
             />
-            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-              <span className="text-white text-lg font-semibold font-merriweather">
+            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center px-2">
+              <span className="text-white text-lg font-semibold font-merriweather text-ellipsis truncate overflow-hidden whitespace-nowrap">
                 {cat.name}
               </span>
             </div>
