@@ -1,5 +1,6 @@
 'use client';
 
+import CorrespondenceHeader from './CorrespondenceHeader';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { AddImageItem, ImageItem } from '@components/Admin/Letters';
@@ -52,7 +53,6 @@ import {
   letterValidators,
   letterViewOptions,
 } from '@constants/letter';
-import CorrespondenceHeader from './CorrespondenceHeader';
 
 const LetterForm = () => {
   const [caption, setCaption] = useState<string>('');
