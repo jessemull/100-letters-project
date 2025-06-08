@@ -205,7 +205,6 @@ jobs:
         if: inputs.environment == 'test'
         run: |
           NODE_ENV=${{ inputs.environment }} nohup npm run proxy &
-        continue-on-error: true
         env:
           CLOUDFRONT_DOMAIN: ${{ secrets.CLOUDFRONT_DOMAIN }}
           CLOUDFRONT_KEY_PAIR_ID: ${{ secrets.CLOUDFRONT_KEY_PAIR_ID }}
@@ -229,7 +228,6 @@ jobs:
         if: inputs.environment == 'test'
         run: |
           NODE_ENV=${{ inputs.environment }} nohup npm run proxy &
-        continue-on-error: true
         env:
           CLOUDFRONT_DOMAIN: ${{ secrets.CLOUDFRONT_DOMAIN }}
           CLOUDFRONT_KEY_PAIR_ID: ${{ secrets.CLOUDFRONT_KEY_PAIR_ID }}
@@ -239,7 +237,6 @@ jobs:
         id: lighthouse
         run: |
           NODE_ENV=${{ inputs.environment }} npx lhci autorun
-        continue-on-error: true
         env:
             LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
 
