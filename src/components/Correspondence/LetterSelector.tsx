@@ -10,7 +10,7 @@ interface Props {
 }
 
 const LetterSelectorHorizontal: React.FC<Props> = ({
-  letters,
+  letters = [],
   onSelect,
   selected,
 }) => {

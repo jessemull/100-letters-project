@@ -6,11 +6,6 @@ import { axe } from 'jest-axe';
 import { render, screen } from '@testing-library/react';
 
 describe('ClockSkeleton Component', () => {
-  const resizeWindow = (width: number) => {
-    (window.innerWidth as number) = width;
-    window.dispatchEvent(new Event('resize'));
-  };
-
   beforeEach(() => {
     jest.clearAllMocks();
   });

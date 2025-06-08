@@ -88,6 +88,20 @@ describe('LetterSelectorMobile Component', () => {
     expect(selectElement.value).toBe('0');
   });
 
+  it('Should still render if letters array is missing.', () => {
+    render(
+      <LetterSelectorMobile
+        letters={undefined as unknown as Letter[]}
+        selected={1}
+        onSelect={mockOnSelect}
+      />,
+    );
+
+    expect(
+      screen.getByRole('heading', { name: /letters/i }),
+    ).toBeInTheDocument();
+  });
+
   it('Has no accessibility violations.', async () => {
     const { container } = render(
       <LetterSelectorMobile

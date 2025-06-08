@@ -10,7 +10,7 @@ interface Props {
 }
 
 const LetterSelectorMobile: React.FC<Props> = ({
-  letters,
+  letters = [],
   selected,
   onSelect,
 }) => {
