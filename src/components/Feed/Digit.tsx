@@ -6,25 +6,34 @@ interface Props {
   digit: string;
 }
 
-const Digit: React.FC<Props> = ({ digit }) => (
-  <span className="inline-block w-8 h-12 rounded bg-white/10 border border-white/15 text-white font-merriweather font-semibold text-2xl overflow-hidden leading-[48px]">
+const Digit: React.FC<Props> = ({ digit }) => {
+  const offset = parseInt(digit, 10);
+
+  return (
     <span
-      className="transition-transform duration-300 ease-in-out block"
-      style={{
-        transform: `translateY(calc(-${digit} * 3rem))`,
-      }}
+      className="digit-container"
+      style={
+        {
+          '--digit-height': '40px',
+          '--digit-height-sm': '48px',
+          height: 'var(--digit-height)',
+        } as React.CSSProperties
+      }
     >
-      {[...Array(10).keys()].map((n) => (
-        <div
-          key={n}
-          className="h-12 leading-12 text-center"
-          style={{ lineHeight: '3rem' }}
-        >
-          {n}
-        </div>
-      ))}
+      <span
+        className="digit-strip"
+        style={{
+          transform: `translateY(calc(-1 * ${offset} * var(--digit-height)))`,
+        }}
+      >
+        {[...Array(10).keys()].map((n) => (
+          <div key={n} className="digit-row">
+            {n}
+          </div>
+        ))}
+      </span>
     </span>
-  </span>
-);
+  );
+};
 
 export default Digit;
