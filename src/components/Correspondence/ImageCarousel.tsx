@@ -25,7 +25,7 @@ const ImageCarousel: React.FC<Props> = ({ letter, onClick, selected }) => {
       role="presentation"
     >
       <div className="flex gap-2 items-center min-w-full select-none py-1 px-0.5">
-        {letter.imageURLs.map((image, idx) => {
+        {letter?.imageURLs?.map((image, idx) => {
           const isSelected = selected === idx;
           return (
             <button

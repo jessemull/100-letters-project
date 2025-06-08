@@ -177,14 +177,15 @@ describe('CorrespondenceNavigator Component', () => {
     );
   });
 
-  it('Returns null if correspondenceId param is missing.', () => {
+  it('Returns CorrespondenceNotFound if correspondenceId param is missing.', async () => {
     (useSearchParams as jest.Mock).mockReturnValue({
       get: () => null,
     });
 
     render(<CorrespondenceNavigator />);
 
-    expect(screen.getByText('Correspondence not found.')).toBeInTheDocument();
+    const notFound = await screen.findByTestId('not-found');
+    expect(notFound).toBeInTheDocument();
   });
 
   it('Renders CorrespondenceNotFound when correspondence is missing.', () => {
@@ -265,6 +266,61 @@ describe('CorrespondenceNavigator Component', () => {
 
     fireEvent.keyDown(image, { key: ' ' });
     expect(screen.getByTestId('mock-lightbox')).toBeInTheDocument();
+  });
+
+  it('Renders CorrespondenceNotFound if correspondence has no letters.', () => {
+    const correspondenceWithNoLetters = {
+      letters: [],
+      metadata: { id: 'test', subject: 'No Letters' },
+    };
+
+    (useCorrespondence as jest.Mock).mockReturnValue({
+      correspondencesById: {
+        test: correspondenceWithNoLetters,
+      },
+    });
+
+    (useSearchParams as jest.Mock).mockReturnValue({
+      get: (key: string) => {
+        if (key === 'correspondenceId') return 'test';
+        return null;
+      },
+    });
+
+    render(<CorrespondenceNavigator />);
+    expect(screen.getByTestId('not-found')).toBeInTheDocument();
+  });
+
+  it('Handles case where selectedLetter.imageURLs is undefined', () => {
+    const letterWithoutImageURLs = {
+      letterId: 'a',
+    };
+
+    const correspondenceWithMissingImageURLs = {
+      letters: [letterWithoutImageURLs],
+      metadata: { id: 'test', subject: 'Missing imageURLs' },
+    };
+
+    (useCorrespondence as jest.Mock).mockReturnValue({
+      correspondencesById: {
+        test: correspondenceWithMissingImageURLs,
+      },
+    });
+
+    (useSearchParams as jest.Mock).mockReturnValue({
+      get: (key: string) => {
+        if (key === 'correspondenceId') return 'test';
+        return null;
+      },
+    });
+
+    render(<CorrespondenceNavigator />);
+
+    const image = screen.getByAltText('Selected letter');
+    expect(image).toHaveAttribute(
+      'src',
+      '/_next/image?url=%2Falt-image.jpg&w=3840&q=75',
+    );
   });
 
   it('Has no accessibility violations.', async () => {
