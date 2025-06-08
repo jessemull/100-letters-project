@@ -16,7 +16,7 @@ const CorrespondenceSearch: React.FC<Props> = ({ onClick }) => {
 
   const results = useSearch({
     term,
-    type: 'letters',
+    type: 'correspondences',
   }) as CorrespondenceSearchItem[];
 
   const router = useRouter();
