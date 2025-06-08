@@ -171,23 +171,23 @@ const CorrespondenceNavigator = () => {
           plugins={[Zoom]}
           render={{
             iconPrev: () => (
-              <span className="flex items-center justify-center w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 transition">
-                <ChevronLeft className="-translate-x-[1px] text-white w-6 h-6" />
+              <span className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 transition">
+                <ChevronLeft className="-translate-x-[1px] text-white w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7" />
               </span>
             ),
             iconNext: () => (
-              <span className="flex items-center justify-center w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 transition">
-                <ChevronRight className="translate-x-[1px] text-white w-6 h-6" />
+              <span className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 transition">
+                <ChevronRight className="translate-x-[1px] text-white w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7" />
               </span>
             ),
             iconZoomIn: () => (
-              <ZoomIn className="w-6 h-6 text-white hover:text-gray-300 transition-colors" />
+              <ZoomIn className="w-6 h-6 text-white hover:text-gray-300 transition-colors duration-200" />
             ),
             iconZoomOut: () => (
-              <ZoomOut className="w-6 h-6 text-white hover:text-gray-300 transition-colors" />
+              <ZoomOut className="w-6 h-6 text-white hover:text-gray-300 transition-colors duration-200" />
             ),
             iconClose: () => (
-              <X className="w-6 h-6 text-white hover:text-gray-300 transition-colors" />
+              <X className="w-6 h-6 text-white hover:text-gray-300 transition-colors duration-200" />
             ),
           }}
           zoom={{
