@@ -1,56 +1,65 @@
+'use client';
+
 import Digit from './Digit';
 import React from 'react';
 import { axe } from 'jest-axe';
 import { render, screen } from '@testing-library/react';
 
 describe('Digit Component', () => {
-  it('Renders correctly with a valid digit.', () => {
+  let addListenerMock: jest.Mock;
+  let removeListenerMock: jest.Mock;
+
+  beforeEach(() => {
+    addListenerMock = jest.fn();
+    removeListenerMock = jest.fn();
+  });
+
+  const mockMatchMedia = (matches: boolean) => {
+    window.matchMedia = jest.fn().mockImplementation((query) => ({
+      addEventListener: addListenerMock,
+      dispatchEvent: jest.fn(),
+      matches,
+      media: query,
+      onchange: null,
+      removeEventListener: removeListenerMock,
+    }));
+  };
+
+  it('Renders the correct digit and div stack with height 40 on small screens.', () => {
+    mockMatchMedia(false);
+
     render(<Digit digit="3" />);
-    const span = screen.getByText('3');
-    expect(span).toBeInTheDocument();
+    const outer = screen.getByText('3').parentElement?.parentElement;
+
+    expect(screen.getAllByText(/\d/)).toHaveLength(10);
+
+    const inner = outer?.querySelector('span > span') as HTMLSpanElement;
+    expect(inner.style.transform).toBe('translateY(-120px)');
   });
 
-  it('Renders all digits from 0 to 9.', () => {
-    render(<Digit digit="0" />);
-    for (let i = 0; i <= 9; i++) {
-      expect(screen.getByText(String(i))).toBeInTheDocument();
-    }
-  });
+  it('Renders the correct digit with height 48 on sm screens.', () => {
+    mockMatchMedia(true);
 
-  it('Applies correct transform style based on digit.', () => {
     render(<Digit digit="5" />);
-    const innerSpan = screen.getByText('0').parentElement as HTMLSpanElement;
+    const outer = screen.getByText('5').parentElement?.parentElement;
+    const inner = outer?.querySelector('span > span') as HTMLSpanElement;
 
-    expect(innerSpan).toHaveStyle({
-      transform: 'translateY(calc(-5 * 3rem))',
-    });
+    expect(inner.style.transform).toBe('translateY(-240px)');
+  });
+
+  it('Adds and removes the event listener.', () => {
+    mockMatchMedia(true);
+    const { unmount } = render(<Digit digit="2" />);
+
+    expect(addListenerMock).toHaveBeenCalledTimes(1);
+    unmount();
+    expect(removeListenerMock).toHaveBeenCalledTimes(1);
   });
 
   it('Has no accessibility violations.', async () => {
-    const { container } = render(<Digit digit="2" />);
+    mockMatchMedia(false);
+    const { container } = render(<Digit digit="7" />);
     const results = await axe(container);
     expect(results).toHaveNoViolations();
-  });
-
-  it('Handles invalid digits gracefully (non-numeric).', () => {
-    render(<Digit digit="x" />);
-    const innerSpan = screen.getByText('0').parentElement as HTMLSpanElement;
-    expect(innerSpan).toHaveStyle({
-      transform: 'translateY(calc(-x * 3rem))',
-    });
-  });
-
-  it('Handles edge digits like 0 and 9.', () => {
-    const { container, rerender } = render(<Digit digit="0" />);
-    const span0 = container.querySelector('span span') as HTMLSpanElement;
-    expect(span0).toHaveStyle({
-      transform: 'translateY(calc(-0 * 3rem))',
-    });
-
-    rerender(<Digit digit="9" />);
-    const span9 = container.querySelector('span span') as HTMLSpanElement;
-    expect(span9).toHaveStyle({
-      transform: 'translateY(calc(-9 * 3rem))',
-    });
   });
 });

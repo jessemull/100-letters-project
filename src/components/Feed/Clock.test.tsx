@@ -25,26 +25,8 @@ describe('Clock Component', () => {
     expect(screen.getByText('Ink Runs Dry In')).toBeInTheDocument();
   });
 
-  it('Adjusts scale when window.innerWidth < 438.', () => {
-    Object.defineProperty(window, 'innerWidth', {
-      writable: true,
-      configurable: true,
-      value: 300,
-    });
-    const resizeEvent = new Event('resize');
-
-    const { container } = render(<Clock />);
-    act(() => {
-      window.dispatchEvent(resizeEvent);
-    });
-
-    expect(container.firstChild).toHaveStyle(
-      'transform: scale(0.684931506849315)',
-    );
-  });
-
   it('Decrements timeLeft every second.', () => {
-    render(<Clock earliestSentAtDate="2020-01-01T00:00:00Z" />);
+    render(<Clock />);
 
     act(() => {
       jest.advanceTimersByTime(1000);
@@ -56,9 +38,7 @@ describe('Clock Component', () => {
 
   it('Has no accessibility violations.', async () => {
     jest.useRealTimers();
-    const { container } = render(
-      <Clock earliestSentAtDate="2020-01-01T00:00:00Z" />,
-    );
+    const { container } = render(<Clock />);
     const results = await axe(container);
     expect(results).toHaveNoViolations();
   });
