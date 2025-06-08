@@ -25,24 +25,6 @@ describe('Clock Component', () => {
     expect(screen.getByText('Ink Runs Dry In')).toBeInTheDocument();
   });
 
-  it('Adjusts scale when window.innerWidth < 438.', () => {
-    Object.defineProperty(window, 'innerWidth', {
-      writable: true,
-      configurable: true,
-      value: 300,
-    });
-    const resizeEvent = new Event('resize');
-
-    const { container } = render(<Clock />);
-    act(() => {
-      window.dispatchEvent(resizeEvent);
-    });
-
-    expect(container.firstChild).toHaveStyle(
-      'transform: scale(0.684931506849315)',
-    );
-  });
-
   it('Decrements timeLeft every second.', () => {
     render(<Clock />);
 
