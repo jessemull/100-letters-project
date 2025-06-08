@@ -1,63 +1,52 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface Props {
   digit: string;
 }
 
 const Digit: React.FC<Props> = ({ digit }) => {
+  const [digitHeight, setDigitHeight] = useState(40);
+
   const offset = parseInt(digit, 10);
+
+  useEffect(() => {
+    const smQuery = window.matchMedia('(min-width: 640px)');
+
+    const updateHeight = () => {
+      setDigitHeight(smQuery.matches ? 48 : 40);
+    };
+
+    updateHeight();
+
+    smQuery.addEventListener('change', updateHeight);
+    return () => {
+      smQuery.removeEventListener('change', updateHeight);
+    };
+  }, []);
 
   return (
     <span
-      className="inline-block w-6 sm:w-8 rounded bg-white/10 border border-white/15 text-white font-merriweather font-semibold text-xl sm:text-2xl overflow-hidden"
-      style={
-        {
-          // This defines the height of *each number row*
-          // and sets the height of the container accordingly
-          '--digit-height': '40px',
-          '--digit-height-sm': '48px',
-          height: 'var(--digit-height)',
-        } as React.CSSProperties
-      }
+      className="inline-block w-6 sm:w-8 overflow-hidden rounded border border-white/15 bg-white/10 text-white text-xl sm:text-2xl font-merriweather font-semibold"
+      style={{ height: `${digitHeight}px` }}
     >
       <span
-        className="transition-transform duration-300 ease-in-out block will-change-transform"
+        className="block transition-transform duration-300 ease-in-out will-change-transform"
         style={{
-          transform: `translateY(calc(-1 * ${offset} * var(--digit-height)))`,
+          transform: `translateY(-${offset * digitHeight}px)`,
         }}
       >
         {[...Array(10).keys()].map((n) => (
           <div
             key={n}
-            className="text-center flex items-center justify-center"
-            style={{
-              height: 'var(--digit-height)',
-            }}
+            className="flex items-center justify-center text-center"
+            style={{ height: `${digitHeight}px` }}
           >
             {n}
           </div>
         ))}
       </span>
-
-      <style jsx>{`
-        @media (min-width: 640px) {
-          span {
-            height: var(--digit-height-sm) !important;
-          }
-
-          span > span > div {
-            height: var(--digit-height-sm) !important;
-          }
-
-          span > span {
-            transform: translateY(
-              calc(-1 * ${offset} * var(--digit-height-sm))
-            ) !important;
-          }
-        }
-      `}</style>
     </span>
   );
 };
