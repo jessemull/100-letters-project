@@ -70,7 +70,7 @@ const RootLayout: React.FC<Props> = ({ children }) => {
             {`
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
-              window.requestIdleCallback(() => {
+              (window.requestIdleCallback || function(cb) { setTimeout(cb, 0); })(() => {
                 const script = document.createElement('script');
                 script.src = 'https://www.googletagmanager.com/gtag/js?id=${NEXT_PUBLIC_GA_TRACKING_ID}';
                 script.async = true;

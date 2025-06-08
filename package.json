@@ -89,7 +89,7 @@
   "private": true,
   "scripts": {
     "bastion": "node ./scripts/connect.js",
-    "build": "NODE_ENV=${NODE_ENV:-test} ANALYZE=true next build",
+    "build": "NODE_ENV=${NODE_ENV:-test} next build",
     "commit": "git-cz",
     "coverage:open": "open ./coverage/lcov-report/index.html",
     "dev": "next dev",
