@@ -4,7 +4,7 @@ import type { NextConfig } from 'next';
 
 const baseConfig: NextConfig = {
   output: 'export',
-  productionBrowserSourceMaps: false,
+  productionBrowserSourceMaps: true,
   images: {
     unoptimized: true,
   },
