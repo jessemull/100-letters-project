@@ -192,7 +192,6 @@ jobs:
         run: |
           NODE_ENV=test nohup npm run proxy &
           npx wait-on http://localhost:8080/healthcheck
-        continue-on-error: true
         env:
           CLOUDFRONT_DOMAIN: ${{ secrets.CLOUDFRONT_DOMAIN }}
           CLOUDFRONT_KEY_PAIR_ID: ${{ secrets.CLOUDFRONT_KEY_PAIR_ID }}
@@ -216,7 +215,6 @@ jobs:
         run: |
           NODE_ENV=test nohup npm run proxy &
           npx wait-on http://localhost:8080/healthcheck
-        continue-on-error: true
         env:
           CLOUDFRONT_DOMAIN: ${{ secrets.CLOUDFRONT_DOMAIN }}
           CLOUDFRONT_KEY_PAIR_ID: ${{ secrets.CLOUDFRONT_KEY_PAIR_ID }}
@@ -229,7 +227,6 @@ jobs:
         id: lighthouse
         run: |
           NODE_ENV=test npx lhci autorun --chrome-flags="--headless --disable-gpu --no-sandbox"
-        continue-on-error: true
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
 

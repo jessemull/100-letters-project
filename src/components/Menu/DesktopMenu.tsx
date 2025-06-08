@@ -25,6 +25,7 @@ const DesktopMenu: React.FC<Props> = ({ collapsed, setCollapsed }) => {
         overflow-y-auto
         h-full
         overflow-x-hidden
+        pb-4
       `}
     >
       <div className="flex items-center justify-between px-4 py-3 border-b border-white-400">
