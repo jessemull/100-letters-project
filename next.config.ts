@@ -1,17 +1,17 @@
-import { withSentryConfig } from '@sentry/nextjs';
-import withBundleAnalyzer from '@next/bundle-analyzer';
 import type { NextConfig } from 'next';
+import withBundleAnalyzer from '@next/bundle-analyzer';
+import { withSentryConfig } from '@sentry/nextjs';
 
 const baseConfig: NextConfig = {
   output: 'export',
-  productionBrowserSourceMaps: true,
+  productionBrowserSourceMaps: process.env.ENABLE_SOURCE_MAPS === 'true',
   images: {
     unoptimized: true,
   },
 };
 
 const withAnalyzer = withBundleAnalyzer({
-  enabled: false,
+  enabled: process.env.ENABLE_ANALYZER === 'true',
 });
 
 export default withSentryConfig(withAnalyzer(baseConfig), {
