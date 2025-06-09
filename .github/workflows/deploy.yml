@@ -70,10 +70,15 @@ jobs:
             public/data/search.json
           retention-days: 1
 
+        # Sentry does not support source maps for static NextJS builds.
+        # The source maps must be uploaded manually.
+        # NextJS does not support generating source maps independently.
+        # To avoid uploading source maps in production NextJS must be built twice for each use case.
+
       - name: Generate & Upload Sentry Source Maps
         run: |
           echo "Uploading source maps to Sentry.io..."
-          NODE_ENV=test npm run sentry-source-maps
+          NODE_ENV=test npm run source-maps
 
   test:
     name: Run Unit Tests
