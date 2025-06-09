@@ -53,14 +53,6 @@ input:-webkit-autofill::first-line {
   border-radius: 8px;
 }
 
-.no-scrollbar {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
-}
-.no-scrollbar::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
-}
-
 .yarl__container {
   background-color: rgba(255, 255, 255, 0.25) !important;
   backdrop-filter: blur(12px) !important;
