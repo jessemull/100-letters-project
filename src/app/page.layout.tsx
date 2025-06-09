@@ -28,7 +28,7 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => {
       />
       <Header />
       <div className="flex flex-1 h-[calc(100vh-56px)] overflow-hidden">
-        <main className="flex-1 w-full overflow-y-auto overflow-x-hidden">
+        <main className="flex-1 w-full overflow-y-auto overflow-x-hidden pl-0 lg:pl-16">
           <div className="flex flex-col min-h-[calc(100vh-56px)] justify-between">
             <div className="pr-2 pl-2 pt-3 pb-3 md:p-0 md:px-8">
               <div className="flex-1">{children}</div>
