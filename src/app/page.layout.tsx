@@ -32,10 +32,7 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => {
           className={`hidden lg:block ${sidebarWidth} text-white sticky top-[56px] h-[calc(100vh-56px)] z-20`}
           data-testid="menu-width"
         >
-          <div
-            className="h-full overflow-y-auto overflow-x-hidden"
-            style={{ scrollbarGutter: 'stable' }}
-          >
+          <div className="h-full overflow-y-auto overflow-x-hidden">
             <SearchProvider>
               <DesktopMenu collapsed={collapsed} setCollapsed={setCollapsed} />
             </SearchProvider>
@@ -46,7 +43,7 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => {
             <div className="pr-2 pl-2 pt-3 pb-3 md:p-0 md:px-8">
               <div className="flex-1">{children}</div>
             </div>
-            <Footer />
+            <Footer collapsed={collapsed} />
           </div>
         </main>
       </div>
