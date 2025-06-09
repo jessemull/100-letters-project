@@ -25,10 +25,7 @@ const DesktopMenu: React.FC<Props> = ({ collapsed, setCollapsed }) => {
       `}
     >
       <div className="absolute inset-0 z-[-1] bg-white/30 backdrop-blur-md" />
-      <div
-        className="flex flex-col overflow-y-auto overflow-x-hidden pb-4"
-        style={{ minHeight: 'calc(100vh - 56px)' }}
-      >
+      <div className="flex flex-col h-full overflow-y-auto overflow-x-hidden pb-4">
         <div className="flex items-center justify-between px-4 py-3 border-b border-white-400">
           {!collapsed && (
             <span className="text-lg whitespace-nowrap">Find Letters</span>
