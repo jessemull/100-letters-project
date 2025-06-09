@@ -63,6 +63,11 @@ jobs:
             public/data/search.json
           retention-days: 1
 
+      - name: Generate & Upload Sentry Source Maps
+        run: |
+          echo "Uploading source maps to Sentry.io..."
+          NODE_ENV=test npm run sentry-source-maps
+
   lint:
     name: Lint Code
     runs-on: ubuntu-latest
