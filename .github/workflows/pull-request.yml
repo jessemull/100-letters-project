@@ -63,6 +63,29 @@ jobs:
             public/data/search.json
           retention-days: 1
 
+        # Sentry does not support source maps for static NextJS builds.
+        # The source maps must be uploaded manually.
+        # NextJS does not support generating source maps independently.
+        # To avoid uploading source maps in production NextJS must be built twice, once for each use case.
+
+      - name: Generate & Upload Sentry Source Maps
+        run: |
+          echo "Uploading source maps to Sentry.io..."
+          NODE_ENV=test npm run source-maps
+        env:
+          NEXT_PUBLIC_API_URL: ${{ secrets.API_URL_DEV }}
+          NEXT_PUBLIC_COGNITO_USER_POOL_ID: ${{ secrets.COGNITO_USER_POOL_ID_DEV }}
+          NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID: ${{ secrets.COGNITO_USER_POOL_CLIENT_ID_DEV }}
+          COGNITO_USER_POOL_PASSWORD: ${{ secrets.COGNITO_USER_POOL_PASSWORD_DEV }}
+          COGNITO_USER_POOL_USERNAME: ${{ secrets.COGNITO_USER_POOL_USERNAME_DEV }}
+          NEXT_PUBLIC_GA_TRACKING_ID: ${{ secrets.GA_TRACKING_ID_DEV }}
+          NEXT_PUBLIC_CAPTCHA_SITE_KEY: ${{ secrets.NEXT_PUBLIC_CAPTCHA_SITE_KEY }}
+          NEXT_PUBLIC_SENTRY_ENVIRONMENT: ${{ secrets.SENTRY_ENVIRONMENT_DEV }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_AUTH_TOKEN_SOURCE_MAPS: ${{ secrets.SENTRY_AUTH_TOKEN_SOURCE_MAPS }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+
   lint:
     name: Lint Code
     runs-on: ubuntu-latest

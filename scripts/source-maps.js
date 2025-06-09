@@ -1,6 +1,4 @@
 const { execSync } = require('child_process');
-const fs = require('fs');
-const pathModule = require('path');
 
 let path = '.env.local';
 
@@ -17,23 +15,6 @@ switch (process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT) {
 }
 
 require('dotenv').config({ path });
-
-function deleteSourceMaps(dir) {
-  if (!fs.existsSync(dir)) return;
-
-  const files = fs.readdirSync(dir);
-  for (const file of files) {
-    const fullPath = pathModule.join(dir, file);
-    const stat = fs.statSync(fullPath);
-
-    if (stat.isDirectory()) {
-      deleteSourceMaps(fullPath);
-    } else if (file.endsWith('.map')) {
-      fs.unlinkSync(fullPath);
-      console.log(`Deleted source map: ${fullPath}`);
-    }
-  }
-}
 
 (async () => {
   const env = process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT;
@@ -81,10 +62,6 @@ function deleteSourceMaps(dir) {
     );
 
     console.log('Sentry source maps uploaded.');
-
-    deleteSourceMaps('.next');
-
-    console.log('Source maps deleted from .next directory.');
   } catch (err) {
     console.error('Sentry source map upload failed: ', err.message);
   }
