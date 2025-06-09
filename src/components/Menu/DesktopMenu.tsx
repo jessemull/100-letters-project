@@ -19,15 +19,14 @@ const DesktopMenu: React.FC<Props> = ({ collapsed, setCollapsed }) => {
   return (
     <div
       className={`
-        hidden font-merriweather lg:flex flex-col text-white transition-all duration-300
-        fixed inset-0 z-50
-        overflow-hidden
-        relative
+        hidden lg:flex flex-col text-white transition-all duration-300
+        h-full relative
+        font-merriweather
       `}
     >
-      <div className="absolute inset-0 z-[-1] bg-white/20 backdrop-blur-md" />
+      <div className="absolute inset-0 z-[-1] bg-white/30 backdrop-blur-md" />
       <div
-        className="flex flex-col overflow-y-auto overflow-x-hidden pb-4 "
+        className="flex flex-col overflow-y-auto overflow-x-hidden pb-4"
         style={{ minHeight: 'calc(100vh - 56px)' }}
       >
         <div className="flex items-center justify-between px-4 py-3 border-b border-white-400">
@@ -42,6 +41,7 @@ const DesktopMenu: React.FC<Props> = ({ collapsed, setCollapsed }) => {
             {collapsed ? <ChevronRight /> : <ChevronLeft />}
           </button>
         </div>
+
         <nav
           aria-label="Desktop Navigation"
           className="flex flex-col gap-4 text-sm"
@@ -54,6 +54,7 @@ const DesktopMenu: React.FC<Props> = ({ collapsed, setCollapsed }) => {
               onNavigate={() => setCollapsed(true)}
             />
           </div>
+
           {!collapsed && (
             <div className="flex flex-col mt-4">
               <div className="px-4">
