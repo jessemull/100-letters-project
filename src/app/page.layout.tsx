@@ -33,7 +33,7 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => {
             <div className="pr-2 pl-2 pt-3 pb-3 md:p-0 md:px-8">
               <div className="flex-1">{children}</div>
             </div>
-            <Footer collapsed={collapsed} />
+            <Footer />
           </div>
         </main>
       </div>
