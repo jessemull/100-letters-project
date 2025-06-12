@@ -30,7 +30,7 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => {
       <div className="flex flex-1 h-[calc(100vh-56px)] overflow-hidden">
         <main className="flex-1 w-full overflow-y-auto overflow-x-hidden">
           <div className="flex flex-col min-h-[calc(100vh-56px)] justify-between">
-            <div className="pr-2 pl-2 pt-3 pb-3 md:p-0 md:px-8 lg:pl-24">
+            <div className="pr-2 pl-2 pt-3 pb-3 md:p-0 md:px-8 lg:pl-20">
               <div className="flex-1">{children}</div>
             </div>
             <Footer />

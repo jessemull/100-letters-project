@@ -69,7 +69,7 @@ const MobileMenu: FC<Props> = ({
       </div>
       <nav
         aria-label="Mobile Navigation"
-        className="flex flex-col space-y-6 px-6 py-6 text-lg"
+        className="flex flex-col space-y-3 px-6 py-6 text-lg"
       >
         <MenuNavItems
           collapsed={false}

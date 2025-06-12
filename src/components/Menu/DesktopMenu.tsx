@@ -24,26 +24,31 @@ const DesktopMenu: React.FC<Props> = ({ collapsed, setCollapsed }) => {
         h-full relative font-merriweather
       `}
     >
+      {/* Background blur */}
       <div className="absolute inset-0 z-[-1] bg-white/30 backdrop-blur-md" />
-      <div className="flex flex-col h-full overflow-y-auto overflow-x-hidden pb-4">
-        <div
-          className={`flex items-center border-b border-white/40 py-3 ${
-            collapsed ? 'justify-center px-2' : 'justify-between px-4'
-          }`}
+
+      {/* Fixed Top Header */}
+      <div
+        className={`flex items-center border-b border-white/40 py-3 ${
+          collapsed ? 'justify-center px-2' : 'justify-between px-4'
+        }`}
+      >
+        {!collapsed && (
+          <span className="text-sm font-bold whitespace-nowrap">
+            Find Letters
+          </span>
+        )}
+        <button
+          aria-label="Toggle Menu"
+          onClick={() => setCollapsed(!collapsed)}
+          className="text-white"
         >
-          {!collapsed && (
-            <span className="text-sm font-bold whitespace-nowrap">
-              Find Letters
-            </span>
-          )}
-          <button
-            aria-label="Toggle Menu"
-            onClick={() => setCollapsed(!collapsed)}
-            className="text-white"
-          >
-            {collapsed ? <ChevronRight size={22} /> : <ChevronLeft size={22} />}
-          </button>
-        </div>
+          {collapsed ? <ChevronRight size={22} /> : <ChevronLeft size={22} />}
+        </button>
+      </div>
+
+      {/* Scrollable content below the header */}
+      <div className="flex-1 overflow-y-auto overflow-x-hidden pb-4">
         <nav
           aria-label="Desktop Navigation"
           className="flex flex-col gap-4 text-sm"
@@ -58,6 +63,7 @@ const DesktopMenu: React.FC<Props> = ({ collapsed, setCollapsed }) => {
               onNavigate={() => setCollapsed(true)}
             />
           </div>
+
           {!collapsed && (
             <div className="flex flex-col mt-4">
               <div className="px-4">
