@@ -16,7 +16,6 @@ interface Props {
 
 const DesktopMenu: React.FC<Props> = ({ collapsed, setCollapsed }) => {
   const { isLoggedIn, signOut } = useAuth();
-
   return (
     <div
       className={`
@@ -24,10 +23,7 @@ const DesktopMenu: React.FC<Props> = ({ collapsed, setCollapsed }) => {
         h-full relative font-merriweather
       `}
     >
-      {/* Background blur */}
       <div className="absolute inset-0 z-[-1] bg-white/30 backdrop-blur-md" />
-
-      {/* Fixed Top Header */}
       <div
         className={`flex items-center border-b border-white/40 py-3 ${
           collapsed ? 'justify-center px-2' : 'justify-between px-4'
@@ -46,8 +42,6 @@ const DesktopMenu: React.FC<Props> = ({ collapsed, setCollapsed }) => {
           {collapsed ? <ChevronRight size={22} /> : <ChevronLeft size={22} />}
         </button>
       </div>
-
-      {/* Scrollable content below the header */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden pb-4">
         <nav
           aria-label="Desktop Navigation"

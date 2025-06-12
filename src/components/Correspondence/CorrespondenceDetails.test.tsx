@@ -17,7 +17,7 @@ describe('CorrespondenceDetails Component', () => {
     },
   } as unknown as CorrespondenceCard;
 
-  it('Renders the correspondence title andreason description.', () => {
+  it('Renders the correspondence title and reason description.', () => {
     render(<CorrespondenceDetails correspondence={mockCorrespondence} />);
 
     expect(
