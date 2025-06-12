@@ -16,34 +16,41 @@ interface Props {
 
 const DesktopMenu: React.FC<Props> = ({ collapsed, setCollapsed }) => {
   const { isLoggedIn, signOut } = useAuth();
+
   return (
     <div
       className={`
         hidden lg:flex flex-col text-white transition-all duration-300
-        h-full relative
-        font-merriweather
+        h-full relative font-merriweather
       `}
     >
       <div className="absolute inset-0 z-[-1] bg-white/30 backdrop-blur-md" />
       <div className="flex flex-col h-full overflow-y-auto overflow-x-hidden pb-4">
-        <div className="flex items-center justify-between px-4 py-3 border-b border-white-400">
+        <div
+          className={`flex items-center border-b border-white/40 py-3 ${
+            collapsed ? 'justify-center px-2' : 'justify-between px-4'
+          }`}
+        >
           {!collapsed && (
-            <span className="text-lg whitespace-nowrap">Find Letters</span>
+            <span className="text-sm font-bold whitespace-nowrap">
+              Find Letters
+            </span>
           )}
           <button
             aria-label="Toggle Menu"
             onClick={() => setCollapsed(!collapsed)}
-            className="text-white ml-auto"
+            className="text-white"
           >
-            {collapsed ? <ChevronRight /> : <ChevronLeft />}
+            {collapsed ? <ChevronRight size={22} /> : <ChevronLeft size={22} />}
           </button>
         </div>
-
         <nav
           aria-label="Desktop Navigation"
           className="flex flex-col gap-4 text-sm"
         >
-          <div className="flex flex-col gap-4 text-sm px-4 pt-4">
+          <div
+            className={`${collapsed ? 'px-2 pt-4' : 'px-4 pt-4'} flex flex-col gap-3`}
+          >
             <MenuNavItems
               isLoggedIn={isLoggedIn}
               handleLogout={signOut}
@@ -51,7 +58,6 @@ const DesktopMenu: React.FC<Props> = ({ collapsed, setCollapsed }) => {
               onNavigate={() => setCollapsed(true)}
             />
           </div>
-
           {!collapsed && (
             <div className="flex flex-col mt-4">
               <div className="px-4">
