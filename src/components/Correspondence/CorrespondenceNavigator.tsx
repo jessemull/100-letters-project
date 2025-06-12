@@ -105,6 +105,7 @@ const CorrespondenceNavigator = () => {
         <div className="flex-1 md:mt-0 min-w-0 w-full order-2 md:order-1">
           <div className="hidden lg:block">
             <LetterSelector
+              category={correspondence.reason.category}
               letters={letters}
               selected={selectedLetterIndex}
               onSelect={(idx) => {
@@ -115,6 +116,7 @@ const CorrespondenceNavigator = () => {
           </div>
           <div className="block md:mt-0 lg:hidden">
             <LetterSelectorMobile
+              category={correspondence.reason.category}
               letters={letters}
               selected={selectedLetterIndex}
               onSelect={(idx) => {
@@ -158,7 +160,7 @@ const CorrespondenceNavigator = () => {
           </div>
         </div>
       </div>
-      <div className="mt-6 lg:mt-8">
+      <div className="mt-8 md:mt-4">
         <LetterText letter={selectedLetter} />
       </div>
       {isLightboxOpen && (

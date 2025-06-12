@@ -22,10 +22,13 @@ describe('Select Component', () => {
   it('Renders correctly with required props only.', () => {
     render(
       <Select
+        IconStart={IconMock}
+        IconEnd={IconMock}
         id="example"
         value="one"
         onChange={handleChangeMock}
         options={options}
+        size="small"
       />,
     );
 
@@ -36,11 +39,13 @@ describe('Select Component', () => {
   it('Renders a placeholder if provided.', () => {
     render(
       <Select
+        IconStart={IconMock}
         id="example"
         value=""
         onChange={handleChangeMock}
         options={options}
         placeholder="Select an option"
+        size="small"
       />,
     );
 
@@ -50,11 +55,13 @@ describe('Select Component', () => {
   it('Calls onChange when a new option is selected.', () => {
     render(
       <Select
+        IconEnd={IconMock}
         id="example"
         value=""
         onChange={handleChangeMock}
         options={options}
         placeholder="Select an option"
+        size="small"
       />,
     );
 
@@ -101,6 +108,7 @@ describe('Select Component', () => {
         onChange={handleChangeMock}
         options={options}
         errors={errorMessages}
+        size="small"
       />,
     );
 
