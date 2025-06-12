@@ -27,6 +27,30 @@ export const correspondenceCategoryOptions = [
   { label: 'Technology', value: Category.TECHNOLOGY },
 ];
 
+export const categoryLabelMap: Record<Category, string> = {
+  [Category.COMEDY]: 'Comedy',
+  [Category.ENTERTAINMENT]: 'Entertainment',
+  [Category.FAMILY]: 'Family',
+  [Category.FOOD]: 'Food',
+  [Category.FRIENDS]: 'Friends',
+  [Category.JOURNALISM]: 'Journalism',
+  [Category.LITERATURE]: 'Literature',
+  [Category.MENTORS]: 'Mentors',
+  [Category.MUSIC]: 'Music',
+  [Category.SCIENCE]: 'Science',
+  [Category.SPORTS]: 'Sports',
+  [Category.TECHNOLOGY]: 'Technology',
+};
+
+export const correspondenceStatusLabelMap: Record<Status, string> = {
+  [Status.COMPLETED]: 'Completed',
+  [Status.PENDING]: 'Pending',
+  [Status.RECEIVED]: 'Received',
+  [Status.RESPONDED]: 'Responded',
+  [Status.SENT]: 'Sent',
+  [Status.UNSENT]: 'Unsent',
+};
+
 export const initialCorrespondenceValues: CorrespondenceUpdate = {
   correspondenceId: '',
   letters: [],

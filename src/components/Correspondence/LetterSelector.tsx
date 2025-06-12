@@ -2,14 +2,18 @@ import { Letter } from '@ts-types/letter';
 import { StepBack, StepForward } from 'lucide-react';
 import { getLetterDate } from '@util/letter';
 import { useRef, useEffect } from 'react';
+import { categoryLabelMap } from '@constants/correspondence';
+import { Category } from '@ts-types/correspondence';
 
 interface Props {
+  category: Category;
   letters: Letter[];
   onSelect: (index: number) => void;
   selected: number;
 }
 
 const LetterSelectorHorizontal: React.FC<Props> = ({
+  category,
   letters = [],
   onSelect,
   selected,
@@ -36,9 +40,14 @@ const LetterSelectorHorizontal: React.FC<Props> = ({
 
   return (
     <div className="flex flex-col max-w-full mb-4">
-      <h1 className="text-3xl font-extrabold tracking-tight text-white drop-shadow-lg mb-4">
-        Letters <span className="tabular-nums">({letters.length})</span>
-      </h1>
+      <div className="flex justify-between items-start">
+        <h1 className="text-3xl font-extrabold tracking-tight text-white drop-shadow-lg mb-4">
+          Letters <span className="tabular-nums">({letters.length})</span>
+        </h1>
+        <span className="border border-white rounded-md bg-white/10 mt-1 px-2 text-lg font-bold uppercase tracking-wider text-white shadow-sm">
+          {categoryLabelMap[category] || 'Other'}
+        </span>
+      </div>
       <div className="flex items-center space-x-1 overflow-hidden">
         <button
           aria-label="Scroll left one letter"

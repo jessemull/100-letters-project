@@ -14,11 +14,10 @@ interface Props {
   options: Option[];
   placeholder?: string;
   value: string;
-  size?: 'small' | 'large'; // <-- new prop
 }
 
 const Select: React.FC<Props> = ({
-  className = '',
+  className,
   IconEnd,
   IconStart,
   errors,
@@ -30,38 +29,33 @@ const Select: React.FC<Props> = ({
   options,
   placeholder,
   value,
-  size = 'large',
 }) => {
   const errorsArray = useMemo(
     () => (Array.isArray(errors) ? errors : errors ? [errors] : []),
     [errors],
   );
 
-  const isLarge = size === 'large';
-
   const paddingClasses = useMemo(() => {
-    if (IconStart && IconEnd) return isLarge ? 'pl-12 pr-12' : 'pl-10 pr-10';
-    if (IconStart) return isLarge ? 'pl-12 pr-4' : 'pl-10 pr-3';
-    if (IconEnd) return isLarge ? 'pl-4 pr-12' : 'pl-3 pr-10';
-    return isLarge ? 'px-4' : 'px-3';
-  }, [IconStart, IconEnd, isLarge]);
+    if (IconStart && IconEnd) return 'pl-10 pr-10';
+    if (IconStart) return 'pl-10 pr-3';
+    if (IconEnd) return 'pl-3 pr-10';
+    return 'px-3';
+  }, [IconStart, IconEnd]);
 
   return (
     <div className="relative w-full">
       {label && (
         <label
           htmlFor={id}
-          className={`block text-white ${isLarge ? 'text-base' : 'text-md'} mb-2 ${className}`}
+          className={`block text-white text-md mb-2 ${className}`}
         >
           {label}
         </label>
       )}
       {IconStart && (
-        <div
-          className={`absolute ${isLarge ? 'left-5 top-3.5' : 'left-4 top-2'} text-white`}
-        >
+        <div className="absolute left-4 top-2 text-white">
           <IconStart
-            className={isLarge ? 'w-5 h-5' : 'w-4 h-4'}
+            className="w-4 h-4"
             data-testid={`${id}-select-icon-start`}
             onClick={onIconStartClick}
           />
@@ -69,19 +63,7 @@ const Select: React.FC<Props> = ({
       )}
       <select
         aria-label={label || placeholder || 'Select input'}
-        className={`
-          w-full 
-          ${isLarge ? 'h-12 text-base' : 'h-9 text-sm'} 
-          rounded-full 
-          bg-white/25 
-          border 
-          border-white 
-          text-white 
-          placeholder-white/70 
-          focus:outline-none 
-          appearance-none 
-          ${paddingClasses}
-        `}
+        className={`w-full h-9 rounded-full bg-white/25 border border-white text-white text-sm placeholder-white/70 focus:outline-none appearance-none ${paddingClasses}`}
         data-testid="select-input"
         id={id}
         onChange={onChange}
@@ -99,20 +81,16 @@ const Select: React.FC<Props> = ({
         ))}
       </select>
       {IconEnd && (
-        <div
-          className={`absolute ${isLarge ? 'right-5 top-3.5' : 'right-4 top-2'} text-white`}
-        >
+        <div className="absolute right-4 top-2 text-white">
           <IconEnd
-            className={isLarge ? 'w-5 h-5' : 'w-4 h-4'}
+            className="w-4 h-4 cursor-pointer"
             data-testid={`${id}-select-icon-end`}
             onClick={onIconEndClick}
           />
         </div>
       )}
       {errorsArray.length > 0 && (
-        <ul
-          className={`pl-4 ${isLarge ? 'mt-2 text-base' : 'mt-1 text-sm'} list-none text-red-400`}
-        >
+        <ul className="pl-4 mt-1 list-none text-red-400 text-sm">
           {errorsArray.map((error) => (
             <li key={error}>{error}</li>
           ))}
