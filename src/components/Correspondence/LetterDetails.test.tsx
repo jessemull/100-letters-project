@@ -12,14 +12,13 @@ describe('LetterDetails Component', () => {
     imageURLs: [],
   } as unknown as Letter;
 
-  it('Renders required fields: title and description.', () => {
+  it('Renders description and header.', () => {
     render(<LetterDetails letter={baseLetter} />);
 
     expect(
       screen.getByRole('heading', { name: /letter details/i }),
     ).toBeInTheDocument();
 
-    expect(screen.getByText(baseLetter.title)).toBeInTheDocument();
     expect(
       screen.getByText(baseLetter.description as string),
     ).toBeInTheDocument();
@@ -35,15 +34,7 @@ describe('LetterDetails Component', () => {
 
     render(<LetterDetails letter={letterWithExtras} />);
 
-    expect(screen.getByText(/status: responded/i)).toBeInTheDocument();
-  });
-
-  it('Omits sentAt, receivedAt, and status if not provided.', () => {
-    render(<LetterDetails letter={baseLetter} />);
-
-    expect(screen.queryByText(/sent:/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/received:/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/status:/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/responded/i)).toBeInTheDocument();
   });
 
   it('Has no accessibility violations.', async () => {

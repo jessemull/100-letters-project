@@ -1,4 +1,4 @@
-import { Correspondence } from '@ts-types/correspondence';
+import { CorrespondenceCard } from '@ts-types/correspondence';
 import { CorrespondenceDetails } from '@components/Correspondence';
 import { axe } from 'jest-axe';
 import { render, screen } from '@testing-library/react';
@@ -15,9 +15,9 @@ describe('CorrespondenceDetails Component', () => {
     recipient: {
       name: 'Ada Lovelace',
     },
-  } as unknown as Correspondence;
+  } as unknown as CorrespondenceCard;
 
-  it('Renders the correspondence title, reason description, and category.', () => {
+  it('Renders the correspondence title andreason description.', () => {
     render(<CorrespondenceDetails correspondence={mockCorrespondence} />);
 
     expect(
@@ -26,7 +26,6 @@ describe('CorrespondenceDetails Component', () => {
     expect(
       screen.getByText(/for pioneering work in computing\./i),
     ).toBeInTheDocument();
-    expect(screen.getByText(/category: technology/i)).toBeInTheDocument();
   });
 
   it('Has no accessibility violations.', async () => {

@@ -110,6 +110,9 @@ describe('CorrespondenceNavigator Component', () => {
   const mockCorrespondence = {
     letters: mockLetters,
     metadata: { id: 'test', subject: 'Hello' },
+    reason: {
+      category: 'TECHNOLOGY',
+    },
   };
 
   beforeEach(() => {
@@ -164,6 +167,9 @@ describe('CorrespondenceNavigator Component', () => {
   it('Falls back to /alt-image.jpg if selected image is undefined.', () => {
     const noImageCorrespondence = {
       letters: [{ letterId: 'a', imageURLs: [] }],
+      reason: {
+        category: 'TECHNOLOGY',
+      },
     };
 
     (useCorrespondence as jest.Mock).mockReturnValue({
@@ -291,7 +297,7 @@ describe('CorrespondenceNavigator Component', () => {
     expect(screen.getByTestId('not-found')).toBeInTheDocument();
   });
 
-  it('Handles case where selectedLetter.imageURLs is undefined', () => {
+  it('Handles case where selectedLetter.imageURLs is undefined.', () => {
     const letterWithoutImageURLs = {
       letterId: 'a',
     };
@@ -299,6 +305,9 @@ describe('CorrespondenceNavigator Component', () => {
     const correspondenceWithMissingImageURLs = {
       letters: [letterWithoutImageURLs],
       metadata: { id: 'test', subject: 'Missing imageURLs' },
+      reason: {
+        category: 'TECHNOLOGY',
+      },
     };
 
     (useCorrespondence as jest.Mock).mockReturnValue({
