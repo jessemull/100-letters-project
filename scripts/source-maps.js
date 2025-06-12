@@ -19,11 +19,6 @@ require('dotenv').config({ path });
 (async () => {
   const env = process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT;
 
-  if (!env || env === 'development') {
-    console.log('Skipping source map upload due to development environment...');
-    return;
-  }
-
   const { SENTRY_AUTH_TOKEN_SOURCE_MAPS, SENTRY_ORG, SENTRY_PROJECT } =
     process.env;
 
