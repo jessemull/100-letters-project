@@ -21,4 +21,5 @@ export default withSentryConfig(withAnalyzer(baseConfig), {
   project: '100-letters-project-client',
   silent: !process.env.CI,
   widenClientFileUpload: true,
+  sourcemaps: { disable: process.env.ENABLE_SOURCE_MAPS !== 'true' },
 });
