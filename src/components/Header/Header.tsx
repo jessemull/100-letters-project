@@ -9,7 +9,9 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { SearchProvider } from '@contexts/SearchProvider';
 
-const stripeURL = process.env.NEXT_PUBLIC_STRIPE_URL as string;
+const stripeURL =
+  process.env.NEXT_PUBLIC_STRIPE_URL ||
+  'https://donate.stripe.com/test_7sY4gB6Ns7rU3bl7TVcQU00';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

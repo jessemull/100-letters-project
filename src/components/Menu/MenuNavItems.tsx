@@ -13,7 +13,9 @@ import {
 import { baseMenuClass, iconMenuClass } from '@constants/menu';
 import { useMemo } from 'react';
 
-const stripeURL = process.env.NEXT_PUBLIC_STRIPE_URL as string;
+const stripeURL =
+  process.env.NEXT_PUBLIC_STRIPE_URL ||
+  'https://donate.stripe.com/test_7sY4gB6Ns7rU3bl7TVcQU00';
 
 interface Props {
   collapsed: boolean;
