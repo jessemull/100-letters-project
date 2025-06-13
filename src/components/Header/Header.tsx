@@ -9,6 +9,10 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { SearchProvider } from '@contexts/SearchProvider';
 
+const stripeURL =
+  process.env.NEXT_PUBLIC_STRIPE_URL ||
+  'https://donate.stripe.com/test_7sY4gB6Ns7rU3bl7TVcQU00';
+
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -49,6 +53,14 @@ const Header = () => {
             </Link>
             <Link href="/contact" className="hover:text-gray-400">
               Contact
+            </Link>
+            <Link
+              href={stripeURL}
+              className="hover:text-gray-400"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Donate
             </Link>
             {isLoggedIn && (
               <Link href="/admin" className="hover:text-gray-400">
