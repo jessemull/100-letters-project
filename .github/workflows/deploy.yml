@@ -88,6 +88,7 @@ jobs:
           NEXT_PUBLIC_GA_TRACKING_ID: ${{ inputs.environment == 'test' && secrets.GA_TRACKING_ID_DEV || secrets.GA_TRACKING_ID_PROD }}
           NEXT_PUBLIC_CAPTCHA_SITE_KEY: ${{ secrets.NEXT_PUBLIC_CAPTCHA_SITE_KEY }}
           NEXT_PUBLIC_SENTRY_ENVIRONMENT: ${{ inputs.environment == 'test' && secrets.SENTRY_ENVIRONMENT_TEST || secrets.SENTRY_ENVIRONMENT_PROD }}
+          NEXT_PUBLIC_STRIPE_URL: ${{ inputs.environment == 'test' && secrets.NEXT_PUBLIC_STRIPE_URL_DEV || secrets.NEXT_PUBLIC_STRIPE_URL_PROD }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_AUTH_TOKEN_SOURCE_MAPS: ${{ secrets.SENTRY_AUTH_TOKEN_SOURCE_MAPS }}
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}

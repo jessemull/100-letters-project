@@ -1,14 +1,24 @@
 'use client';
 
 import Link from 'next/link';
-import { Home, Info, Mail, Shield, LogIn, LogOut } from 'lucide-react';
+import {
+  Home,
+  Info,
+  Mail,
+  Shield,
+  LogIn,
+  LogOut,
+  HandHelping,
+} from 'lucide-react';
 import { baseMenuClass, iconMenuClass } from '@constants/menu';
 import { useMemo } from 'react';
 
+const stripeURL = process.env.NEXT_PUBLIC_STRIPE_URL as string;
+
 interface Props {
-  isLoggedIn: boolean;
-  handleLogout: () => void;
   collapsed: boolean;
+  handleLogout: () => void;
+  isLoggedIn: boolean;
   onNavigate?: () => void;
 }
 
@@ -32,6 +42,18 @@ const MenuNavItems: React.FC<Props> = ({
     onNavigate();
   };
 
+  const renderIconWithTooltip = (
+    IconComponent: React.ComponentType<any>,
+    label: string,
+  ) =>
+    collapsed ? (
+      <span title={label}>
+        <IconComponent className={iconMenuClass} />
+      </span>
+    ) : (
+      <IconComponent className={iconMenuClass} />
+    );
+
   return (
     <>
       <Link
@@ -40,7 +62,7 @@ const MenuNavItems: React.FC<Props> = ({
         onClick={handleNavClick}
         className={linkClass}
       >
-        <Home className={iconMenuClass} />
+        {renderIconWithTooltip(Home, 'Home')}
         {!collapsed ? <span>Home</span> : <span className="sr-only">Home</span>}
       </Link>
       <Link
@@ -49,7 +71,7 @@ const MenuNavItems: React.FC<Props> = ({
         onClick={handleNavClick}
         className={linkClass}
       >
-        <Info className={iconMenuClass} />
+        {renderIconWithTooltip(Info, 'About')}
         {!collapsed ? (
           <span>About</span>
         ) : (
@@ -62,11 +84,25 @@ const MenuNavItems: React.FC<Props> = ({
         onClick={handleNavClick}
         className={linkClass}
       >
-        <Mail className={iconMenuClass} />
+        {renderIconWithTooltip(Mail, 'Contact')}
         {!collapsed ? (
           <span>Contact</span>
         ) : (
           <span className="sr-only">Contact</span>
+        )}
+      </Link>
+      <Link
+        aria-label="Donate"
+        href={stripeURL}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={linkClass}
+      >
+        {renderIconWithTooltip(HandHelping, 'Donate')}
+        {!collapsed ? (
+          <span>Donate</span>
+        ) : (
+          <span className="sr-only">Donate</span>
         )}
       </Link>
       {isLoggedIn && (
@@ -76,7 +112,7 @@ const MenuNavItems: React.FC<Props> = ({
           onClick={handleNavClick}
           className={linkClass}
         >
-          <Shield className={iconMenuClass} />
+          {renderIconWithTooltip(Shield, 'Admin')}
           {!collapsed ? (
             <span>Admin</span>
           ) : (
@@ -89,6 +125,7 @@ const MenuNavItems: React.FC<Props> = ({
           aria-label="Logout"
           onClick={handleLogout}
           className={`${baseMenuClass} ${collapsed ? 'justify-center' : 'space-x-3 justify-start'}`}
+          title={collapsed ? 'Logout' : undefined}
         >
           <LogOut className={iconMenuClass} />
           {!collapsed ? (
@@ -104,7 +141,7 @@ const MenuNavItems: React.FC<Props> = ({
           onClick={handleNavClick}
           className={linkClass}
         >
-          <LogIn className={iconMenuClass} />
+          {renderIconWithTooltip(LogIn, 'Login')}
           {!collapsed ? (
             <span>Login</span>
           ) : (
