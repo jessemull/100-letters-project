@@ -36,13 +36,20 @@ const Splash = () => {
       <div className="w-full space-y-4">
         <h2 className="text-2xl font-bold text-center">{`Recent Letters${correspondences.length === 0 ? ' Coming Soon!' : ''}`}</h2>
         {correspondences.length === 0 ? (
-          <p className="text-lg text-white text-center md:w-2/3 lg:w-2/3 xl:w-1/2 md:mx-auto">
-            The <strong>100 Letters Project</strong> is driven by the desire to
-            promote real-world human interaction in an increasingly digital
-            landscape and create meaningful connections through handwritten
-            communication. Over the course of a year, I will write 100 letters
-            to 100 individuals.
-          </p>
+          <>
+            <p className="text-lg text-white text-center md:w-2/3 lg:w-2/3 xl:w-1/2 md:mx-auto">
+              The <strong>100 Letters Project</strong> is driven by the desire
+              to promote real-world human interaction in an increasingly digital
+              landscape.
+            </p>
+            <p className="text-lg text-white text-center md:w-2/3 lg:w-2/3 xl:w-1/2 md:mx-auto">
+              Over the course of a year, I will write 100 letters to 100
+              individuals.
+            </p>
+            <p className="text-lg text-white text-center md:w-2/3 lg:w-2/3 xl:w-1/2 md:mx-auto">
+              Please check in soon for the very first letter!
+            </p>
+          </>
         ) : (
           <div className="grid grid-cols-1 sm-tablet:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
             {correspondences
