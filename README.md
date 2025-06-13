@@ -29,44 +29,47 @@ This repository is part of the **100 Letters Project** which includes the follow
    - [Unit Tests](#unit-tests)
    - [Fishery Factories](#fishery-factories)
    - [Code Coverage](#code-coverage)
-8. [Development Website Proxy](#development-website-proxy)
+8. [Error & Performance Metrics](#error--performance-metrics)
+   - [Configuration](#configuration)
+   - [Source Maps](#source-maps)
+9. [Development Website Proxy](#development-website-proxy)
    - [Environment Variables](#environment-variables)
    - [Running The Proxy](#running-the-proxy)
-9. [E2E Tests](#e2e-tests)
-   - [Configuration](#configuration)
-   - [Running E2E Tests - Development](#running-e2e-tests---development)
-   - [Running E2E Tests - Test](#running-e2e-tests---test)
-   - [Running E2E Tests - Production](#running-e2e-tests---production)
-10. [Lighthouse](#lighthouse)
+10. [E2E Tests](#e2e-tests)
+    - [Configuration](#configuration)
+    - [Running E2E Tests - Development](#running-e2e-tests---development)
+    - [Running E2E Tests - Test](#running-e2e-tests---test)
+    - [Running E2E Tests - Production](#running-e2e-tests---production)
+11. [Lighthouse](#lighthouse)
     - [Configuration](#configuration-1)
     - [Running Lighthouse - Development](#running-lighthouse---development)
     - [Running Lighthouse - Test](#running-lighthouse---test)
     - [Running Lighthouse - Production](#running-lighthouse---production)
     - [Code Coverage](#code-coverage-1)
-11. [Accessibility](#accessibility)
-12. [Deep Linking & Cognito Authentication](#deep-linking--cognito-authentication)
+12. [Accessibility](#accessibility)
+13. [Deep Linking & Cognito Authentication](#deep-linking--cognito-authentication)
     - [Deep Linking](#deep-linking)
     - [Cognito Authentication](#cognito-authentication)
-13. [Build](#build)
+14. [Build](#build)
     - [Environment Variables](#environment-variables-1)
     - [Pre-build Script](#pre-build-script)
     - [Post-build script](#post-build-script)
     - [Build](#build-1)
     - [Building The Development Server](#building-the-development-server)
-14. [Deployment Pipelines](#deployment-pipelines)
+15. [Deployment Pipelines](#deployment-pipelines)
     - [Deployment Strategy](#deployment-strategy)
     - [Tools Used](#tools-used)
     - [Pull Request](#pull-request)
     - [Deploy](#deploy-on-merge)
     - [Deploy On Merge](#deploy-on-merge)
     - [Rollback](#rollback)
-15. [Cognito Access Token](#cognito-access-token)
+16. [Cognito Access Token](#cognito-access-token)
     - [Generating An Access Token](#generating-an-access-token)
     - [Using An Access Token](#using-an-access-token)
     - [Environment Variables](#environment-variables)
-16. [Connecting to the Bastion Host](#connecting-to-the-bastion-host)
+17. [Connecting to the Bastion Host](#connecting-to-the-bastion-host)
     - [Environment Variables](#environment-variables-2)
-17. [License](#license)
+18. [License](#license)
 
 ## Project Overview
 
@@ -117,6 +120,8 @@ The **100 Letters Project Website** is built using modern web technologies to en
 - **HTTP Proxy**: Used to sign cookies and securely proxy requests to the development website, enabling local testing and authentication workflows.
 
 - **AWS Lambda@Edge**: Provides authentication and request routing logic at CloudFront's edge locations, enabling low-latency security enforcement.
+
+- **Sentry.io**: Monitors the website for runtime errors and performance issues in production, helping quickly identify and fix bugs that occur in users' browsers.
 
 This tech stack ensures that the **100 Letters Project** website remains performant, secure, and easily maintainable while leveraging AWS infrastructure for scalability and reliability.
 
@@ -223,6 +228,18 @@ Fishery factory functions to provide mock data are available for all of the mode
 ### Code Coverage
 
 Coverage thresholds are enforced at **80%** for all metrics. The build will fail if coverage drops below this threshold.
+
+## Error & Performance Metrics
+
+This project uses **Sentry.io** for client-side error and performance monitoring. Since the website is statically built with Next.js, only the browser runtime is instrumented.
+
+### Configuration
+
+Sentry is initialized in the browser with environment-specific settings. Errors and performance data are reported to Sentry’s **test** or **production** environments based on the active deployment stage.
+
+### Source Maps
+
+Sourcemaps are uploaded during the build process to allow for readable stack traces in the Sentry dashboard. NextJS static export requires manual upload.
 
 ## Development Website Proxy
 
