@@ -2,7 +2,6 @@ import { Letter } from '@ts-types/letter';
 import { StepBack, StepForward } from 'lucide-react';
 import { getLetterDate } from '@util/letter';
 import { useRef, useEffect } from 'react';
-import { categoryLabelMap } from '@constants/correspondence';
 import { Category } from '@ts-types/correspondence';
 
 interface Props {
@@ -44,9 +43,6 @@ const LetterSelectorHorizontal: React.FC<Props> = ({
         <h1 className="text-3xl font-extrabold tracking-tight text-white drop-shadow-lg mb-4">
           Letters <span className="tabular-nums">({letters.length})</span>
         </h1>
-        <span className="border border-white rounded-md bg-white/10 mt-1 px-2 text-lg font-bold uppercase tracking-wider text-white shadow-sm">
-          {categoryLabelMap[category] || 'Other'}
-        </span>
       </div>
       <div className="flex items-center space-x-1 overflow-hidden">
         <button

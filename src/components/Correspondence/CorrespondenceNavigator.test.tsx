@@ -147,7 +147,7 @@ describe('CorrespondenceNavigator Component', () => {
     expect(screen.getByTestId('correspondence-details')).toBeInTheDocument();
     expect(screen.getByTestId('recipient-details')).toBeInTheDocument();
     expect(screen.getByTestId('letter-text')).toBeInTheDocument();
-    expect(screen.getAllByTestId('letter-details').length).toBe(2);
+    expect(screen.getAllByTestId('letter-details').length).toBe(1);
   });
 
   it('Updates selected letter index and resets image index on letter select.', () => {
