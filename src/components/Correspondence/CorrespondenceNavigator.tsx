@@ -157,17 +157,14 @@ const CorrespondenceNavigator = () => {
         </div>
       </div>
       <div className="mt-8 md:mt-6">
-        {/* Letter Title */}
         <h1 className="text-3xl font-extrabold tracking-tight text-white drop-shadow-lg break-words overflow-hidden mb-8">
           {selectedLetter?.title}
         </h1>
 
-        {/* Letter Details - appears after title on larger devices */}
         <div className="mb-8 hidden md:block">
           <LetterDetails letter={selectedLetter} />
         </div>
 
-        {/* Letter Text Content */}
         <div className="text-white/90 whitespace-pre-line break-words overflow-hidden">
           {selectedLetter?.text}
         </div>
