@@ -19,7 +19,6 @@ import {
   LetterDetails,
   LetterSelector,
   LetterSelectorMobile,
-  LetterText,
   RecipientDetails,
 } from '@components/Correspondence';
 import { CorrespondenceCard } from '@ts-types/correspondence';
@@ -98,9 +97,6 @@ const CorrespondenceNavigator = () => {
         <div className="flex-1 space-y-6 text-white min-w-0 order-1 md:order-2">
           <CorrespondenceDetails correspondence={correspondence} />
           <RecipientDetails correspondence={correspondence} />
-          <div className="hidden md:block">
-            <LetterDetails letter={selectedLetter} />
-          </div>
         </div>
         <div className="flex-1 md:mt-0 min-w-0 w-full order-2 md:order-1">
           <div className="hidden lg:block">
@@ -160,8 +156,21 @@ const CorrespondenceNavigator = () => {
           </div>
         </div>
       </div>
-      <div className="mt-8 md:mt-4">
-        <LetterText letter={selectedLetter} />
+      <div className="mt-8 md:mt-6">
+        <h1 className="text-3xl font-extrabold tracking-tight text-white drop-shadow-lg break-words overflow-hidden mb-8">
+          {selectedLetter?.title}
+        </h1>
+
+        <div className="mb-8 hidden md:block">
+          <LetterDetails letter={selectedLetter} />
+        </div>
+
+        <div
+          className="text-white/90 whitespace-pre-line break-words overflow-hidden"
+          data-testid="letter-text"
+        >
+          {selectedLetter?.text}
+        </div>
       </div>
       {isLightboxOpen && (
         <Lightbox
