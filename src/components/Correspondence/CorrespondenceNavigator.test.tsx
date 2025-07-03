@@ -96,6 +96,8 @@ describe('CorrespondenceNavigator Component', () => {
   const mockLetters = [
     {
       letterId: 'a',
+      title: 'Test Letter A',
+      text: 'Test letter content A',
       imageURLs: [
         { id: 'img1', url: '/img1.jpg' },
         { id: 'img2', url: '/img2.jpg' },
@@ -103,6 +105,8 @@ describe('CorrespondenceNavigator Component', () => {
     },
     {
       letterId: 'b',
+      title: 'Test Letter B',
+      text: 'Test letter content B',
       imageURLs: [{ id: 'img3', url: '/img3.jpg' }],
     },
   ];
@@ -166,7 +170,14 @@ describe('CorrespondenceNavigator Component', () => {
 
   it('Falls back to /alt-image.jpg if selected image is undefined.', () => {
     const noImageCorrespondence = {
-      letters: [{ letterId: 'a', imageURLs: [] }],
+      letters: [
+        {
+          letterId: 'a',
+          title: 'No Image Letter',
+          text: 'Content',
+          imageURLs: [],
+        },
+      ],
       reason: {
         category: 'TECHNOLOGY',
       },
@@ -300,6 +311,8 @@ describe('CorrespondenceNavigator Component', () => {
   it('Handles case where selectedLetter.imageURLs is undefined.', () => {
     const letterWithoutImageURLs = {
       letterId: 'a',
+      title: 'Letter Without Images',
+      text: 'Content without images',
     };
 
     const correspondenceWithMissingImageURLs = {

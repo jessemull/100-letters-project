@@ -165,7 +165,10 @@ const CorrespondenceNavigator = () => {
           <LetterDetails letter={selectedLetter} />
         </div>
 
-        <div className="text-white/90 whitespace-pre-line break-words overflow-hidden">
+        <div
+          className="text-white/90 whitespace-pre-line break-words overflow-hidden"
+          data-testid="letter-text"
+        >
           {selectedLetter?.text}
         </div>
       </div>
