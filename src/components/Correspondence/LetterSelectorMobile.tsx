@@ -37,7 +37,7 @@ const LetterSelectorMobile: React.FC<Props> = ({
             ({letters.length})
           </span>
         </h1>
-        <span className="border border-white rounded-md bg-white/10 px-2 text-sm sm:text-md font-bold uppercase tracking-wider text-white shadow-sm">
+        <span className="md:hidden border border-white rounded-md bg-white/10 px-2 text-sm sm:text-md font-bold uppercase tracking-wider text-white shadow-sm">
           {categoryLabelMap[category] || 'Other'}
         </span>
       </div>
