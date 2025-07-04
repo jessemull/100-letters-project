@@ -7,9 +7,9 @@ interface Props {
 }
 
 const RecipientDetails: React.FC<Props> = ({ correspondence }) => (
-  <div className="space-y-4 md:bg-white/20 md:p-4 lg:p-5 md:rounded-2xl md:shadow-xl md:border md:border-white/10 md:backdrop-blur-md md:h-full md:flex md:flex-col md:overflow-y-auto">
-    {/* Recipient Details */}
-    <div className="md:flex-shrink-0">
+  <div className="space-y-4 md:bg-white/20 md:p-4 lg:p-5 md:rounded-2xl md:shadow-xl md:border md:border-white/10 md:backdrop-blur-md md:h-full md:flex md:flex-col">
+    {/* Recipient Details Header */}
+    <div className="flex-shrink-0">
       <div className="hidden md:flex md:justify-between md:items-start mb-2">
         <h2 className="text-2xl font-bold text-white">
           {correspondence?.recipient?.firstName}{' '}
@@ -32,7 +32,9 @@ const RecipientDetails: React.FC<Props> = ({ correspondence }) => (
         </p>
       </div>
     </div>
-    <div className="md:flex-1 md:min-h-0">
+
+    {/* Scrollable Description */}
+    <div className="flex-1 min-h-0 overflow-y-auto">
       <p className="italic text-white/90 mt-4 md:mt-0 whitespace-pre-line">
         {correspondence?.recipient?.description}
       </p>

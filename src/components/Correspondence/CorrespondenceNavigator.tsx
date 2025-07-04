@@ -93,88 +93,85 @@ const CorrespondenceNavigator = () => {
   return (
     <div className="font-merriweather max-w-7xl mx-auto py-4 px-4 md:px-0 md:py-12">
       <div className="flex flex-col space-y-6">
-        {/* Mobile Letter Selector */}
-        <div className="block lg:hidden">
-          <LetterSelectorMobile
-            category={correspondence.reason.category}
-            letters={letters}
-            selected={selectedLetterIndex}
-            onSelect={(idx) => {
-              setSelectedLetterIndex(idx);
-              setSelectedImageIndex(0);
-            }}
-          />
-        </div>
-
-        {/* Main Content - Left: Correspondence Details + Recipient, Right: Letter Selector + Image + Carousel */}
-        <div className="flex flex-col md:flex-row md:gap-12 md:items-stretch mb-4">
-          <div className="flex-1 md:flex-[3] text-white md:flex md:flex-col space-y-4">
-            {/* Correspondence Title and Description */}
-            <div className="space-y-2">
-              <h1 className="text-3xl font-extrabold tracking-tight text-white drop-shadow-lg">
-                {correspondence?.title}
-              </h1>
-              <p className="italic text-white/90">
-                {correspondence?.reason?.description}
-              </p>
-            </div>
-
-            {/* Recipient Details */}
-            <div className="md:flex-1 md:flex md:flex-col">
-              <div className="md:flex-1 lg:mt-10">
-                <RecipientDetails correspondence={correspondence} />
-              </div>
-            </div>
+        {/* CSS Grid Layout for precise alignment */}
+        <div className="grid grid-cols-1 md:grid-cols-5 md:grid-rows-[auto_1fr] gap-4 md:gap-6 mb-4">
+          {/* Mobile Letter Selector - only visible on mobile, spans full width */}
+          <div className="block md:hidden col-span-1">
+            <LetterSelectorMobile
+              category={correspondence.reason.category}
+              letters={letters}
+              selected={selectedLetterIndex}
+              onSelect={(idx) => {
+                setSelectedLetterIndex(idx);
+                setSelectedImageIndex(0);
+              }}
+            />
           </div>
 
-          <div className="flex-1 md:flex-[2] min-w-0 w-full mt-6 md:mt-0">
-            <div className="space-y-4 md:h-full md:flex md:flex-col">
-              {/* Desktop Letter Selector */}
-              <div className="hidden lg:block md:flex-shrink-0">
-                <LetterSelector
-                  category={correspondence.reason.category}
-                  letters={letters}
-                  selected={selectedLetterIndex}
-                  onSelect={(idx) => {
-                    setSelectedLetterIndex(idx);
-                    setSelectedImageIndex(0);
-                  }}
-                />
-              </div>
+          {/* Correspondence Title and Description */}
+          <div className="md:col-span-3 text-white space-y-2">
+            <h1 className="text-3xl font-extrabold tracking-tight text-white drop-shadow-lg">
+              {correspondence?.title}
+            </h1>
+            <p className="italic text-white/90">
+              {correspondence?.reason?.description}
+            </p>
+          </div>
 
-              <div className="w-full aspect-[4/3] relative rounded-2xl overflow-hidden shadow-md max-w-full md:flex-shrink-0">
-                <Image
-                  priority
-                  onClick={() => setIsLightboxOpen(true)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      setIsLightboxOpen(true);
-                    }
-                  }}
-                  role="button"
-                  tabIndex={0}
-                  src={selectedImage?.url || '/alt-image.jpg'}
-                  alt="Selected letter"
-                  fill
-                  className="object-cover cursor-pointer outline-none"
-                />
-                <button
-                  onClick={() => setIsLightboxOpen(true)}
-                  className="absolute top-2 right-2 z-20 bg-black/40 hover:bg-black/60 p-1.5 rounded-md transition"
-                  aria-label="Expand to fullscreen"
-                >
-                  <Expand className="text-white/90 w-6 h-6" />
-                </button>
-              </div>
+          {/* Desktop Letter Selector - aligned with correspondence title */}
+          <div className="hidden md:block md:col-span-2">
+            <LetterSelector
+              category={correspondence.reason.category}
+              letters={letters}
+              selected={selectedLetterIndex}
+              onSelect={(idx) => {
+                setSelectedLetterIndex(idx);
+                setSelectedImageIndex(0);
+              }}
+            />
+          </div>
 
-              <div className="md:flex-1">
-                <Carousel
-                  letter={selectedLetter}
-                  onClick={(idx) => setSelectedImageIndex(idx)}
-                  selected={selectedImageIndex}
-                />
-              </div>
+          {/* Recipient Details - left column, starts in row 2 */}
+          <div className="md:col-span-3 md:row-start-2">
+            <RecipientDetails correspondence={correspondence} />
+          </div>
+
+          {/* Right column container - contains both image and carousel */}
+          <div className="md:col-span-2 md:row-start-2 space-y-4">
+            {/* Main Image */}
+            <div className="w-full aspect-[4/3] relative rounded-2xl overflow-hidden shadow-md">
+              <Image
+                priority
+                onClick={() => setIsLightboxOpen(true)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setIsLightboxOpen(true);
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                src={selectedImage?.url || '/alt-image.jpg'}
+                alt="Selected letter"
+                fill
+                className="object-cover cursor-pointer outline-none"
+              />
+              <button
+                onClick={() => setIsLightboxOpen(true)}
+                className="absolute top-2 right-2 z-20 bg-black/40 hover:bg-black/60 p-1.5 rounded-md transition"
+                aria-label="Expand to fullscreen"
+              >
+                <Expand className="text-white/90 w-6 h-6" />
+              </button>
+            </div>
+
+            {/* Thumbnail Carousel */}
+            <div>
+              <Carousel
+                letter={selectedLetter}
+                onClick={(idx) => setSelectedImageIndex(idx)}
+                selected={selectedImageIndex}
+              />
             </div>
           </div>
         </div>

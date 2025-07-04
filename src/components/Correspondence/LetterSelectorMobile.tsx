@@ -29,7 +29,7 @@ const LetterSelectorMobile: React.FC<Props> = ({
   };
 
   return (
-    <div className="pt-2 pb-1 mt-4 md:mt-0 mb-4">
+    <div className="pb-1 md:mt-0 mb-4">
       <div className="flex justify-between items-start">
         <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-white drop-shadow-lg mb-4">
           Letters{' '}
