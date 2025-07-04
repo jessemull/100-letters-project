@@ -17,7 +17,7 @@ const ImageCarousel: React.FC<Props> = ({ letter, onClick, selected }) => {
     <div
       ref={containerRef}
       data-testid="image-carousel"
-      className="w-full overflow-x-auto scrollbar-hide-unless-hover cursor-grab active:cursor-grabbing mb-4"
+      className="w-full overflow-x-auto scrollbar-hide-unless-hover cursor-grab active:cursor-grabbing"
       onMouseDown={onMouseDown}
       onMouseMove={onMouseMove}
       onMouseUp={onMouseUpOrLeave}

@@ -2,7 +2,6 @@
 
 import 'yet-another-react-lightbox/styles.css';
 import Carousel from './ImageCarousel';
-import CorrespondenceDetails from './CorrespondenceDetails';
 import Image from 'next/image';
 import Lightbox from 'yet-another-react-lightbox';
 import Zoom from 'yet-another-react-lightbox/plugins/zoom';
@@ -24,7 +23,7 @@ import {
 import { CorrespondenceCard } from '@ts-types/correspondence';
 import { Progress } from '@components/Form';
 import { useCorrespondence } from '@contexts/CorrespondenceProvider';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 const CorrespondenceNavigator = () => {
@@ -38,6 +37,26 @@ const CorrespondenceNavigator = () => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [rightColumnHeight, setRightColumnHeight] = useState(0);
+
+  const rightColumnRef = useCallback((element: HTMLDivElement) => {
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const height = entry.contentRect.height;
+        setRightColumnHeight(height);
+      }
+    });
+
+    resizeObserver.observe(element);
+
+    const initialHeight = element.getBoundingClientRect().height;
+
+    setRightColumnHeight(initialHeight);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
 
   const correspondence: CorrespondenceCard | null = useMemo(() => {
     if (!correspondenceId) return null;
@@ -91,77 +110,97 @@ const CorrespondenceNavigator = () => {
     ? selectedLetter.imageURLs.map(({ url }) => ({ src: url }))
     : [];
 
+  const scrollToLetterText = () => {
+    const letterElement = document.getElementById('letter-text-section');
+    if (letterElement) {
+      letterElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   return (
     <div className="font-merriweather max-w-7xl mx-auto py-4 px-4 md:px-0 md:py-12">
-      <div className="flex flex-col md:flex-row md:gap-8 items-start">
-        <div className="flex-1 space-y-6 text-white min-w-0 order-1 md:order-2">
-          <CorrespondenceDetails correspondence={correspondence} />
-          <RecipientDetails correspondence={correspondence} />
-        </div>
-        <div className="flex-1 md:mt-0 min-w-0 w-full order-2 md:order-1">
-          <div className="hidden lg:block">
+      <div className="flex flex-col space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-5 md:grid-rows-[auto_min-content] gap-6 md:gap-8 mb-4">
+          <div className="md:col-span-3 text-white space-y-2 mb-2">
+            <h1 className="text-3xl font-extrabold tracking-tight text-white drop-shadow-lg">
+              {correspondence?.title}
+            </h1>
+            <p className="italic text-white/90">
+              {correspondence?.reason?.description}
+            </p>
+          </div>
+          <div className="hidden md:block md:col-span-2">
             <LetterSelector
-              category={correspondence.reason.category}
               letters={letters}
               selected={selectedLetterIndex}
               onSelect={(idx) => {
                 setSelectedLetterIndex(idx);
                 setSelectedImageIndex(0);
               }}
+              onScrollToText={scrollToLetterText}
             />
           </div>
-          <div className="block md:mt-0 lg:hidden">
+          <div className="md:col-span-3 md:row-start-2 mb-3 md:mb-0">
+            <RecipientDetails
+              correspondence={correspondence}
+              dynamicHeight={rightColumnHeight}
+            />
+          </div>
+          <div className="block md:hidden col-span-1">
             <LetterSelectorMobile
-              category={correspondence.reason.category}
               letters={letters}
               selected={selectedLetterIndex}
               onSelect={(idx) => {
                 setSelectedLetterIndex(idx);
                 setSelectedImageIndex(0);
               }}
+              onScrollToText={scrollToLetterText}
             />
           </div>
-          <div className="w-full aspect-[4/3] relative rounded-2xl overflow-hidden shadow-md max-w-full mb-4">
-            <Image
-              priority
-              onClick={() => setIsLightboxOpen(true)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  setIsLightboxOpen(true);
-                }
-              }}
-              role="button"
-              tabIndex={0}
-              src={selectedImage?.url || '/alt-image.jpg'}
-              alt="Selected letter"
-              fill
-              className="object-cover cursor-pointer outline-none"
-            />
-            <button
-              onClick={() => setIsLightboxOpen(true)}
-              className="absolute top-2 right-2 z-20 bg-black/40 hover:bg-black/60 p-1.5 rounded-md transition"
-              aria-label="Expand to fullscreen"
-            >
-              <Expand className="text-white/90 w-6 h-6" />
-            </button>
-          </div>
-          <Carousel
-            letter={selectedLetter}
-            onClick={(idx) => setSelectedImageIndex(idx)}
-            selected={selectedImageIndex}
-          />
-          <div className="pt-2 lg:pt-5 block md:hidden">
-            <LetterDetails letter={selectedLetter} />
+          <div className="md:col-span-2 md:row-start-2 -mt-3 md:mt-0">
+            <div ref={rightColumnRef} className="space-y-4">
+              <div className="w-full aspect-[4/3] relative rounded-2xl overflow-hidden shadow-md">
+                <Image
+                  priority
+                  onClick={() => setIsLightboxOpen(true)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      setIsLightboxOpen(true);
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  src={selectedImage?.url || '/alt-image.jpg'}
+                  alt="Selected letter"
+                  fill
+                  className="object-cover cursor-pointer outline-none"
+                />
+                <button
+                  onClick={() => setIsLightboxOpen(true)}
+                  className="absolute top-2 right-2 z-20 bg-black/40 hover:bg-black/60 p-1.5 rounded-md transition"
+                  aria-label="Expand to fullscreen"
+                >
+                  <Expand className="text-white/90 w-6 h-6" />
+                </button>
+              </div>
+              <div>
+                <Carousel
+                  letter={selectedLetter}
+                  onClick={(idx) => setSelectedImageIndex(idx)}
+                  selected={selectedImageIndex}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      <div className="mt-8 md:mt-6">
-        <h1 className="text-3xl font-extrabold tracking-tight text-white drop-shadow-lg break-words overflow-hidden mb-8">
+      <div className="mt-6 md:mt-10" id="letter-text-section">
+        <h1 className="text-3xl font-extrabold tracking-tight text-white drop-shadow-lg break-words overflow-hidden mb-5">
           {selectedLetter?.title}
         </h1>
 
-        <div className="mb-8 hidden md:block">
+        <div className="pt-5 pb-5 border-t border-b border-white/70 mb-10">
           <LetterDetails letter={selectedLetter} />
         </div>
 

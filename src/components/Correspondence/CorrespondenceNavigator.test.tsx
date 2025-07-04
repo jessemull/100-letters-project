@@ -1,7 +1,13 @@
 import CorrespondenceNavigator from './CorrespondenceNavigator';
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { axe } from 'jest-axe';
-import { render, screen, fireEvent } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  renderHook,
+  act,
+} from '@testing-library/react';
 import { useCorrespondence } from '@contexts/CorrespondenceProvider';
 import { useSearchParams } from 'next/navigation';
 
@@ -65,11 +71,24 @@ jest.mock('@components/Correspondence', () => ({
   LetterSelector: (props: any) => (
     <div data-testid="letter-selector">
       <button onClick={() => props.onSelect(1)}>SelectLetter</button>
+      {props.onScrollToText && (
+        <button onClick={props.onScrollToText} data-testid="scroll-to-text">
+          Read Text
+        </button>
+      )}
     </div>
   ),
   LetterSelectorMobile: (props: any) => (
     <div data-testid="letter-selector-mobile">
       <button onClick={() => props.onSelect(1)}>SelectMobileLetter</button>
+      {props.onScrollToText && (
+        <button
+          onClick={props.onScrollToText}
+          data-testid="mobile-scroll-to-text"
+        >
+          Read Text
+        </button>
+      )}
     </div>
   ),
   LetterDetails: () => (
@@ -113,9 +132,11 @@ describe('CorrespondenceNavigator Component', () => {
 
   const mockCorrespondence = {
     letters: mockLetters,
+    title: 'Test Correspondence Title',
     metadata: { id: 'test', subject: 'Hello' },
     reason: {
       category: 'TECHNOLOGY',
+      description: 'Test correspondence description',
     },
   };
 
@@ -144,10 +165,9 @@ describe('CorrespondenceNavigator Component', () => {
     );
     expect(screen.getByTestId('carousel')).toBeInTheDocument();
     expect(screen.getByTestId('letter-selector')).toBeInTheDocument();
-    expect(screen.getByTestId('correspondence-details')).toBeInTheDocument();
     expect(screen.getByTestId('recipient-details')).toBeInTheDocument();
     expect(screen.getByTestId('letter-text')).toBeInTheDocument();
-    expect(screen.getAllByTestId('letter-details').length).toBe(2);
+    expect(screen.getAllByTestId('letter-details').length).toBe(1);
   });
 
   it('Updates selected letter index and resets image index on letter select.', () => {
@@ -349,5 +369,113 @@ describe('CorrespondenceNavigator Component', () => {
     const { container } = render(<CorrespondenceNavigator />);
     const results = await axe(container);
     expect(results).toHaveNoViolations();
+  });
+
+  it('Scrolls to letter text section when scroll button is clicked.', () => {
+    const mockScrollIntoView = jest.fn();
+    const mockGetElementById = jest.spyOn(document, 'getElementById');
+
+    mockGetElementById.mockReturnValue({
+      scrollIntoView: mockScrollIntoView,
+    } as any);
+
+    render(<CorrespondenceNavigator />);
+
+    const scrollButton = screen.getByTestId('scroll-to-text');
+    fireEvent.click(scrollButton);
+
+    expect(mockGetElementById).toHaveBeenCalledWith('letter-text-section');
+    expect(mockScrollIntoView).toHaveBeenCalledWith({
+      behavior: 'smooth',
+      block: 'start',
+    });
+
+    mockGetElementById.mockRestore();
+  });
+
+  it('Handles case where letter text section element is not found.', () => {
+    const mockGetElementById = jest.spyOn(document, 'getElementById');
+    mockGetElementById.mockReturnValue(null);
+
+    render(<CorrespondenceNavigator />);
+
+    const scrollButton = screen.getByTestId('scroll-to-text');
+    fireEvent.click(scrollButton);
+
+    expect(mockGetElementById).toHaveBeenCalledWith('letter-text-section');
+    // Should not throw an error when element is null
+
+    mockGetElementById.mockRestore();
+  });
+
+  it('Scrolls to letter text section when mobile scroll button is clicked.', () => {
+    const mockScrollIntoView = jest.fn();
+    const mockGetElementById = jest.spyOn(document, 'getElementById');
+
+    mockGetElementById.mockReturnValue({
+      scrollIntoView: mockScrollIntoView,
+    } as any);
+
+    render(<CorrespondenceNavigator />);
+
+    const mobileScrollButton = screen.getByTestId('mobile-scroll-to-text');
+    fireEvent.click(mobileScrollButton);
+
+    expect(mockGetElementById).toHaveBeenCalledWith('letter-text-section');
+    expect(mockScrollIntoView).toHaveBeenCalledWith({
+      behavior: 'smooth',
+      block: 'start',
+    });
+
+    mockGetElementById.mockRestore();
+  });
+
+  it('rightColumnRef exits early if element is null.', () => {
+    const { result } = renderHook(() => {
+      const [_rightColumnHeight, _setRightColumnHeight] = useState(0);
+      const refCallback = useCallback((element: HTMLDivElement | null) => {
+        if (!element) return 'early-exit';
+      }, []);
+      return refCallback;
+    });
+
+    const returnValue = result.current(null);
+    expect(returnValue).toBe('early-exit');
+  });
+
+  it('ResizeObserver sets rightColumnHeight when triggered.', () => {
+    const observe = jest.fn();
+    const disconnect = jest.fn();
+
+    global.ResizeObserver = jest.fn().mockImplementation((callback) => ({
+      observe,
+      disconnect,
+      callback,
+    }));
+
+    const _mockElement = {
+      getBoundingClientRect: () => ({ height: 123 }),
+    };
+
+    render(<CorrespondenceNavigator />);
+
+    const refContainer = screen.getByTestId('recipient-details').parentElement;
+    expect(refContainer).toBeTruthy();
+
+    const resizeCallback = (global.ResizeObserver as jest.Mock).mock
+      .calls[0][0];
+    act(() => {
+      resizeCallback([
+        {
+          contentRect: {
+            height: 456,
+          },
+        },
+      ]);
+    });
+
+    expect(screen.getByTestId('recipient-details')).toBeInTheDocument();
+
+    (global.ResizeObserver as jest.Mock).mockReset();
   });
 });

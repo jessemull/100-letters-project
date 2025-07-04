@@ -12,12 +12,8 @@ describe('LetterDetails Component', () => {
     imageURLs: [],
   } as unknown as Letter;
 
-  it('Renders description and header.', () => {
+  it('Renders description.', () => {
     render(<LetterDetails letter={baseLetter} />);
-
-    expect(
-      screen.getByRole('heading', { name: /letter details/i }),
-    ).toBeInTheDocument();
 
     expect(
       screen.getByText(baseLetter.description as string),
