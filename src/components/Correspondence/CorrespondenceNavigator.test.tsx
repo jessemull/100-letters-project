@@ -430,7 +430,7 @@ describe('CorrespondenceNavigator Component', () => {
     mockGetElementById.mockRestore();
   });
 
-  it('rightColumnRef exits early if element is null', () => {
+  it('rightColumnRef exits early if element is null.', () => {
     const { result } = renderHook(() => {
       const [_rightColumnHeight, _setRightColumnHeight] = useState(0);
       const refCallback = useCallback((element: HTMLDivElement | null) => {
@@ -439,16 +439,14 @@ describe('CorrespondenceNavigator Component', () => {
       return refCallback;
     });
 
-    // Simulate null ref
     const returnValue = result.current(null);
     expect(returnValue).toBe('early-exit');
   });
 
-  it('ResizeObserver sets rightColumnHeight when triggered', () => {
+  it('ResizeObserver sets rightColumnHeight when triggered.', () => {
     const observe = jest.fn();
     const disconnect = jest.fn();
 
-    // Mock ResizeObserver
     global.ResizeObserver = jest.fn().mockImplementation((callback) => ({
       observe,
       disconnect,
@@ -461,11 +459,9 @@ describe('CorrespondenceNavigator Component', () => {
 
     render(<CorrespondenceNavigator />);
 
-    // Find the div that gets the ref callback
     const refContainer = screen.getByTestId('recipient-details').parentElement;
     expect(refContainer).toBeTruthy();
 
-    // Simulate ResizeObserver firing
     const resizeCallback = (global.ResizeObserver as jest.Mock).mock
       .calls[0][0];
     act(() => {
@@ -478,12 +474,8 @@ describe('CorrespondenceNavigator Component', () => {
       ]);
     });
 
-    // Expect the new height to be reflected later via prop
     expect(screen.getByTestId('recipient-details')).toBeInTheDocument();
-    // We can't directly assert `setRightColumnHeight`, but if the component rerenders with the prop,
-    // then it’s implicitly working.
 
-    // Clean up
     (global.ResizeObserver as jest.Mock).mockReset();
   });
 });
