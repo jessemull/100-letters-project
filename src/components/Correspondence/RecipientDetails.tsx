@@ -33,7 +33,7 @@ const RecipientDetails: React.FC<Props> = ({ correspondence }) => (
       </div>
     </div>
     <div className="md:flex-1 md:min-h-0">
-      <p className="italic text-white/90 mt-4 md:mt-0">
+      <p className="italic text-white/90 mt-4 md:mt-0 whitespace-pre-line">
         {correspondence?.recipient?.description}
       </p>
     </div>
