@@ -45,7 +45,6 @@ const CorrespondenceNavigator = () => {
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const height = entry.contentRect.height;
-        console.log('ResizeObserver fired with height:', height);
         setRightColumnHeight(height);
       }
     });
@@ -123,9 +122,7 @@ const CorrespondenceNavigator = () => {
   return (
     <div className="font-merriweather max-w-7xl mx-auto py-4 px-4 md:px-0 md:py-12">
       <div className="flex flex-col space-y-6">
-        {/* CSS Grid Layout for precise alignment */}
         <div className="grid grid-cols-1 md:grid-cols-5 md:grid-rows-[auto_min-content] gap-6 md:gap-8 mb-4">
-          {/* Correspondence Title and Description */}
           <div className="md:col-span-3 text-white space-y-2 mb-2">
             <h1 className="text-3xl font-extrabold tracking-tight text-white drop-shadow-lg">
               {correspondence?.title}
@@ -189,8 +186,6 @@ const CorrespondenceNavigator = () => {
                   <Expand className="text-white/90 w-6 h-6" />
                 </button>
               </div>
-
-              {/* Thumbnail Carousel */}
               <div>
                 <Carousel
                   letter={selectedLetter}

@@ -58,8 +58,6 @@ const RecipientDetails: React.FC<Props> = ({
           </p>
         </div>
       </div>
-
-      {/* Scrollable Description */}
       <div
         className={`${isDesktop && dynamicHeight ? 'md:flex-1 md:min-h-0 md:overflow-y-auto md:pr-2' : ''}`}
       >
