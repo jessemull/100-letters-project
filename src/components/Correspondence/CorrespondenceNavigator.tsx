@@ -23,7 +23,7 @@ import {
 import { CorrespondenceCard } from '@ts-types/correspondence';
 import { Progress } from '@components/Form';
 import { useCorrespondence } from '@contexts/CorrespondenceProvider';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 const CorrespondenceNavigator = () => {
@@ -37,6 +37,29 @@ const CorrespondenceNavigator = () => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [rightColumnHeight, setRightColumnHeight] = useState(0);
+
+  const rightColumnRef = useCallback((element: HTMLDivElement | null) => {
+    if (!element) return;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const height = entry.contentRect.height;
+        console.log('ResizeObserver fired with height:', height);
+        setRightColumnHeight(height);
+      }
+    });
+
+    resizeObserver.observe(element);
+
+    const initialHeight = element.getBoundingClientRect().height;
+
+    setRightColumnHeight(initialHeight);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
 
   const correspondence: CorrespondenceCard | null = useMemo(() => {
     if (!correspondenceId) return null;
@@ -94,7 +117,7 @@ const CorrespondenceNavigator = () => {
     <div className="font-merriweather max-w-7xl mx-auto py-4 px-4 md:px-0 md:py-12">
       <div className="flex flex-col space-y-6">
         {/* CSS Grid Layout for precise alignment */}
-        <div className="grid grid-cols-1 md:grid-cols-5 md:grid-rows-[auto_1fr] gap-4 md:gap-6 mb-4">
+        <div className="grid grid-cols-1 md:grid-cols-5 md:grid-rows-[auto_min-content] gap-4 md:gap-6 mb-4">
           {/* Mobile Letter Selector - only visible on mobile, spans full width */}
           <div className="block md:hidden col-span-1">
             <LetterSelectorMobile
@@ -133,45 +156,50 @@ const CorrespondenceNavigator = () => {
 
           {/* Recipient Details - left column, starts in row 2 */}
           <div className="md:col-span-3 md:row-start-2">
-            <RecipientDetails correspondence={correspondence} />
+            <RecipientDetails
+              correspondence={correspondence}
+              dynamicHeight={rightColumnHeight}
+            />
           </div>
 
           {/* Right column container - contains both image and carousel */}
-          <div className="md:col-span-2 md:row-start-2 space-y-4">
-            {/* Main Image */}
-            <div className="w-full aspect-[4/3] relative rounded-2xl overflow-hidden shadow-md">
-              <Image
-                priority
-                onClick={() => setIsLightboxOpen(true)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    setIsLightboxOpen(true);
-                  }
-                }}
-                role="button"
-                tabIndex={0}
-                src={selectedImage?.url || '/alt-image.jpg'}
-                alt="Selected letter"
-                fill
-                className="object-cover cursor-pointer outline-none"
-              />
-              <button
-                onClick={() => setIsLightboxOpen(true)}
-                className="absolute top-2 right-2 z-20 bg-black/40 hover:bg-black/60 p-1.5 rounded-md transition"
-                aria-label="Expand to fullscreen"
-              >
-                <Expand className="text-white/90 w-6 h-6" />
-              </button>
-            </div>
+          <div className="md:col-span-2 md:row-start-2">
+            <div ref={rightColumnRef} className="space-y-4">
+              {/* Main Image */}
+              <div className="w-full aspect-[4/3] relative rounded-2xl overflow-hidden shadow-md">
+                <Image
+                  priority
+                  onClick={() => setIsLightboxOpen(true)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      setIsLightboxOpen(true);
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  src={selectedImage?.url || '/alt-image.jpg'}
+                  alt="Selected letter"
+                  fill
+                  className="object-cover cursor-pointer outline-none"
+                />
+                <button
+                  onClick={() => setIsLightboxOpen(true)}
+                  className="absolute top-2 right-2 z-20 bg-black/40 hover:bg-black/60 p-1.5 rounded-md transition"
+                  aria-label="Expand to fullscreen"
+                >
+                  <Expand className="text-white/90 w-6 h-6" />
+                </button>
+              </div>
 
-            {/* Thumbnail Carousel */}
-            <div>
-              <Carousel
-                letter={selectedLetter}
-                onClick={(idx) => setSelectedImageIndex(idx)}
-                selected={selectedImageIndex}
-              />
+              {/* Thumbnail Carousel */}
+              <div>
+                <Carousel
+                  letter={selectedLetter}
+                  onClick={(idx) => setSelectedImageIndex(idx)}
+                  selected={selectedImageIndex}
+                />
+              </div>
             </div>
           </div>
         </div>
