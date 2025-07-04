@@ -39,9 +39,7 @@ const CorrespondenceNavigator = () => {
   const [loading, setLoading] = useState(true);
   const [rightColumnHeight, setRightColumnHeight] = useState(0);
 
-  const rightColumnRef = useCallback((element: HTMLDivElement | null) => {
-    if (!element) return;
-
+  const rightColumnRef = useCallback((element: HTMLDivElement) => {
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const height = entry.contentRect.height;

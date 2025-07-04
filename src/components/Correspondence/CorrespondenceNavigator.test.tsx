@@ -1,7 +1,13 @@
 import CorrespondenceNavigator from './CorrespondenceNavigator';
 import React, { useCallback, useState } from 'react';
 import { axe } from 'jest-axe';
-import { render, screen, fireEvent, renderHook } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  renderHook,
+  act,
+} from '@testing-library/react';
 import { useCorrespondence } from '@contexts/CorrespondenceProvider';
 import { useSearchParams } from 'next/navigation';
 
@@ -462,13 +468,15 @@ describe('CorrespondenceNavigator Component', () => {
     // Simulate ResizeObserver firing
     const resizeCallback = (global.ResizeObserver as jest.Mock).mock
       .calls[0][0];
-    resizeCallback([
-      {
-        contentRect: {
-          height: 456,
+    act(() => {
+      resizeCallback([
+        {
+          contentRect: {
+            height: 456,
+          },
         },
-      },
-    ]);
+      ]);
+    });
 
     // Expect the new height to be reflected later via prop
     expect(screen.getByTestId('recipient-details')).toBeInTheDocument();
