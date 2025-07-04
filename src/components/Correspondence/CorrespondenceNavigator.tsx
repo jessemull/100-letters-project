@@ -113,26 +113,20 @@ const CorrespondenceNavigator = () => {
     ? selectedLetter.imageURLs.map(({ url }) => ({ src: url }))
     : [];
 
+  const scrollToLetterText = () => {
+    const letterElement = document.getElementById('letter-text-section');
+    if (letterElement) {
+      letterElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   return (
     <div className="font-merriweather max-w-7xl mx-auto py-4 px-4 md:px-0 md:py-12">
       <div className="flex flex-col space-y-6">
         {/* CSS Grid Layout for precise alignment */}
-        <div className="grid grid-cols-1 md:grid-cols-5 md:grid-rows-[auto_min-content] gap-4 md:gap-6 mb-4">
-          {/* Mobile Letter Selector - only visible on mobile, spans full width */}
-          <div className="block md:hidden col-span-1">
-            <LetterSelectorMobile
-              category={correspondence.reason.category}
-              letters={letters}
-              selected={selectedLetterIndex}
-              onSelect={(idx) => {
-                setSelectedLetterIndex(idx);
-                setSelectedImageIndex(0);
-              }}
-            />
-          </div>
-
+        <div className="grid grid-cols-1 md:grid-cols-5 md:grid-rows-[auto_min-content] gap-6 md:gap-8 mb-4">
           {/* Correspondence Title and Description */}
-          <div className="md:col-span-3 text-white space-y-2">
+          <div className="md:col-span-3 text-white space-y-2 mb-2">
             <h1 className="text-3xl font-extrabold tracking-tight text-white drop-shadow-lg">
               {correspondence?.title}
             </h1>
@@ -140,32 +134,36 @@ const CorrespondenceNavigator = () => {
               {correspondence?.reason?.description}
             </p>
           </div>
-
-          {/* Desktop Letter Selector - aligned with correspondence title */}
           <div className="hidden md:block md:col-span-2">
             <LetterSelector
-              category={correspondence.reason.category}
               letters={letters}
               selected={selectedLetterIndex}
               onSelect={(idx) => {
                 setSelectedLetterIndex(idx);
                 setSelectedImageIndex(0);
               }}
+              onScrollToText={scrollToLetterText}
             />
           </div>
-
-          {/* Recipient Details - left column, starts in row 2 */}
-          <div className="md:col-span-3 md:row-start-2">
+          <div className="md:col-span-3 md:row-start-2 mb-3 md:mb-0">
             <RecipientDetails
               correspondence={correspondence}
               dynamicHeight={rightColumnHeight}
             />
           </div>
-
-          {/* Right column container - contains both image and carousel */}
-          <div className="md:col-span-2 md:row-start-2">
+          <div className="block md:hidden col-span-1">
+            <LetterSelectorMobile
+              letters={letters}
+              selected={selectedLetterIndex}
+              onSelect={(idx) => {
+                setSelectedLetterIndex(idx);
+                setSelectedImageIndex(0);
+              }}
+              onScrollToText={scrollToLetterText}
+            />
+          </div>
+          <div className="md:col-span-2 md:row-start-2 -mt-3 md:mt-0">
             <div ref={rightColumnRef} className="space-y-4">
-              {/* Main Image */}
               <div className="w-full aspect-[4/3] relative rounded-2xl overflow-hidden shadow-md">
                 <Image
                   priority
@@ -204,7 +202,7 @@ const CorrespondenceNavigator = () => {
           </div>
         </div>
       </div>
-      <div className="mt-12 md:mt-10">
+      <div className="mt-6 md:mt-10" id="letter-text-section">
         <h1 className="text-3xl font-extrabold tracking-tight text-white drop-shadow-lg break-words overflow-hidden mb-5">
           {selectedLetter?.title}
         </h1>

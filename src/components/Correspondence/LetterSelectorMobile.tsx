@@ -1,22 +1,20 @@
 import React, { ChangeEvent } from 'react';
-import { Category } from '@ts-types/correspondence';
 import { Letter } from '@ts-types/letter';
 import { Select } from '@components/Form';
-import { categoryLabelMap } from '@constants/correspondence';
 import { getLetterDate } from '@util/letter';
 
 interface Props {
-  category: Category;
   letters: Letter[];
   selected: number;
   onSelect: (index: number) => void;
+  onScrollToText?: () => void;
 }
 
 const LetterSelectorMobile: React.FC<Props> = ({
-  category,
   letters = [],
   selected,
   onSelect,
+  onScrollToText,
 }) => {
   const options = letters.map((letter, idx) => ({
     label: getLetterDate(letter),
@@ -29,17 +27,22 @@ const LetterSelectorMobile: React.FC<Props> = ({
   };
 
   return (
-    <div className="pb-1 md:mt-0 mb-4">
+    <div className="pb-1 md:mt-0 mb-2 md:mb-4">
       <div className="flex justify-between items-start">
         <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-white drop-shadow-lg mb-4">
           Letters{' '}
-          <span className="hidden md:inline tabular-nums">
+          <span className="hidden lg:inline tabular-nums">
             ({letters.length})
           </span>
         </h1>
-        <span className="md:hidden border border-white rounded-md bg-white/10 px-2 text-sm sm:text-md font-bold uppercase tracking-wider text-white shadow-sm">
-          {categoryLabelMap[category] || 'Other'}
-        </span>
+        {onScrollToText && (
+          <button
+            onClick={onScrollToText}
+            className="border border-white rounded-md bg-white/10 hover:bg-white/20 px-2 py-0.5 md:px-3 md:py-1 text-sm md:text-base font-bold uppercase tracking-wider text-white shadow-sm cursor-pointer transition-colors"
+          >
+            Read Text
+          </button>
+        )}
       </div>
       <Select
         className="text-md"

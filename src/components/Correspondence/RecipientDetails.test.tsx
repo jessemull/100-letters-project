@@ -1,4 +1,4 @@
-import { Correspondence } from '@ts-types/correspondence';
+import { CorrespondenceCard } from '@ts-types/correspondence';
 import { RecipientDetails } from '@components/Correspondence';
 import { axe } from 'jest-axe';
 import { render, screen } from '@testing-library/react';
@@ -14,17 +14,18 @@ describe('RecipientDetails Component', () => {
     recipient: {
       firstName: 'Marie',
       lastName: 'Curie',
+      fullName: 'Marie Curie',
       occupation: 'Physicist and Chemist',
       organization: 'Sorbonne University',
       description:
         'First woman to win a Nobel Prize and the only person to win in two scientific fields.',
     },
-  } as unknown as Correspondence;
+  } as unknown as CorrespondenceCard;
 
   it('Renders all recipient details.', () => {
     render(<RecipientDetails correspondence={correspondence} />);
     expect(
-      screen.getByRole('heading', { name: /recipient/i }),
+      screen.getByRole('heading', { name: /Marie Curie/i }),
     ).toBeInTheDocument();
     expect(screen.getByText(/Marie Curie/)).toBeInTheDocument();
     expect(screen.getByText(/Physicist and Chemist/)).toBeInTheDocument();
