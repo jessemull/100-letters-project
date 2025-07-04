@@ -25,4 +25,10 @@ global.IntersectionObserver = jest.fn(() => ({
   unobserve: jest.fn(),
 }));
 
+global.ResizeObserver = jest.fn(() => ({
+  disconnect: jest.fn(),
+  observe: jest.fn(),
+  unobserve: jest.fn(),
+}));
+
 expect.extend(toHaveNoViolations);

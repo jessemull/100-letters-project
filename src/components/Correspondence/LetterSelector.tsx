@@ -2,20 +2,19 @@ import { Letter } from '@ts-types/letter';
 import { StepBack, StepForward } from 'lucide-react';
 import { getLetterDate } from '@util/letter';
 import { useRef, useEffect } from 'react';
-import { Category } from '@ts-types/correspondence';
 
 interface Props {
-  category: Category;
   letters: Letter[];
   onSelect: (index: number) => void;
   selected: number;
+  onScrollToText?: () => void;
 }
 
 const LetterSelectorHorizontal: React.FC<Props> = ({
-  category,
   letters = [],
   onSelect,
   selected,
+  onScrollToText,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -41,8 +40,19 @@ const LetterSelectorHorizontal: React.FC<Props> = ({
     <div className="flex flex-col max-w-full mb-4">
       <div className="flex justify-between items-start">
         <h1 className="text-3xl font-extrabold tracking-tight text-white drop-shadow-lg mb-4">
-          Letters <span className="tabular-nums">({letters.length})</span>
+          Letters{' '}
+          <span className="hidden lg:inline tabular-nums">
+            ({letters.length})
+          </span>
         </h1>
+        {onScrollToText && (
+          <button
+            onClick={onScrollToText}
+            className="border border-white rounded-md bg-white/10 hover:bg-white/20 px-2 py-0.5 md:px-3 md:py-1 text-sm md:text-base font-bold uppercase tracking-wider text-white shadow-sm cursor-pointer transition-colors"
+          >
+            Read Text
+          </button>
+        )}
       </div>
       <div className="flex items-center space-x-1 overflow-hidden">
         <button

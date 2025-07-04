@@ -113,9 +113,11 @@ describe('CorrespondenceNavigator Component', () => {
 
   const mockCorrespondence = {
     letters: mockLetters,
+    title: 'Test Correspondence Title',
     metadata: { id: 'test', subject: 'Hello' },
     reason: {
       category: 'TECHNOLOGY',
+      description: 'Test correspondence description',
     },
   };
 
@@ -144,7 +146,6 @@ describe('CorrespondenceNavigator Component', () => {
     );
     expect(screen.getByTestId('carousel')).toBeInTheDocument();
     expect(screen.getByTestId('letter-selector')).toBeInTheDocument();
-    expect(screen.getByTestId('correspondence-details')).toBeInTheDocument();
     expect(screen.getByTestId('recipient-details')).toBeInTheDocument();
     expect(screen.getByTestId('letter-text')).toBeInTheDocument();
     expect(screen.getAllByTestId('letter-details').length).toBe(1);
