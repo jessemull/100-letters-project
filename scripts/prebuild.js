@@ -196,7 +196,6 @@ async function authenticateUser() {
     const dataDir = path.join(__dirname, '../public/data');
     fs.mkdirSync(dataDir, { recursive: true });
 
-    // Clean up old versioned files
     const cleanupOldVersions = () => {
       const files = fs.readdirSync(dataDir);
       const oldVersionedFiles = files.filter((file) =>

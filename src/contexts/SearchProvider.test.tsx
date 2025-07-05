@@ -30,7 +30,6 @@ describe('SearchProvider', () => {
       .spyOn(console, 'error')
       .mockImplementation(() => {});
 
-    // Override the global fetch mock to reject
     const originalFetch = global.fetch;
     global.fetch = jest.fn().mockRejectedValue(mockError);
 
