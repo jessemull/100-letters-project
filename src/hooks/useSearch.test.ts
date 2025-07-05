@@ -3,8 +3,17 @@ import { act, waitFor } from '@testing-library/react';
 import { renderHook } from '@testing-library/react';
 import { useSearch } from '@hooks/useSearch';
 
+// Mock bootstrap.json with dataVersion
+jest.mock('@public/data/bootstrap.json', () => ({
+  default: {
+    dataVersion: 1234567890,
+    totalCorrespondences: 2,
+    earliestSentAtDate: '2023-01-01T00:00:00Z',
+  },
+}));
+
 global.fetch = jest.fn().mockImplementation((url: string) => {
-  if (url.endsWith('data.json')) {
+  if (url.includes('data.') && url.endsWith('.json')) {
     return Promise.resolve({
       ok: true,
       json: () =>
@@ -41,7 +50,7 @@ global.fetch = jest.fn().mockImplementation((url: string) => {
     });
   }
 
-  if (url.endsWith('search.json')) {
+  if (url.includes('search.') && url.endsWith('.json')) {
     return Promise.resolve({
       ok: true,
       json: () =>
@@ -192,7 +201,7 @@ describe('useSearch', () => {
     consoleErrorSpy.mockRestore();
 
     (global.fetch as jest.Mock).mockImplementation((url: string) => {
-      if (url.endsWith('data.json')) {
+      if (url.includes('data.') && url.endsWith('.json')) {
         return Promise.resolve({
           ok: true,
           json: () =>
@@ -224,7 +233,7 @@ describe('useSearch', () => {
             }),
         });
       }
-      if (url.endsWith('search.json')) {
+      if (url.includes('search.') && url.endsWith('.json')) {
         return Promise.resolve({
           ok: true,
           json: () =>

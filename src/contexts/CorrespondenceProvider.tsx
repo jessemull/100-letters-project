@@ -40,7 +40,8 @@ export const CorrespondenceProvider = ({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch('/data/data.json');
+        const dataUrl = `/data/data.${(bootstrap as any).dataVersion}.json`;
+        const res = await fetch(dataUrl);
         const data = await res.json();
         setCorrespondences(data.correspondences ?? []);
         setCorrespondencesById(data.correspondencesById ?? {});

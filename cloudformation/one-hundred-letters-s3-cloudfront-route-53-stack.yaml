@@ -182,6 +182,24 @@ Resources:
           QueryStringsConfig:
             QueryStringBehavior: none
 
+  DataCachePolicy:
+    Type: AWS::CloudFront::CachePolicy
+    Properties:
+      CachePolicyConfig:
+        Name: !Sub "DataCachePolicy-${Environment}"
+        DefaultTTL: 300
+        MinTTL: 0
+        MaxTTL: 3600
+        ParametersInCacheKeyAndForwardedToOrigin:
+          EnableAcceptEncodingGzip: true
+          EnableAcceptEncodingBrotli: true
+          CookiesConfig:
+            CookieBehavior: none
+          HeadersConfig:
+            HeaderBehavior: none
+          QueryStringsConfig:
+            QueryStringBehavior: none
+
   StaticWebsiteCloudFront:
     Type: AWS::CloudFront::Distribution
     Properties:
@@ -216,6 +234,15 @@ Resources:
             - GET
             - HEAD
         CacheBehaviors:
+          - PathPattern: "/data/*"
+            TargetOriginId: "S3Origin"
+            ViewerProtocolPolicy: "redirect-to-https"
+            Compress: true
+            CachePolicyId: !Ref DataCachePolicy
+            ForwardedValues:
+              QueryString: false
+              Cookies:
+                Forward: "none"
           - PathPattern: "/images/*"
             TargetOriginId: "ImageS3Origin"
             ViewerProtocolPolicy: "redirect-to-https"
