@@ -28,7 +28,10 @@ export const SearchProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const loadSearchData = async () => {
       try {
-        const res = await fetch('/data/search.json');
+        const bootstrap = await import('@public/data/bootstrap.json');
+        const searchUrl = `/data/search.${(bootstrap as any).dataVersion}.json`;
+
+        const res = await fetch(searchUrl);
         const data = await res.json();
 
         setSearchData({
@@ -37,7 +40,7 @@ export const SearchProvider = ({ children }: { children: ReactNode }) => {
           letters: data.letters ?? [],
         });
       } catch (err) {
-        console.error('Failed to load search.json:', err);
+        console.error('Failed to load search data:', err);
       } finally {
         setLoading(false);
       }

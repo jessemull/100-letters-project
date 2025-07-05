@@ -22,9 +22,15 @@ export const useSearch = ({
   useEffect(() => {
     const loadSearchData = async () => {
       try {
+        const bootstrap = await import('@public/data/bootstrap.json');
+        const timestamp = (bootstrap as any).dataVersion;
+
+        const dataUrl = `/data/data.${timestamp}.json`;
+        const searchUrl = `/data/search.${timestamp}.json`;
+
         const [dataRes, searchRes] = await Promise.all([
-          fetch('/data/data.json'),
-          fetch('/data/search.json'),
+          fetch(dataUrl),
+          fetch(searchUrl),
         ]);
 
         const dataModule = await dataRes.json();

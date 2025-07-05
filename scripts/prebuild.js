@@ -196,18 +196,45 @@ async function authenticateUser() {
     const dataDir = path.join(__dirname, '../public/data');
     fs.mkdirSync(dataDir, { recursive: true });
 
-    const outputPath = path.join(dataDir, 'data.json');
+    // Clean up old versioned files
+    const cleanupOldVersions = () => {
+      const files = fs.readdirSync(dataDir);
+      const oldVersionedFiles = files.filter((file) =>
+        file.match(/^(data|search)\.\d+\.json$/),
+      );
+
+      oldVersionedFiles.forEach((file) => {
+        const filePath = path.join(dataDir, file);
+        fs.unlinkSync(filePath);
+        console.log(`Cleaned up old version: ${file}`);
+      });
+    };
+
+    cleanupOldVersions();
+
+    const timestamp = Date.now();
+
+    // Only write versioned files - no fallbacks needed
+    const outputPath = path.join(dataDir, `data.${timestamp}.json`);
     fs.writeFileSync(outputPath, JSON.stringify(data, null, 2));
 
-    const searchPath = path.join(dataDir, 'search.json');
+    const searchPath = path.join(dataDir, `search.${timestamp}.json`);
     fs.writeFileSync(searchPath, JSON.stringify(searchData, null, 2));
 
     const bootstrapPath = path.join(dataDir, 'bootstrap.json');
-    fs.writeFileSync(bootstrapPath, JSON.stringify(bootstrapData, null, 2));
+    const updatedBootstrapData = {
+      ...bootstrapData,
+      dataVersion: timestamp,
+    };
+    fs.writeFileSync(
+      bootstrapPath,
+      JSON.stringify(updatedBootstrapData, null, 2),
+    );
 
     console.log(`Data successfully written to ${outputPath}`);
     console.log(`Search index successfully written to ${searchPath}`);
     console.log(`Bootstrap data successfully written to ${bootstrapPath}`);
+    console.log(`Cache-busting timestamp: ${timestamp}`);
   } catch (error) {
     console.error('Error loading data: ', error);
     process.exit(1);
