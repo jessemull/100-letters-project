@@ -45,10 +45,11 @@ const ImageCarousel: React.FC<Props> = ({ letter, onClick, selected }) => {
                 onClick(idx, image);
               }}
               onDragStart={(e) => e.preventDefault()}
+              title={image.caption || `Image ${idx + 1}`}
             >
               <Image
                 src={image.urlThumbnail || '/alt-image.jpg'}
-                alt={`Thumbnail ${idx}`}
+                alt={image.caption || `Thumbnail ${idx}`}
                 fill
                 className="object-cover transition-transform duration-300 ease-out hover:scale-105"
               />
