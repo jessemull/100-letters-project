@@ -80,9 +80,28 @@ async function authenticateUser() {
       fetchAllPages('letter', token),
     ]);
 
-    const correspondences = unsorted.sort(
-      (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
-    );
+    // Sort correspondences by the most recent sentAt date from their letters
+    const correspondences = unsorted.sort((a, b) => {
+      // Get the most recent sentAt date for each correspondence
+      const getLatestSentAt = (correspondence) => {
+        if (!correspondence.letters || correspondence.letters.length === 0) {
+          return new Date(0); // Use epoch for correspondences with no letters
+        }
+
+        const sentDates = correspondence.letters
+          .map((letter) => new Date(letter.sentAt))
+          .filter((date) => !isNaN(date.getTime()));
+
+        return sentDates.length > 0
+          ? new Date(Math.max(...sentDates))
+          : new Date(0);
+      };
+
+      const aLatest = getLatestSentAt(a);
+      const bLatest = getLatestSentAt(b);
+
+      return bLatest - aLatest; // Sort in descending order (most recent first)
+    });
 
     const sentDates = letters
       .map((letter) => new Date(letter.sentAt))
