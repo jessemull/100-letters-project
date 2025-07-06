@@ -46,7 +46,6 @@ const Card: React.FC<Props> = ({ correspondence, loading, priority }) => {
           loading={loading}
           priority={priority}
         />
-        {/* Caption overlay - appears on hover */}
         {imageCaption && (
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent text-white p-3 transform translate-y-full opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
             <p className="text-sm font-medium">{imageCaption}</p>

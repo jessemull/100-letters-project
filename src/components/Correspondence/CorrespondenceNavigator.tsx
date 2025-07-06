@@ -189,7 +189,6 @@ const CorrespondenceNavigator = () => {
                 >
                   <Expand className="text-white/90 w-6 h-6" />
                 </button>
-                {/* Caption overlay - appears on hover */}
                 {selectedImage &&
                   'caption' in selectedImage &&
                   selectedImage.caption && (
