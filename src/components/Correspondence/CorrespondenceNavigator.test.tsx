@@ -159,7 +159,7 @@ describe('CorrespondenceNavigator Component', () => {
   it('Renders the main image and mocked children correctly.', () => {
     render(<CorrespondenceNavigator />);
 
-    expect(screen.getByAltText('Selected letter')).toHaveAttribute(
+    expect(screen.getByAltText('Test Letter A')).toHaveAttribute(
       'src',
       '/_next/image?url=%2Fimg1.jpg&w=3840&q=75',
     );
@@ -173,7 +173,7 @@ describe('CorrespondenceNavigator Component', () => {
   it('Updates selected letter index and resets image index on letter select.', () => {
     render(<CorrespondenceNavigator />);
     fireEvent.click(screen.getByText('SelectLetter'));
-    expect(screen.getByAltText('Selected letter')).toHaveAttribute(
+    expect(screen.getByAltText('Test Letter B')).toHaveAttribute(
       'src',
       '/_next/image?url=%2Fimg3.jpg&w=3840&q=75',
     );
@@ -182,7 +182,7 @@ describe('CorrespondenceNavigator Component', () => {
   it('Updates selected image when a thumbnail is clicked in carousel.', () => {
     render(<CorrespondenceNavigator />);
     fireEvent.click(screen.getByTestId('carousel'));
-    expect(screen.getByAltText('Selected letter')).toHaveAttribute(
+    expect(screen.getByAltText('Test Letter A')).toHaveAttribute(
       'src',
       '/_next/image?url=%2Fimg2.jpg&w=3840&q=75',
     );
@@ -208,7 +208,7 @@ describe('CorrespondenceNavigator Component', () => {
     });
 
     render(<CorrespondenceNavigator />);
-    expect(screen.getByAltText('Selected letter')).toHaveAttribute(
+    expect(screen.getByAltText('No Image Letter')).toHaveAttribute(
       'src',
       '/_next/image?url=%2Falt-image.jpg&w=3840&q=75',
     );
@@ -252,7 +252,7 @@ describe('CorrespondenceNavigator Component', () => {
 
     render(<CorrespondenceNavigator />);
 
-    expect(screen.getByAltText('Selected letter')).toHaveAttribute(
+    expect(screen.getByAltText('Test Letter A')).toHaveAttribute(
       'src',
       '/_next/image?url=%2Fimg1.jpg&w=3840&q=75',
     );
@@ -262,7 +262,7 @@ describe('CorrespondenceNavigator Component', () => {
     render(<CorrespondenceNavigator />);
     fireEvent.click(screen.getByText('SelectMobileLetter'));
 
-    expect(screen.getByAltText('Selected letter')).toHaveAttribute(
+    expect(screen.getByAltText('Test Letter B')).toHaveAttribute(
       'src',
       '/_next/image?url=%2Fimg3.jpg&w=3840&q=75',
     );
@@ -286,14 +286,14 @@ describe('CorrespondenceNavigator Component', () => {
 
   it('Opens lightbox when image is clicked.', () => {
     render(<CorrespondenceNavigator />);
-    const image = screen.getByRole('button', { name: /selected letter/i });
+    const image = screen.getByRole('button', { name: /test letter a/i });
     fireEvent.click(image);
     expect(screen.getByTestId('mock-lightbox')).toBeInTheDocument();
   });
 
   it('Opens lightbox when pressing Enter or Space on the image.', () => {
     render(<CorrespondenceNavigator />);
-    const image = screen.getByRole('button', { name: /selected letter/i });
+    const image = screen.getByRole('button', { name: /test letter a/i });
 
     fireEvent.keyDown(image, { key: 'Enter' });
     expect(screen.getByTestId('mock-lightbox')).toBeInTheDocument();
@@ -358,7 +358,7 @@ describe('CorrespondenceNavigator Component', () => {
 
     render(<CorrespondenceNavigator />);
 
-    const image = screen.getByAltText('Selected letter');
+    const image = screen.getByAltText('Letter Without Images');
     expect(image).toHaveAttribute(
       'src',
       '/_next/image?url=%2Falt-image.jpg&w=3840&q=75',

@@ -159,7 +159,7 @@ const CorrespondenceNavigator = () => {
           </div>
           <div className="md:col-span-2 md:row-start-2 -mt-3 md:mt-0">
             <div ref={rightColumnRef} className="space-y-4">
-              <div className="w-full aspect-[4/3] relative rounded-2xl overflow-hidden shadow-md">
+              <div className="w-full aspect-[4/3] relative rounded-2xl overflow-hidden shadow-md group">
                 <Image
                   priority
                   onClick={() => setIsLightboxOpen(true)}
@@ -172,7 +172,13 @@ const CorrespondenceNavigator = () => {
                   role="button"
                   tabIndex={0}
                   src={selectedImage?.url || '/alt-image.jpg'}
-                  alt="Selected letter"
+                  alt={
+                    selectedImage &&
+                    'caption' in selectedImage &&
+                    selectedImage.caption
+                      ? selectedImage.caption
+                      : selectedLetter?.title || 'Selected letter'
+                  }
                   fill
                   className="object-cover cursor-pointer outline-none"
                 />
@@ -183,6 +189,16 @@ const CorrespondenceNavigator = () => {
                 >
                   <Expand className="text-white/90 w-6 h-6" />
                 </button>
+                {/* Caption overlay - appears on hover */}
+                {selectedImage &&
+                  'caption' in selectedImage &&
+                  selectedImage.caption && (
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent text-white p-4 transform translate-y-full opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 z-10">
+                      <p className="text-sm font-medium">
+                        {selectedImage.caption}
+                      </p>
+                    </div>
+                  )}
               </div>
               <div>
                 <Carousel
