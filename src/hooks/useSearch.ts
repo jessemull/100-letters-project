@@ -36,6 +36,7 @@ export const useSearch = ({
   type,
   term,
   limit = 100,
+  isExactCategory = false,
 }: SearchOptions): SearchResult[] => {
   const [fuseMap, setFuseMap] = useState<FuseMap | null>(null);
   const [correspondenceData, setCorrespondenceData] = useState<
@@ -114,7 +115,7 @@ export const useSearch = ({
 
     // Check if this is an exact category search
     const categoryEnum = getCategoryEnum(term.trim());
-    if (categoryEnum && type === 'all') {
+    if (categoryEnum && type === 'all' && isExactCategory) {
       // Do exact category filtering instead of fuzzy search
       return correspondenceData
         .filter(
@@ -131,7 +132,7 @@ export const useSearch = ({
           .slice(0, limit)
           .map((r) => r.item)
       : [];
-  }, [type, term, limit, fuseMap, correspondenceData]);
+  }, [type, term, limit, fuseMap, correspondenceData, isExactCategory]);
 
   return results;
 };

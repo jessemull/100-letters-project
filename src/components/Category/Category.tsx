@@ -20,6 +20,7 @@ const Category = () => {
   const results = useSearch({
     type: 'all',
     term: category && !term ? category : term,
+    isExactCategory: !!(category && !term), // true when browsing categories, false when manually searching
   }) as CorrespondenceCard[];
 
   const showCategoryHeader = category && !term;

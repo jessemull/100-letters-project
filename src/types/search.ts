@@ -1,10 +1,11 @@
 export type SearchType = 'all' | 'letters' | 'recipients' | 'correspondences';
 
-export type SearchOptions = {
-  type: SearchType;
+export interface SearchOptions {
+  type: 'all' | 'correspondences' | 'recipients' | 'letters';
   term: string;
   limit?: number;
-};
+  isExactCategory?: boolean;
+}
 
 export type CorrespondenceSearchItem = {
   correspondenceId: string;
