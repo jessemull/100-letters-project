@@ -11,6 +11,26 @@ import {
 import { FuseMap } from '@ts-types/hooks';
 import { useState, useEffect, useMemo } from 'react';
 import { CorrespondenceCard } from '@ts-types/correspondence';
+import { Category } from '@ts-types/correspondence';
+
+// Function to convert display name to category enum
+const getCategoryEnum = (displayName: string): Category | null => {
+  const categoryMap: Record<string, Category> = {
+    Arts: Category.ARTS,
+    Entertainment: Category.ENTERTAINMENT,
+    Family: Category.FAMILY,
+    Food: Category.FOOD,
+    Friends: Category.FRIENDS,
+    Government: Category.GOVERNMENT,
+    Literature: Category.LITERATURE,
+    Mentors: Category.MENTORS,
+    Music: Category.MUSIC,
+    Science: Category.SCIENCE,
+    Sports: Category.SPORTS,
+    Technology: Category.TECHNOLOGY,
+  };
+  return categoryMap[displayName] || null;
+};
 
 export const useSearch = ({
   type,
@@ -18,6 +38,9 @@ export const useSearch = ({
   limit = 100,
 }: SearchOptions): SearchResult[] => {
   const [fuseMap, setFuseMap] = useState<FuseMap | null>(null);
+  const [correspondenceData, setCorrespondenceData] = useState<
+    CorrespondenceCard[]
+  >([]);
 
   useEffect(() => {
     const loadSearchData = async () => {
@@ -37,6 +60,7 @@ export const useSearch = ({
         const searchIndexModule = await searchRes.json();
 
         const { correspondences: correspondenceData } = dataModule;
+        setCorrespondenceData(correspondenceData ?? []);
 
         const all = new Fuse<CorrespondenceCard>(correspondenceData ?? [], {
           threshold: 0.3,
@@ -87,6 +111,19 @@ export const useSearch = ({
   const results = useMemo(() => {
     if (!term.trim()) return [];
     if (!fuseMap) return [];
+
+    // Check if this is an exact category search
+    const categoryEnum = getCategoryEnum(term.trim());
+    if (categoryEnum && type === 'all') {
+      // Do exact category filtering instead of fuzzy search
+      return correspondenceData
+        .filter(
+          (correspondence) => correspondence.reason?.category === categoryEnum,
+        )
+        .slice(0, limit);
+    }
+
+    // Use fuzzy search for non-category searches
     const fuse = fuseMap[type];
     return fuse
       ? fuse
@@ -94,7 +131,7 @@ export const useSearch = ({
           .slice(0, limit)
           .map((r) => r.item)
       : [];
-  }, [type, term, limit, fuseMap]);
+  }, [type, term, limit, fuseMap, correspondenceData]);
 
   return results;
 };
