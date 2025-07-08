@@ -73,7 +73,7 @@ describe('CorrespondenceForm Component', () => {
       target: { value: 'Test Title' },
     });
     fireEvent.change(screen.getByLabelText(/category/i), {
-      target: { value: 'COMEDY' },
+      target: { value: 'ARTS' },
     });
     fireEvent.change(screen.getByLabelText(/status/i), {
       target: { value: 'UNSENT' },
@@ -133,7 +133,7 @@ describe('CorrespondenceForm Component', () => {
       target: { value: 'Test Title' },
     });
     fireEvent.change(screen.getByLabelText(/category/i), {
-      target: { value: 'COMEDY' },
+      target: { value: 'ARTS' },
     });
     fireEvent.change(descriptions[0], { target: { value: 'Description...' } });
     fireEvent.change(screen.getByLabelText(/first name/i), {
@@ -195,7 +195,7 @@ describe('CorrespondenceForm Component', () => {
       target: { value: 'Test Title' },
     });
     fireEvent.change(screen.getByLabelText(/category/i), {
-      target: { value: 'COMEDY' },
+      target: { value: 'ARTS' },
     });
     fireEvent.change(descriptions[0], { target: { value: 'Description...' } });
     fireEvent.change(screen.getByLabelText(/first name/i), {

@@ -12,12 +12,12 @@ export const CorrespondenceFactory = Factory.define<Correspondence>(() => ({
   recipientId: uuidv4(),
   reason: {
     category: faker.helpers.arrayElement([
-      'COMEDY',
+      'ARTS',
       'ENTERTAINMENT',
       'FAMILY',
       'FOOD',
       'FRIENDS',
-      'JOURNALISM',
+      'GOVERNMENT',
       'LITERATURE',
       'MENTORS',
       'MUSIC',

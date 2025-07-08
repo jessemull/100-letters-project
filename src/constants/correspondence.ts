@@ -13,12 +13,12 @@ export const correspondenceStatusOptions = [
 ];
 
 export const correspondenceCategoryOptions = [
-  { label: 'Comedy', value: Category.COMEDY },
+  { label: 'Arts', value: Category.ARTS },
   { label: 'Entertainment', value: Category.ENTERTAINMENT },
   { label: 'Family', value: Category.FAMILY },
   { label: 'Food', value: Category.FOOD },
   { label: 'Friends', value: Category.FRIENDS },
-  { label: 'Journalism', value: Category.JOURNALISM },
+  { label: 'Government', value: Category.GOVERNMENT },
   { label: 'Literature', value: Category.LITERATURE },
   { label: 'Mentors', value: Category.MENTORS },
   { label: 'Music', value: Category.MUSIC },
@@ -28,12 +28,12 @@ export const correspondenceCategoryOptions = [
 ];
 
 export const categoryLabelMap: Record<Category, string> = {
-  [Category.COMEDY]: 'Comedy',
+  [Category.ARTS]: 'Arts',
   [Category.ENTERTAINMENT]: 'Entertainment',
   [Category.FAMILY]: 'Family',
   [Category.FOOD]: 'Food',
   [Category.FRIENDS]: 'Friends',
-  [Category.JOURNALISM]: 'Journalism',
+  [Category.GOVERNMENT]: 'Government',
   [Category.LITERATURE]: 'Literature',
   [Category.MENTORS]: 'Mentors',
   [Category.MUSIC]: 'Music',
