@@ -11,25 +11,7 @@ import {
 import { FuseMap } from '@ts-types/hooks';
 import { useState, useEffect, useMemo } from 'react';
 import { CorrespondenceCard } from '@ts-types/correspondence';
-import { Category } from '@ts-types/correspondence';
-
-const getCategoryEnum = (displayName: string): Category | null => {
-  const categoryMap: Record<string, Category> = {
-    Arts: Category.ARTS,
-    Entertainment: Category.ENTERTAINMENT,
-    Family: Category.FAMILY,
-    Food: Category.FOOD,
-    Friends: Category.FRIENDS,
-    Government: Category.GOVERNMENT,
-    Literature: Category.LITERATURE,
-    Mentors: Category.MENTORS,
-    Music: Category.MUSIC,
-    Science: Category.SCIENCE,
-    Sports: Category.SPORTS,
-    Technology: Category.TECHNOLOGY,
-  };
-  return categoryMap[displayName] || null;
-};
+import { getCategoryEnum } from '@util/search';
 
 export const useSearch = ({
   type,
@@ -120,6 +102,7 @@ export const useSearch = ({
         )
         .slice(0, limit);
     }
+
     const fuse = fuseMap[type];
     return fuse
       ? fuse
