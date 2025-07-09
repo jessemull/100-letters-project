@@ -25,6 +25,7 @@ import {
 } from './cache';
 import { calculateCountdown } from './feed';
 import { formatLetterDates } from './letter';
+import { getCategoryEnum } from './search';
 
 export {
   calculateCountdown,
@@ -43,6 +44,7 @@ export {
   formatTime,
   get,
   formatLetterDates,
+  getCategoryEnum,
   isEmail,
   letterByIdDeleteUpdate,
   letterByIdUpdate,

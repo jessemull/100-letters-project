@@ -42,11 +42,13 @@ app.use((req, res, next) => {
 });
 
 app.use((req, res, next) => {
-  const baseUrl = req.originalUrl.split('?')[0];
+  const [baseUrl, queryString] = req.originalUrl.split('?');
+  const queryParams = queryString ? `?${queryString}` : '';
+
   if (baseUrl === '/') {
-    req.url = '/index.html';
+    req.url = '/index.html' + queryParams;
   } else if (!baseUrl.match(/\.[a-zA-Z0-9]+$/)) {
-    req.url += '.html';
+    req.url = baseUrl + '.html' + queryParams;
   }
   next();
 });

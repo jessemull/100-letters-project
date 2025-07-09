@@ -11,13 +11,18 @@ import {
 import { FuseMap } from '@ts-types/hooks';
 import { useState, useEffect, useMemo } from 'react';
 import { CorrespondenceCard } from '@ts-types/correspondence';
+import { getCategoryEnum } from '@util/search';
 
 export const useSearch = ({
   type,
   term,
   limit = 100,
+  isExactCategory = false,
 }: SearchOptions): SearchResult[] => {
   const [fuseMap, setFuseMap] = useState<FuseMap | null>(null);
+  const [correspondenceData, setCorrespondenceData] = useState<
+    CorrespondenceCard[]
+  >([]);
 
   useEffect(() => {
     const loadSearchData = async () => {
@@ -37,6 +42,7 @@ export const useSearch = ({
         const searchIndexModule = await searchRes.json();
 
         const { correspondences: correspondenceData } = dataModule;
+        setCorrespondenceData(correspondenceData ?? []);
 
         const all = new Fuse<CorrespondenceCard>(correspondenceData ?? [], {
           threshold: 0.3,
@@ -87,6 +93,16 @@ export const useSearch = ({
   const results = useMemo(() => {
     if (!term.trim()) return [];
     if (!fuseMap) return [];
+
+    const categoryEnum = getCategoryEnum(term.trim());
+    if (categoryEnum && type === 'all' && isExactCategory) {
+      return correspondenceData
+        .filter(
+          (correspondence) => correspondence.reason?.category === categoryEnum,
+        )
+        .slice(0, limit);
+    }
+
     const fuse = fuseMap[type];
     return fuse
       ? fuse
@@ -94,7 +110,7 @@ export const useSearch = ({
           .slice(0, limit)
           .map((r) => r.item)
       : [];
-  }, [type, term, limit, fuseMap]);
+  }, [type, term, limit, fuseMap, correspondenceData, isExactCategory]);
 
   return results;
 };

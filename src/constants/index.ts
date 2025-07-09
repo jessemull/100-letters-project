@@ -8,3 +8,4 @@ export * from './letter';
 export * from './login';
 export * from './menu';
 export * from './recipients';
+export * from './search';
