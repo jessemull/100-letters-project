@@ -13,7 +13,6 @@ import { useState, useEffect, useMemo } from 'react';
 import { CorrespondenceCard } from '@ts-types/correspondence';
 import { Category } from '@ts-types/correspondence';
 
-// Function to convert display name to category enum
 const getCategoryEnum = (displayName: string): Category | null => {
   const categoryMap: Record<string, Category> = {
     Arts: Category.ARTS,
@@ -113,18 +112,14 @@ export const useSearch = ({
     if (!term.trim()) return [];
     if (!fuseMap) return [];
 
-    // Check if this is an exact category search
     const categoryEnum = getCategoryEnum(term.trim());
     if (categoryEnum && type === 'all' && isExactCategory) {
-      // Do exact category filtering instead of fuzzy search
       return correspondenceData
         .filter(
           (correspondence) => correspondence.reason?.category === categoryEnum,
         )
         .slice(0, limit);
     }
-
-    // Use fuzzy search for non-category searches
     const fuse = fuseMap[type];
     return fuse
       ? fuse
