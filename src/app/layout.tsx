@@ -18,7 +18,7 @@ export const metadata = {
   alternates: {
     canonical: 'https://www.onehundredletters.com',
   },
-  description: 
+  description:
     '100 letters written to 100 individuals over the course of one year. Each letter is a personal reflection, handwritten and sent with intention and love.',
   metadataBase: new URL('https://www.onehundredletters.com'),
   openGraph: {
