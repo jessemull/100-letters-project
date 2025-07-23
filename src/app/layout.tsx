@@ -16,10 +16,10 @@ const merriweather = Merriweather({
 
 export const metadata = {
   alternates: {
-    canonical: 'https://onehundredletters.com',
+    canonical: 'https://www.onehundredletters.com',
   },
   description: '100 letters, 100 people, 1 year.',
-  metadataBase: new URL('https://onehundredletters.com'),
+  metadataBase: new URL('https://www.onehundredletters.com'),
   openGraph: {
     description: '100 letters, 100 people, 1 year.',
     images: [
@@ -32,7 +32,7 @@ export const metadata = {
     ],
     siteName: '100 Letters Project',
     title: '100 Letters Project',
-    url: 'https://onehundredletters.com',
+    url: 'https://www.onehundredletters.com',
     type: 'website',
   },
   title: '100 Letters Project',
