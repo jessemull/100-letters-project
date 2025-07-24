@@ -57,7 +57,6 @@ const RootLayout: React.FC<Props> = ({ children }) => {
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="canonical" href="https://www.onehundredletters.com/" />
-        <meta name="description" content="100 letters, 100 people, 1 year." />
         <meta property="og:title" content="100 Letters Project" />
         <meta property="og:image" content="/og-image.png" />
       </head>
