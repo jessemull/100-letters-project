@@ -1,7 +1,7 @@
 import * as AuthProvider from '@contexts/AuthProvider';
 import React from 'react';
 import showToast from '@components/Form/Toast';
-import { AuthContextType } from '@contexts/AuthProvider';
+import { AuthContextType } from '@ts-types/context';
 import { LettersTab } from '@components/Admin';
 import { axe } from 'jest-axe';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';

@@ -85,6 +85,9 @@
       "prettier --write"
     ]
   },
+  "engines": {
+    "node": ">=20"
+  },
   "name": "100-letters-project",
   "private": true,
   "scripts": {
@@ -108,7 +111,8 @@
     "start": "next start",
     "test": "jest --coverage",
     "test:watch": "jest --watch",
-    "token": "node ./scripts/cognito-token.js"
+    "token": "node ./scripts/cognito-token.js",
+    "typecheck": "tsc --noEmit"
   },
   "version": "0.1.0"
 }

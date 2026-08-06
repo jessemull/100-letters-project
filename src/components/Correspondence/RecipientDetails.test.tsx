@@ -70,7 +70,7 @@ describe('RecipientDetails Component', () => {
         ...correspondence.reason,
         category: 'NON_EXISTENT_CATEGORY',
       },
-    };
+    } as unknown as CorrespondenceCard;
     render(<RecipientDetails correspondence={modified} />);
     expect(screen.getByText('Other')).toBeInTheDocument();
   });

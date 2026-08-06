@@ -1,0 +1,16 @@
+---
+description: "Jest, Testing Library, axe, and Cypress expectations."
+globs:
+  - "**/*.{test,spec}.{ts,tsx}"
+  - "jest.setup.ts"
+  - "cypress/**/*"
+alwaysApply: false
+---
+
+# Testing
+
+- ≥80% coverage via `npm test` / `make test`
+- Prefer behavior tests; use Fishery factories
+- Extend jest-axe where UI a11y matters
+- Do not delete tests only to pass coverage
+- See `docs/TESTING.md`

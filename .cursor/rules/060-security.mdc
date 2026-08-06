@@ -1,0 +1,15 @@
+---
+description: "Secrets, Cognito, proxy, and client bundle safety."
+globs:
+  - "src/**/*.{ts,tsx}"
+  - "proxy/**/*"
+  - "scripts/**/*"
+alwaysApply: false
+---
+
+# Security
+
+- No secrets in source or client bundle
+- Env-only Cognito / CloudFront / AWS credentials for scripts and proxy
+- Do not log tokens or PII carelessly
+- See `docs/SECURITY.md`

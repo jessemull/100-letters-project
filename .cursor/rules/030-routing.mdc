@@ -1,0 +1,16 @@
+---
+description: "Next.js App Router and static-export routing rules."
+globs:
+  - "src/app/**/*"
+  - "src/components/Header/**/*"
+  - "src/components/Menu/**/*"
+alwaysApply: false
+---
+
+# Routing
+
+- Routes live in `src/app/*/page.tsx`
+- Use `next/link` for navigation
+- Keep pages thin; UI in `src/components`
+- Compatible with static HTML export
+- See `docs/ARCHITECTURE.md`

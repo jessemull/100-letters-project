@@ -1,7 +1,7 @@
 import * as AuthProvider from '@contexts/AuthProvider';
 import React from 'react';
 import showToast from '@components/Form/Toast';
-import { AuthContextType } from '@contexts/AuthProvider';
+import { AuthContextType } from '@ts-types/context';
 import { Recipient } from '@ts-types/recipients';
 import { RecipientFactory } from '@factories/recipient';
 import { RecipientsTab } from '@components/Admin';

@@ -1,6 +1,7 @@
 import * as AuthProvider from '@contexts/AuthProvider';
 import React from 'react';
 import showToast from '@components/Form/Toast';
+import { AuthContextType } from '@ts-types/context';
 import { CorrespondencesTab } from '@components/Admin';
 import { axe } from 'jest-axe';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
@@ -52,7 +53,7 @@ describe('CorrespondencesTab Component', () => {
     jest.clearAllMocks();
     (AuthProvider.useAuth as jest.Mock).mockReturnValue({
       token: 'token',
-    } as AuthProvider.AuthContextType);
+    } as AuthContextType);
     (useRouter as jest.Mock).mockReturnValue({ push: mockPush });
     (showToast as jest.Mock).mockClear();
   });

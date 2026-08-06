@@ -1,0 +1,12 @@
+---
+description: "Path aliases and import boundaries."
+globs:
+  - "src/**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# Imports & boundaries
+
+- Use path aliases (`@components`, `@hooks`, `@contexts`, `@constants`, `@ts-types`, `@util`, `@factories`, `@pages`, `@public`)
+- Avoid deep relative imports across feature folders
+- See `AGENTS.md`

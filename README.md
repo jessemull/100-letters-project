@@ -11,65 +11,81 @@ This repository is part of the **100 Letters Project** which includes the follow
 - **[100 Letters Project Lambda@Edge](https://github.com/jessemull/100-letters-project-lambda-at-edge)**: The **100 Letters Project** Lambda@Edge.
 - **[100 Letters Project Authorizer](https://github.com/jessemull/100-letters-project-authorizer)**: The **100 Letters Project** authorizer.
 
+## Agent / Contributor Governance
+
+AI agents and contributors should start with **[`CONTEXT.md`](CONTEXT.md)** (mandatory reading order, constraints, quality gates), then [`AGENTS.md`](AGENTS.md) and `docs/`. Review severity tiers live in [`docs/REVIEW.md`](docs/REVIEW.md); human onboarding in [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md).
+
+Quality locally:
+
+```bash
+make help
+make preflight   # lint + typecheck + test + build
+```
+
+Human ops detail (proxy, bastion, Cognito, CI secrets) remains in this README below — do not duplicate agent rules here.
+
 ## Table of Contents
 
-1. [Project Overview](#project-overview)
-2. [Environments](#environments)
+1. [Agent / Contributor Governance](#agent--contributor-governance)
+2. [Project Overview](#project-overview)
+3. [Environments](#environments)
    - [Test Environment](#test-environment)
    - [Production Environment](#production-environment)
-3. [Tech Stack](#tech-stack)
-4. [Setup Instructions](#setup-instructions)
-5. [Commits & Commitizen](#commits--commitizen)
+4. [Tech Stack](#tech-stack)
+5. [Setup Instructions](#setup-instructions)
+6. [Commits & Commitizen](#commits--commitizen)
    - [Making a Commit](#making-a-commit)
-6. [Linting & Formatting](#linting--formatting)
+7. [Linting & Formatting](#linting--formatting)
    - [Linting Commands](#linting-commands)
    - [Formatting Commands](#formatting-commands)
    - [Pre-Commit Hook](#pre-commit-hook)
-7. [Unit Tests & Code Coverage](#unit-tests--code-coverage)
+8. [Unit Tests & Code Coverage](#unit-tests--code-coverage)
    - [Unit Tests](#unit-tests)
    - [Fishery Factories](#fishery-factories)
    - [Code Coverage](#code-coverage)
-8. [Error & Performance Metrics](#error--performance-metrics)
+9. [Error & Performance Metrics](#error--performance-metrics)
    - [Configuration](#configuration)
    - [Source Maps](#source-maps)
-9. [Development Website Proxy](#development-website-proxy)
-   - [Environment Variables](#environment-variables)
-   - [Running The Proxy](#running-the-proxy)
-10. [E2E Tests](#e2e-tests)
+10. [Development Website Proxy](#development-website-proxy)
+
+- [Environment Variables](#environment-variables)
+- [Running The Proxy](#running-the-proxy)
+
+11. [E2E Tests](#e2e-tests)
     - [Configuration](#configuration)
     - [Running E2E Tests - Development](#running-e2e-tests---development)
     - [Running E2E Tests - Test](#running-e2e-tests---test)
     - [Running E2E Tests - Production](#running-e2e-tests---production)
-11. [Lighthouse](#lighthouse)
+12. [Lighthouse](#lighthouse)
     - [Configuration](#configuration-1)
     - [Running Lighthouse - Development](#running-lighthouse---development)
     - [Running Lighthouse - Test](#running-lighthouse---test)
     - [Running Lighthouse - Production](#running-lighthouse---production)
     - [Code Coverage](#code-coverage-1)
-12. [Accessibility](#accessibility)
-13. [Deep Linking & Cognito Authentication](#deep-linking--cognito-authentication)
+13. [Accessibility](#accessibility)
+14. [Deep Linking & Cognito Authentication](#deep-linking--cognito-authentication)
     - [Deep Linking](#deep-linking)
     - [Cognito Authentication](#cognito-authentication)
-14. [Build](#build)
+15. [Build](#build)
     - [Environment Variables](#environment-variables-1)
     - [Pre-build Script](#pre-build-script)
     - [Post-build script](#post-build-script)
     - [Build](#build-1)
     - [Building The Development Server](#building-the-development-server)
-15. [Deployment Pipelines](#deployment-pipelines)
+16. [Deployment Pipelines](#deployment-pipelines)
     - [Deployment Strategy](#deployment-strategy)
     - [Tools Used](#tools-used)
     - [Pull Request](#pull-request)
     - [Deploy](#deploy-on-merge)
     - [Deploy On Merge](#deploy-on-merge)
     - [Rollback](#rollback)
-16. [Cognito Access Token](#cognito-access-token)
+17. [Cognito Access Token](#cognito-access-token)
     - [Generating An Access Token](#generating-an-access-token)
     - [Using An Access Token](#using-an-access-token)
     - [Environment Variables](#environment-variables)
-17. [Connecting to the Bastion Host](#connecting-to-the-bastion-host)
+18. [Connecting to the Bastion Host](#connecting-to-the-bastion-host)
     - [Environment Variables](#environment-variables-2)
-18. [License](#license)
+19. [License](#license)
 
 ## Project Overview
 

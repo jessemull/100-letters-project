@@ -1,0 +1,13 @@
+---
+description: "Performance and Lighthouse expectations."
+globs:
+  - "src/components/**/*.{ts,tsx}"
+  - "src/app/**/*"
+alwaysApply: false
+---
+
+# Performance
+
+- Respect Lighthouse CI thresholds
+- Prefer lazy-loading heavy UI; watch list sizes
+- See `docs/PERFORMANCE.md`

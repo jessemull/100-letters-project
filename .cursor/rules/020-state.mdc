@@ -1,0 +1,15 @@
+---
+description: "React state and context rules for the 100 Letters client."
+globs:
+  - "src/contexts/**/*"
+  - "src/hooks/**/*"
+  - "src/components/**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# State
+
+- Use existing contexts under `src/contexts/` for auth, correspondence, menus, search
+- Local `useState` for UI-only state is fine
+- No Redux/Zustand/MobX without governance approval
+- See `docs/ARCHITECTURE.md`

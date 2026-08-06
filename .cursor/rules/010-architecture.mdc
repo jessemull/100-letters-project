@@ -1,0 +1,14 @@
+---
+description: "Architecture boundaries for the Next.js static-export 100 Letters client."
+globs:
+  - "src/**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# Architecture
+
+- Layers: `app` routes → feature components → hooks/contexts/util/constants
+- Shared chrome: Form, Header, Footer, Protected, Skeleton
+- Auth via `AuthProvider` / Cognito; data via SWR + build-time `public/data`
+- Sibling API / Lambda / Authorizer repos stay out of tree
+- See `docs/ARCHITECTURE.md`

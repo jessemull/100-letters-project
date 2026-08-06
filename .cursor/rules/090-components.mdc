@@ -1,0 +1,12 @@
+---
+description: "React component composition rules."
+globs:
+  - "src/components/**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# Components
+
+- Prefer shared Form / Header / Footer / Protected / Skeleton
+- `'use client'` only when required
+- See `docs/ARCHITECTURE.md`, `docs/ACCESSIBILITY.md`
