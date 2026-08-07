@@ -25,19 +25,20 @@ const AutoSelect: React.FC<Props> = ({
   placeholder = '',
   value,
 }) => {
-  const [inputValue, setInputValue] = useState('');
-  const [isFocused, setIsFocused] = useState(false);
-  const wrapperRef = useRef<HTMLDivElement | null>(null);
-
   const selectedOption = useMemo(() => {
     return options.find((option) => option.value === value);
   }, [value, options]);
 
-  useEffect(() => {
-    if (!isFocused && selectedOption) {
-      setInputValue(selectedOption.label);
-    }
-  }, [selectedOption, isFocused]);
+  const selectedLabel = selectedOption?.label ?? '';
+  const [inputValue, setInputValue] = useState(selectedLabel);
+  const [isFocused, setIsFocused] = useState(false);
+  const [syncedLabel, setSyncedLabel] = useState(selectedLabel);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+
+  if (!isFocused && selectedOption && selectedLabel !== syncedLabel) {
+    setSyncedLabel(selectedLabel);
+    setInputValue(selectedLabel);
+  }
 
   const filteredOptions = useMemo(() => {
     if (!inputValue || inputValue === selectedOption?.label) return options;
@@ -50,28 +51,31 @@ const AutoSelect: React.FC<Props> = ({
     const selected = options.find((option) => option.value === val);
     if (selected) {
       setInputValue(selected.label);
+      setSyncedLabel(selected.label);
       onChange(val);
     }
     setIsFocused(false);
   };
 
-  const handleClickOutside = (event: MouseEvent | TouchEvent) => {
-    if (
-      wrapperRef.current &&
-      !wrapperRef.current.contains(event.target as Node)
-    ) {
-      setIsFocused(false);
-    }
-  };
-
   useEffect(() => {
+    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(event.target as Node)
+      ) {
+        setIsFocused(false);
+        setInputValue(selectedLabel);
+        setSyncedLabel(selectedLabel);
+      }
+    };
+
     document.addEventListener('mousedown', handleClickOutside);
     document.addEventListener('touchstart', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('touchstart', handleClickOutside);
     };
-  }, []);
+  }, [selectedLabel]);
 
   const errorsArray = useMemo(
     () => (Array.isArray(errors) ? errors : errors ? [errors] : []),

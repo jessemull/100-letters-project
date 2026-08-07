@@ -28,7 +28,6 @@ const LettersTab: React.FC<Props> = ({ search }) => {
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [letterId, setLetterId] = useState('');
   const [correspondenceId, setCorrespondenceId] = useState('');
-  const [lastEvaluatedKey, setLastEvaluatedKey] = useState<string | null>(null);
 
   const router = useRouter();
   const { token } = useAuth();
@@ -39,6 +38,8 @@ const LettersTab: React.FC<Props> = ({ search }) => {
       path: search ? `/letter?search=${search}` : '/letter',
       token,
     });
+
+  const lastEvaluatedKey = data?.lastEvaluatedKey || null;
 
   const { isLoading: isDeleting, mutate } = useSWRMutation<
     {},
@@ -83,14 +84,6 @@ const LettersTab: React.FC<Props> = ({ search }) => {
       );
     }
   }, [inView, lastEvaluatedKey, fetchMore, loadingMore, search]);
-
-  useEffect(() => {
-    setLastEvaluatedKey(null);
-  }, [search]);
-
-  useEffect(() => {
-    setLastEvaluatedKey(data?.lastEvaluatedKey || null);
-  }, [data]);
 
   const onEdit = (id: string) => {
     router.push(`/admin/letter?letterId=${id}`);

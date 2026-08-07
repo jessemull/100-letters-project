@@ -5,7 +5,6 @@ import React, {
   useContext,
   useEffect,
   useState,
-  useCallback,
   ReactNode,
 } from 'react';
 import cookies from 'js-cookie';
@@ -132,29 +131,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     cookies.remove(authCookieKey);
   };
 
-  const initializeSession = useCallback(async () => {
-    try {
-      const currentUser = await getCurrentUser();
-      if (!currentUser) throw new Error('No current user');
-
-      const session = await getSession(currentUser);
-      const accessToken = session.getAccessToken().getJwtToken();
-
-      setUser(currentUser);
-      setToken(accessToken);
-      setIsLoggedIn(true);
-
-      setAuthCookie(accessToken);
-    } catch {
-      resetAuthState();
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
   useEffect(() => {
-    initializeSession();
-  }, [initializeSession]);
+    void (async () => {
+      try {
+        const currentUser = await getCurrentUser();
+        if (!currentUser) throw new Error('No current user');
+
+        const session = await getSession(currentUser);
+        const accessToken = session.getAccessToken().getJwtToken();
+
+        setUser(currentUser);
+        setToken(accessToken);
+        setIsLoggedIn(true);
+
+        setAuthCookie(accessToken);
+      } catch {
+        resetAuthState();
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
 
   const signIn = async (
     username: string,

@@ -25,12 +25,13 @@ const Category = () => {
 
   const showCategoryHeader = category && !term;
 
-  useEffect(() => {
-    if (term && category) {
+  const handleTermChange = (value: string) => {
+    setTerm(value);
+    if (value && category) {
       window.history.pushState({ category }, '', `?`);
       setCategory(null);
     }
-  }, [term, category]);
+  };
 
   useEffect(() => {
     const handlePopState = () => {
@@ -54,7 +55,7 @@ const Category = () => {
           id="search-all"
           IconEnd={term ? X : undefined}
           IconStart={SearchIcon}
-          onChange={({ target: { value } }) => setTerm(value)}
+          onChange={({ target: { value } }) => handleTermChange(value)}
           onIconEndClick={() => setTerm('')}
           placeholder="Search for letters and people..."
           type="text"

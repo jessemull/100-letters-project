@@ -19,8 +19,6 @@ const eslintConfig = defineConfig([
           singleQuote: true,
         },
       ],
-      // React Compiler / hooks v7 — remaining rules re-enabled gradually.
-      'react-hooks/set-state-in-effect': 'off',
       'unused-imports/no-unused-imports': 'error',
       'unused-imports/no-unused-vars': [
         'warn',

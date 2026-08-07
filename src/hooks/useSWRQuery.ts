@@ -16,9 +16,16 @@ export const useSWRQuery = <T = any>({
   merge = defaultMerge<T>,
 }: UseSWRQueryOptions<T>) => {
   const [loadingMore, setLoadingMore] = useState(false);
-  const [mergedData, setMergedData] = useState<T>();
+  const [mergedOverride, setMergedOverride] = useState<T>();
+  const [trackedPath, setTrackedPath] = useState(path);
   const [unauthorized, setUnauthorized] = useState(false);
   const router = useRouter();
+
+  // Reset pagination merge when the query path changes.
+  if (path !== trackedPath) {
+    setTrackedPath(path);
+    setMergedOverride(undefined);
+  }
 
   const fetcher = useMemo(() => {
     if (!token) return null;
@@ -74,11 +81,7 @@ export const useSWRQuery = <T = any>({
     config,
   );
 
-  useEffect(() => {
-    if (data) {
-      setMergedData(data);
-    }
-  }, [data]);
+  const resolvedData = mergedOverride ?? data;
 
   const fetchMore = useCallback(
     async (newPath: string) => {
@@ -89,8 +92,8 @@ export const useSWRQuery = <T = any>({
       try {
         const url = `${API_BASE_URL}${newPath}`;
         const nextPageData = await fetcher!(url);
-        setMergedData((prevData) => {
-          const nextData = merge(prevData, nextPageData);
+        setMergedOverride((prevData) => {
+          const nextData = merge(prevData ?? data, nextPageData);
           setTimeout(() => {
             globalMutate(fullUrl, nextData, false);
           }, 0);
@@ -106,11 +109,11 @@ export const useSWRQuery = <T = any>({
         setLoadingMore(false);
       }
     },
-    [token, merge, fullUrl, fetcher],
+    [token, merge, fullUrl, fetcher, data],
   );
 
   return {
-    data: mergedData,
+    data: resolvedData,
     error,
     isLoading,
     loadingMore,

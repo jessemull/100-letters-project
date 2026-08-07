@@ -2,7 +2,7 @@ import React from 'react';
 import Search from '@components/Feed/Search';
 import { CorrespondenceCard } from '@ts-types/correspondence';
 import { axe } from 'jest-axe';
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import { useCorrespondence } from '@contexts/CorrespondenceProvider';
 import { useInView } from 'react-intersection-observer';
 
@@ -87,7 +87,7 @@ describe('Search Component', () => {
     expect(screen.getByTestId('progress')).toBeInTheDocument();
   });
 
-  it('Loads next page when inView is true and more items exist.', () => {
+  it('Loads next page when inView is true and more items exist.', async () => {
     (useInView as jest.Mock).mockReturnValue([{ current: null }, true]);
     const longList = Array.from({ length: 30 }, (_, i) => ({
       correspondenceId: `${i + 1}`,
@@ -95,6 +95,11 @@ describe('Search Component', () => {
     }));
 
     render(<Search results={longList as CorrespondenceCard[]} term="search" />);
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
     const cards = screen.getAllByTestId('card');
     expect(cards.length).toBeGreaterThan(12);
   });

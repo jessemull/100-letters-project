@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Lightbox from 'yet-another-react-lightbox';
 import Zoom from 'yet-another-react-lightbox/plugins/zoom';
 import {
@@ -45,9 +45,9 @@ interface Props {
 }
 
 const ImageItem = ({ data, deleteImage, letter, onUpdateImage }: Props) => {
-  const [caption, setCaption] = useState<string>('');
+  const [caption, setCaption] = useState<string>(data.caption ?? '');
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [view, setView] = useState<View>(View.LETTER_FRONT);
+  const [view, setView] = useState<View>(data.view ?? View.LETTER_FRONT);
   const [isLightboxOpen, setIsLightboxOpen] = useState<boolean>(false);
 
   const { token } = useAuth();
@@ -92,6 +92,12 @@ const ImageItem = ({ data, deleteImage, letter, onUpdateImage }: Props) => {
     },
   });
 
+  const openEdit = () => {
+    setCaption(data.caption ?? '');
+    setView(data.view ?? View.LETTER_FRONT);
+    setIsOpen(true);
+  };
+
   const onSubmit = async () => {
     const updated = {
       ...letter,
@@ -110,18 +116,6 @@ const ImageItem = ({ data, deleteImage, letter, onUpdateImage }: Props) => {
       },
     });
   };
-
-  useEffect(() => {
-    if (data.caption) {
-      setCaption(data.caption);
-    }
-  }, [data.caption]);
-
-  useEffect(() => {
-    if (data.view) {
-      setView(data.view);
-    }
-  }, [data.view]);
 
   return (
     <>
@@ -172,7 +166,7 @@ const ImageItem = ({ data, deleteImage, letter, onUpdateImage }: Props) => {
                     data-testid="edit-button"
                     className="text-white hover:text-gray-400"
                     aria-label="Edit"
-                    onClick={() => setIsOpen(!isOpen)}
+                    onClick={() => (isOpen ? setIsOpen(false) : openEdit())}
                   >
                     <PenSquare
                       data-testid="edit-button-icon"

@@ -13,12 +13,13 @@ const Feed = () => {
 
   const results = useSearch({ type: 'all', term }) as CorrespondenceCard[];
 
-  useEffect(() => {
-    if (term && !showSearch) {
+  const handleTermChange = (value: string) => {
+    setTerm(value);
+    if (value && !showSearch) {
       window.history.pushState({ search: true }, '');
       setShowSearch(true);
     }
-  }, [term, showSearch]);
+  };
 
   useEffect(() => {
     const handlePopState = () => {
@@ -36,7 +37,7 @@ const Feed = () => {
           id="search-all"
           IconEnd={term ? X : undefined}
           IconStart={SearchIcon}
-          onChange={({ target: { value } }) => setTerm(value)}
+          onChange={({ target: { value } }) => handleTermChange(value)}
           onIconEndClick={() => setTerm('')}
           placeholder="Search for letters and people..."
           type="text"

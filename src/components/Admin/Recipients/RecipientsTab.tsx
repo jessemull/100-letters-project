@@ -22,7 +22,6 @@ interface Props {
 const RecipientsTab: React.FC<Props> = ({ search }) => {
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [recipientId, setRecipientId] = useState('');
-  const [lastEvaluatedKey, setLastEvaluatedKey] = useState<string | null>(null);
 
   const router = useRouter();
   const { token } = useAuth();
@@ -33,6 +32,8 @@ const RecipientsTab: React.FC<Props> = ({ search }) => {
       path: search ? `/recipient?search=${search}` : '/recipient',
       token,
     });
+
+  const lastEvaluatedKey = data?.lastEvaluatedKey || null;
 
   const { ref, inView } = useInView({
     threshold: 0,
@@ -86,14 +87,6 @@ const RecipientsTab: React.FC<Props> = ({ search }) => {
       );
     }
   }, [inView, lastEvaluatedKey, fetchMore, loadingMore, search]);
-
-  useEffect(() => {
-    setLastEvaluatedKey(null);
-  }, [search]);
-
-  useEffect(() => {
-    setLastEvaluatedKey(data?.lastEvaluatedKey || null);
-  }, [data]);
 
   return (
     <>

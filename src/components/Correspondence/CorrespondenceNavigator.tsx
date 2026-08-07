@@ -23,20 +23,18 @@ import {
 import { CorrespondenceCard } from '@ts-types/correspondence';
 import { Progress } from '@components/Form';
 import { useCorrespondence } from '@contexts/CorrespondenceProvider';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 const CorrespondenceNavigator = () => {
-  const { correspondencesById } = useCorrespondence();
+  const { correspondencesById, loading } = useCorrespondence();
   const searchParams = useSearchParams();
 
   const correspondenceId = searchParams.get('correspondenceId');
   const letterId = searchParams.get('letterId');
 
-  const [selectedLetterIndex, setSelectedLetterIndex] = useState(0);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [rightColumnHeight, setRightColumnHeight] = useState(0);
 
   const rightColumnRef = useCallback((element: HTMLDivElement) => {
@@ -68,21 +66,23 @@ const CorrespondenceNavigator = () => {
     [correspondence],
   );
 
-  useEffect(() => {
-    if (!correspondence) {
-      setLoading(false);
-      return;
-    }
-
-    if (!Array.isArray(letters) || letters.length === 0) {
-      setLoading(false);
-      return;
-    }
-
+  const letterIndexFromParams = useMemo(() => {
+    if (!Array.isArray(letters) || letters.length === 0) return 0;
     const index = letters.findIndex((l) => l.letterId === letterId);
-    setSelectedLetterIndex(index !== -1 ? index : 0);
-    setLoading(false);
-  }, [correspondence, letterId, letters]);
+    return index !== -1 ? index : 0;
+  }, [letters, letterId]);
+
+  const [selectedLetterIndex, setSelectedLetterIndex] = useState(
+    letterIndexFromParams,
+  );
+  const selectionKey = `${correspondenceId}:${letterId}`;
+  const [prevSelectionKey, setPrevSelectionKey] = useState(selectionKey);
+
+  if (selectionKey !== prevSelectionKey) {
+    setPrevSelectionKey(selectionKey);
+    setSelectedLetterIndex(letterIndexFromParams);
+    setSelectedImageIndex(0);
+  }
 
   if (!correspondenceId) {
     return <CorrespondenceNotFound />;

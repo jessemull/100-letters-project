@@ -4,43 +4,44 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Heart } from '@components/Animation';
 import { HeartIcon } from 'lucide-react';
 import { heartsConfig } from '@constants/animation';
-import { useState, useEffect, useMemo } from 'react';
-import { Progress } from '@components/Form';
+import { useState, useEffect, useMemo, useSyncExternalStore } from 'react';
+
+const getSizeFromWidth = (width: number) => {
+  let newWidth;
+  if (width > 1024) newWidth = 200;
+  else if (width > 500) newWidth = 150;
+  else newWidth = 100;
+
+  const height = newWidth * (224 / 320);
+  const flap = newWidth * (120 / 320);
+
+  return { width: newWidth, height, flap };
+};
+
+const subscribeToWindowWidth = (onStoreChange: () => void) => {
+  window.addEventListener('resize', onStoreChange);
+  return () => window.removeEventListener('resize', onStoreChange);
+};
+
+const getWindowWidth = () => window.innerWidth;
+
+const getServerWindowWidth = () => 1024;
 
 const Envelope = () => {
   const [flapZIndex, setFlapZIndex] = useState(30);
-  const [isReady, setIsReady] = useState(false);
   const [showLetter, setShowLetter] = useState(false);
   const [showHeart, setShowHeart] = useState(false);
-  const [size, setSize] = useState({ width: 320, height: 224, flap: 120 });
   const [startAnimation, setStartAnimation] = useState(false);
 
-  const updateSizeByWidth = (width: number) => {
-    let newWidth;
-    if (width > 1024) newWidth = 200;
-    else if (width > 500) newWidth = 150;
-    else newWidth = 100;
+  const windowWidth = useSyncExternalStore(
+    subscribeToWindowWidth,
+    getWindowWidth,
+    getServerWindowWidth,
+  );
 
-    const height = newWidth * (224 / 320);
-    const flap = newWidth * (120 / 320);
-
-    setSize({ width: newWidth, height, flap });
-    setIsReady(true);
-  };
+  const size = useMemo(() => getSizeFromWidth(windowWidth), [windowWidth]);
 
   useEffect(() => {
-    updateSizeByWidth(window.innerWidth);
-
-    const handleResize = () => updateSizeByWidth(window.innerWidth);
-
-    window.addEventListener('resize', handleResize);
-
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  useEffect(() => {
-    if (!isReady) return;
-
     const timers = [
       setTimeout(() => setStartAnimation(true), 500),
       setTimeout(() => setShowLetter(true), 800),
@@ -49,16 +50,9 @@ const Envelope = () => {
     ];
 
     return () => timers.forEach(clearTimeout);
-  }, [isReady]);
+  }, []);
 
   const scaleFactor = useMemo(() => size.width / 287.8, [size.width]);
-
-  if (!isReady)
-    return (
-      <div className="flex items-center justify-center h-[108px] md:h-[161px] lg:h-[215px]">
-        <Progress color="white" size={16} />
-      </div>
-    );
 
   const letterWidth = size.width * 0.7;
   const letterHeight = size.height * 0.6;

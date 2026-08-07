@@ -222,7 +222,7 @@ describe('useSWRQuery', () => {
     expect(console.error).toHaveBeenCalledWith('Error fetching more: ', error);
   });
 
-  it('Updates merged data in useEffect after new data is fetched.', async () => {
+  it('Returns resolved SWR data and updates after fetchMore.', async () => {
     const fakeResponse = { data: ['mocked data'] };
     const existingData = { data: ['existing data'] };
 
@@ -241,6 +241,8 @@ describe('useSWRQuery', () => {
     const { result } = renderHook(() =>
       useSWRQuery({ path: '/test', token: 'abc123' }),
     );
+
+    expect(result.current.data).toEqual(existingData);
 
     await act(async () => {
       if (capturedFetcher) {

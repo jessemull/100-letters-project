@@ -25,7 +25,6 @@ interface Props {
 const CorrespondencesTab: React.FC<Props> = ({ search }) => {
   const [correspondenceId, setCorrespondenceId] = useState('');
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
-  const [lastEvaluatedKey, setLastEvaluatedKey] = useState<string | null>(null);
 
   const router = useRouter();
   const { token } = useAuth();
@@ -36,6 +35,8 @@ const CorrespondencesTab: React.FC<Props> = ({ search }) => {
       path: search ? `/correspondence?search=${search}` : '/correspondence',
       token,
     });
+
+  const lastEvaluatedKey = data?.lastEvaluatedKey || null;
 
   const { ref, inView } = useInView({
     threshold: 0,
@@ -96,14 +97,6 @@ const CorrespondencesTab: React.FC<Props> = ({ search }) => {
       params: { correspondenceId },
     });
   };
-
-  useEffect(() => {
-    setLastEvaluatedKey(null);
-  }, [search]);
-
-  useEffect(() => {
-    setLastEvaluatedKey(data?.lastEvaluatedKey || null);
-  }, [data]);
 
   return (
     <>

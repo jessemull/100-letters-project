@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Button, TextInput } from '@components/Form';
 import { Eye, EyeOff, User, Lock } from 'lucide-react';
 import { LoginForm } from '@ts-types/login';
@@ -34,9 +34,10 @@ const Login = () => {
     validators: loginValidators,
   });
 
-  useEffect(() => {
+  const handleFieldChange = (field: keyof LoginForm, value: string) => {
     setNetworkError('');
-  }, [values]);
+    updateField(field, value);
+  };
 
   const handleCancel = () => {
     router.push('/');
@@ -80,7 +81,9 @@ const Login = () => {
           errors={inputErrors.username}
           id="username-text-input"
           label="Username"
-          onChange={({ target: { value } }) => updateField('username', value)}
+          onChange={({ target: { value } }) =>
+            handleFieldChange('username', value)
+          }
           placeholder="Username"
           type="text"
           value={values.username}
@@ -91,7 +94,9 @@ const Login = () => {
           errors={inputErrors.password}
           id="password-text-input"
           label="Password"
-          onChange={({ target: { value } }) => updateField('password', value)}
+          onChange={({ target: { value } }) =>
+            handleFieldChange('password', value)
+          }
           onIconEndClick={toggleVisibility}
           placeholder="Password"
           type={isPasswordVisible ? 'text' : 'password'}

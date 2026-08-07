@@ -15,9 +15,6 @@ interface Props {
 
 const Search: React.FC<Props> = ({ results, term }) => {
   const [page, setPage] = useState(1);
-  const [ref, inView] = useInView({ threshold: 0 });
-  const [visibleItems, setVisibleItems] = useState<CorrespondenceCard[]>([]);
-
   const { correspondences } = useCorrespondence();
 
   const items = useMemo(
@@ -25,19 +22,31 @@ const Search: React.FC<Props> = ({ results, term }) => {
     [term, results, correspondences],
   );
 
-  useEffect(() => {
+  const [trackedItems, setTrackedItems] = useState(items);
+  if (items !== trackedItems) {
+    setTrackedItems(items);
     setPage(1);
-    setVisibleItems(items.slice(0, searchItemsPerPage));
-  }, [items]);
+  }
 
+  const visibleItems = useMemo(
+    () => items.slice(0, page * searchItemsPerPage),
+    [items, page],
+  );
+
+  const [ref, inView] = useInView({
+    threshold: 0,
+  });
+
+  // setTimeout keeps setState out of the synchronous effect body.
   useEffect(() => {
-    if (inView && visibleItems.length < items.length) {
-      const nextPage = page + 1;
-      const nextItems = items.slice(0, nextPage * searchItemsPerPage);
-      setVisibleItems(nextItems);
-      setPage(nextPage);
-    }
-  }, [inView, items, page, visibleItems.length]);
+    if (!inView || page * searchItemsPerPage >= items.length) return;
+
+    const timeoutId = window.setTimeout(() => {
+      setPage((prev) => prev + 1);
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [inView, page, items.length]);
 
   if (items.length === 0) {
     return (
