@@ -35,7 +35,7 @@ Do **not** rewrite these lightly. Document changes in the PR and treat as human-
 | Lighthouse   | Failure triggers S3 rollback on merge/deploy      |
 | Revert       | Restores backup + re-invalidates CloudFront       |
 
-Node **24** (`actions/setup-node`, `.nvmrc`, `engines.node`).
+Node **26** (`actions/setup-node`, `.nvmrc`, `engines.node`).
 
 ---
 

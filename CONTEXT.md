@@ -96,7 +96,7 @@ CI also runs Cypress e2e and Lighthouse on PRs/merges — see `docs/CI_CD.md`.
 | Field             | Value                                                                                     |
 | ----------------- | ----------------------------------------------------------------------------------------- |
 | **Project**       | 100 Letters Project — Next.js client                                                      |
-| **Stack**         | Next.js 16 App Router, React 19, TypeScript 6, Tailwind 4, SWR, Cognito, Sentry (Node 24) |
+| **Stack**         | Next.js 16 App Router, React 19, TypeScript 6, Tailwind 4, SWR, Cognito, Sentry (Node 26) |
 | **Hosting**       | Static export → S3 + CloudFront                                                           |
 | **Auth**          | Amazon Cognito (client) + Lambda@Edge / Authorizer (sibling repos)                        |
 | **Data**          | Build-time fetch into `public/data/`; runtime API via `NEXT_PUBLIC_API_URL`               |

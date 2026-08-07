@@ -42,7 +42,7 @@
     "@types/jest": "^30.0.0",
     "@types/jest-axe": "^3.5.9",
     "@types/js-cookie": "^3.0.6",
-    "@types/node": "^24",
+    "@types/node": "^26.1.2",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/react-google-recaptcha": "^2.1.9",
@@ -78,7 +78,7 @@
     "wait-on": "^9.1.0"
   },
   "engines": {
-    "node": ">=24"
+    "node": ">=26"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx,mjs,cjs}": [

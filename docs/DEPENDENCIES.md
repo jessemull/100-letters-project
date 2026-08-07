@@ -26,10 +26,10 @@
 
 ## Runtime / CI pins
 
-| Pin            | Value               | Notes                                                                                |
-| -------------- | ------------------- | ------------------------------------------------------------------------------------ |
-| Node           | **24** (Active LTS) | `.nvmrc`, `engines.node`, GitHub Actions `setup-node`                                |
-| GitHub Actions | latest majors       | `actions/checkout@v7`, `setup-node@v7`, `upload-artifact@v7`, `download-artifact@v8` |
+| Pin            | Value            | Notes                                                                                |
+| -------------- | ---------------- | ------------------------------------------------------------------------------------ |
+| Node           | **26** (Current) | `.nvmrc`, `engines.node`, GitHub Actions `setup-node`                                |
+| GitHub Actions | latest majors    | `actions/checkout@v7`, `setup-node@v7`, `upload-artifact@v7`, `download-artifact@v8` |
 
 This repo’s CloudFormation stack is S3/CloudFront/Route 53 only (no Lambda `nodejs*` runtime).
 
