@@ -43,15 +43,15 @@ const Admin = () => {
     router.push(activeTab.createRoute);
   };
 
-  const debouncedSetSearch = useRef(
+  const debouncedSetSearchRef = useRef(
     debounce((value: string) => {
       setSearch(value);
     }, 500),
-  ).current;
+  );
 
   useEffect(() => {
-    debouncedSetSearch(searchInput);
-  }, [searchInput, debouncedSetSearch]);
+    debouncedSetSearchRef.current(searchInput);
+  }, [searchInput]);
 
   return (
     <div className="flex-1 flex w-full h-full text-white font-merriweather min-h-screen md:pt-4 md:pb-4">
