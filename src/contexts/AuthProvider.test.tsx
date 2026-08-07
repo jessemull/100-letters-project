@@ -132,15 +132,18 @@ describe('AuthProvider', () => {
       signOut: jest.fn(),
     }));
 
-    let signInFunc: (
-      username: string,
-      password: string,
-    ) => Promise<{ isSignedIn: boolean }> = () =>
-      new Promise(() => ({ isSignedIn: false }));
+    const signInRef: {
+      current: (
+        username: string,
+        password: string,
+      ) => Promise<{ isSignedIn: boolean }>;
+    } = {
+      current: () => Promise.resolve({ isSignedIn: false }),
+    };
 
     const HookCapture = () => {
       const auth = useAuth();
-      signInFunc = auth.signIn;
+      signInRef.current = auth.signIn;
       return null;
     };
 
@@ -153,7 +156,7 @@ describe('AuthProvider', () => {
     });
 
     await act(async () => {
-      await expect(signInFunc('', '')).rejects.toThrow(
+      await expect(signInRef.current('', '')).rejects.toThrow(
         'Error signing in. Please try again.',
       );
     });

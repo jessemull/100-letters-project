@@ -19,9 +19,7 @@ const eslintConfig = defineConfig([
           singleQuote: true,
         },
       ],
-      // React Compiler / hooks v7 rules — existing patterns are valid; enable
-      // gradually via review fixes rather than blocking the toolchain upgrade.
-      'react-hooks/globals': 'off',
+      // React Compiler / hooks v7 — remaining rules re-enabled gradually.
       'react-hooks/immutability': 'off',
       'react-hooks/refs': 'off',
       'react-hooks/set-state-in-effect': 'off',
