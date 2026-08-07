@@ -132,35 +132,45 @@ describe('AuthProvider', () => {
       signOut: jest.fn(),
     }));
 
-    const signInRef: {
-      current: (
-        username: string,
-        password: string,
-      ) => Promise<{ isSignedIn: boolean }>;
-    } = {
-      current: () => Promise.resolve({ isSignedIn: false }),
-    };
+    const onRejected = jest.fn();
 
-    const HookCapture = () => {
-      const auth = useAuth();
-      signInRef.current = auth.signIn;
-      return null;
+    const FailureTrigger = () => {
+      const { signIn } = useAuth();
+      return (
+        <button
+          onClick={() => {
+            void signIn('', '').then(
+              () => undefined,
+              (error: Error) => onRejected(error),
+            );
+          }}
+        >
+          TriggerFailure
+        </button>
+      );
     };
 
     await act(async () => {
       render(
         <AuthProvider>
-          <HookCapture />
+          <FailureTrigger />
         </AuthProvider>,
       );
     });
 
     await act(async () => {
-      await expect(signInRef.current('', '')).rejects.toThrow(
-        'Error signing in. Please try again.',
-      );
+      screen.getByText('TriggerFailure').click();
     });
 
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(onRejected).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: 'Error signing in. Please try again.',
+      }),
+    );
     expect(cookies.remove).toHaveBeenCalled();
   });
 

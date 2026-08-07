@@ -20,7 +20,6 @@ const eslintConfig = defineConfig([
         },
       ],
       // React Compiler / hooks v7 — remaining rules re-enabled gradually.
-      'react-hooks/immutability': 'off',
       'react-hooks/refs': 'off',
       'react-hooks/set-state-in-effect': 'off',
       'unused-imports/no-unused-imports': 'error',
