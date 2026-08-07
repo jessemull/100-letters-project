@@ -75,7 +75,9 @@ describe('Header Component', () => {
       fireEvent.click(menuButton);
     });
     await waitFor(() => {
-      expect(screen.getByRole('navigation')).toBeInTheDocument();
+      expect(
+        screen.getByRole('navigation', { name: 'Mobile Navigation' }),
+      ).toBeInTheDocument();
     });
   });
 

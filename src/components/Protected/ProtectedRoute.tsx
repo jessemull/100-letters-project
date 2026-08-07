@@ -18,7 +18,7 @@ const ProtectedRoute: React.FC<Props> = ({ children }) => {
     }
   }, [authenticating, isLoggedIn, router]);
 
-  if (authenticating) return null;
+  if (authenticating || !isLoggedIn) return null;
 
   return <>{children}</>;
 };

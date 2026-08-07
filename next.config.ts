@@ -15,11 +15,14 @@ const withAnalyzer = withBundleAnalyzer({
 });
 
 export default withSentryConfig(withAnalyzer(baseConfig), {
-  automaticVercelMonitors: true,
-  disableLogger: true,
   org: '100-letters-project',
   project: '100-letters-project-client',
   silent: !process.env.CI,
   widenClientFileUpload: true,
   sourcemaps: { disable: process.env.ENABLE_SOURCE_MAPS !== 'true' },
+  webpack: {
+    treeshake: {
+      removeDebugLogging: true,
+    },
+  },
 });

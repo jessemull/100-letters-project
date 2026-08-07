@@ -31,6 +31,7 @@ const Card: React.FC<Props> = ({ correspondence, loading, priority }) => {
       onClick={handleClick}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
           handleClick();
         }
       }}

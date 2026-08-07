@@ -98,6 +98,10 @@ const CorrespondencesTab: React.FC<Props> = ({ search }) => {
   };
 
   useEffect(() => {
+    setLastEvaluatedKey(null);
+  }, [search]);
+
+  useEffect(() => {
     setLastEvaluatedKey(data?.lastEvaluatedKey || null);
   }, [data]);
 

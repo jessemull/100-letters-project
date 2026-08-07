@@ -1,6 +1,6 @@
 import ProtectedRoute from './ProtectedRoute';
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { useAuth } from '@contexts/AuthProvider';
 import { useRouter } from 'next/navigation';
 
@@ -30,6 +30,7 @@ describe('ProtectedRoute Component', () => {
     );
 
     expect(replaceMock).toHaveBeenCalledWith('/forbidden');
+    expect(screen.queryByTestId('protected-content')).not.toBeInTheDocument();
   });
 
   it('Returns null when authenticating is true.', () => {

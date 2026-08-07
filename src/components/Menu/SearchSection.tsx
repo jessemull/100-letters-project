@@ -43,6 +43,7 @@ function SearchSection<T>({
           <div className="relative">
             <input
               type="text"
+              aria-label={`Search ${title}`}
               placeholder={`Search ${title.toLowerCase()}...`}
               className="text-sm pl-7 pr-7 w-full h-10 md:h-8 rounded-xl bg-white/25 border border-white text-white placeholder-white/70 focus:outline-none"
               value={term}
@@ -58,6 +59,7 @@ function SearchSection<T>({
             {term && (
               <button
                 type="button"
+                aria-label={`Clear ${title} search`}
                 onClick={() => setTerm('')}
                 className="absolute right-2 top-1/2 -translate-y-1/2 text-white hover:text-white/70 transition"
               >

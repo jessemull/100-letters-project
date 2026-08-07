@@ -8,6 +8,12 @@ const getSignedCookies = () => {
     const keyPairId = process.env.CLOUDFRONT_KEY_PAIR_ID;
     const privateKeyPath = process.env.CLOUDFRONT_PRIVATE_KEY_PATH;
 
+    if (!domain || !keyPairId || (!key && !privateKeyPath)) {
+      throw new Error(
+        'Missing CloudFront signing config (CLOUDFRONT_DOMAIN, CLOUDFRONT_KEY_PAIR_ID, and private key)',
+      );
+    }
+
     const privateKey = key || fs.readFileSync(privateKeyPath, 'utf8');
 
     const expireTime = Math.floor((Date.now() + 60 * 60 * 1000) / 1000);
@@ -41,7 +47,8 @@ const getSignedCookies = () => {
 
     return cookies;
   } catch (error) {
-    console.log('Signing cookies failed: ', error);
+    console.error('Signing cookies failed: ', error);
+    throw error;
   }
 };
 

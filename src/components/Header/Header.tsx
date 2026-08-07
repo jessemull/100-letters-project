@@ -9,9 +9,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { SearchProvider } from '@contexts/SearchProvider';
 
-const stripeURL =
-  process.env.NEXT_PUBLIC_STRIPE_URL ||
-  'https://donate.stripe.com/test_7sY4gB6Ns7rU3bl7TVcQU00';
+const stripeURL = process.env.NEXT_PUBLIC_STRIPE_URL;
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -32,12 +30,14 @@ const Header = () => {
   return (
     <header className="bg-gray-900 text-white px-4 py-3 font-merriweather sticky top-0 z-50 w-full h-[56px]">
       <div className="flex justify-between items-center max-w-full">
-        <button aria-label="Open Menu" className="lg:hidden">
-          <Menu
-            className="h-6 w-6 text-white"
-            data-testid="open-menu"
-            onClick={() => setIsMenuOpen(true)}
-          />
+        <button
+          aria-label="Open Menu"
+          className="lg:hidden"
+          data-testid="open-menu"
+          onClick={() => setIsMenuOpen(true)}
+          type="button"
+        >
+          <Menu className="h-6 w-6 text-white" />
         </button>
         <div className="flex items-center space-x-3">
           <Image src="/favicon.svg" alt="Logo" height={32} width={32} />
@@ -54,14 +54,16 @@ const Header = () => {
             <Link href="/contact" className="hover:text-gray-400">
               Contact
             </Link>
-            <Link
-              href={stripeURL}
-              className="hover:text-gray-400"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Donate
-            </Link>
+            {stripeURL && (
+              <Link
+                href={stripeURL}
+                className="hover:text-gray-400"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Donate
+              </Link>
+            )}
             {isLoggedIn && (
               <Link href="/admin" className="hover:text-gray-400">
                 Admin
@@ -70,11 +72,15 @@ const Header = () => {
           </nav>
         </div>
         {isLoggedIn ? (
-          <LogOut
-            className="h-6 w-6 text-white cursor-pointer"
+          <button
+            aria-label="Logout"
+            className="cursor-pointer"
             data-testid="logout-icon"
             onClick={handleLogout}
-          />
+            type="button"
+          >
+            <LogOut className="h-6 w-6 text-white" />
+          </button>
         ) : (
           <Link href="/login" aria-label="Login">
             <LogIn className="h-6 w-6 text-white" data-testid="login-icon" />

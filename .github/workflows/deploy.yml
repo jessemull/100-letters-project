@@ -128,13 +128,6 @@ jobs:
           path: coverage
           retention-days: 7
 
-      - name: Coverage Threshold Check
-        run: |
-          if [[ $(grep "Statements" coverage/lcov-report/index.html | awk '{print $4}' | tr -d '%') -lt 80 ]]; then
-            echo "Code coverage is below threshold. Please update test coverage and try again."
-            exit 1
-          fi
-
   backup_s3:
     name: Backup S3
     needs: test

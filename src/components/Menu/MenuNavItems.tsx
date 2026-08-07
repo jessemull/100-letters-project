@@ -13,9 +13,7 @@ import {
 import { baseMenuClass, iconMenuClass } from '@constants/menu';
 import { useMemo } from 'react';
 
-const stripeURL =
-  process.env.NEXT_PUBLIC_STRIPE_URL ||
-  'https://donate.stripe.com/test_7sY4gB6Ns7rU3bl7TVcQU00';
+const stripeURL = process.env.NEXT_PUBLIC_STRIPE_URL;
 
 interface Props {
   collapsed: boolean;
@@ -93,20 +91,22 @@ const MenuNavItems: React.FC<Props> = ({
           <span className="sr-only">Contact</span>
         )}
       </Link>
-      <Link
-        aria-label="Donate"
-        href={stripeURL}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={linkClass}
-      >
-        {renderIconWithTooltip(HandHelping, 'Donate')}
-        {!collapsed ? (
-          <span>Donate</span>
-        ) : (
-          <span className="sr-only">Donate</span>
-        )}
-      </Link>
+      {stripeURL && (
+        <Link
+          aria-label="Donate"
+          href={stripeURL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={linkClass}
+        >
+          {renderIconWithTooltip(HandHelping, 'Donate')}
+          {!collapsed ? (
+            <span>Donate</span>
+          ) : (
+            <span className="sr-only">Donate</span>
+          )}
+        </Link>
+      )}
       {isLoggedIn && (
         <Link
           aria-label="Admin"

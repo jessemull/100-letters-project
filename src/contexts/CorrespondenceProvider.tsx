@@ -43,7 +43,7 @@ export const CorrespondenceProvider = ({
         const dataUrl = `/data/data.${(bootstrap as any).dataVersion}.json`;
         const res = await fetch(dataUrl);
         const data = await res.json();
-        setCorrespondences(data.correspondences ?? []);
+        setCorrespondences(data.correspondences ?? initialCorrespondences);
         setCorrespondencesById(data.correspondencesById ?? {});
       } catch (err) {
         console.error('Failed to load correspondence data: ', err);
@@ -53,7 +53,7 @@ export const CorrespondenceProvider = ({
     };
 
     fetchData();
-  }, [correspondences.length]);
+  }, []);
 
   return (
     <CorrespondenceContext.Provider

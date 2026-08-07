@@ -18,7 +18,13 @@ app.use(cookieParser());
 
 app.use((req, res, next) => {
   if (!req.cookies['CloudFront-Policy']) {
-    const signedCookies = getSignedCookies();
+    let signedCookies;
+    try {
+      signedCookies = getSignedCookies();
+    } catch (error) {
+      console.error('Failed to sign CloudFront cookies: ', error);
+      return res.status(500).send('CloudFront cookie signing misconfigured');
+    }
 
     Object.entries(signedCookies).forEach(([name, value]) => {
       res.cookie(name, value, {
