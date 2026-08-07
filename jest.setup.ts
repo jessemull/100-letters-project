@@ -20,10 +20,11 @@ global.IntersectionObserver = jest.fn(() => ({
   observe: jest.fn(),
   root: null,
   rootMargin: '',
+  scrollMargin: '',
   takeRecords: jest.fn(),
   thresholds: [],
   unobserve: jest.fn(),
-}));
+})) as unknown as typeof IntersectionObserver;
 
 global.ResizeObserver = jest.fn(() => ({
   disconnect: jest.fn(),

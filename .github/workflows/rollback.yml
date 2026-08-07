@@ -33,7 +33,7 @@ jobs:
           AWS_REGION: ${{ secrets.AWS_REGION }}
       
       - name: Invalidate CloudFront Cache
-        uses: chetan/invalidate-cloudfront-action@v2
+        uses: chetan/invalidate-cloudfront-action@v2.4.2
         env:
           DISTRIBUTION: ${{ inputs.environment == 'test' && secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV || secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD }}
           PATHS: "/*"

@@ -9,7 +9,7 @@ import {
 } from '@ts-types/letter';
 import { Status } from '@ts-types/correspondence';
 import { faker } from '@faker-js/faker';
-import { v4 as uuidv4 } from 'uuid';
+const uuidv4 = () => crypto.randomUUID();
 
 export const LetterImageFactory = Factory.define<LetterImage>(() => ({
   id: uuidv4(),

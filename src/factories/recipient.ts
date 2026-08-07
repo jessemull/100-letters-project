@@ -1,7 +1,7 @@
 import { Factory } from 'fishery';
 import { Recipient } from '@ts-types/recipients';
 import { faker } from '@faker-js/faker';
-import { v4 as uuidv4 } from 'uuid';
+const uuidv4 = () => crypto.randomUUID();
 
 export const RecipientFactory = Factory.define<Recipient>(() => ({
   address: {

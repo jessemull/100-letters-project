@@ -11,12 +11,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
 
       - name: Install Dependencies
@@ -48,14 +48,14 @@ jobs:
           cp public/sitemap-0.xml out/
 
       - name: Archive Build Output
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: next-build
           path: out
           retention-days: 1
     
       - name: Archive Static Data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: public-json
           path: |
@@ -94,19 +94,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
 
       - name: Install Dependencies
         run: npm ci
 
       - name: Restore Static Data
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: public-json
           path: public/data
@@ -115,7 +115,7 @@ jobs:
         run: npm run test
 
       - name: Upload Coverage Report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-report
           path: coverage
@@ -134,7 +134,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Generate Timestamp
         id: timestamp
@@ -159,25 +159,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
 
       - name: Install Dependencies
         run: npm ci
 
       - name: Download Build Output
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: next-build
           path: next-build
 
       - name: Deploy to S3
-        uses: jakejarvis/s3-sync-action@v0.5.0
+        uses: jakejarvis/s3-sync-action@v0.5.1
         with:
           args: --delete
         env:
@@ -188,7 +188,7 @@ jobs:
           SOURCE_DIR: 'next-build'
 
       - name: Invalidate CloudFront Cache
-        uses: chetan/invalidate-cloudfront-action@v2
+        uses: chetan/invalidate-cloudfront-action@v2.4.2
         env:
           DISTRIBUTION: ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV }}
           PATHS: "/*"
@@ -202,12 +202,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
 
       - name: Install Dependencies
@@ -231,7 +231,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install Dependencies
         run: npm ci
@@ -271,7 +271,7 @@ jobs:
           BACKUP_DIR: ${{ env.BACKUP_DIR }}
 
       - name: Invalidate CloudFront Cache
-        uses: chetan/invalidate-cloudfront-action@v2
+        uses: chetan/invalidate-cloudfront-action@v2.4.2
         env:
           DISTRIBUTION: ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV }}
           PATHS: "/*"

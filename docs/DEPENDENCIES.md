@@ -10,6 +10,7 @@
 - New runtime dependencies need a clear problem statement in the PR.
 - Prefer official / widely used libraries for AWS, auth, and a11y.
 - Stay on the latest major/minor that the toolchain supports; document intentional holds below.
+- Prefer upgrading the **blocking constraint** (CI Node pin, CloudFormation runtime, peers) over freezing a package at an old major.
 
 ---
 
@@ -23,19 +24,28 @@
 
 ---
 
+## Runtime / CI pins
+
+| Pin            | Value               | Notes                                                                                |
+| -------------- | ------------------- | ------------------------------------------------------------------------------------ |
+| Node           | **24** (Active LTS) | `.nvmrc`, `engines.node`, GitHub Actions `setup-node`                                |
+| GitHub Actions | latest majors       | `actions/checkout@v7`, `setup-node@v7`, `upload-artifact@v7`, `download-artifact@v8` |
+
+This repo’s CloudFormation stack is S3/CloudFront/Route 53 only (no Lambda `nodejs*` runtime).
+
+---
+
 ## Intentional version holds
 
-| Package               | Held at   | Latest blocked | Why                                                                                                  |
-| --------------------- | --------- | -------------- | ---------------------------------------------------------------------------------------------------- |
-| `eslint`              | `^9.39.5` | 10.x           | `eslint-config-next` / `eslint-plugin-jsx-a11y` / `eslint-plugin-react` peer ranges stop at ESLint 9 |
-| `typescript`          | `^5.9.3`  | 6.x / 7.x      | `typescript-eslint` (via `eslint-config-next`) peers `>=4.8.4 <6.1.0`                                |
-| `lighthouse` (direct) | `^12.8.2` | 13.x           | `@lhci/cli@0.15` pins `lighthouse@12.x`; keep major aligned with LHCI                                |
-| `express`             | `^4.21.2` | 5.x            | Local CloudFront cookie proxy; Express 5 is a breaking migration deferred intentionally              |
-| `@faker-js/faker`     | `^9.9.0`  | 10.x           | Faker 10 ships ESM-only; Jest factories would need broader transformIgnorePatterns                   |
+| Package               | Held at   | Latest blocked | Why                                                                                              |
+| --------------------- | --------- | -------------- | ------------------------------------------------------------------------------------------------ |
+| `eslint`              | `^9.39.5` | 10.x           | `eslint-plugin-jsx-a11y` / `eslint-plugin-react` (via `eslint-config-next`) peer-cap at ESLint 9 |
+| `typescript`          | `^6.0.3`  | 7.x            | `typescript-eslint` (via `eslint-config-next`) peers `>=4.8.4 <6.1.0`                            |
+| `lighthouse` (direct) | `^12.8.2` | 13.x           | `@lhci/cli@0.15` pins `lighthouse@12.6.1`; keep major aligned with LHCI                          |
 
 Do **not** run `npm audit fix --force` — it may downgrade tooling (e.g. `@lhci/cli`) to ancient versions.
 
-Residual audit findings are mostly transitive (often via `@lhci/cli` / nested tooling). Prefer upgrading LHCI when a compatible release lands; do not force-resolve via `npm audit fix --force`.
+Residual audit findings are mostly transitive via `@lhci/cli` (e.g. nested `uuid`, high-severity `tmp`). Prefer upgrading LHCI when a compatible release lands.
 
 ---
 
@@ -47,11 +57,12 @@ Residual audit findings are mostly transitive (often via `@lhci/cli` / nested to
 
 ---
 
-## Notes from latest upgrade
+## Notes
 
-- Next **16** + Tailwind **4** + ESLint **9** flat config + Jest **30** + Husky **9**.
-- `eslint-plugin-react-hooks` v7 Compiler rules (`set-state-in-effect`, `refs`, etc.) are temporarily **off** in `eslint.config.mjs` so established patterns do not block the toolchain; enable gradually via review fixes.
-- Jest transforms `uuid` (ESM) via `transformIgnorePatterns` in `jest.config.js`.
+- Next **16** + Tailwind **4** + React **19** + Jest **30** + Husky **9**.
+- Factories use `crypto.randomUUID()` (no direct `uuid` dependency).
+- `@faker-js/faker` v10 is ESM; Jest transforms it via `transformIgnorePatterns`.
+- Some `eslint-plugin-react-hooks` v7 Compiler rules remain off in `eslint.config.mjs` pending gradual enablement.
 
 ---
 

@@ -7,14 +7,14 @@
 
 ## Repository Overview
 
-| Field                 | Value                                                                                          |
-| --------------------- | ---------------------------------------------------------------------------------------------- |
-| **Project**           | 100 Letters Project client                                                                     |
-| **Architecture**      | Next.js App Router static site + Cognito auth + SWR data layer                                 |
-| **Platform**          | Web (static hosting on S3 / CloudFront)                                                        |
-| **Core Technologies** | Next.js 16, React 19, TypeScript, Tailwind 4, SWR, Framer Motion, Cognito, Sentry, Headless UI |
-| **CI/CD**             | GitHub Actions → S3 / CloudFront                                                               |
-| **Git Hooks**         | Husky + lint-staged + Conventional Commits (commitlint); pre-push runs preflight               |
+| Field                 | Value                                                                                                      |
+| --------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **Project**           | 100 Letters Project client                                                                                 |
+| **Architecture**      | Next.js App Router static site + Cognito auth + SWR data layer                                             |
+| **Platform**          | Web (static hosting on S3 / CloudFront)                                                                    |
+| **Core Technologies** | Next.js 16, React 19, TypeScript 6, Tailwind 4, SWR, Framer Motion, Cognito, Sentry, Headless UI (Node 24) |
+| **CI/CD**             | GitHub Actions → S3 / CloudFront                                                                           |
+| **Git Hooks**         | Husky + lint-staged + Conventional Commits (commitlint); pre-push runs preflight                           |
 
 ### Layout
 

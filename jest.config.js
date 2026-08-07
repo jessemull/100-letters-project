@@ -49,9 +49,9 @@ const customJestConfig = {
 module.exports = async () => {
   const nextJestConfig = await createJestConfig(customJestConfig)();
 
-  // uuid@11+ is ESM-only; allow Jest to transform it.
+  // ESM-only packages that Jest must transform.
   nextJestConfig.transformIgnorePatterns = [
-    '/node_modules/(?!(uuid)/)',
+    '/node_modules/(?!(@faker-js/faker)/)',
     '^.+\\.module\\.(css|sass|scss)$',
   ];
 
