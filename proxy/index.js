@@ -59,7 +59,7 @@ app.use(
     changeOrigin: true,
     http2: true,
     target: `https://${CLOUDFRONT_DOMAIN}`,
-    onProxyReq: (proxyReq, req, res) => {
+    onProxyReq: (proxyReq, req, _res) => {
       if (req.headers.cookie) {
         proxyReq.setHeader('Cookie', req.headers.cookie);
       }

@@ -46,4 +46,14 @@ const customJestConfig = {
   testPathIgnorePatterns: ['/node_modules/', '/.next/'],
 };
 
-module.exports = createJestConfig(customJestConfig);
+module.exports = async () => {
+  const nextJestConfig = await createJestConfig(customJestConfig)();
+
+  // uuid@11+ is ESM-only; allow Jest to transform it.
+  nextJestConfig.transformIgnorePatterns = [
+    '/node_modules/(?!(uuid)/)',
+    '^.+\\.module\\.(css|sass|scss)$',
+  ];
+
+  return nextJestConfig;
+};

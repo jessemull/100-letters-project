@@ -310,8 +310,7 @@ const LetterForm = () => {
     const correspondence =
       correspondenceMap[values.correspondenceId] ||
       (singleCorrespondence?.data?.correspondence as
-        | Correspondence
-        | undefined);
+        Correspondence | undefined);
 
     if (!correspondence || !correspondence.recipient || !correspondence.title) {
       return null;
@@ -426,7 +425,9 @@ const LetterForm = () => {
             }
             name="sentAt"
             dateFormat="Pp"
-            onChange={(date) => updateField('sentAt', date?.toISOString())}
+            onChange={(date: Date | null) =>
+              updateField('sentAt', date?.toISOString())
+            }
             placeholderText="Sent At"
             selected={values.sentAt ? new Date(values.sentAt) : null}
             showTimeSelect
@@ -445,7 +446,9 @@ const LetterForm = () => {
             }
             name="receivedAt"
             dateFormat="Pp"
-            onChange={(date) => updateField('receivedAt', date?.toISOString())}
+            onChange={(date: Date | null) =>
+              updateField('receivedAt', date?.toISOString())
+            }
             selected={values.receivedAt ? new Date(values.receivedAt) : null}
             showTimeSelect
             placeholderText="Received At"

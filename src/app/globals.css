@@ -1,6 +1,15 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@source '../../src/**/*.{js,ts,jsx,tsx}';
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-midnight: #1f2937;
+  --font-merriweather: Merriweather, serif;
+  --breakpoint-sm-tablet: 500px;
+  --breakpoint-md-tablet: 650px;
+}
 
 :root {
   --background: #ffffff;

@@ -19,9 +19,7 @@ describe('ContactPage Component', () => {
       );
     });
     expect(screen.getAllByText('100 Letters Project').length).toBe(1);
-    expect(
-      screen.getByText('© 2025 100 Letters Project.'),
-    ).toBeInTheDocument();
+    expect(screen.getByText('© 2025 100 Letters Project.')).toBeInTheDocument();
   });
 
   it('Has no accessibility errors.', async () => {

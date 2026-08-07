@@ -7,8 +7,8 @@ const urls = {
 
 const throttling = {
   production: 'simulate',
-  test: 'simulate'
-}
+  test: 'simulate',
+};
 
 module.exports = {
   ci: {

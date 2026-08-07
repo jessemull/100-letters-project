@@ -29,6 +29,4 @@ export type LetterSearchItem = {
 };
 
 export type SearchResult =
-  | CorrespondenceSearchItem
-  | RecipientSearchItem
-  | LetterSearchItem;
+  CorrespondenceSearchItem | RecipientSearchItem | LetterSearchItem;

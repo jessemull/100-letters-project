@@ -93,14 +93,14 @@ CI also runs Cypress e2e and Lighthouse on PRs/merges — see `docs/CI_CD.md`.
 
 ## Repository Identity
 
-| Field             | Value                                                                       |
-| ----------------- | --------------------------------------------------------------------------- |
-| **Project**       | 100 Letters Project — Next.js client                                        |
-| **Stack**         | Next.js App Router, React 19, TypeScript, Tailwind, SWR, Cognito, Sentry    |
-| **Hosting**       | Static export → S3 + CloudFront                                             |
-| **Auth**          | Amazon Cognito (client) + Lambda@Edge / Authorizer (sibling repos)          |
-| **Data**          | Build-time fetch into `public/data/`; runtime API via `NEXT_PUBLIC_API_URL` |
-| **Sibling repos** | API, Lambda@Edge, Authorizer (not in this tree)                             |
+| Field             | Value                                                                         |
+| ----------------- | ----------------------------------------------------------------------------- |
+| **Project**       | 100 Letters Project — Next.js client                                          |
+| **Stack**         | Next.js 16 App Router, React 19, TypeScript, Tailwind 4, SWR, Cognito, Sentry |
+| **Hosting**       | Static export → S3 + CloudFront                                               |
+| **Auth**          | Amazon Cognito (client) + Lambda@Edge / Authorizer (sibling repos)            |
+| **Data**          | Build-time fetch into `public/data/`; runtime API via `NEXT_PUBLIC_API_URL`   |
+| **Sibling repos** | API, Lambda@Edge, Authorizer (not in this tree)                               |
 
 ---
 

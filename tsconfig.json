@@ -9,7 +9,7 @@
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "paths": {
       "@components/*": ["src/components/*"],
       "@constants/*": ["src/constants/*"],
@@ -23,7 +23,7 @@
     },
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "incremental": true,
     "plugins": [
       {
@@ -36,7 +36,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "scripts/postbuild.js"
+    "scripts/postbuild.js",
+    ".next/dev/types/**/*.ts"
   ],
   "exclude": ["node_modules"]
 }

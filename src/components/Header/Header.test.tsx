@@ -23,20 +23,6 @@ jest.mock('@contexts/AuthProvider', () => ({
 }));
 
 describe('Header Component', () => {
-  const originalLocation = window.location;
-
-  beforeAll(() => {
-    delete (window as any).location;
-    (window as any).location = {
-      ...originalLocation,
-      assign: jest.fn(),
-    };
-  });
-
-  afterAll(() => {
-    window.location = originalLocation as string & Location;
-  });
-
   it('Renders header with logged-in state.', async () => {
     (useAuth as jest.Mock).mockReturnValue({
       isLoggedIn: true,
