@@ -27,6 +27,18 @@ const poolData = {
 
 const userPool = new CognitoUserPool(poolData);
 
+const authCookieOptions = {
+  expires: 1,
+  secure: true,
+  sameSite: 'Strict' as const,
+  // Explicit encodeURIComponent so Lambda@Edge can decodeURIComponent the Cookie header.
+  encode: (value: string) => encodeURIComponent(value),
+};
+
+const setAuthCookie = (accessToken: string) => {
+  cookies.set(authCookieKey, accessToken, authCookieOptions);
+};
+
 export const defaultSignIn = async () => ({ isSignedIn: false });
 
 export const defaultSignOut = () => {};
@@ -88,11 +100,7 @@ export const startSessionRefreshInterval = ({
 
         if (newToken !== token) {
           setToken(newToken);
-          cookies.set(authCookieKey, newToken, {
-            expires: 1,
-            secure: true,
-            sameSite: 'Strict',
-          });
+          setAuthCookie(newToken);
         }
       } catch {
         setTimeout(() => resetAuthState(), 100);
@@ -136,11 +144,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setToken(accessToken);
       setIsLoggedIn(true);
 
-      cookies.set(authCookieKey, accessToken, {
-        expires: 1,
-        secure: true,
-        sameSite: 'Strict',
-      });
+      setAuthCookie(accessToken);
     } catch {
       resetAuthState();
     } finally {
@@ -171,11 +175,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           setUser(cognitoUser);
           setToken(accessToken);
           setIsLoggedIn(true);
-          cookies.set(authCookieKey, accessToken, {
-            expires: 1,
-            secure: true,
-            sameSite: 'Strict',
-          });
+          setAuthCookie(accessToken);
           resolve({ isSignedIn: true });
         },
         onFailure: (err) => {
