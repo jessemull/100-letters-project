@@ -52,6 +52,7 @@ const Login = () => {
         await signIn(username, password);
         router.push('/');
       } catch (error) {
+        console.error('[auth] Login signIn failed', error);
         const msg = (error as Error).message || defaultLoginError;
         setNetworkError(msg);
       } finally {

@@ -30,10 +30,11 @@ const authCookieOptions = {
   expires: 1,
   secure: true,
   sameSite: 'Strict' as const,
-  // Explicit encodeURIComponent so Lambda@Edge can decodeURIComponent the Cookie header.
-  encode: (value: string) => encodeURIComponent(value),
 };
 
+// js-cookie's default write converter already URI-encodes values (Lambda@Edge can
+// decodeURIComponent). Do not pass `encode` in attribute options — that is not a
+// documented API and throws: attributes[attributeName].split is not a function.
 const setAuthCookie = (accessToken: string) => {
   cookies.set(authCookieKey, accessToken, authCookieOptions);
 };
@@ -167,15 +168,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         Pool: userPool,
       });
       cognitoUser.authenticateUser(authDetails, {
-        onSuccess: async (session) => {
-          const accessToken = session.getAccessToken().getJwtToken();
-          setUser(cognitoUser);
-          setToken(accessToken);
-          setIsLoggedIn(true);
-          setAuthCookie(accessToken);
-          resolve({ isSignedIn: true });
+        onSuccess: (session) => {
+          try {
+            const accessToken = session.getAccessToken().getJwtToken();
+            setUser(cognitoUser);
+            setToken(accessToken);
+            setIsLoggedIn(true);
+            setAuthCookie(accessToken);
+            resolve({ isSignedIn: true });
+          } catch (error) {
+            console.error('[auth] signIn onSuccess failed', error);
+            resetAuthState();
+            reject(
+              error instanceof Error ? error : new Error(defaultAuthError),
+            );
+          }
         },
         onFailure: (err) => {
+          console.error('[auth] Cognito signIn failed', {
+            name: err?.name,
+            code: err?.code,
+            message: err?.message,
+          });
           resetAuthState();
           reject(err || new Error(defaultAuthError));
         },
