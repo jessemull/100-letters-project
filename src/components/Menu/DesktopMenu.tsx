@@ -55,12 +55,9 @@ const DesktopMenu: React.FC<Props> = ({ collapsed, setCollapsed }) => {
         </button>
       </div>
       <div className="flex-1 overflow-y-auto overflow-x-hidden pb-4">
-        <nav
-          aria-label="Desktop Navigation"
-          className="flex flex-col gap-4 text-sm"
-        >
+        <nav aria-label="Desktop Navigation" className="flex flex-col text-sm">
           <div
-            className={`flex flex-col gap-3 pt-4 transition-all duration-300 ease-in-out ${
+            className={`flex flex-col gap-3 py-4 transition-all duration-300 ease-in-out ${
               collapsed ? 'px-2' : 'px-4'
             }`}
           >
@@ -82,16 +79,17 @@ const DesktopMenu: React.FC<Props> = ({ collapsed, setCollapsed }) => {
                 transition={panelTransition}
                 className="overflow-hidden"
               >
-                <div className="flex flex-col mt-4">
-                  <div className="px-4">
+                <div className="flex flex-col">
+                  <hr className="border-t border-white w-full" />
+                  <div className="px-4 py-4">
                     <RecipientSearch onClick={() => setCollapsed(true)} />
                   </div>
-                  <hr className="border-t border-white w-full my-4" />
-                  <div className="px-4">
+                  <hr className="border-t border-white w-full" />
+                  <div className="px-4 py-4">
                     <LetterSearch onClick={() => setCollapsed(true)} />
                   </div>
-                  <hr className="border-t border-white w-full my-4" />
-                  <div className="px-4">
+                  <hr className="border-t border-white w-full" />
+                  <div className="px-4 py-4">
                     <CorrespondenceSearch onClick={() => setCollapsed(true)} />
                   </div>
                 </div>

@@ -69,7 +69,7 @@ const MobileMenu: FC<Props> = ({
       </div>
       <nav
         aria-label="Mobile Navigation"
-        className="flex flex-col space-y-3 px-6 py-6 text-lg"
+        className="flex flex-col space-y-3 px-6 py-4 text-lg"
       >
         <MenuNavItems
           collapsed={false}
@@ -78,16 +78,17 @@ const MobileMenu: FC<Props> = ({
           onNavigate={onClose}
         />
       </nav>
-      <div className="flex flex-col mt-4">
-        <div className="px-4">
+      <div className="flex flex-col">
+        <hr className="border-t border-white w-full" />
+        <div className="px-4 py-4">
           <RecipientSearch onClick={onClose} />
         </div>
-        <hr className="border-t border-white w-full my-4" />
-        <div className="px-4">
+        <hr className="border-t border-white w-full" />
+        <div className="px-4 py-4">
           <LetterSearch onClick={onClose} />
         </div>
-        <hr className="border-t border-white w-full my-4" />
-        <div className="px-4">
+        <hr className="border-t border-white w-full" />
+        <div className="px-4 py-4">
           <CorrespondenceSearch onClick={onClose} />
         </div>
       </div>

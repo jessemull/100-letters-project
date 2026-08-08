@@ -101,7 +101,7 @@ function SearchSection<T>({
                 <button
                   type="button"
                   onClick={() => setItemsToShowCount((count) => count + 10)}
-                  className="mt-2 mb-4 text-sm text-white/80 hover:text-white underline-offset-2 hover:underline cursor-pointer transition"
+                  className="mt-3 text-sm text-white/80 hover:text-white underline-offset-2 hover:underline cursor-pointer transition"
                 >
                   Show more...
                 </button>
