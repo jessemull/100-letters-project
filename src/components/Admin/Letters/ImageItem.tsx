@@ -144,7 +144,7 @@ const ImageItem = ({ data, deleteImage, letter, onUpdateImage }: Props) => {
                 <div className="space-y-2 flex flex-col items-center justify-center">
                   <button
                     data-testid="full-screen-button"
-                    className="text-white hover:text-gray-400"
+                    className="text-white hover:text-gray-400 cursor-pointer"
                     aria-label="Full Screen"
                     onClick={() => setIsLightboxOpen(true)}
                   >
@@ -155,7 +155,7 @@ const ImageItem = ({ data, deleteImage, letter, onUpdateImage }: Props) => {
                   </button>
                   <button
                     data-testid="edit-button"
-                    className="text-white hover:text-gray-400"
+                    className="text-white hover:text-gray-400 cursor-pointer"
                     aria-label="Edit"
                     onClick={() => (isOpen ? setIsOpen(false) : openEdit())}
                   >
@@ -166,7 +166,7 @@ const ImageItem = ({ data, deleteImage, letter, onUpdateImage }: Props) => {
                   </button>
                   <button
                     data-testid="delete-button"
-                    className="text-white hover:text-gray-400"
+                    className="text-white hover:text-gray-400 cursor-pointer"
                     aria-label="Delete"
                     onClick={() => deleteImage(data.id)}
                   >

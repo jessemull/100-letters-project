@@ -25,7 +25,7 @@ const LetterItem = ({ data, onEdit, onDelete }: Props) => {
           <button
             data-testid="edit-button"
             onClick={() => onEdit(data.letterId)}
-            className="text-white hover:text-gray-400"
+            className="text-white hover:text-gray-400 cursor-pointer"
             aria-label="Edit"
           >
             <PenSquare className="w-6 h-6" />
@@ -33,7 +33,7 @@ const LetterItem = ({ data, onEdit, onDelete }: Props) => {
           <button
             data-testid="delete-button"
             onClick={() => onDelete(data.letterId, data.correspondenceId)}
-            className="text-white hover:text-gray-400"
+            className="text-white hover:text-gray-400 cursor-pointer"
             aria-label="Delete"
           >
             <Trash2 className="w-6 h-6" />

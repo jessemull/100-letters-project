@@ -110,7 +110,7 @@ const AutoSelect: React.FC<Props> = ({
                 <button
                   type="button"
                   onClick={() => handleSelect(option.value)}
-                  className={`w-full text-left px-4 py-2 hover:bg-black/10 ${
+                  className={`w-full text-left px-4 py-2 hover:bg-black/10 cursor-pointer ${
                     idx % 2 === 0 ? 'bg-white' : 'bg-white/60'
                   }`}
                 >

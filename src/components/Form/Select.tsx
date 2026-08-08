@@ -80,6 +80,7 @@ const Select: React.FC<Props> = ({
           placeholder-white/70 
           focus:outline-none 
           appearance-none 
+          cursor-pointer
           ${paddingClasses}
         `}
         data-testid="select-input"

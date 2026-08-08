@@ -40,6 +40,7 @@ const AddImageItem = ({
         <h2 className="text-xl font-semibold text-white">Add New Image</h2>
         <X
           data-testid="add-image-close-icon"
+          className="cursor-pointer"
           color="white"
           onClick={resetAddNewImage}
         />

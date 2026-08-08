@@ -65,7 +65,7 @@ const Admin = () => {
               id="tab-select"
               value={selectedIndex}
               onChange={(e) => handleTabChange(Number(e.target.value))}
-              className="w-full h-12 rounded-full bg-white/25 border border-white text-white text-base placeholder-white/70 px-4 pr-10 focus:outline-none appearance-none"
+              className="w-full h-12 rounded-full bg-white/25 border border-white text-white text-base placeholder-white/70 px-4 pr-10 focus:outline-none appearance-none cursor-pointer"
             >
               {adminTabs.map((tab, idx) => (
                 <option key={tab.key} value={idx} className="text-black">
@@ -83,7 +83,7 @@ const Admin = () => {
             <TabList className="hidden sm:flex space-x-2 border-b border-white">
               {adminTabs.map((tab) => (
                 <Tab
-                  className={`px-4 py-2 font-semibold text-lg rounded-t-md transition
+                  className={`px-4 py-2 font-semibold text-lg rounded-t-md transition cursor-pointer
                     ${
                       tab.key === adminTabs[selectedIndex].key
                         ? 'text-white border-b-2 border-white'
