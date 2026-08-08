@@ -9,9 +9,9 @@ import { useDesktopMenu } from '@contexts/DesktopMenuProvider';
 import { useMemo } from 'react';
 
 /**
- * Locked viewport chrome (not CSS sticky):
- * Header and footer frame the middle band. Only main scrolls.
- * Sidebar lives in that middle band so it ends above the full-width footer.
+ * Header stays put. Main is the page scroller; footer is the last child
+ * inside that scroller (not viewport-pinned). Sidebar fills the middle
+ * band beside main only.
  */
 const PageLayout = ({ children }: { children: React.ReactNode }) => {
   const { collapsed, setCollapsed } = useDesktopMenu();
@@ -33,19 +33,19 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => {
       <Header />
       <div className="flex min-h-0 flex-1 overflow-hidden">
         <aside
-          className={`relative z-0 hidden min-h-0 shrink-0 overflow-hidden lg:flex lg:flex-col ${sidebarWidth} text-white transition-[width] duration-300 ease-in-out`}
+          className={`hidden min-h-0 shrink-0 overflow-hidden lg:flex lg:flex-col ${sidebarWidth} text-white transition-[width] duration-300 ease-in-out`}
           data-testid="menu-width"
         >
           <SearchProvider>
             <DesktopMenu collapsed={collapsed} setCollapsed={setCollapsed} />
           </SearchProvider>
         </aside>
-        <main className="relative z-0 min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden">
-          <div className="pr-2 pl-2 pt-3 pb-3 md:p-0 md:px-8">{children}</div>
+        <main className="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden">
+          <div className="flex min-h-full flex-col justify-between">
+            <div className="pr-2 pl-2 pt-3 pb-3 md:p-0 md:px-8">{children}</div>
+            <Footer />
+          </div>
         </main>
-      </div>
-      <div className="relative z-50 shrink-0">
-        <Footer />
       </div>
       <Toaster position="top-center" />
     </div>

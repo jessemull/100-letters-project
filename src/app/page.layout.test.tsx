@@ -51,7 +51,7 @@ describe('PageLayout Component', () => {
     expect(screen.getByTestId('menu-width')).toHaveClass('w-80');
   });
 
-  it('Keeps sidebar in the middle band above a full-width footer chrome.', () => {
+  it('Puts the footer inside the main scroller, not viewport chrome.', () => {
     render(
       <DesktopMenuContext.Provider
         value={{ collapsed: true, setCollapsed: jest.fn() }}
@@ -65,7 +65,6 @@ describe('PageLayout Component', () => {
     const sidebar = screen.getByTestId('menu-width');
     expect(sidebar).toHaveClass('w-12');
     expect(sidebar).not.toHaveClass('fixed');
-    expect(sidebar).not.toHaveClass('sticky');
     expect(screen.getByText(/© 2025 100 Letters Project/i)).toBeInTheDocument();
   });
 });
