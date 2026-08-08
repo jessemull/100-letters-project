@@ -28,7 +28,7 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-gray-900 text-white px-4 py-3 font-merriweather sticky top-0 z-50 w-full h-[56px]">
+    <header className="bg-gray-900 text-white px-4 py-3 font-merriweather z-50 w-full h-[56px] shrink-0">
       <div className="flex justify-between items-center max-w-full">
         <button
           aria-label="Open Menu"

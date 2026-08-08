@@ -38,7 +38,7 @@ jest.mock('@components/Menu/CorrespondenceSearch', () => ({
 }));
 
 describe('PageLayout Component', () => {
-  it('Collapses menu.', () => {
+  it('Renders an expanded desktop sidebar width.', () => {
     render(
       <DesktopMenuContext.Provider
         value={{ collapsed: false, setCollapsed: jest.fn() }}
@@ -48,7 +48,24 @@ describe('PageLayout Component', () => {
         </PageLayout>
       </DesktopMenuContext.Provider>,
     );
+    expect(screen.getByTestId('menu-width')).toHaveClass('w-80');
+  });
+
+  it('Uses an in-flow sidebar shell with footer in the main scroller.', () => {
+    render(
+      <DesktopMenuContext.Provider
+        value={{ collapsed: true, setCollapsed: jest.fn() }}
+      >
+        <PageLayout>
+          <div>Test Content</div>
+        </PageLayout>
+      </DesktopMenuContext.Provider>,
+    );
+
     const sidebar = screen.getByTestId('menu-width');
-    expect(sidebar).toHaveClass('w-80');
+    expect(sidebar).toHaveClass('w-12');
+    expect(sidebar).not.toHaveClass('fixed');
+    expect(sidebar).not.toHaveClass('sticky');
+    expect(screen.getByText(/© 2025 100 Letters Project/i)).toBeInTheDocument();
   });
 });

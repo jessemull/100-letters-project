@@ -29,8 +29,9 @@ body {
   margin: 0;
 }
 
+/* Page shell owns height via flex; don't force main past its scroller. */
 main {
-  min-height: 'calc(100vh - 56px)';
+  min-height: 0;
 }
 
 input:-webkit-autofill,
@@ -50,17 +51,23 @@ input:-webkit-autofill::first-line {
 }
 
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(0, 0, 0, 0.25);
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.4);
+  background-color: rgba(255, 255, 255, 0.55);
   border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.75);
 }
 
 .yarl__container {
