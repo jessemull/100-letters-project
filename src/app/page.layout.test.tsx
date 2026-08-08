@@ -51,7 +51,7 @@ describe('PageLayout Component', () => {
     expect(screen.getByTestId('menu-width')).toHaveClass('w-80');
   });
 
-  it('Pins the sidebar under the header so it can overlay the footer.', () => {
+  it('Keeps sidebar in the middle band above a full-width footer chrome.', () => {
     render(
       <DesktopMenuContext.Provider
         value={{ collapsed: true, setCollapsed: jest.fn() }}
@@ -63,10 +63,9 @@ describe('PageLayout Component', () => {
     );
 
     const sidebar = screen.getByTestId('menu-width');
-    expect(sidebar).toHaveClass('fixed');
-    expect(sidebar).toHaveClass('top-[56px]');
-    expect(sidebar).toHaveClass('bottom-0');
     expect(sidebar).toHaveClass('w-12');
+    expect(sidebar).not.toHaveClass('fixed');
+    expect(sidebar).not.toHaveClass('sticky');
     expect(screen.getByText(/© 2025 100 Letters Project/i)).toBeInTheDocument();
   });
 });
