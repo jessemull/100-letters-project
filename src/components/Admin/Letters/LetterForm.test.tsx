@@ -91,7 +91,7 @@ describe('LetterForm Component', () => {
     (useSearchParams as jest.Mock).mockReturnValue({ get: () => null });
 
     (useSWRQuery as jest.Mock).mockImplementation(({ path }) => {
-      if (path === '/correspondence?limit=500') {
+      if (path === '/correspondence?limit=100') {
         return {
           data: {
             data: [
@@ -291,7 +291,7 @@ describe('LetterForm Component', () => {
     (useSearchParams as jest.Mock).mockReturnValue({ get: () => null });
 
     (useSWRQuery as jest.Mock).mockImplementation(({ path }) => {
-      if (path === '/correspondence?limit=500') {
+      if (path === '/correspondence?limit=100') {
         return {
           data: {
             data: [
@@ -352,7 +352,7 @@ describe('LetterForm Component', () => {
     (useSearchParams as jest.Mock).mockReturnValue({ get: () => null });
 
     (useSWRQuery as jest.Mock).mockImplementation(({ path }) => {
-      if (path === '/correspondence?limit=500') {
+      if (path === '/correspondence?limit=100') {
         return {
           data: {
             data: [
@@ -438,7 +438,7 @@ describe('LetterForm Component', () => {
     (useSearchParams as jest.Mock).mockReturnValue({ get: () => null });
 
     (useSWRQuery as jest.Mock).mockImplementation(({ path }) => {
-      if (path === '/correspondence?limit=500') {
+      if (path === '/correspondence?limit=100') {
         return {
           data: {
             data: [
@@ -500,7 +500,7 @@ describe('LetterForm Component', () => {
     (useSearchParams as jest.Mock).mockReturnValue({ get: () => null });
 
     (useSWRQuery as jest.Mock).mockImplementation(({ path }) => {
-      if (path === '/correspondence?limit=500') {
+      if (path === '/correspondence?limit=100') {
         return {
           data: {
             data: [

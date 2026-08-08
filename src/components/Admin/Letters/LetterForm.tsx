@@ -86,7 +86,7 @@ const LetterForm = () => {
     isLoading: correspondencesLoading,
   } = useSWRQuery<GetCorrespondencesResponse>({
     config: { shouldRetryOnError: false },
-    path: '/correspondence?limit=500',
+    path: '/correspondence?limit=100',
     skip: letterId === null && correspondenceId !== null,
     token,
   });

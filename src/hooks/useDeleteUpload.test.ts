@@ -65,6 +65,34 @@ describe('useDeleteUpload', () => {
     });
   });
 
+  it('Normalizes processed images/ fileKeys before delete.', async () => {
+    const corr = '6c18f8f5-bc49-4229-8a13-3d3471425f29';
+    const letterId = '2e5d1072-9dcb-446b-b972-eac5d9e1fc9c';
+    const uuid = 'd4f872a4-1e32-4514-870f-1ffeeeb10058';
+    const processedKey = `images/${corr}/${letterId}/LETTER_FRONT/${uuid}_large_8.jpg`;
+    const expectedKey = `unprocessed/${corr}___${letterId}___LETTER_FRONT___${uuid}.jpg`;
+
+    const letterWithProcessedKey: Letter = {
+      ...letter,
+      imageURLs: [{ id: 'img-1', fileKey: processedKey }],
+    } as any;
+
+    mockDeleteUpload.mockResolvedValue({});
+    mockUpdateLetter.mockResolvedValue({ message: 'Success!' });
+
+    const { result } = renderHook(() =>
+      useDeleteUpload({ letter: letterWithProcessedKey, token: 'test-token' }),
+    );
+
+    await act(async () => {
+      await result.current.deleteFile({ imageId: 'img-1' });
+    });
+
+    expect(mockDeleteUpload).toHaveBeenCalledWith({
+      path: `/uploads?fileKey=${encodeURIComponent(expectedKey)}`,
+    });
+  });
+
   it('Handles error if upload deletion fails.', async () => {
     mockDeleteUpload.mockRejectedValue(new Error('Failed to delete'));
 

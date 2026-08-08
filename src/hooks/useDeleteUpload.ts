@@ -10,6 +10,7 @@ import {
   lettersUpdate,
 } from '@util/cache';
 import { formatLetterDates } from '@util/letter';
+import { toDeleteUploadFileKey } from '@util/uploads';
 import { useSWRMutation } from './useSWRMutation';
 import { useState } from 'react';
 
@@ -55,8 +56,10 @@ export const useDeleteUpload = ({ letter, token }: UseDeleteUpload) => {
         (image) => image.id === imageId,
       ) as LetterImage;
 
+      const fileKey = toDeleteUploadFileKey(imageToDelete.fileKey);
+
       await deleteUpload({
-        path: `/uploads?fileKey=${imageToDelete.fileKey}`,
+        path: `/uploads?fileKey=${encodeURIComponent(fileKey)}`,
       });
 
       const formatted = formatLetterDates(letter);
