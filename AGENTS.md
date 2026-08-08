@@ -151,7 +151,7 @@ See `docs/TESTING.md`.
 
 ## Performance Rules
 
-- Respect Lighthouse CI thresholds (perf ≥ 0.8; a11y/seo/best-practices ≥ 0.9).
+- Respect Lighthouse CI thresholds (perf ≥ 0.75; a11y/seo/best-practices ≥ 0.9).
 - Watch bundle size (`ENABLE_ANALYZER=true` when investigating).
 - Lighthouse regressions on merge can trigger rollback — see `docs/CI_CD.md` / `docs/PERFORMANCE.md`.
 

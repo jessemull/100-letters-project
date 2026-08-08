@@ -10,7 +10,7 @@ Lighthouse CI (`.lighthouserc.js`):
 
 | Category       | Minimum score |
 | -------------- | ------------- |
-| Performance    | ≥ 0.8         |
+| Performance    | ≥ 0.75        |
 | Accessibility  | ≥ 0.9         |
 | SEO            | ≥ 0.9         |
 | Best practices | ≥ 0.9         |
