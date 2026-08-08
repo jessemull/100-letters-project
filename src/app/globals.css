@@ -64,13 +64,36 @@ input:-webkit-autofill::first-line {
 }
 
 .yarl__container {
-  background-color: rgba(255, 255, 255, 0.25) !important;
-  backdrop-filter: blur(12px) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
+  background-color: rgba(0, 0, 0, 0.78) !important;
+  backdrop-filter: blur(6px) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
+}
+
+.yarl__slide_wrapper {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
 .yarl__slide_image {
   border-radius: 1rem !important;
+  /* Contain without JS upsizing — avoids render-then-expand jumps. */
+  max-width: 100% !important;
+  max-height: 100% !important;
+  width: auto !important;
+  height: auto !important;
+  object-fit: contain !important;
+}
+
+.yarl__slide_image_loading {
+  opacity: 0 !important;
+}
+
+/* Default yarl chrome is replaced by ProjectLightbox overlays. */
+.yarl__toolbar,
+.yarl__navigation_prev,
+.yarl__navigation_next {
+  display: none !important;
 }
 
 .yarl__button {
@@ -78,15 +101,6 @@ input:-webkit-autofill::first-line {
   box-shadow: none !important;
   filter: none !important;
   padding: 0 !important;
-  text-shadow: none !important;
-}
-
-.yarl__navigation_prev,
-.yarl__navigation_next {
-  background: transparent !important;
-  box-shadow: none !important;
-  filter: none !important;
-  padding: 24 16 !important;
   text-shadow: none !important;
 }
 
@@ -102,18 +116,6 @@ input:-webkit-autofill::first-line {
   box-shadow: none !important;
   filter: none !important;
   text-shadow: none !important;
-}
-
-.yarl__toolbar {
-  -webkit-backdrop-filter: blur(8px);
-  align-items: center !important;
-  backdrop-filter: blur(8px);
-  background-color: rgba(255 255 255 / 0.2) !important;
-  border-radius: 0.5rem;
-  display: flex !important;
-  gap: 0.5rem !important;
-  margin: 1rem;
-  padding: 0.5rem 0.75rem;
 }
 
 .tabular-nums {

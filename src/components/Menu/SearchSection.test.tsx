@@ -1,6 +1,6 @@
 import SearchSection from './SearchSection';
 import { axe } from 'jest-axe';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 
 interface Item {
   name: string;
@@ -43,10 +43,10 @@ describe('SearchSection Component', () => {
       screen.getByPlaceholderText(`Search ${title.toLowerCase()}...`),
     ).toBeInTheDocument();
     expect(screen.getAllByTestId('list-item')).toHaveLength(10);
-    expect(screen.getByText('Show More')).toBeInTheDocument();
+    expect(screen.getByText('Show more...')).toBeInTheDocument();
   });
 
-  it('Expands to show more items when Show More is clicked.', () => {
+  it('Expands to show more items when Show more... is clicked.', () => {
     render(
       <SearchSection
         title={title}
@@ -59,7 +59,7 @@ describe('SearchSection Component', () => {
       />,
     );
 
-    fireEvent.click(screen.getByText('Show More'));
+    fireEvent.click(screen.getByText('Show more...'));
     expect(screen.getAllByTestId('list-item')).toHaveLength(20);
   });
 
@@ -83,7 +83,7 @@ describe('SearchSection Component', () => {
     expect(setTerm).toHaveBeenCalledWith('new term');
   });
 
-  it('Toggles open/closed state.', () => {
+  it('Toggles open/closed state.', async () => {
     render(
       <SearchSection
         title={title}
@@ -97,12 +97,14 @@ describe('SearchSection Component', () => {
     );
 
     fireEvent.click(screen.getByText(title));
-    expect(
-      screen.queryByPlaceholderText(`Search ${title.toLowerCase()}...`),
-    ).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.queryByPlaceholderText(`Search ${title.toLowerCase()}...`),
+      ).not.toBeInTheDocument();
+    });
   });
 
-  it('Does not render search input or list when isOpen is false.', () => {
+  it('Does not render search input or list when isOpen is false.', async () => {
     render(
       <SearchSection
         title={title}
@@ -117,11 +119,13 @@ describe('SearchSection Component', () => {
 
     fireEvent.click(screen.getByText(title));
 
-    expect(
-      screen.queryByPlaceholderText(`Search ${title.toLowerCase()}...`),
-    ).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.queryByPlaceholderText(`Search ${title.toLowerCase()}...`),
+      ).not.toBeInTheDocument();
+    });
     expect(screen.queryByTestId('list-item')).not.toBeInTheDocument();
-    expect(screen.queryByText('Show More')).not.toBeInTheDocument();
+    expect(screen.queryByText('Show more...')).not.toBeInTheDocument();
   });
 
   it('Clear term when clear button is clicked.', () => {

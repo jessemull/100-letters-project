@@ -38,7 +38,7 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => {
         </main>
       </div>
       <aside
-        className={`hidden lg:block ${sidebarWidth} text-white fixed top-[56px] bottom-0 left-0 z-40`}
+        className={`hidden lg:block ${sidebarWidth} text-white fixed top-[56px] bottom-0 left-0 z-40 transition-all duration-300 ease-in-out`}
         data-testid="menu-width"
       >
         <div className="h-full overflow-y-auto overflow-x-hidden">

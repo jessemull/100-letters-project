@@ -31,7 +31,7 @@ const ImageCarousel: React.FC<Props> = ({ letter, onClick, selected }) => {
             <button
               key={image.id}
               data-testid={`thumbnail-${idx}`}
-              className={`snap-start relative w-24 h-24 flex-shrink-0 overflow-hidden rounded ${
+              className={`snap-start relative w-24 h-24 flex-shrink-0 overflow-hidden rounded cursor-pointer ${
                 isSelected
                   ? 'border border-white'
                   : 'hover:border hover:border-white'
@@ -54,7 +54,7 @@ const ImageCarousel: React.FC<Props> = ({ letter, onClick, selected }) => {
                 className="object-cover transition-transform duration-300 ease-out hover:scale-105"
               />
               {isSelected && (
-                <div className="absolute inset-0 bg-black/50 z-10 pointer-events-none" />
+                <div className="absolute inset-0 bg-black/80 z-10 pointer-events-none" />
               )}
             </button>
           );

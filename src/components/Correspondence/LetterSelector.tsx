@@ -63,6 +63,7 @@ const LetterSelectorHorizontal: React.FC<Props> = ({
             transition 
             transform 
             hover:scale-110
+            cursor-pointer
           "
           onClick={() => onSelect(Math.max(0, selected - 1))}
         >
@@ -81,7 +82,7 @@ const LetterSelectorHorizontal: React.FC<Props> = ({
                   itemRefs.current[idx] = el;
                 }}
                 onClick={() => onSelect(idx)}
-                className={`text-md whitespace-nowrap px-3 py-1 rounded transition truncate max-w-[120px]
+                className={`text-md whitespace-nowrap px-3 py-1 rounded transition truncate max-w-[120px] cursor-pointer
                   ${
                     isSelected
                       ? 'bg-white/20 text-md text-white font-semibold shadow border-b-4 border-white'
@@ -101,6 +102,7 @@ const LetterSelectorHorizontal: React.FC<Props> = ({
             transition 
             transform 
             hover:scale-110
+            cursor-pointer
           "
           onClick={() => onSelect(Math.min(letters.length - 1, selected + 1))}
         >

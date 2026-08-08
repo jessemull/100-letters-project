@@ -31,10 +31,7 @@ const ConfirmationModal = ({
       className="fixed inset-0 z-50 flex items-center justify-center p-8"
     >
       {isOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50"
-          aria-hidden="true"
-        />
+        <div className="fixed inset-0 bg-black/80" aria-hidden="true" />
       )}
       <div className="relative bg-white rounded-xl p-8 max-w-md w-full shadow-xl z-10 space-y-4">
         <DialogTitle className="font-merriweather text-xl font-semibold text-gray-900">

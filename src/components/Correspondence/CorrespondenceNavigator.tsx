@@ -1,18 +1,8 @@
 'use client';
 
-import 'yet-another-react-lightbox/styles.css';
 import Carousel from './ImageCarousel';
 import Image from 'next/image';
-import Lightbox from 'yet-another-react-lightbox';
-import Zoom from 'yet-another-react-lightbox/plugins/zoom';
-import {
-  ChevronLeft,
-  ChevronRight,
-  Expand,
-  X,
-  ZoomIn,
-  ZoomOut,
-} from 'lucide-react';
+import { Expand } from 'lucide-react';
 import {
   CorrespondenceNotFound,
   LetterDetails,
@@ -22,6 +12,7 @@ import {
 } from '@components/Correspondence';
 import { CorrespondenceCard } from '@ts-types/correspondence';
 import { Progress } from '@components/Form';
+import { ProjectLightbox } from '@components/Lightbox';
 import { useCorrespondence } from '@contexts/CorrespondenceProvider';
 import { useCallback, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
@@ -184,7 +175,7 @@ const CorrespondenceNavigator = () => {
                 />
                 <button
                   onClick={() => setIsLightboxOpen(true)}
-                  className="absolute top-2 right-2 z-20 bg-black/40 hover:bg-black/60 p-1.5 rounded-md transition"
+                  className="absolute top-2 right-2 z-20 bg-black/40 hover:bg-black/60 p-1.5 rounded-md transition cursor-pointer"
                   aria-label="Expand to fullscreen"
                 >
                   <Expand className="text-white/90 w-6 h-6" />
@@ -227,42 +218,12 @@ const CorrespondenceNavigator = () => {
         </div>
       </div>
       {isLightboxOpen && (
-        <Lightbox
+        <ProjectLightbox
           open={isLightboxOpen}
           close={() => setIsLightboxOpen(false)}
           slides={lightboxSlides}
           index={selectedImageIndex}
-          on={{ view: ({ index }) => setSelectedImageIndex(index) }}
-          plugins={[Zoom]}
-          render={{
-            iconPrev: () => (
-              <span className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 transition">
-                <ChevronLeft className="-translate-x-[1px] text-white w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7" />
-              </span>
-            ),
-            iconNext: () => (
-              <span className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 transition">
-                <ChevronRight className="translate-x-[1px] text-white w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7" />
-              </span>
-            ),
-            iconZoomIn: () => (
-              <ZoomIn className="w-6 h-6 text-white hover:text-gray-300 transition-colors duration-200" />
-            ),
-            iconZoomOut: () => (
-              <ZoomOut className="w-6 h-6 text-white hover:text-gray-300 transition-colors duration-200" />
-            ),
-            iconClose: () => (
-              <X className="w-6 h-6 text-white hover:text-gray-300 transition-colors duration-200" />
-            ),
-          }}
-          zoom={{
-            maxZoomPixelRatio: 5,
-            zoomInMultiplier: 2,
-            doubleTapDelay: 300,
-            doubleClickDelay: 300,
-            pinchZoomDistanceFactor: 100,
-            wheelZoomDistanceFactor: 100,
-          }}
+          onView={(nextIndex) => setSelectedImageIndex(nextIndex)}
         />
       )}
     </div>

@@ -1,8 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import Lightbox from 'yet-another-react-lightbox';
-import Zoom from 'yet-another-react-lightbox/plugins/zoom';
 import {
   Button,
   Progress,
@@ -10,14 +8,7 @@ import {
   TextInput,
   showToast,
 } from '@components/Form';
-import {
-  Fullscreen,
-  PenSquare,
-  Trash2,
-  X,
-  ZoomIn,
-  ZoomOut,
-} from 'lucide-react';
+import { Fullscreen, PenSquare, Trash2 } from 'lucide-react';
 import { Image } from '@components/Image';
 import {
   Letter,
@@ -31,9 +22,9 @@ import {
   letterByIdUpdate,
   lettersUpdate,
 } from '@util/cache';
-import 'yet-another-react-lightbox/styles.css';
 import { formatLetterDates } from '@util/letter';
 import { letterViewOptions, letterViewToLabel } from '@constants/letter';
+import { ProjectLightbox } from '@components/Lightbox';
 import { useAuth } from '@contexts/AuthProvider';
 import { useSWRMutation } from '@hooks/useSWRMutation';
 
@@ -221,32 +212,11 @@ const ImageItem = ({ data, deleteImage, letter, onUpdateImage }: Props) => {
         )}
       </div>
       {isLightboxOpen && (
-        <Lightbox
+        <ProjectLightbox
           open={isLightboxOpen}
           close={() => setIsLightboxOpen(false)}
           slides={[{ src: data.url }]}
-          plugins={[Zoom]}
-          render={{
-            iconPrev: () => null,
-            iconNext: () => null,
-            iconZoomIn: () => (
-              <ZoomIn className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-white hover:text-gray-300 transition-colors duration-200" />
-            ),
-            iconZoomOut: () => (
-              <ZoomOut className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-white hover:text-gray-300 transition-colors duration-200" />
-            ),
-            iconClose: () => (
-              <X className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-white hover:text-gray-300 transition-colors duration-200" />
-            ),
-          }}
-          zoom={{
-            maxZoomPixelRatio: 5,
-            zoomInMultiplier: 2,
-            doubleTapDelay: 300,
-            doubleClickDelay: 300,
-            pinchZoomDistanceFactor: 100,
-            wheelZoomDistanceFactor: 100,
-          }}
+          showNavigation={false}
         />
       )}
     </>
