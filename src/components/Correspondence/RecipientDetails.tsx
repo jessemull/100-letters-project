@@ -45,7 +45,7 @@ const RecipientDetails: React.FC<Props> = ({
             {correspondence?.recipient?.firstName}{' '}
             {correspondence?.recipient?.lastName}
           </h2>
-          <span className="border border-white rounded-md bg-white/10 px-2 py-0.5 md:px-3 md:py-1 text-sm md:text-base font-bold uppercase tracking-wider text-white shadow-sm">
+          <span className="border border-white rounded-md bg-white/10 px-1.5 py-0.5 md:px-2 md:py-0.5 text-xs md:text-sm font-bold uppercase tracking-wide text-white shadow-sm">
             {categoryLabelMap[correspondence?.reason?.category] || 'Other'}
           </span>
         </div>

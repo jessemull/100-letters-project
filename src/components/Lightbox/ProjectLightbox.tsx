@@ -6,7 +6,6 @@ import Lightbox, {
 } from 'yet-another-react-lightbox';
 import Zoom from 'yet-another-react-lightbox/plugins/zoom';
 import { ChevronLeft, ChevronRight, X, ZoomIn, ZoomOut } from 'lucide-react';
-import { AnimatePresence, motion } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import 'yet-another-react-lightbox/styles.css';
@@ -46,48 +45,59 @@ interface ImageLayout {
 
 const DESKTOP_MQ = '(min-width: 1024px)';
 const ARROW_SIZE_PX = 40;
-const ARROW_GAP_PX = 10;
-const TOOLBAR_INSET_PX = 12;
-const VIEWPORT_PAD_PX = 8;
-/** Keep in sync with Lightbox `animation.swipe`. */
+const ARROW_GAP_PX = 8;
+const VIEWPORT_PAD_PX = 16;
+/** Desktop slide padding must leave room for image-adjacent arrows. */
+const DESKTOP_SLIDE_PAD_PX = 64;
 const SWIPE_MS = 400;
 const SETTLE_BUFFER_MS = 80;
+const ZOOM_EPS = 1.02;
 
-const findActiveSlideImage = (): HTMLImageElement | null => {
-  const images = Array.from(
-    document.querySelectorAll<HTMLImageElement>(
-      '.yarl__portal_open .yarl__slide_image',
-    ),
+const findCenteredSlide = (): HTMLElement | null => {
+  const slides = Array.from(
+    document.querySelectorAll<HTMLElement>('.yarl__portal_open .yarl__slide'),
   );
+  if (slides.length === 0) return null;
 
   const viewportCenterX = window.innerWidth / 2;
-  const viewportCenterY = window.innerHeight / 2;
-
-  let best: HTMLImageElement | null = null;
+  let best: HTMLElement | null = null;
   let bestScore = Number.POSITIVE_INFINITY;
 
-  for (const image of images) {
-    const rect = image.getBoundingClientRect();
+  for (const slide of slides) {
+    const rect = slide.getBoundingClientRect();
     if (rect.width < 8 || rect.height < 8) continue;
-
-    const visibleWidth =
-      Math.min(rect.right, window.innerWidth) - Math.max(rect.left, 0);
-    const visibleHeight =
-      Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0);
-    if (visibleWidth < 32 || visibleHeight < 32) continue;
-
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    const score =
-      Math.abs(centerX - viewportCenterX) + Math.abs(centerY - viewportCenterY);
-
+    const score = Math.abs(rect.left + rect.width / 2 - viewportCenterX);
     if (score < bestScore) {
       bestScore = score;
-      best = image;
+      best = slide;
     }
   }
 
   return best;
+};
+
+/**
+ * Visual bounds of the current slide image at zoom 1.
+ * Prefer the rendered img rect — YARL padding/CSS vars make slide-math unreliable.
+ */
+const measureFitLayout = (): ImageLayout | null => {
+  const slide = findCenteredSlide();
+  if (!slide) return null;
+
+  const image = slide.querySelector<HTMLImageElement>(
+    '.yarl__slide_image:not(.yarl__slide_image_loading)',
+  );
+  if (!image) return null;
+
+  const rect = image.getBoundingClientRect();
+  if (rect.width < 8 || rect.height < 8) return null;
+
+  return {
+    width: rect.width,
+    height: rect.height,
+    left: rect.left,
+    top: rect.top,
+  };
 };
 
 const ProjectLightbox = ({
@@ -110,8 +120,8 @@ const ProjectLightbox = ({
       typeof window.matchMedia === 'function' &&
       window.matchMedia(DESKTOP_MQ).matches,
   );
-  const [layout, setLayout] = useState<ImageLayout | null>(null);
-  const [chromeVisible, setChromeVisible] = useState(false);
+  const [fitLayout, setFitLayout] = useState<ImageLayout | null>(null);
+  const [chromeReady, setChromeReady] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(index);
   const [portalEl, setPortalEl] = useState<Element | null>(null);
   const [zoomLevel, setZoomLevel] = useState(1);
@@ -125,38 +135,30 @@ const ProjectLightbox = ({
   const navigationEnabled = showNavigation ?? slides.length > 1;
   const canGoPrev = currentIndex > 0;
   const canGoNext = currentIndex < slides.length - 1;
+  const isZoomed = zoomLevel > ZOOM_EPS;
 
-  const measureLayout = useCallback((): ImageLayout | null => {
-    if (!open) return null;
-
+  const syncPortal = useCallback(() => {
     const portal = document.querySelector('.yarl__portal_open');
     if (portal) setPortalEl(portal);
+  }, []);
 
-    const image = findActiveSlideImage();
-    if (!image) return null;
-
-    const rect = image.getBoundingClientRect();
-    if (rect.width < 8 || rect.height < 8) return null;
-
-    return {
-      height: rect.height,
-      left: rect.left,
-      top: rect.top,
-      width: rect.width,
-    };
-  }, [open]);
+  const refreshFitLayout = useCallback((): ImageLayout | null => {
+    if (!open) return null;
+    syncPortal();
+    return measureFitLayout();
+  }, [open, syncPortal]);
 
   const revealChrome = useCallback(() => {
     if (transitioningRef.current) return;
-    const nextLayout = measureLayout();
-    if (!nextLayout) return;
-    setLayout(nextLayout);
-    setChromeVisible(true);
-  }, [measureLayout]);
+    const nextLayout = refreshFitLayout();
+    if (nextLayout) setFitLayout(nextLayout);
+    setChromeReady(true);
+  }, [refreshFitLayout]);
 
   const beginTransition = useCallback(() => {
     transitioningRef.current = true;
-    setChromeVisible(false);
+    setChromeReady(false);
+    setZoomLevel(1);
     if (settleTimerRef.current !== null) {
       window.clearTimeout(settleTimerRef.current);
       settleTimerRef.current = null;
@@ -189,172 +191,160 @@ const ProjectLightbox = ({
       transitioningRef.current = false;
       hasReceivedViewRef.current = false;
       const clearId = window.setTimeout(() => {
-        setLayout(null);
+        setFitLayout(null);
         setPortalEl(null);
         setZoomLevel(1);
-        setChromeVisible(false);
+        setChromeReady(false);
       }, 0);
       return () => window.clearTimeout(clearId);
     }
 
-    // Initial open: wait a beat for the portal/image to mount, then show chrome.
     transitioningRef.current = true;
+    let remeasureTimer: number | null = null;
     const openTimer = window.setTimeout(() => {
       transitioningRef.current = false;
       revealChrome();
+      // Image decode can finish after the first paint — remeasure once more.
+      remeasureTimer = window.setTimeout(() => {
+        if (transitioningRef.current) return;
+        const nextLayout = refreshFitLayout();
+        if (nextLayout) setFitLayout(nextLayout);
+      }, 200);
     }, 120);
 
     const onResize = () => {
       if (transitioningRef.current) return;
-      const nextLayout = measureLayout();
-      if (nextLayout) setLayout(nextLayout);
+      if ((zoomRef.current?.zoom ?? 1) > ZOOM_EPS) return;
+      const nextLayout = refreshFitLayout();
+      if (nextLayout) setFitLayout(nextLayout);
     };
     window.addEventListener('resize', onResize);
 
     return () => {
       window.clearTimeout(openTimer);
+      if (remeasureTimer !== null) window.clearTimeout(remeasureTimer);
       window.removeEventListener('resize', onResize);
       if (settleTimerRef.current !== null) {
         window.clearTimeout(settleTimerRef.current);
         settleTimerRef.current = null;
       }
     };
-  }, [open, measureLayout, revealChrome]);
+  }, [open, refreshFitLayout, revealChrome]);
 
   const goPrev = () => {
-    if (!canGoPrev || transitioningRef.current) return;
+    if (!canGoPrev || transitioningRef.current || isZoomed) return;
     beginTransition();
     controllerRef.current?.prev();
   };
 
   const goNext = () => {
-    if (!canGoNext || transitioningRef.current) return;
+    if (!canGoNext || transitioningRef.current || isZoomed) return;
     beginTransition();
     controllerRef.current?.next();
   };
 
-  const showDesktopArrows = isDesktop && navigationEnabled;
-  // Chrome unmounts while transitioning, so zoom alone gates arrow clicks.
-  const arrowsInteractive = zoomLevel <= 1.01;
+  const showDesktopArrows =
+    isDesktop && navigationEnabled && !isZoomed && chromeReady && fitLayout;
 
-  const toolbarLeft = layout
-    ? Math.min(
-        window.innerWidth - VIEWPORT_PAD_PX,
-        Math.max(
-          VIEWPORT_PAD_PX + 120,
-          layout.left + layout.width - TOOLBAR_INSET_PX,
-        ),
-      )
-    : window.innerWidth - VIEWPORT_PAD_PX * 2;
-  const toolbarTop = layout
-    ? Math.max(VIEWPORT_PAD_PX, layout.top + TOOLBAR_INSET_PX)
-    : VIEWPORT_PAD_PX * 2;
-
-  const prevArrowLeft = layout
-    ? Math.max(VIEWPORT_PAD_PX, layout.left - ARROW_GAP_PX - ARROW_SIZE_PX)
+  const prevArrowLeft = fitLayout
+    ? Math.max(VIEWPORT_PAD_PX, fitLayout.left - ARROW_GAP_PX - ARROW_SIZE_PX)
     : VIEWPORT_PAD_PX;
-  const nextArrowLeft = layout
+  const nextArrowLeft = fitLayout
     ? Math.min(
         window.innerWidth - VIEWPORT_PAD_PX - ARROW_SIZE_PX,
-        layout.left + layout.width + ARROW_GAP_PX,
+        fitLayout.left + fitLayout.width + ARROW_GAP_PX,
       )
     : window.innerWidth - VIEWPORT_PAD_PX - ARROW_SIZE_PX;
-  const arrowTop = layout
-    ? layout.top + layout.height / 2
+  const arrowTop = fitLayout
+    ? fitLayout.top + fitLayout.height / 2
     : window.innerHeight / 2;
 
   const mountNode =
     portalEl ?? (typeof document !== 'undefined' ? document.body : null);
 
   const chrome =
-    open && mountNode
+    open && mountNode && chromeReady
       ? createPortal(
-          <AnimatePresence>
-            {chromeVisible && layout && (
-              <motion.div
-                key={`lightbox-chrome-${currentIndex}`}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.18, ease: 'easeOut' }}
-                className="pointer-events-none"
+          <div className="pointer-events-none">
+            {/* Always viewport top-right — never tracks zoom/pan. */}
+            <div
+              className="pointer-events-auto fixed z-[10000] flex items-center gap-2 rounded-lg bg-white/20 px-3 py-2 shadow-lg backdrop-blur-md"
+              data-testid="lightbox-toolbar"
+              style={{
+                top: VIEWPORT_PAD_PX,
+                right: VIEWPORT_PAD_PX,
+              }}
+            >
+              <button
+                aria-label="Zoom in"
+                className="cursor-pointer text-white transition-colors hover:text-gray-300"
+                onClick={() => zoomRef.current?.zoomIn()}
+                type="button"
               >
-                <div
-                  className="pointer-events-auto flex items-center gap-2 rounded-lg bg-white/20 px-3 py-2 shadow-lg backdrop-blur-md"
-                  data-testid="lightbox-toolbar"
-                  style={{
-                    left: toolbarLeft,
-                    position: 'fixed',
-                    top: toolbarTop,
-                    transform: 'translateX(-100%)',
-                    zIndex: 10000,
-                  }}
+                <ZoomIn className="h-5 w-5" strokeWidth={1.75} />
+              </button>
+              <button
+                aria-label="Zoom out"
+                className="cursor-pointer text-white transition-colors hover:text-gray-300"
+                onClick={() => zoomRef.current?.zoomOut()}
+                type="button"
+              >
+                <ZoomOut className="h-5 w-5" strokeWidth={1.75} />
+              </button>
+              <button
+                aria-label="Close"
+                className="cursor-pointer text-white transition-colors hover:text-gray-300"
+                onClick={() => {
+                  controllerRef.current?.close();
+                  close();
+                }}
+                type="button"
+              >
+                <X className="h-5 w-5" strokeWidth={1.75} />
+              </button>
+            </div>
+
+            {showDesktopArrows && (
+              <>
+                <button
+                  aria-disabled={!canGoPrev}
+                  aria-label="Previous image"
+                  className={`pointer-events-auto fixed z-[10000] flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/20 text-white shadow-lg backdrop-blur-sm transition ${
+                    canGoPrev
+                      ? 'cursor-pointer hover:bg-white/30'
+                      : 'cursor-not-allowed opacity-40'
+                  }`}
+                  disabled={!canGoPrev}
+                  onClick={goPrev}
+                  style={{ left: prevArrowLeft, top: arrowTop }}
+                  type="button"
                 >
-                  <button
-                    aria-label="Zoom in"
-                    className="cursor-pointer text-white transition-colors hover:text-gray-300"
-                    onClick={() => zoomRef.current?.zoomIn()}
-                    type="button"
-                  >
-                    <ZoomIn className="h-6 w-6" />
-                  </button>
-                  <button
-                    aria-label="Zoom out"
-                    className="cursor-pointer text-white transition-colors hover:text-gray-300"
-                    onClick={() => zoomRef.current?.zoomOut()}
-                    type="button"
-                  >
-                    <ZoomOut className="h-6 w-6" />
-                  </button>
-                  <button
-                    aria-label="Close"
-                    className="cursor-pointer text-white transition-colors hover:text-gray-300"
-                    onClick={() => {
-                      controllerRef.current?.close();
-                      close();
-                    }}
-                    type="button"
-                  >
-                    <X className="h-6 w-6" />
-                  </button>
-                </div>
-                {showDesktopArrows && (
-                  <>
-                    <button
-                      aria-disabled={!canGoPrev || !arrowsInteractive}
-                      aria-label="Previous image"
-                      className={`pointer-events-auto fixed z-[10000] flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/20 text-white shadow-lg backdrop-blur-sm transition ${
-                        canGoPrev && arrowsInteractive
-                          ? 'cursor-pointer hover:bg-white/30'
-                          : 'cursor-not-allowed opacity-40'
-                      }`}
-                      disabled={!canGoPrev || !arrowsInteractive}
-                      onClick={goPrev}
-                      style={{ left: prevArrowLeft, top: arrowTop }}
-                      type="button"
-                    >
-                      <ChevronLeft className="h-7 w-7 -translate-x-px" />
-                    </button>
-                    <button
-                      aria-disabled={!canGoNext || !arrowsInteractive}
-                      aria-label="Next image"
-                      className={`pointer-events-auto fixed z-[10000] flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/20 text-white shadow-lg backdrop-blur-sm transition ${
-                        canGoNext && arrowsInteractive
-                          ? 'cursor-pointer hover:bg-white/30'
-                          : 'cursor-not-allowed opacity-40'
-                      }`}
-                      disabled={!canGoNext || !arrowsInteractive}
-                      onClick={goNext}
-                      style={{ left: nextArrowLeft, top: arrowTop }}
-                      type="button"
-                    >
-                      <ChevronRight className="h-7 w-7 translate-x-px" />
-                    </button>
-                  </>
-                )}
-              </motion.div>
+                  <ChevronLeft
+                    className="h-6 w-6 -translate-x-px"
+                    strokeWidth={1.75}
+                  />
+                </button>
+                <button
+                  aria-disabled={!canGoNext}
+                  aria-label="Next image"
+                  className={`pointer-events-auto fixed z-[10000] flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/20 text-white shadow-lg backdrop-blur-sm transition ${
+                    canGoNext
+                      ? 'cursor-pointer hover:bg-white/30'
+                      : 'cursor-not-allowed opacity-40'
+                  }`}
+                  disabled={!canGoNext}
+                  onClick={goNext}
+                  style={{ left: nextArrowLeft, top: arrowTop }}
+                  type="button"
+                >
+                  <ChevronRight
+                    className="h-6 w-6 translate-x-px"
+                    strokeWidth={1.75}
+                  />
+                </button>
+              </>
             )}
-          </AnimatePresence>,
+          </div>,
           mountNode,
         )
       : null;
@@ -365,7 +355,7 @@ const ProjectLightbox = ({
         animation={{ fade: 250, swipe: SWIPE_MS }}
         carousel={{
           finite: true,
-          padding: isDesktop ? 72 : 20,
+          padding: isDesktop ? DESKTOP_SLIDE_PAD_PX : 20,
         }}
         close={close}
         controller={{ ref: controllerRef }}
@@ -375,7 +365,6 @@ const ProjectLightbox = ({
             setCurrentIndex(nextIndex);
             onView?.(nextIndex);
 
-            // Initial open already reveals chrome via the open effect.
             if (!hasReceivedViewRef.current) {
               hasReceivedViewRef.current = true;
               return;
@@ -388,9 +377,9 @@ const ProjectLightbox = ({
           },
           zoom: ({ zoom }) => {
             setZoomLevel(zoom);
-            if (!transitioningRef.current) {
-              const nextLayout = measureLayout();
-              if (nextLayout) setLayout(nextLayout);
+            if (zoom <= ZOOM_EPS && !transitioningRef.current) {
+              const nextLayout = refreshFitLayout();
+              if (nextLayout) setFitLayout(nextLayout);
             }
           },
         }}

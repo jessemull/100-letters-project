@@ -48,7 +48,7 @@ const LetterSelectorHorizontal: React.FC<Props> = ({
         {onScrollToText && (
           <button
             onClick={onScrollToText}
-            className="border border-white rounded-md bg-white/10 hover:bg-white/20 px-2 py-0.5 md:px-3 md:py-1 text-sm md:text-base font-bold uppercase tracking-wider text-white shadow-sm cursor-pointer transition-colors"
+            className="border border-white rounded-md bg-white/10 hover:bg-white/20 px-1.5 py-0.5 md:px-2 md:py-0.5 text-xs md:text-sm font-bold uppercase tracking-wide text-white shadow-sm cursor-pointer transition-colors"
           >
             Read Text
           </button>
