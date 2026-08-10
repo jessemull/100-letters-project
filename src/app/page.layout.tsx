@@ -4,9 +4,12 @@ import { DesktopMenu } from '@components/Menu';
 import { Footer } from '@components/Footer';
 import { Header } from '@components/Header';
 import { SearchProvider } from '@contexts/SearchProvider';
-import { Toaster } from 'react-hot-toast';
+import { Toaster, ToastPosition } from 'react-hot-toast';
 import { useDesktopMenu } from '@contexts/DesktopMenuProvider';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+
+/** Aligns with Tailwind `lg` / desktop sidebar visibility. */
+const DESKTOP_MQ = '(min-width: 1024px)';
 
 /**
  * Header stays put. Main is the page scroller; footer is the last child
@@ -15,11 +18,25 @@ import { useMemo } from 'react';
  */
 const PageLayout = ({ children }: { children: React.ReactNode }) => {
   const { collapsed, setCollapsed } = useDesktopMenu();
+  const [toastPosition, setToastPosition] =
+    useState<ToastPosition>('bottom-center');
 
   const sidebarWidth = useMemo(
     () => (collapsed ? 'w-12' : 'w-80'),
     [collapsed],
   );
+
+  useEffect(() => {
+    if (typeof window.matchMedia !== 'function') return;
+
+    const media = window.matchMedia(DESKTOP_MQ);
+    const update = () =>
+      setToastPosition(media.matches ? 'bottom-right' : 'bottom-center');
+
+    update();
+    media.addEventListener('change', update);
+    return () => media.removeEventListener('change', update);
+  }, []);
 
   return (
     <div className="relative flex h-dvh w-full flex-col overflow-hidden">
@@ -49,7 +66,7 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => {
           </main>
         </div>
       </SearchProvider>
-      <Toaster position="top-center" />
+      <Toaster position={toastPosition} />
     </div>
   );
 };
