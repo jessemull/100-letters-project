@@ -1,6 +1,6 @@
 # 100 Letters Project
 
-The **100 Letters Project** is driven by the desire to promote real human interaction in an increasingly digital world and create meaningful connections through handwritten communication. Over the course of a year I will write 100 letters to 100 individuals.
+The **100 Letters Project** is driven by the desire to promote real human interaction in an increasingly digital world and create meaningful connections through personal letters. Over the course of a year I will write 100 letters to 100 individuals.
 
 The **100 Letters Project** website showcases these exchanges, offering a digital display of the letters with details about the recipients and the reasons behind their selection.
 

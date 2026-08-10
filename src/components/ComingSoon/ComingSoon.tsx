@@ -8,8 +8,7 @@ const ComingSoon = () => (
     </p>
     <p className="text-md md:text-lg text-white md:w-2/3 lg:w-2/3 xl:w-1/2 md:mx-auto">
       Over the course of a year, I will write 100 letters to 100 individuals.
-      Each letter will be a personal reflection, written by hand and sent with
-      intention and love.
+      Each letter will be a personal reflection, sent with intention and love.
     </p>
     <p className="text-md md:text-lg text-white md:w-2/3 lg:w-2/3 xl:w-1/2 md:mx-auto">
       This website will showcase these exchanges, offering a digital display of

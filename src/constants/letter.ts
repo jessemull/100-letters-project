@@ -45,7 +45,7 @@ export const initialLetterValues: Letter = {
   description: '',
   imageURLs: [],
   letterId: '',
-  method: LetterMethod.HANDWRITTEN,
+  method: LetterMethod.TYPED,
   receivedAt: '',
   sentAt: '',
   status: Status.PENDING,
