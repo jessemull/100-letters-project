@@ -91,7 +91,7 @@ export const useFileUpload = ({
           imageURL,
           signedUrl,
           uuid,
-          thumbnailURL,
+          thumbnailUrl,
           uploadedBy,
         },
       } = signedUrlResponse as SignedURLResponse;
@@ -113,7 +113,7 @@ export const useFileUpload = ({
         sizeInBytes: file.size,
         uploadedBy,
         url: imageURL,
-        urlThumbnail: thumbnailURL,
+        urlThumbnail: thumbnailUrl,
         view,
       };
 

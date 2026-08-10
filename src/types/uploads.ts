@@ -16,7 +16,8 @@ export type SignedURLResponse = {
     letterId: string;
     mimeType: LetterMimeType;
     signedUrl: string;
-    thumbnailURL: string;
+    /** Matches API `uploads` response (`api.yaml` / uploads handler). */
+    thumbnailUrl: string;
     uploadedBy: string;
     uuid: string;
     view: View;

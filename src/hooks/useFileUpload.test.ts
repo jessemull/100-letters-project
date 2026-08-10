@@ -30,7 +30,7 @@ beforeEach(() => {
                 imageURL: 'https://image.url',
                 signedUrl: 'https://signed.url',
                 uuid: 'image-id',
-                thumbnailURL: 'https://image.thumb',
+                thumbnailUrl: 'https://image.thumb',
                 uploadedBy: 'user-id',
               },
             };
@@ -231,7 +231,7 @@ describe('useFileUpload', () => {
                   imageURL: 'https://image.url',
                   signedUrl: 'https://signed.url',
                   uuid: 'image-id',
-                  thumbnailURL: 'https://image.thumb',
+                  thumbnailUrl: 'https://image.thumb',
                   uploadedBy: 'user-id',
                 },
               };
@@ -283,7 +283,7 @@ describe('useFileUpload', () => {
                   imageURL: 'https://image.url',
                   signedUrl: 'https://signed.url',
                   uuid: 'image-id',
-                  thumbnailURL: 'https://image.thumb',
+                  thumbnailUrl: 'https://image.thumb',
                   uploadedBy: 'user-id',
                 },
               };
@@ -335,7 +335,7 @@ describe('useFileUpload', () => {
                   imageURL: 'https://image.url',
                   signedUrl: 'https://signed.url',
                   uuid: 'image-id',
-                  thumbnailURL: 'https://image.thumb',
+                  thumbnailUrl: 'https://image.thumb',
                   uploadedBy: 'user-id',
                 },
               };
@@ -383,7 +383,7 @@ describe('useFileUpload', () => {
                   imageURL: 'https://image.url',
                   signedUrl: 'https://signed.url',
                   uuid: 'image-id',
-                  thumbnailURL: 'https://image.thumb',
+                  thumbnailUrl: 'https://image.thumb',
                   uploadedBy: 'user-id',
                 },
               };
