@@ -43,7 +43,7 @@ export type UseAuthorizedMutationOptions<Body, Response, Params> = {
   onError?: (args: {
     error: string;
     status?: number;
-    info?: any;
+    info?: unknown;
     path: string;
     body?: Body;
     params?: Params;

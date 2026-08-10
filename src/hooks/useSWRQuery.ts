@@ -8,7 +8,7 @@ import { useState, useCallback, useEffect, useMemo } from 'react';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export const useSWRQuery = <T = any>({
+export const useSWRQuery = <T = unknown>({
   path,
   token,
   config,
@@ -39,18 +39,24 @@ export const useSWRQuery = <T = any>({
       });
 
       if (!res.ok) {
-        let errorBody;
+        let errorBody: unknown;
         try {
           errorBody = await res.json();
         } catch {
           errorBody = { message: res.statusText };
         }
 
-        const error = new Error(
-          errorBody?.message || `Error ${res.status}: ${res.statusText}`,
-        ) as Error & {
+        const message =
+          typeof errorBody === 'object' &&
+          errorBody !== null &&
+          'message' in errorBody &&
+          typeof (errorBody as { message: unknown }).message === 'string'
+            ? (errorBody as { message: string }).message
+            : `Error ${res.status}: ${res.statusText}`;
+
+        const error = new Error(message) as Error & {
           status?: number;
-          info?: any;
+          info?: unknown;
         };
 
         error.status = res.status;
@@ -99,8 +105,16 @@ export const useSWRQuery = <T = any>({
           }, 0);
           return nextData;
         });
-      } catch (err: any) {
-        if (err?.status === 401) {
+      } catch (err: unknown) {
+        const status =
+          typeof err === 'object' &&
+          err !== null &&
+          'status' in err &&
+          typeof (err as { status: unknown }).status === 'number'
+            ? (err as { status: number }).status
+            : undefined;
+
+        if (status === 401) {
           setUnauthorized(true);
         } else {
           console.error('Error fetching more: ', err);

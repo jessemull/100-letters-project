@@ -1,6 +1,7 @@
 'use client';
 
 import { SearchContextType, SearchData } from '@ts-types/context';
+import type { BootstrapData } from '@ts-types/bootstrap';
 import {
   createContext,
   useContext,
@@ -28,8 +29,9 @@ export const SearchProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const loadSearchData = async () => {
       try {
-        const bootstrap = await import('@public/data/bootstrap.json');
-        const searchUrl = `/data/search.${(bootstrap as any).dataVersion}.json`;
+        const bootstrapModule =
+          (await import('@public/data/bootstrap.json')) as BootstrapData;
+        const searchUrl = `/data/search.${bootstrapModule.dataVersion}.json`;
 
         const res = await fetch(searchUrl);
         const data = await res.json();

@@ -12,6 +12,7 @@ import { FuseMap } from '@ts-types/hooks';
 import { useState, useEffect, useMemo } from 'react';
 import { CorrespondenceCard } from '@ts-types/correspondence';
 import { getCategoryEnum } from '@util/search';
+import type { BootstrapData } from '@ts-types/bootstrap';
 
 export const useSearch = ({
   type,
@@ -27,8 +28,9 @@ export const useSearch = ({
   useEffect(() => {
     const loadSearchData = async () => {
       try {
-        const bootstrap = await import('@public/data/bootstrap.json');
-        const timestamp = (bootstrap as any).dataVersion;
+        const bootstrapModule =
+          (await import('@public/data/bootstrap.json')) as BootstrapData;
+        const timestamp = bootstrapModule.dataVersion;
 
         const dataUrl = `/data/data.${timestamp}.json`;
         const searchUrl = `/data/search.${timestamp}.json`;

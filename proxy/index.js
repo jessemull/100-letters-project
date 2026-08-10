@@ -27,6 +27,8 @@ app.use((req, res, next) => {
     }
 
     Object.entries(signedCookies).forEach(([name, value]) => {
+      // httpOnly must stay false: Cypress/LH and local debugging read these
+      // CloudFront signed cookies from document.cookie via the localhost proxy.
       res.cookie(name, value, {
         httpOnly: false,
         secure: true,

@@ -4,6 +4,7 @@ import {
   LetterSearchItem,
   RecipientSearchItem,
 } from './search';
+import type { CognitoUser } from 'amazon-cognito-identity-js';
 
 export type AuthContextType = {
   isLoggedIn: boolean;
@@ -14,7 +15,7 @@ export type AuthContextType = {
   ) => Promise<{ isSignedIn: boolean }>;
   signOut: () => void;
   token: string | null;
-  user: any | null;
+  user: CognitoUser | null;
 };
 
 export type CorrespondenceContextType = {

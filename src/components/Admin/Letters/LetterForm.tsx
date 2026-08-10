@@ -83,13 +83,28 @@ const LetterForm = () => {
   const {
     data: correspondencesData,
     error: correspondencesError,
+    fetchMore: fetchMoreCorrespondences,
     isLoading: correspondencesLoading,
+    loadingMore: correspondencesLoadingMore,
   } = useSWRQuery<GetCorrespondencesResponse>({
     config: { shouldRetryOnError: false },
     path: '/correspondence?limit=100',
     skip: letterId === null && correspondenceId !== null,
     token,
   });
+
+  // Drain remaining pages so AutoSelect can list every correspondence.
+  useEffect(() => {
+    const key = correspondencesData?.lastEvaluatedKey;
+    if (!key || correspondencesLoadingMore) return;
+    void fetchMoreCorrespondences(
+      `/correspondence?limit=100&lastEvaluatedKey=${encodeURIComponent(key)}`,
+    );
+  }, [
+    correspondencesData?.lastEvaluatedKey,
+    correspondencesLoadingMore,
+    fetchMoreCorrespondences,
+  ]);
 
   const {
     data: singleCorrespondence = {
@@ -269,10 +284,18 @@ const LetterForm = () => {
 
   useEffect(() => {
     if (error || correspondencesError || singleCorrespondenceError) {
+      const fetchError =
+        error || correspondencesError || singleCorrespondenceError;
+      const info = (fetchError as { info?: unknown } | undefined)?.info;
+      const message =
+        typeof info === 'object' &&
+        info !== null &&
+        'message' in info &&
+        typeof (info as { message: unknown }).message === 'string'
+          ? (info as { message: string }).message
+          : 'An error occurred while fetching data.';
       showToast({
-        message:
-          (error || correspondencesError || singleCorrespondenceError).info
-            ?.message || 'An error occurred while fetching data.',
+        message,
         type: 'error',
       });
     }

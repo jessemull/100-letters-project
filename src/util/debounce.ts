@@ -1,9 +1,9 @@
-export const debounce = <T extends (...args: any[]) => void>(
-  callback: T,
+export const debounce = <TArgs extends unknown[]>(
+  callback: (...args: TArgs) => void,
   delay: number,
-): ((...args: Parameters<T>) => void) => {
+): ((...args: TArgs) => void) => {
   let timer: NodeJS.Timeout;
-  return (...args: Parameters<T>) => {
+  return (...args: TArgs) => {
     clearTimeout(timer);
     timer = setTimeout(() => {
       callback(...args);
@@ -11,13 +11,13 @@ export const debounce = <T extends (...args: any[]) => void>(
   };
 };
 
-export const throttle = <T extends (...args: any[]) => any>(
-  func: T,
+export const throttle = <TArgs extends unknown[], TResult>(
+  func: (...args: TArgs) => TResult,
   limit: number,
-): ((...args: Parameters<T>) => void) => {
+): ((...args: TArgs) => TResult | undefined) => {
   let inThrottle = false;
-  let lastResult: ReturnType<T> | undefined;
-  return (...args: Parameters<T>): void => {
+  let lastResult: TResult | undefined;
+  return (...args: TArgs): TResult | undefined => {
     if (!inThrottle) {
       inThrottle = true;
       setTimeout(() => {

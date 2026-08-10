@@ -76,12 +76,19 @@ export const useSWRMutation = <Body, Response = unknown, Params = unknown>(
         );
 
         if (!res.ok) {
-          let errorBody: any = null;
+          let errorBody: unknown = null;
           let errorMessage = res.statusText || 'Unknown error';
 
           try {
             errorBody = await res.json();
-            errorMessage = errorBody?.message || errorMessage;
+            if (
+              typeof errorBody === 'object' &&
+              errorBody !== null &&
+              'message' in errorBody &&
+              typeof (errorBody as { message: unknown }).message === 'string'
+            ) {
+              errorMessage = (errorBody as { message: string }).message;
+            }
           } catch {
             errorBody = await res.text();
             errorMessage =

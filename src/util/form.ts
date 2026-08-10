@@ -1,4 +1,9 @@
-import { DeepKeys, NestedValidatorObject, PathValidator } from '@ts-types/form';
+import {
+  DeepKeys,
+  DeepValue,
+  NestedValidatorObject,
+  PathValidator,
+} from '@ts-types/form';
 
 export const flattenValidators = <T>(
   nested: NestedValidatorObject<T>,
@@ -17,22 +22,34 @@ export const flattenValidators = <T>(
   return flat;
 };
 
-export const get = <T, K extends DeepKeys<T>>(obj: T, path: K): any =>
-  path.split('.').reduce((acc: any, key) => acc?.[key], obj);
+export const get = <T, K extends DeepKeys<T>>(
+  obj: T,
+  path: K,
+): DeepValue<T, K> =>
+  path.split('.').reduce<unknown>((acc, key) => {
+    if (acc !== null && typeof acc === 'object' && key in (acc as object)) {
+      return (acc as Record<string, unknown>)[key];
+    }
+    return undefined;
+  }, obj) as DeepValue<T, K>;
 
 export const set = <T, K extends DeepKeys<T>>(
   obj: T,
   path: K,
-  value: any,
+  value: DeepValue<T, K>,
 ): T => {
   const keys = path.split('.');
   const lastKey = keys.pop()!;
-  const copy: any = { ...obj };
-  let curr = copy;
+  const copy = { ...obj } as Record<string, unknown>;
+  let curr: Record<string, unknown> = copy;
   for (const key of keys) {
-    curr[key] = { ...curr[key] };
-    curr = curr[key];
+    const next = curr[key];
+    curr[key] =
+      next !== null && typeof next === 'object'
+        ? { ...(next as Record<string, unknown>) }
+        : {};
+    curr = curr[key] as Record<string, unknown>;
   }
   curr[lastKey] = value;
-  return copy;
+  return copy as T;
 };

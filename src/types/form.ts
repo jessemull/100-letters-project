@@ -1,6 +1,6 @@
-export type Validator = (value: any) => string | null;
+export type Validator = (value: unknown) => string | null;
 
-export type FormData = Record<string, any>;
+export type FormData = Record<string, unknown>;
 
 export type Prev = [never, 0, 1, 2, 3, 4, 5];
 

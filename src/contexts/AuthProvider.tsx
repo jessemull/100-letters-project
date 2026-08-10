@@ -61,7 +61,7 @@ const getCurrentUser = (): Promise<CognitoUser | null> => {
 
 export const getSession = (user: CognitoUser): Promise<CognitoUserSession> => {
   return new Promise((resolve, reject) => {
-    user.getSession((err: any, session: CognitoUserSession | null) => {
+    user.getSession((err: Error | null, session: CognitoUserSession | null) => {
       if (err || !session || !session.isValid()) {
         reject(err || new Error('Invalid session'));
       } else {

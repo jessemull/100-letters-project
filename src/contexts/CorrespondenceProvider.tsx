@@ -7,11 +7,14 @@ import React, {
   useState,
   ReactNode,
 } from 'react';
-import bootstrap from '@public/data/bootstrap.json';
+import bootstrapJson from '@public/data/bootstrap.json';
 import {
   CorrespondenceCard,
   CorrespondencesMap,
 } from '@ts-types/correspondence';
+import type { BootstrapData } from '@ts-types/bootstrap';
+
+const bootstrap = bootstrapJson as BootstrapData;
 
 const { correspondences: initialCorrespondences } = bootstrap;
 
@@ -40,7 +43,7 @@ export const CorrespondenceProvider = ({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const dataUrl = `/data/data.${(bootstrap as any).dataVersion}.json`;
+        const dataUrl = `/data/data.${bootstrap.dataVersion}.json`;
         const res = await fetch(dataUrl);
         const data = await res.json();
         setCorrespondences(data.correspondences ?? initialCorrespondences);

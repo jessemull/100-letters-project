@@ -1,5 +1,5 @@
 import RecipientForm from './RecipientForm';
-import showToast from '../../Form/Toast';
+import showToast from '@components/Form/Toast';
 import { axe } from 'jest-axe';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { useAuth } from '@contexts/AuthProvider';
@@ -24,7 +24,7 @@ jest.mock('next/navigation', () => ({
   useSearchParams: jest.fn(),
 }));
 
-jest.mock('../../Form/Toast', () => ({
+jest.mock('@components/Form/Toast', () => ({
   __esModule: true,
   default: jest.fn(),
 }));

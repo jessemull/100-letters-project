@@ -106,8 +106,11 @@ describe('LetterForm Component', () => {
                 title: 'Test Correspondence 2',
               },
             ],
+            lastEvaluatedKey: null,
           },
+          fetchMore: jest.fn(),
           isLoading: false,
+          loadingMore: false,
         };
       }
       return {};
@@ -301,8 +304,11 @@ describe('LetterForm Component', () => {
                 title: 'Test Correspondence',
               },
             ],
+            lastEvaluatedKey: null,
           },
           isLoading: false,
+          fetchMore: jest.fn(),
+          loadingMore: false,
         };
       }
       return {};
@@ -360,8 +366,11 @@ describe('LetterForm Component', () => {
                 correspondenceId: 'c1',
               },
             ],
+            lastEvaluatedKey: null,
           },
           isLoading: false,
+          fetchMore: jest.fn(),
+          loadingMore: false,
         };
       }
       return {};
@@ -448,8 +457,11 @@ describe('LetterForm Component', () => {
                 title: 'Test Correspondence',
               },
             ],
+            lastEvaluatedKey: null,
           },
           isLoading: false,
+          fetchMore: jest.fn(),
+          loadingMore: false,
         };
       }
       return {};
@@ -510,8 +522,11 @@ describe('LetterForm Component', () => {
                 title: 'Test Correspondence',
               },
             ],
+            lastEvaluatedKey: null,
           },
           isLoading: false,
+          fetchMore: jest.fn(),
+          loadingMore: false,
         };
       }
       return {};

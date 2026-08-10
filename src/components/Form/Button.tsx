@@ -4,9 +4,10 @@ import { Progress } from '@components/Form';
 
 interface ButtonProps {
   disabled?: boolean;
+  htmlType?: 'button' | 'submit' | 'reset';
   id: string;
   loading?: boolean;
-  onClick: () => void;
+  onClick?: () => void;
   type?: 'round' | 'square';
   value: string;
   variant?: ButtonVariant;
@@ -14,6 +15,7 @@ interface ButtonProps {
 
 const Button: React.FC<ButtonProps> = ({
   disabled,
+  htmlType = 'button',
   id,
   loading,
   onClick,
@@ -56,7 +58,7 @@ const Button: React.FC<ButtonProps> = ({
         disabled={disabled || loading}
         id={id}
         onClick={disabled || loading ? undefined : onClick}
-        type="submit"
+        type={htmlType}
         value={loading ? '' : value}
       />
       {loading && (
