@@ -74,8 +74,19 @@ const RecipientForm = () => {
   });
 
   const handleSubmit = () => {
-    onSubmit(async () => {
-      await mutate({ body: values });
+    onSubmit(async (formValues) => {
+      if (!token) {
+        showToast({
+          message: 'Your session has expired. Please log in again.',
+          type: 'error',
+        });
+        return;
+      }
+
+      // Create model rejects unknown shapes in some deployments; never send an
+      // empty recipientId on POST (server assigns the id).
+      const { recipientId: _unusedId, ...createBody } = formValues;
+      await mutate({ body: recipientId ? formValues : createBody });
     });
   };
 

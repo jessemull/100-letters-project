@@ -139,12 +139,26 @@ export const useSWRMutation = <Body, Response = unknown, Params = unknown>(
 
         return data;
       } catch (err: unknown) {
-        const message =
+        const host = (() => {
+          try {
+            return API_BASE_URL ? new URL(API_BASE_URL).host : 'API';
+          } catch {
+            return 'API';
+          }
+        })();
+
+        let message =
           err instanceof Error
             ? err.message
             : typeof err === 'string'
               ? err
               : 'An unexpected error occurred';
+
+        // API Gateway authorizer/validator errors often omit CORS headers, so
+        // the browser throws TypeError: Failed to fetch instead of exposing 401/400.
+        if (/failed to fetch/i.test(message)) {
+          message = `Failed to fetch (${host}). If you were signed in, try logging in again; otherwise check the Network tab for a blocked 401/400.`;
+        }
 
         setError(message);
         onError?.({
