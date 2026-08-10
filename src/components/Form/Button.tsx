@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { ButtonVariant } from '@ts-types/form';
-import { Progress } from '@components/Form';
+import Progress from './Progress';
 
 interface ButtonProps {
   'data-testid'?: string;

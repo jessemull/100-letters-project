@@ -1,6 +1,6 @@
 'use client';
 
-import { Progress } from '@components/Form';
+import Progress from '@components/Form/Progress';
 import dynamic from 'next/dynamic';
 
 const LazyRecaptcha = dynamic(() => import('react-google-recaptcha'), {
