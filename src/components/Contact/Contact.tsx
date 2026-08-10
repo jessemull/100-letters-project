@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import React, { useState } from 'react';
 import { Button, TextArea, TextInput } from '@components/Form';
 import {
@@ -14,17 +15,17 @@ import {
   contactValidators,
 } from '@constants/contact';
 import { useForm } from '@hooks/useForm';
-import { useRouter } from 'next/navigation';
 import { useSWRMutation } from '@hooks/useSWRMutation';
 
 const CAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_CAPTCHA_SITE_KEY as string;
+
+const contactNavLinkClassName =
+  'flex w-full h-12 items-center justify-center text-base leading-[30px] rounded-[25px] border bg-[#111827] text-white border-white hover:bg-[#293E6A] cursor-pointer';
 
 const Contact = () => {
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
-
-  const router = useRouter();
 
   const { errors, isDirty, onSubmit, updateField, values } =
     useForm<ContactForm>({
@@ -67,10 +68,6 @@ const Contact = () => {
     });
   };
 
-  const goHome = () => {
-    router.push('/');
-  };
-
   const handleCaptchaToken = (token: string | null) => {
     setCaptchaToken(token);
     setError('');
@@ -84,12 +81,13 @@ const Contact = () => {
             {`Thanks for your message! We'll be in touch soon.`}
           </p>
           <div className="w-1/2 lg:w-1/4 xl:w-1/6">
-            <Button
-              htmlType="button"
+            <Link
+              href="/"
               id="contact-back"
-              onClick={goHome}
-              value="Back"
-            />
+              className={contactNavLinkClassName}
+            >
+              Back
+            </Link>
           </div>
         </div>
       ) : (
@@ -158,13 +156,23 @@ const Contact = () => {
               />
             </div>
             <div className="w-full">
-              <Button
-                disabled={isLoading}
-                htmlType="button"
-                id="contact-cancel"
-                onClick={goHome}
-                value="Cancel"
-              />
+              {isLoading ? (
+                <span
+                  aria-disabled="true"
+                  className={`${contactNavLinkClassName} bg-gray-500 cursor-not-allowed hover:bg-gray-500 pointer-events-none`}
+                  id="contact-cancel"
+                >
+                  Cancel
+                </span>
+              ) : (
+                <Link
+                  href="/"
+                  id="contact-cancel"
+                  className={contactNavLinkClassName}
+                >
+                  Cancel
+                </Link>
+              )}
             </div>
           </div>
         </form>

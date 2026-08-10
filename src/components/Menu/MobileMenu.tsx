@@ -10,6 +10,7 @@ import {
 import { FC, useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useSearchData } from '@contexts/SearchProvider';
 
 interface Props {
   handleLogout: () => Promise<void>;
@@ -25,6 +26,7 @@ const MobileMenu: FC<Props> = ({
   handleLogout,
 }) => {
   const menuRef = useRef<HTMLDivElement>(null);
+  const { error: searchError } = useSearchData();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -79,18 +81,29 @@ const MobileMenu: FC<Props> = ({
         />
       </nav>
       <div className="flex flex-col">
-        <hr className="border-t border-white w-full" />
-        <div className="px-4 py-4">
-          <RecipientSearch onClick={onClose} />
-        </div>
-        <hr className="border-t border-white w-full" />
-        <div className="px-4 py-4">
-          <LetterSearch onClick={onClose} />
-        </div>
-        <hr className="border-t border-white w-full" />
-        <div className="px-4 py-4">
-          <CorrespondenceSearch onClick={onClose} />
-        </div>
+        {searchError ? (
+          <>
+            <hr className="border-t border-white w-full" />
+            <p role="alert" className="px-4 py-4 text-sm text-white/80">
+              Search is temporarily unavailable. Please try again later.
+            </p>
+          </>
+        ) : (
+          <>
+            <hr className="border-t border-white w-full" />
+            <div className="px-4 py-4">
+              <RecipientSearch onClick={onClose} />
+            </div>
+            <hr className="border-t border-white w-full" />
+            <div className="px-4 py-4">
+              <LetterSearch onClick={onClose} />
+            </div>
+            <hr className="border-t border-white w-full" />
+            <div className="px-4 py-4">
+              <CorrespondenceSearch onClick={onClose} />
+            </div>
+          </>
+        )}
       </div>
     </motion.div>
   );

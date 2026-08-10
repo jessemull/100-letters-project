@@ -28,7 +28,7 @@ const Category = () => {
   const handleTermChange = (value: string) => {
     setTerm(value);
     if (value && category) {
-      window.history.pushState({ category }, '', `?`);
+      window.history.pushState({}, '', window.location.pathname);
       setCategory(null);
     }
   };

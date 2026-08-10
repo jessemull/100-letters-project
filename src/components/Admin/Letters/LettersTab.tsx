@@ -113,7 +113,10 @@ const LettersTab: React.FC<Props> = ({ search }) => {
       ) : (
         <ul className="grid gap-4">
           {data?.data.map((item, idx) => (
-            <li key={idx} ref={idx === data?.data.length - 1 ? ref : undefined}>
+            <li
+              key={item.letterId}
+              ref={idx === data?.data.length - 1 ? ref : undefined}
+            >
               <LetterItem data={item} onDelete={onDelete} onEdit={onEdit} />
             </li>
           ))}

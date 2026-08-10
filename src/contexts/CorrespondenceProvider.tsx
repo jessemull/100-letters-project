@@ -21,6 +21,7 @@ const { correspondences: initialCorrespondences } = bootstrap;
 export const CorrespondenceContext = createContext({
   correspondences: [] as CorrespondenceCard[],
   correspondencesById: {} as CorrespondencesMap,
+  error: null as string | null,
   loading: true,
 });
 
@@ -38,6 +39,7 @@ export const CorrespondenceProvider = ({
   );
   const [correspondencesById, setCorrespondencesById] =
     useState<CorrespondencesMap>({});
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -45,11 +47,16 @@ export const CorrespondenceProvider = ({
       try {
         const dataUrl = `/data/data.${bootstrap.dataVersion}.json`;
         const res = await fetch(dataUrl);
+        if (!res.ok) {
+          throw new Error(`Failed to load correspondence data (${res.status})`);
+        }
         const data = await res.json();
         setCorrespondences(data.correspondences ?? initialCorrespondences);
         setCorrespondencesById(data.correspondencesById ?? {});
+        setError(null);
       } catch (err) {
         console.error('Failed to load correspondence data: ', err);
+        setError('Failed to load correspondence data.');
       } finally {
         setLoading(false);
       }
@@ -63,6 +70,7 @@ export const CorrespondenceProvider = ({
       value={{
         correspondences,
         correspondencesById,
+        error,
         loading,
       }}
     >

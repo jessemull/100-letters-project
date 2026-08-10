@@ -1,42 +1,34 @@
 import CorrespondenceNotFound from './CorrespondenceNotFound';
 import React from 'react';
 import { axe } from 'jest-axe';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { useRouter } from 'next/navigation';
-
-jest.mock('next/navigation', () => ({
-  useRouter: jest.fn(),
-}));
+import { render, screen } from '@testing-library/react';
 
 jest.mock('@components/Feed', () => ({
   Categories: () => <div data-testid="mock-categories">Mock Categories</div>,
 }));
 
 describe('CorrespondenceNotFound Component', () => {
-  const pushMock = jest.fn();
-
-  beforeEach(() => {
-    (useRouter as jest.Mock).mockReturnValue({ push: pushMock });
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it('Renders heading and button.', () => {
+  it('Renders heading and home link.', () => {
     render(<CorrespondenceNotFound />);
     expect(screen.getByText('Correspondence not found.')).toBeInTheDocument();
 
-    const button = screen.getByTestId('go-home');
-    expect(button).toBeInTheDocument();
-    expect(button).toHaveTextContent('Go Home');
+    const link = screen.getByTestId('go-home');
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveTextContent('Go Home');
+    expect(link).toHaveAttribute('href', '/');
   });
 
-  it('Calls router.push("/") when the button is clicked.', () => {
-    render(<CorrespondenceNotFound />);
-    fireEvent.click(screen.getByTestId('go-home'));
-    expect(pushMock).toHaveBeenCalledTimes(1);
-    expect(pushMock).toHaveBeenCalledWith('/');
+  it('Renders a custom title and description when provided.', () => {
+    render(
+      <CorrespondenceNotFound
+        title="Unable to load correspondence."
+        description="Please try again later."
+      />,
+    );
+    expect(
+      screen.getByText('Unable to load correspondence.'),
+    ).toBeInTheDocument();
+    expect(screen.getByText('Please try again later.')).toBeInTheDocument();
   });
 
   it('Renders the Categories component.', () => {

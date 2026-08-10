@@ -97,7 +97,10 @@ const RecipientsTab: React.FC<Props> = ({ search }) => {
       ) : (
         <ul className="grid gap-4">
           {data?.data.map((item, idx) => (
-            <li key={idx} ref={idx === data?.data.length - 1 ? ref : undefined}>
+            <li
+              key={item.recipientId}
+              ref={idx === data?.data.length - 1 ? ref : undefined}
+            >
               <RecipientItem data={item} onDelete={onDelete} onEdit={onEdit} />
             </li>
           ))}

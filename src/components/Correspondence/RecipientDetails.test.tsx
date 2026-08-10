@@ -1,15 +1,7 @@
 import { CorrespondenceCard } from '@ts-types/correspondence';
 import { RecipientDetails } from '@components/Correspondence';
 import { axe } from 'jest-axe';
-import { fireEvent, render, screen } from '@testing-library/react';
-
-const mockPush = jest.fn();
-
-jest.mock('next/navigation', () => ({
-  useRouter: () => ({
-    push: mockPush,
-  }),
-}));
+import { render, screen } from '@testing-library/react';
 
 const resizeWindow = (width: number) => {
   (window.innerWidth as number) = width;
@@ -36,7 +28,6 @@ describe('RecipientDetails Component', () => {
   } as unknown as CorrespondenceCard;
 
   beforeEach(() => {
-    mockPush.mockClear();
     resizeWindow(1024);
   });
 
@@ -84,17 +75,16 @@ describe('RecipientDetails Component', () => {
     expect(screen.getByText('Other')).toBeInTheDocument();
   });
 
-  it('Navigates to the category page when the category badge is clicked.', () => {
+  it('Links to the category page for browsable categories.', () => {
     render(<RecipientDetails correspondence={correspondence} />);
-    fireEvent.click(
-      screen.getByRole('button', {
+    expect(
+      screen.getByRole('link', {
         name: /view letters in category science/i,
       }),
-    );
-    expect(mockPush).toHaveBeenCalledWith('/category?category=Science');
+    ).toHaveAttribute('href', '/category?category=Science');
   });
 
-  it('Does not navigate when the category is Other.', () => {
+  it('Does not link when the category is Other.', () => {
     const modified = {
       ...correspondence,
       reason: {
@@ -104,9 +94,8 @@ describe('RecipientDetails Component', () => {
     } as unknown as CorrespondenceCard;
     render(<RecipientDetails correspondence={modified} />);
     expect(
-      screen.queryByRole('button', { name: /view letters in category/i }),
+      screen.queryByRole('link', { name: /view letters in category/i }),
     ).not.toBeInTheDocument();
-    expect(mockPush).not.toHaveBeenCalled();
   });
 
   it('Applies scrollable container classes when isDesktop and dynamicHeight are truthy.', () => {

@@ -6,6 +6,10 @@ jest.mock('@contexts/SearchProvider', () => ({
   SearchProvider: ({ children }: { children: React.ReactNode }) => (
     <>{children}</>
   ),
+  useSearchData: () => ({
+    error: null,
+    loading: false,
+  }),
 }));
 
 jest.mock('next/navigation', () => ({

@@ -43,7 +43,7 @@ const getSignedCookies = () => {
       'CloudFront-Key-Pair-Id': keyPairId,
     };
 
-    console.log('Successfully signed cookies...');
+    console.debug('Successfully signed cookies...');
 
     return cookies;
   } catch (error) {

@@ -107,7 +107,10 @@ const CorrespondencesTab: React.FC<Props> = ({ search }) => {
       ) : (
         <ul className="grid gap-4">
           {data?.data.map((item, idx) => (
-            <li key={idx} ref={idx === data?.data.length - 1 ? ref : undefined}>
+            <li
+              key={item.correspondenceId}
+              ref={idx === data?.data.length - 1 ? ref : undefined}
+            >
               <CorrespondenceItem
                 data={item}
                 onEdit={onEdit}

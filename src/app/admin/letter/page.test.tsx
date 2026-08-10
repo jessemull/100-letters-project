@@ -23,7 +23,7 @@ jest.mock('@components/Admin/Letters/LetterForm', () => {
   return MockForm;
 });
 
-jest.mock('../../page.layout', () => {
+jest.mock('@pages/page.layout', () => {
   const MockLayout = ({ children }: { children: React.ReactNode }) => (
     <div data-testid="page-layout">{children}</div>
   );

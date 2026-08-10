@@ -18,7 +18,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 const CorrespondenceNavigator = () => {
-  const { correspondencesById, loading } = useCorrespondence();
+  const { correspondencesById, error, loading } = useCorrespondence();
   const searchParams = useSearchParams();
 
   const correspondenceId = searchParams.get('correspondenceId');
@@ -84,6 +84,15 @@ const CorrespondenceNavigator = () => {
       <div className="flex justify-center items-center min-h-screen">
         <Progress color="white" size={16} />
       </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <CorrespondenceNotFound
+        title="Unable to load correspondence."
+        description="The correspondence data could not be loaded. Please try again later."
+      />
     );
   }
 
@@ -194,9 +203,9 @@ const CorrespondenceNavigator = () => {
         </div>
       </div>
       <div className="mt-6 md:mt-10" id="letter-text-section">
-        <h1 className="text-3xl font-extrabold tracking-tight text-white drop-shadow-lg break-words overflow-hidden mb-5">
+        <h2 className="text-3xl font-extrabold tracking-tight text-white drop-shadow-lg break-words overflow-hidden mb-5">
           {selectedLetter?.title}
-        </h1>
+        </h2>
 
         <div className="pt-5 pb-5 border-t border-b border-white/70 mb-10">
           <LetterDetails letter={selectedLetter} />

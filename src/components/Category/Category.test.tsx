@@ -72,9 +72,9 @@ describe('Category Component', () => {
 
     expect(input).toHaveValue('new term');
     expect(mockPushState).toHaveBeenCalledWith(
-      { category: 'technology' },
+      {},
       '',
-      '?',
+      window.location.pathname,
     );
     expect(screen.queryByRole('heading', { level: 2 })).not.toBeInTheDocument();
   });

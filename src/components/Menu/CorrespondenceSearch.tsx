@@ -1,6 +1,5 @@
 import { CorrespondenceSearchItem } from '@ts-types/search';
 import { SearchSection } from '@components/Menu';
-import { useRouter } from 'next/navigation';
 import { useSearch } from '@hooks/useSearch';
 import { useSearchData } from '@contexts/SearchProvider';
 import { useState } from 'react';
@@ -11,7 +10,6 @@ interface Props {
 
 const CorrespondenceSearch: React.FC<Props> = ({ onClick }) => {
   const [term, setTerm] = useState('');
-
   const { correspondences } = useSearchData();
 
   const results = useSearch({
@@ -19,19 +17,14 @@ const CorrespondenceSearch: React.FC<Props> = ({ onClick }) => {
     type: 'correspondences',
   }) as CorrespondenceSearchItem[];
 
-  const router = useRouter();
-
-  const onItemClick = ({ correspondenceId }: CorrespondenceSearchItem) => {
-    if (onClick) {
-      onClick();
-    }
-    router.push(`/correspondence?correspondenceId=${correspondenceId}`);
-  };
-
   return (
     <SearchSection<CorrespondenceSearchItem>
       data={correspondences}
-      onItemClick={onItemClick}
+      getHref={({ correspondenceId }) =>
+        `/correspondence?correspondenceId=${correspondenceId}`
+      }
+      getItemKey={({ correspondenceId }) => correspondenceId}
+      onNavigate={onClick}
       results={results}
       setTerm={setTerm}
       term={term}

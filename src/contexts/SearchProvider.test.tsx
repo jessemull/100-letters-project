@@ -3,9 +3,8 @@ import {
   SearchProvider,
   useSearchData,
 } from '@contexts/SearchProvider';
-import { render } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 
-// Mock bootstrap.json with dataVersion for tests
 jest.mock('@public/data/bootstrap.json', () => ({
   default: {
     dataVersion: 1234567890,
@@ -15,8 +14,13 @@ jest.mock('@public/data/bootstrap.json', () => ({
 }));
 
 const TestComponent = () => {
-  const { loading } = useSearchData();
-  return <div data-testid="loading">{loading ? 'Loading' : 'Done'}</div>;
+  const { error, loading } = useSearchData();
+  return (
+    <div>
+      <div data-testid="loading">{loading ? 'Loading' : 'Done'}</div>
+      <div data-testid="error">{error ?? 'none'}</div>
+    </div>
+  );
 };
 
 describe('SearchProvider', () => {
@@ -24,7 +28,7 @@ describe('SearchProvider', () => {
     expect(SearchContext).toBeDefined();
   });
 
-  it('Logs an error when fetch fails.', async () => {
+  it('Exposes an error state when fetch fails.', async () => {
     const mockError = new Error('Fetch failed');
     const consoleErrorSpy = jest
       .spyOn(console, 'error')
@@ -33,21 +37,23 @@ describe('SearchProvider', () => {
     const originalFetch = global.fetch;
     global.fetch = jest.fn().mockRejectedValue(mockError);
 
-    render(
-      <SearchProvider>
-        <TestComponent />
-      </SearchProvider>,
-    );
-
-    // Wait a bit for the async operation to complete
-    await new Promise((resolve) => setTimeout(resolve, 10));
+    await act(async () => {
+      render(
+        <SearchProvider>
+          <TestComponent />
+        </SearchProvider>,
+      );
+    });
 
     expect(consoleErrorSpy).toHaveBeenCalledWith(
       'Failed to load search data:',
       mockError,
     );
+    expect(screen.getByTestId('error')).toHaveTextContent(
+      'Failed to load search data.',
+    );
+    expect(screen.getByTestId('loading')).toHaveTextContent('Done');
 
-    // Restore original mocks
     consoleErrorSpy.mockRestore();
     global.fetch = originalFetch;
   });

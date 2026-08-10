@@ -19,6 +19,13 @@ jest.mock('@contexts/AuthProvider', () => ({
   }),
 }));
 
+jest.mock('@contexts/SearchProvider', () => ({
+  useSearchData: () => ({
+    error: null,
+    loading: false,
+  }),
+}));
+
 jest.mock('@components/Menu/RecipientSearch', () => ({
   __esModule: true,
   default: ({ onClick }: { onClick: () => void }) => (

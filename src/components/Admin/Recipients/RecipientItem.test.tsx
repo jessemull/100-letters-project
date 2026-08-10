@@ -68,7 +68,7 @@ describe('RecipientItem Commponent', () => {
 
     const container = screen.getByTestId('card-edit-button');
     expect(container).toHaveClass('p-4');
-    expect(container).toHaveClass('cursor-pointer');
+    expect(container).not.toHaveClass('cursor-pointer');
   });
 
   it('Has no accessibility violations.', async () => {

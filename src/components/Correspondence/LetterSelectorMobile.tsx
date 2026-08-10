@@ -29,12 +29,12 @@ const LetterSelectorMobile: React.FC<Props> = ({
   return (
     <div className="pb-1 md:mt-0 mb-2 md:mb-4">
       <div className="flex justify-between items-start">
-        <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-white drop-shadow-lg mb-4">
+        <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight text-white drop-shadow-lg mb-4">
           Letters{' '}
           <span className="hidden lg:inline tabular-nums">
             ({letters.length})
           </span>
-        </h1>
+        </h2>
         {onScrollToText && (
           <button
             type="button"

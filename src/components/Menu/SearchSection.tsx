@@ -1,12 +1,15 @@
 'use client';
 
+import Link from 'next/link';
 import { ChevronDown, ChevronUp, Search, X } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useState, ReactNode } from 'react';
 
 interface SearchSectionProps<T> {
   data: T[];
-  onItemClick: (item: T) => void;
+  getHref: (item: T) => string;
+  getItemKey: (item: T) => string;
+  onNavigate?: () => void;
   renderItem: (item: T) => ReactNode;
   results: T[];
   setTerm: (term: string) => void;
@@ -21,7 +24,9 @@ const accordionTransition = {
 
 function SearchSection<T>({
   data,
-  onItemClick,
+  getHref,
+  getItemKey,
+  onNavigate,
   renderItem,
   results,
   setTerm,
@@ -85,15 +90,15 @@ function SearchSection<T>({
                 )}
               </div>
               <ul className="space-y-2 text-white text-sm mt-3">
-                {itemsToRender.map((item, i) => (
-                  <li key={i}>
-                    <button
-                      type="button"
-                      onClick={() => onItemClick(item)}
-                      className="w-full text-left bg-transparent hover:bg-white/10 rounded transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+                {itemsToRender.map((item) => (
+                  <li key={getItemKey(item)}>
+                    <Link
+                      href={getHref(item)}
+                      onClick={() => onNavigate?.()}
+                      className="block w-full text-left bg-transparent hover:bg-white/10 rounded transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
                     >
                       {renderItem(item)}
-                    </button>
+                    </Link>
                   </li>
                 ))}
               </ul>

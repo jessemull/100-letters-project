@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { CorrespondenceCard } from '@ts-types/correspondence';
 import { categoryLabelMap } from '@constants/correspondence';
-import { useRouter } from 'next/navigation';
 
 interface Props {
   correspondence: CorrespondenceCard;
@@ -14,7 +14,6 @@ const RecipientDetails: React.FC<Props> = ({
   correspondence,
   dynamicHeight,
 }) => {
-  const router = useRouter();
   const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
@@ -41,11 +40,7 @@ const RecipientDetails: React.FC<Props> = ({
   const categoryLabel =
     categoryLabelMap[correspondence?.reason?.category] || 'Other';
   const canBrowseCategory = categoryLabel !== 'Other';
-
-  const onCategoryClick = () => {
-    if (!canBrowseCategory) return;
-    router.push(`/category?category=${encodeURIComponent(categoryLabel)}`);
-  };
+  const categoryHref = `/category?category=${encodeURIComponent(categoryLabel)}`;
 
   return (
     <div
@@ -59,14 +54,13 @@ const RecipientDetails: React.FC<Props> = ({
             {correspondence?.recipient?.lastName}
           </h2>
           {canBrowseCategory ? (
-            <button
-              type="button"
-              onClick={onCategoryClick}
+            <Link
+              href={categoryHref}
               aria-label={`View letters in category ${categoryLabel}`}
               className="border border-white rounded-md bg-white/10 px-1.5 py-0.5 md:px-2 md:py-0.5 text-xs md:text-sm font-bold uppercase tracking-wide text-white shadow-sm cursor-pointer transition-colors hover:bg-white/20"
             >
               {categoryLabel}
-            </button>
+            </Link>
           ) : (
             <span className="border border-white rounded-md bg-white/10 px-1.5 py-0.5 md:px-2 md:py-0.5 text-xs md:text-sm font-bold uppercase tracking-wide text-white shadow-sm">
               {categoryLabel}

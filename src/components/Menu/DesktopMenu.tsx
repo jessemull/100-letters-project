@@ -9,6 +9,7 @@ import {
 } from '@components/Menu';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAuth } from '@contexts/AuthProvider';
+import { useSearchData } from '@contexts/SearchProvider';
 
 interface Props {
   collapsed: boolean;
@@ -22,6 +23,8 @@ const panelTransition = {
 
 const DesktopMenu: React.FC<Props> = ({ collapsed, setCollapsed }) => {
   const { isLoggedIn, signOut } = useAuth();
+  const { error: searchError } = useSearchData();
+
   return (
     <div
       className={`
@@ -80,18 +83,35 @@ const DesktopMenu: React.FC<Props> = ({ collapsed, setCollapsed }) => {
                 className="overflow-hidden"
               >
                 <div className="flex flex-col">
-                  <hr className="border-t border-white w-full" />
-                  <div className="px-4 py-4">
-                    <RecipientSearch onClick={() => setCollapsed(true)} />
-                  </div>
-                  <hr className="border-t border-white w-full" />
-                  <div className="px-4 py-4">
-                    <LetterSearch onClick={() => setCollapsed(true)} />
-                  </div>
-                  <hr className="border-t border-white w-full" />
-                  <div className="px-4 py-4">
-                    <CorrespondenceSearch onClick={() => setCollapsed(true)} />
-                  </div>
+                  {searchError ? (
+                    <>
+                      <hr className="border-t border-white w-full" />
+                      <p
+                        role="alert"
+                        className="px-4 py-4 text-sm text-white/80"
+                      >
+                        Search is temporarily unavailable. Please try again
+                        later.
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <hr className="border-t border-white w-full" />
+                      <div className="px-4 py-4">
+                        <RecipientSearch onClick={() => setCollapsed(true)} />
+                      </div>
+                      <hr className="border-t border-white w-full" />
+                      <div className="px-4 py-4">
+                        <LetterSearch onClick={() => setCollapsed(true)} />
+                      </div>
+                      <hr className="border-t border-white w-full" />
+                      <div className="px-4 py-4">
+                        <CorrespondenceSearch
+                          onClick={() => setCollapsed(true)}
+                        />
+                      </div>
+                    </>
+                  )}
                 </div>
               </motion.div>
             )}

@@ -40,13 +40,14 @@ jest.mock('@public/data/bootstrap.json', () => ({
 }));
 
 const TestComponent = () => {
-  const { correspondences, loading } = useCorrespondence();
+  const { correspondences, error, loading } = useCorrespondence();
   return (
     <div>
       <div data-testid="correspondence-count">
         Correspondences: {correspondences.length}
       </div>
       <div data-testid="loading">{loading ? 'Loading' : 'Loaded'}</div>
+      <div data-testid="error">{error ?? 'none'}</div>
     </div>
   );
 };
@@ -166,14 +167,10 @@ describe('CorrespondenceContext', () => {
     );
   });
 
-  it('Logs error when fetch fails.', async () => {
+  it('Exposes an error state when fetch fails.', async () => {
     const mockError = new Error('Network error');
     jest.spyOn(console, 'error').mockImplementation(() => {});
     (global.fetch as jest.Mock).mockRejectedValueOnce(mockError);
-
-    jest.mock('@public/data/bootstrap.json', () => ({
-      correspondences: [],
-    }));
 
     await act(async () => {
       render(
@@ -187,6 +184,10 @@ describe('CorrespondenceContext', () => {
       'Failed to load correspondence data: ',
       mockError,
     );
+    expect(screen.getByTestId('error')).toHaveTextContent(
+      'Failed to load correspondence data.',
+    );
+    expect(screen.getByTestId('loading')).toHaveTextContent('Loaded');
 
     (console.error as jest.Mock).mockRestore();
   });

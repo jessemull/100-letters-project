@@ -3,6 +3,7 @@ import { axe } from 'jest-axe';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 
 interface Item {
+  id: string;
   name: string;
 }
 
@@ -10,15 +11,21 @@ describe('SearchSection Component', () => {
   const title = 'Test Items';
 
   const allData: Item[] = Array.from({ length: 25 }, (_, i) => ({
+    id: `item-${i + 1}`,
     name: `Item ${i + 1}`,
   }));
 
-  const results: Item[] = [{ name: 'Result 1' }, { name: 'Result 2' }];
+  const results: Item[] = [
+    { id: 'result-1', name: 'Result 1' },
+    { id: 'result-2', name: 'Result 2' },
+  ];
 
   const renderItem = (item: Item) => (
     <span data-testid="list-item">{item.name}</span>
   );
 
+  const getHref = (item: Item) => `/items/${item.id}`;
+  const getItemKey = (item: Item) => item.id;
   const setTerm = jest.fn();
 
   beforeEach(() => {
@@ -30,7 +37,8 @@ describe('SearchSection Component', () => {
       <SearchSection
         title={title}
         data={allData}
-        onItemClick={jest.fn()}
+        getHref={getHref}
+        getItemKey={getItemKey}
         results={[]}
         renderItem={renderItem}
         setTerm={setTerm}
@@ -51,7 +59,8 @@ describe('SearchSection Component', () => {
       <SearchSection
         title={title}
         data={allData}
-        onItemClick={jest.fn()}
+        getHref={getHref}
+        getItemKey={getItemKey}
         results={[]}
         renderItem={renderItem}
         setTerm={setTerm}
@@ -68,7 +77,8 @@ describe('SearchSection Component', () => {
       <SearchSection
         title={title}
         data={allData}
-        onItemClick={jest.fn()}
+        getHref={getHref}
+        getItemKey={getItemKey}
         results={results}
         renderItem={renderItem}
         setTerm={setTerm}
@@ -88,7 +98,8 @@ describe('SearchSection Component', () => {
       <SearchSection
         title={title}
         data={allData}
-        onItemClick={jest.fn()}
+        getHref={getHref}
+        getItemKey={getItemKey}
         results={[]}
         renderItem={renderItem}
         setTerm={setTerm}
@@ -109,7 +120,8 @@ describe('SearchSection Component', () => {
       <SearchSection
         title={title}
         data={allData}
-        onItemClick={jest.fn()}
+        getHref={getHref}
+        getItemKey={getItemKey}
         results={[]}
         renderItem={renderItem}
         setTerm={setTerm}
@@ -133,7 +145,8 @@ describe('SearchSection Component', () => {
       <SearchSection
         title={title}
         data={allData}
-        onItemClick={jest.fn()}
+        getHref={getHref}
+        getItemKey={getItemKey}
         results={results}
         renderItem={renderItem}
         setTerm={setTerm}
@@ -141,34 +154,33 @@ describe('SearchSection Component', () => {
       />,
     );
 
-    const buttons = screen.getAllByRole('button');
-    const clearBtn = buttons.find((btn) => btn.textContent === '');
-
-    fireEvent.click(clearBtn as HTMLElement);
+    fireEvent.click(screen.getByLabelText(`Clear ${title} search`));
 
     expect(setTerm).toHaveBeenCalledWith('');
   });
 
-  it('Calls onItemClick when an item is clicked.', () => {
-    const onItemClick = jest.fn();
+  it('Renders result links and calls onNavigate when clicked.', () => {
+    const onNavigate = jest.fn();
 
     render(
       <SearchSection
         title={title}
         data={allData}
+        getHref={getHref}
+        getItemKey={getItemKey}
         results={results}
         renderItem={renderItem}
         setTerm={setTerm}
         term=""
-        onItemClick={onItemClick}
+        onNavigate={onNavigate}
       />,
     );
 
-    const itemButtons = screen.getAllByRole('button', { name: /Item \d+/i });
-    fireEvent.click(itemButtons[0]);
+    const firstLink = screen.getByRole('link', { name: 'Item 1' });
+    expect(firstLink).toHaveAttribute('href', '/items/item-1');
+    fireEvent.click(firstLink);
 
-    expect(onItemClick).toHaveBeenCalledTimes(1);
-    expect(onItemClick).toHaveBeenCalledWith(allData[0]);
+    expect(onNavigate).toHaveBeenCalledTimes(1);
   });
 
   it('Has no accessibility violations.', async () => {
@@ -176,14 +188,15 @@ describe('SearchSection Component', () => {
       <SearchSection
         title={title}
         data={allData}
-        onItemClick={jest.fn()}
+        getHref={getHref}
+        getItemKey={getItemKey}
         results={[]}
         renderItem={renderItem}
         setTerm={setTerm}
         term=""
       />,
     );
-    const results = await axe(container);
-    expect(results).toHaveNoViolations();
+    const resultsAxe = await axe(container);
+    expect(resultsAxe).toHaveNoViolations();
   });
 });

@@ -98,9 +98,11 @@ jest.mock('@components/Correspondence', () => ({
   RecipientDetails: () => (
     <div data-testid="recipient-details">MockRecipientDetails</div>
   ),
-  CorrespondenceNotFound: () => (
-    <div data-testid="not-found">Correspondence not found.</div>
-  ),
+  CorrespondenceNotFound: ({
+    title = 'Correspondence not found.',
+  }: {
+    title?: string;
+  }) => <div data-testid="not-found">{title}</div>,
 }));
 
 jest.mock('@contexts/CorrespondenceProvider', () => ({
@@ -145,6 +147,8 @@ describe('CorrespondenceNavigator Component', () => {
       correspondencesById: {
         test: mockCorrespondence,
       },
+      error: null,
+      loading: false,
     });
 
     (useSearchParams as jest.Mock).mockReturnValue({
@@ -228,6 +232,8 @@ describe('CorrespondenceNavigator Component', () => {
   it('Renders CorrespondenceNotFound when correspondence is missing.', () => {
     (useCorrespondence as jest.Mock).mockReturnValue({
       correspondencesById: {},
+      error: null,
+      loading: false,
     });
 
     (useSearchParams as jest.Mock).mockReturnValue({
@@ -239,6 +245,19 @@ describe('CorrespondenceNavigator Component', () => {
 
     render(<CorrespondenceNavigator />);
     expect(screen.getByTestId('not-found')).toBeInTheDocument();
+  });
+
+  it('Renders a load-error state when correspondence data fails to load.', () => {
+    (useCorrespondence as jest.Mock).mockReturnValue({
+      correspondencesById: {},
+      error: 'Failed to load correspondence data.',
+      loading: false,
+    });
+
+    render(<CorrespondenceNavigator />);
+    expect(screen.getByTestId('not-found')).toHaveTextContent(
+      'Unable to load correspondence.',
+    );
   });
 
   it('Falls back to index 0 when letterId does not match any letter.', () => {

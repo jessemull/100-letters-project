@@ -29,7 +29,10 @@ export type DesktopMenuContextType = {
   setCollapsed: (value: boolean) => void;
 };
 
-export type SearchContextType = SearchData & { loading: boolean };
+export type SearchContextType = SearchData & {
+  error: string | null;
+  loading: boolean;
+};
 
 export type SearchData = {
   correspondences: CorrespondenceSearchItem[];

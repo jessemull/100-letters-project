@@ -6,6 +6,13 @@ jest.mock('@hooks/useSearch', () => ({
   useSearch: jest.fn(() => []),
 }));
 
+jest.mock('@contexts/SearchProvider', () => ({
+  useSearchData: () => ({
+    error: null,
+    loading: false,
+  }),
+}));
+
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn().mockReturnValue({
     push: jest.fn(),

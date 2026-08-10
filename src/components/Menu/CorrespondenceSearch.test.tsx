@@ -2,11 +2,6 @@ import React from 'react';
 import { CorrespondenceSearch } from '@components/Menu';
 import { axe } from 'jest-axe';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { useRouter } from 'next/navigation';
-
-jest.mock('next/navigation', () => ({
-  useRouter: jest.fn(),
-}));
 
 jest.mock('@hooks/useSearch', () => ({
   useSearch: () => [
@@ -28,18 +23,16 @@ jest.mock('@contexts/SearchProvider', () => ({
   }),
 }));
 
-const MockSearchSection = ({ data, onItemClick, renderItem }: any) => (
+const MockSearchSection = ({ data, getHref, onNavigate, renderItem }: any) => (
   <div>
     {data.map((item: any) => (
-      <div
+      <a
         key={item.correspondenceId}
-        role="button"
-        tabIndex={0}
-        onClick={() => onItemClick(item)}
-        onKeyDown={() => onItemClick(item)}
+        href={getHref(item)}
+        onClick={() => onNavigate?.()}
       >
         {renderItem(item)}
-      </div>
+      </a>
     ))}
   </div>
 );
@@ -52,34 +45,20 @@ jest.mock('@components/Menu/SearchSection', () => ({
 }));
 
 describe('CorrespondenceSearch Component', () => {
-  it('Calls router.push when an item is clicked.', () => {
-    const pushMock = jest.fn();
-    (useRouter as jest.Mock).mockReturnValue({ push: pushMock });
-
+  it('Renders result links to the correspondence page.', () => {
     render(<CorrespondenceSearch />);
 
-    const item = screen.getByText('Letter to Ada Lovelace');
-    fireEvent.click(item);
-
-    expect(pushMock).toHaveBeenCalledWith(
-      '/correspondence?correspondenceId=abc123',
-    );
+    expect(
+      screen.getByRole('link', { name: 'Letter to Ada Lovelace' }),
+    ).toHaveAttribute('href', '/correspondence?correspondenceId=abc123');
   });
 
   it('Calls on click callback when an item is clicked.', () => {
-    const pushMock = jest.fn();
-    (useRouter as jest.Mock).mockReturnValue({ push: pushMock });
-
     const onClick = jest.fn();
 
     render(<CorrespondenceSearch onClick={onClick} />);
 
-    const item = screen.getByText('Letter to Ada Lovelace');
-    fireEvent.click(item);
-
-    expect(pushMock).toHaveBeenCalledWith(
-      '/correspondence?correspondenceId=abc123',
-    );
+    fireEvent.click(screen.getByText('Letter to Ada Lovelace'));
     expect(onClick).toHaveBeenCalled();
   });
 

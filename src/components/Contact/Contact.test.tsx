@@ -212,9 +212,12 @@ describe('Contact Component', () => {
       fireEvent.click(screen.getByText('Submit'));
     });
 
-    fireEvent.click(screen.getByRole('button', { name: 'Back' }));
+    fireEvent.click(screen.getByRole('link', { name: 'Back' }));
 
-    expect(mockPush).toHaveBeenCalledWith('/');
+    expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
+      'href',
+      '/',
+    );
   });
 
   it('Displays the first email error if present in the errors object.', () => {

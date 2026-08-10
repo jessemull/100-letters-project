@@ -1,4 +1,4 @@
-import PageLayout from './page.layout';
+import PageLayout from '@pages/page.layout';
 import { Feed } from '@components/Feed';
 import { SearchProvider } from '@contexts/SearchProvider';
 
