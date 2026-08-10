@@ -16,7 +16,7 @@ import {
   CognitoUserSession,
 } from 'amazon-cognito-identity-js';
 import { authCookieKey, defaultAuthError } from '@constants/context';
-import { showToast } from '@components/Form';
+import showToast from '@util/toast';
 import { useRouter } from 'next/navigation';
 
 const poolData = {

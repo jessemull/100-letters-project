@@ -18,7 +18,7 @@ import {
   Status,
 } from '@ts-types/correspondence';
 import { DeleteLetterParams, DeleteLetterResponse } from '@ts-types/letter';
-import { LetterItem } from '../Letters';
+import { LetterItem } from '@components/Admin/Letters';
 import { useAuth } from '@contexts/AuthProvider';
 import { useEffect, useState } from 'react';
 import { useForm } from '@hooks/useForm';

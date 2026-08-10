@@ -60,8 +60,10 @@ public/sitemap.xml
 # ignore coverage everywhere
 **/dist
 
-# cypress
-/cypress
+# cypress artifacts (keep specs tracked)
+/cypress/videos
+/cypress/screenshots
+/cypress/downloads
 
 # sentry config file
 .env.sentry-build-plugin

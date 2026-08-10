@@ -1,5 +1,5 @@
 import React from 'react';
-import { Progress } from '@components/Form';
+import Progress from './Progress';
 
 const SuspenseProgress = () => (
   <div className="w-full h-full min-h-screen flex items-center justify-center">

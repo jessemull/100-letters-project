@@ -5,6 +5,13 @@ const sshPrivateKeyPath = process.env.SSH_PRIVATE_KEY_PATH;
 const sshUser = process.env.SSH_USER;
 const sshHost = process.env.SSH_HOST;
 
+if (!sshPrivateKeyPath || !sshUser || !sshHost) {
+  console.error(
+    'Missing required SSH env vars: SSH_PRIVATE_KEY_PATH, SSH_USER, SSH_HOST',
+  );
+  process.exit(1);
+}
+
 const sshCommand = [
   '-i',
   sshPrivateKeyPath,

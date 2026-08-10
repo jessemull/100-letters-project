@@ -13,7 +13,7 @@ import {
 } from '@contexts/AuthProvider';
 import cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
-import { showToast } from '@components/Form';
+import showToast from '@util/toast';
 
 // Avoid typescript mock errors.
 
@@ -30,8 +30,9 @@ jest.mock('js-cookie', () => ({
   remove: jest.fn(),
 }));
 
-jest.mock('@components/Form', () => ({
-  showToast: jest.fn(),
+jest.mock('@util/toast', () => ({
+  __esModule: true,
+  default: jest.fn(),
 }));
 
 jest.mock('next/navigation', () => ({

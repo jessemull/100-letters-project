@@ -47,7 +47,10 @@ async function authenticateUser() {
       );
     }
   } catch (error) {
-    console.error('Error authenticating user:', error);
+    console.error(
+      'Error authenticating user:',
+      error instanceof Error ? error.message : error,
+    );
     process.exitCode = 1;
   }
 }

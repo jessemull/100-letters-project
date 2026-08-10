@@ -1,6 +1,11 @@
 import Fuse from 'fuse.js';
+import { CorrespondenceCard } from './correspondence';
+import {
+  CorrespondenceSearchItem,
+  LetterSearchItem,
+  RecipientSearchItem,
+} from './search';
 import { Letter, View } from './letter';
-import { SearchType } from './search';
 import { SWRConfiguration } from 'swr';
 
 export type UseDeleteUpload = {
@@ -19,7 +24,12 @@ export type UseFileUpload = {
   view: View;
 };
 
-export type FuseMap = Record<SearchType, Fuse<any>>;
+export type FuseMap = {
+  all: Fuse<CorrespondenceCard>;
+  correspondences: Fuse<CorrespondenceSearchItem>;
+  recipients: Fuse<RecipientSearchItem>;
+  letters: Fuse<LetterSearchItem>;
+};
 
 export type Method = 'POST' | 'PUT' | 'DELETE';
 
