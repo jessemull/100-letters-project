@@ -25,6 +25,7 @@ import {
 } from './cache';
 import { calculateCountdown } from './feed';
 import { formatLetterDates } from './letter';
+import { getCardImageUrl } from './images';
 import { getCategoryEnum } from './search';
 
 export {
@@ -44,6 +45,7 @@ export {
   formatTime,
   get,
   formatLetterDates,
+  getCardImageUrl,
   getCategoryEnum,
   isEmail,
   letterByIdDeleteUpdate,

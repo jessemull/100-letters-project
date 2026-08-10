@@ -10,14 +10,26 @@ import { CorrespondenceCard } from '@ts-types/correspondence';
 const Feed = () => {
   const [term, setTerm] = useState('');
   const [showSearch, setShowSearch] = useState(false);
+  const [searchEnabled, setSearchEnabled] = useState(false);
 
-  const { error, loading, results } = useSearch({ type: 'all', term });
+  const { error, loading, results } = useSearch({
+    type: 'all',
+    term,
+    enabled: searchEnabled,
+  });
 
   const handleTermChange = (value: string) => {
+    enableSearch();
     setTerm(value);
     if (value && !showSearch) {
       window.history.pushState({ search: true }, '');
       setShowSearch(true);
+    }
+  };
+
+  const enableSearch = () => {
+    if (!searchEnabled) {
+      setSearchEnabled(true);
     }
   };
 
@@ -40,6 +52,7 @@ const Feed = () => {
           ariaLabel="Search for letters and people"
           iconEndLabel="Clear search"
           onChange={({ target: { value } }) => handleTermChange(value)}
+          onFocus={enableSearch}
           onIconEndClick={() => setTerm('')}
           placeholder="Search for letters and people..."
           type="text"

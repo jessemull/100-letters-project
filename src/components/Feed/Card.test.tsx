@@ -63,6 +63,7 @@ describe('Card Commponent', () => {
       />,
     );
     const img = screen.getByTestId('card-image') as HTMLImageElement;
+    expect(img.src).toContain('thumbnail.jpg');
     expect(img.alt).toBe('First Letter');
   });
 

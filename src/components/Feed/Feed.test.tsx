@@ -14,12 +14,13 @@ jest.mock('@components/Feed', () => ({
 }));
 
 jest.mock('@components/Form', () => ({
-  TextInput: ({ value, onChange, onIconEndClick, IconEnd }: any) => (
+  TextInput: ({ value, onChange, onIconEndClick, onFocus, IconEnd }: any) => (
     <div>
       <input
         data-testid="text-input"
         value={value}
         onChange={onChange}
+        onFocus={onFocus}
         placeholder="Search for letters and people..."
       />
       {IconEnd && (
@@ -51,6 +52,17 @@ describe('Feed component', () => {
   it('Renders Splash by default.', () => {
     render(<Feed />);
     expect(screen.getByTestId('splash')).toBeInTheDocument();
+    expect(useSearch).toHaveBeenCalledWith(
+      expect.objectContaining({ enabled: false }),
+    );
+  });
+
+  it('Enables search when the input is focused.', () => {
+    render(<Feed />);
+    fireEvent.focus(screen.getByTestId('text-input'));
+    expect(useSearch).toHaveBeenCalledWith(
+      expect.objectContaining({ enabled: true }),
+    );
   });
 
   it('Shows Search when term is typed and history is pushed.', () => {

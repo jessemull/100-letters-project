@@ -5,6 +5,8 @@ export interface SearchOptions {
   term: string;
   limit?: number;
   isExactCategory?: boolean;
+  /** When false, skip Fuse/index loading (e.g. homepage splash before search). */
+  enabled?: boolean;
 }
 
 export type CorrespondenceSearchItem = {

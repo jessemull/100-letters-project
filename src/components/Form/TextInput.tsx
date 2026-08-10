@@ -13,6 +13,7 @@ interface Props {
   id: string;
   onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
   onClick?: () => void;
+  onFocus?: () => void;
   onIconEndClick?: () => void;
   onIconStartClick?: () => void;
   placeholder: string;
@@ -34,6 +35,7 @@ const TextInput = forwardRef<HTMLInputElement, Props>(
       id,
       onChange,
       onClick,
+      onFocus,
       onIconEndClick,
       onIconStartClick,
       placeholder,
@@ -96,6 +98,7 @@ const TextInput = forwardRef<HTMLInputElement, Props>(
             id={id}
             onChange={onChange}
             onClick={onClick}
+            onFocus={onFocus}
             placeholder={placeholder}
             type={type}
             value={value}

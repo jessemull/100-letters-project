@@ -67,8 +67,9 @@ const RootLayout: React.FC<Props> = ({ children }) => {
           </DesktopMenuProvider>
         </AuthProvider>
         <>
-          <Script id="gtag-load" strategy="afterInteractive">
-            {`
+          {NEXT_PUBLIC_GA_TRACKING_ID ? (
+            <Script id="gtag-load" strategy="lazyOnload">
+              {`
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               (window.requestIdleCallback || function(cb) { setTimeout(cb, 0); })(() => {
@@ -83,7 +84,8 @@ const RootLayout: React.FC<Props> = ({ children }) => {
                 });
               });
             `}
-          </Script>
+            </Script>
+          ) : null}
         </>
       </body>
     </html>

@@ -1,6 +1,5 @@
 'use client';
 
-import Fuse from 'fuse.js';
 import {
   CorrespondenceSearchItem,
   LetterSearchItem,
@@ -25,17 +24,29 @@ export const useSearch = ({
   term,
   limit = 100,
   isExactCategory = false,
+  enabled = true,
 }: SearchOptions): UseSearchState => {
   const [fuseMap, setFuseMap] = useState<FuseMap | null>(null);
   const [correspondenceData, setCorrespondenceData] = useState<
     CorrespondenceCard[]
   >([]);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [indexLoading, setIndexLoading] = useState(false);
+  const loading = enabled && indexLoading;
 
   useEffect(() => {
+    if (!enabled) {
+      return;
+    }
+
+    let cancelled = false;
+
     const loadSearchData = async () => {
       try {
+        const Fuse = (await import('fuse.js')).default;
+        if (cancelled) return;
+        setIndexLoading(true);
+
         const bootstrapModule =
           (await import('@public/data/bootstrap.json')) as BootstrapData;
         const timestamp = bootstrapModule.dataVersion;
@@ -59,6 +70,8 @@ export const useSearch = ({
 
         const dataModule = await dataRes.json();
         const searchIndexModule = await searchRes.json();
+
+        if (cancelled) return;
 
         const { correspondences: correspondenceData } = dataModule;
         setCorrespondenceData(correspondenceData ?? []);
@@ -103,18 +116,26 @@ export const useSearch = ({
         setFuseMap({ all, correspondences, recipients, letters });
         setError(null);
       } catch (err) {
+        if (cancelled) return;
         console.error('Failed to load search data:', err);
         setError('Failed to load search data.');
         setFuseMap(null);
       } finally {
-        setLoading(false);
+        if (!cancelled) {
+          setIndexLoading(false);
+        }
       }
     };
 
-    loadSearchData();
-  }, []);
+    void loadSearchData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [enabled]);
 
   const results = useMemo(() => {
+    if (!enabled) return [];
     if (!term.trim()) return [];
     if (!fuseMap) return [];
 
@@ -134,7 +155,15 @@ export const useSearch = ({
           .slice(0, limit)
           .map((r) => r.item)
       : [];
-  }, [type, term, limit, fuseMap, correspondenceData, isExactCategory]);
+  }, [
+    enabled,
+    type,
+    term,
+    limit,
+    fuseMap,
+    correspondenceData,
+    isExactCategory,
+  ]);
 
   return { results, error, loading };
 };

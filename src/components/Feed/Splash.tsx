@@ -4,6 +4,7 @@ import React, { useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Card, ClockSkeleton, Completion } from '@components/Feed';
 import { Categories } from '@components/Feed';
+import { getCardImageUrl } from '@util/images';
 import { useCorrespondence } from '@contexts/CorrespondenceProvider';
 
 const Clock = dynamic(() => import('@components/Feed/Clock'), {
@@ -19,8 +20,17 @@ const Splash = () => {
     return numLetterRows * 3 < correspondences.length;
   }, [correspondences, numLetterRows]);
 
+  const lcpImageUrl = useMemo(() => {
+    const firstImage = correspondences[0]?.letters?.[0]?.imageURLs?.[0];
+    if (!firstImage) return null;
+    return getCardImageUrl(firstImage);
+  }, [correspondences]);
+
   return (
     <>
+      {lcpImageUrl ? (
+        <link rel="preload" as="image" href={lcpImageUrl} />
+      ) : null}
       <div className="text-center space-y-2">
         <h1 className="text-3xl md:text-4xl font-bold">
           The 100 Letters Project
@@ -67,7 +77,7 @@ const Splash = () => {
                 <Card
                   correspondence={correspondence}
                   key={correspondence.correspondenceId}
-                  loading={idx === 0 ? 'eager' : undefined}
+                  loading={idx === 0 ? 'eager' : 'lazy'}
                   priority={idx === 0}
                 />
               ))}

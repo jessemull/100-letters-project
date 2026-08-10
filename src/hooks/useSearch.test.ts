@@ -84,6 +84,20 @@ global.fetch = jest.fn().mockImplementation((url: string) => {
 });
 
 describe('useSearch', () => {
+  it('Skips loading when enabled is false.', async () => {
+    const { result } = renderHook(() =>
+      useSearch({ type: 'correspondences', term: 'First', enabled: false }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+      expect(result.current.results).toEqual([]);
+      expect(result.current.error).toBeNull();
+    });
+
+    expect(global.fetch).not.toHaveBeenCalled();
+  });
+
   it('Returns empty results if search term is blank.', async () => {
     const { result } = renderHook(() =>
       useSearch({ type: 'correspondences', term: '  ' }),
