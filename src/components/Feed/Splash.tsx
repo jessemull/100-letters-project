@@ -29,7 +29,12 @@ const Splash = () => {
   return (
     <>
       {lcpImageUrl ? (
-        <link rel="preload" as="image" href={lcpImageUrl} />
+        <link
+          rel="preload"
+          as="image"
+          href={lcpImageUrl}
+          fetchPriority="high"
+        />
       ) : null}
       <div className="text-center space-y-2">
         <h1 className="text-3xl md:text-4xl font-bold">
