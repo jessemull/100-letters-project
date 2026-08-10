@@ -14,6 +14,7 @@ const CorrespondenceNotFound = () => {
       <div className="text-center space-y-6">
         <h2 className="text-3xl font-bold">Correspondence not found.</h2>
         <button
+          type="button"
           className="bg-white/10 hover:bg-white/20 border rounded-3xl border-white pr-4 pl-4 pt-2 pb-2"
           id="go-home"
           data-testid="go-home"

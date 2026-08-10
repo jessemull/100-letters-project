@@ -6,6 +6,8 @@ interface Props {
   IconEnd?: ElementType;
   IconStart?: ElementType;
   errors?: string | string[];
+  iconEndLabel?: string;
+  iconStartLabel?: string;
   id: string;
   label?: string;
   onChange: (event: ChangeEvent<HTMLSelectElement>) => void;
@@ -14,7 +16,7 @@ interface Props {
   options: Option[];
   placeholder?: string;
   value: string;
-  size?: 'small' | 'large'; // <-- new prop
+  size?: 'small' | 'large';
 }
 
 const Select: React.FC<Props> = ({
@@ -22,6 +24,8 @@ const Select: React.FC<Props> = ({
   IconEnd,
   IconStart,
   errors,
+  iconEndLabel,
+  iconStartLabel,
   id,
   label,
   onChange,
@@ -46,6 +50,10 @@ const Select: React.FC<Props> = ({
     return isLarge ? 'px-4' : 'px-3';
   }, [IconStart, IconEnd, isLarge]);
 
+  const iconSizeClass = isLarge ? 'w-5 h-5' : 'w-4 h-4';
+  const iconStartPosition = isLarge ? 'left-5 top-3.5' : 'left-4 top-2';
+  const iconEndPosition = isLarge ? 'right-5 top-3.5' : 'right-4 top-2';
+
   return (
     <div className="relative w-full">
       {label && (
@@ -56,17 +64,26 @@ const Select: React.FC<Props> = ({
           {label}
         </label>
       )}
-      {IconStart && (
-        <div
-          className={`absolute ${isLarge ? 'left-5 top-3.5' : 'left-4 top-2'} text-white`}
-        >
-          <IconStart
-            className={isLarge ? 'w-5 h-5' : 'w-4 h-4'}
+      {IconStart &&
+        (onIconStartClick ? (
+          <button
+            aria-label={iconStartLabel ?? 'Select action'}
+            className={`absolute ${iconStartPosition} text-white cursor-pointer`}
             data-testid={`${id}-select-icon-start`}
             onClick={onIconStartClick}
-          />
-        </div>
-      )}
+            type="button"
+          >
+            <IconStart aria-hidden className={iconSizeClass} />
+          </button>
+        ) : (
+          <div
+            aria-hidden
+            className={`absolute ${iconStartPosition} pointer-events-none text-white`}
+            data-testid={`${id}-select-icon-start`}
+          >
+            <IconStart className={iconSizeClass} />
+          </div>
+        ))}
       <select
         aria-label={label || placeholder || 'Select input'}
         className={`
@@ -99,17 +116,26 @@ const Select: React.FC<Props> = ({
           </option>
         ))}
       </select>
-      {IconEnd && (
-        <div
-          className={`absolute ${isLarge ? 'right-5 top-3.5' : 'right-4 top-2'} text-white`}
-        >
-          <IconEnd
-            className={isLarge ? 'w-5 h-5' : 'w-4 h-4'}
+      {IconEnd &&
+        (onIconEndClick ? (
+          <button
+            aria-label={iconEndLabel ?? 'Select action'}
+            className={`absolute ${iconEndPosition} text-white cursor-pointer`}
             data-testid={`${id}-select-icon-end`}
             onClick={onIconEndClick}
-          />
-        </div>
-      )}
+            type="button"
+          >
+            <IconEnd aria-hidden className={iconSizeClass} />
+          </button>
+        ) : (
+          <div
+            aria-hidden
+            className={`absolute ${iconEndPosition} pointer-events-none text-white`}
+            data-testid={`${id}-select-icon-end`}
+          >
+            <IconEnd className={iconSizeClass} />
+          </div>
+        ))}
       {errorsArray.length > 0 && (
         <ul
           className={`pl-4 ${isLarge ? 'mt-2 text-base' : 'mt-1 text-sm'} list-none text-red-400`}

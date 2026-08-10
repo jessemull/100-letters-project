@@ -85,11 +85,22 @@ const Contact = () => {
             {`Thanks for your message! We'll be in touch soon.`}
           </p>
           <div className="w-1/2 lg:w-1/4 xl:w-1/6">
-            <Button id="contact-back" onClick={goHome} value="Back" />
+            <Button
+              htmlType="button"
+              id="contact-back"
+              onClick={goHome}
+              value="Back"
+            />
           </div>
         </div>
       ) : (
-        <div className="w-full max-w-lg space-y-6">
+        <form
+          className="w-full max-w-lg space-y-6"
+          onSubmit={(event) => {
+            event.preventDefault();
+            void handleSubmit();
+          }}
+        >
           <h1 className="text-white text-3xl font-semibold">Contact Us</h1>
           <TextInput
             errors={errors.firstName || undefined}
@@ -141,22 +152,23 @@ const Contact = () => {
                 disabled={
                   !isDirty || isLoading || Object.keys(errors).length > 0
                 }
+                htmlType="submit"
                 id="contact-submit"
                 loading={isLoading}
-                onClick={handleSubmit}
                 value="Submit"
               />
             </div>
             <div className="w-full">
               <Button
                 disabled={isLoading}
+                htmlType="button"
                 id="contact-cancel"
                 onClick={goHome}
                 value="Cancel"
               />
             </div>
           </div>
-        </div>
+        </form>
       )}
     </div>
   );

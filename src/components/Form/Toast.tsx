@@ -23,6 +23,7 @@ const showToast = ({ type, message }: { type: ToastType; message: string }) => {
         {message}
       </div>
       <button
+        type="button"
         onClick={() => toast.dismiss(t.id)}
         className="flex-shrink-0 hover:text-gray-300 transition"
         aria-label="Close"

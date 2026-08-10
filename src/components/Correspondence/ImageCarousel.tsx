@@ -31,12 +31,15 @@ const ImageCarousel: React.FC<Props> = ({ letter, onClick, selected }) => {
             <button
               key={image.id}
               data-testid={`thumbnail-${idx}`}
+              aria-label={image.caption || `Image ${idx + 1}`}
+              aria-pressed={isSelected}
               className={`snap-start relative w-24 h-24 flex-shrink-0 overflow-hidden rounded cursor-pointer ${
                 isSelected
                   ? 'border border-white'
                   : 'hover:border hover:border-white'
               }`}
               draggable={false}
+              type="button"
               onClick={(e) => {
                 if (shouldCancelClick()) {
                   e.preventDefault();
@@ -45,7 +48,6 @@ const ImageCarousel: React.FC<Props> = ({ letter, onClick, selected }) => {
                 onClick(idx, image);
               }}
               onDragStart={(e) => e.preventDefault()}
-              title={image.caption || `Image ${idx + 1}`}
             >
               <Image
                 src={image.urlThumbnail || '/alt-image.jpg'}

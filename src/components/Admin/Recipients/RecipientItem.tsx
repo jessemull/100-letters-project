@@ -28,7 +28,7 @@ const RecipientItem = ({ data, onDelete, onEdit }: Props) => {
             data-testid="edit-button"
             onClick={() => onEdit(data?.recipientId)}
             className="text-white hover:text-gray-400 cursor-pointer"
-            aria-label="Edit"
+            aria-label={`Edit recipient ${data?.lastName}, ${data?.firstName}`}
             type="button"
           >
             <PenSquare className="w-6 h-6" />
@@ -37,7 +37,7 @@ const RecipientItem = ({ data, onDelete, onEdit }: Props) => {
             data-testid="delete-button"
             onClick={() => onDelete(data?.recipientId)}
             className="text-white hover:text-gray-400 cursor-pointer"
-            aria-label="Delete"
+            aria-label={`Delete recipient ${data?.lastName}, ${data?.firstName}`}
             type="button"
           >
             <Trash2 className="w-6 h-6" />

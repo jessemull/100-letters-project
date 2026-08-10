@@ -84,7 +84,7 @@ describe('Category Component', () => {
     const input = screen.getByPlaceholderText(/search for letters and people/i);
     fireEvent.change(input, { target: { value: 'something' } });
 
-    const clearButton = screen.getByTestId('password-text-input-icon-end');
+    const clearButton = screen.getByTestId('search-all-icon-end');
     fireEvent.click(clearButton);
     expect(input).toHaveValue('');
   });

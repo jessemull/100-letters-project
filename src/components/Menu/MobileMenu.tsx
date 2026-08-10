@@ -63,7 +63,7 @@ const MobileMenu: FC<Props> = ({
           <Image src="/favicon.svg" alt="Logo" height={32} width={32} />
           <span className="text-xl">100 Letters Project</span>
         </div>
-        <button onClick={onClose} aria-label="Close Menu">
+        <button type="button" onClick={onClose} aria-label="Close Menu">
           <X className="h-6 w-6" data-testid="close-menu" />
         </button>
       </div>

@@ -284,24 +284,28 @@ describe('CorrespondenceNavigator Component', () => {
     expect(screen.queryByText('Close')).toBeNull();
   });
 
-  it('Opens lightbox when image is clicked.', () => {
+  it('Opens lightbox when expand control is clicked.', () => {
     render(<CorrespondenceNavigator />);
-    const image = screen.getByRole('button', { name: /test letter a/i });
-    fireEvent.click(image);
+    fireEvent.click(
+      screen.getByRole('button', { name: /expand to fullscreen/i }),
+    );
     expect(screen.getByTestId('mock-lightbox')).toBeInTheDocument();
   });
 
-  it('Opens lightbox when pressing Enter or Space on the image.', () => {
+  it('Opens lightbox when pressing Enter or Space on the expand control.', () => {
     render(<CorrespondenceNavigator />);
-    const image = screen.getByRole('button', { name: /test letter a/i });
+    const expand = screen.getByRole('button', {
+      name: /expand to fullscreen/i,
+    });
 
-    fireEvent.keyDown(image, { key: 'Enter' });
+    fireEvent.keyDown(expand, { key: 'Enter' });
+    fireEvent.click(expand);
     expect(screen.getByTestId('mock-lightbox')).toBeInTheDocument();
 
     fireEvent.click(screen.getByTestId('close-button'));
     expect(screen.queryByTestId('mock-lightbox')).not.toBeInTheDocument();
 
-    fireEvent.keyDown(image, { key: ' ' });
+    fireEvent.click(expand);
     expect(screen.getByTestId('mock-lightbox')).toBeInTheDocument();
   });
 

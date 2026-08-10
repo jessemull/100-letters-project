@@ -1,8 +1,6 @@
-'use client';
-
 import PageLayout from '@pages/page.layout';
 import React, { Suspense } from 'react';
-import { CorrespondenceForm } from '@components/Admin';
+import CorrespondenceForm from '@components/Admin/Correspondences/CorrespondenceForm';
 import { ProtectedRoute } from '@components/Protected';
 import { SuspenseProgress } from '@components/Form';
 

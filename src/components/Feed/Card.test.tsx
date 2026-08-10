@@ -3,13 +3,7 @@ import React from 'react';
 import { Card } from '@components/Feed';
 import { Correspondence, CorrespondenceCard } from '@ts-types/correspondence';
 import { axe } from 'jest-axe';
-import { fireEvent, render, screen } from '@testing-library/react';
-
-jest.mock('next/navigation', () => ({
-  useRouter: jest.fn().mockReturnValue({
-    push: jest.fn(),
-  }),
-}));
+import { render, screen } from '@testing-library/react';
 
 jest.mock('@components/Image', () => ({
   Image: ({ src, alt }: { src: string; alt: string }) => (
@@ -99,37 +93,24 @@ describe('Card Commponent', () => {
   });
 
   it('Has the correct outer class for layout and hover styling.', () => {
-    const { container } = render(
-      <Card
-        correspondence={mockCorrespondence as unknown as CorrespondenceCard}
-      />,
-    );
-    const cardDiv = container.querySelector('div');
-    expect(cardDiv?.className).toMatch(/rounded-xl/);
-    expect(cardDiv?.className).toMatch(/hover:scale/);
-  });
-
-  it('Fires router.push when Enter or Space is pressed.', () => {
-    const pushMock = jest.fn();
-    (require('next/navigation').useRouter as jest.Mock).mockReturnValue({
-      push: pushMock,
-    });
-
     render(
       <Card
         correspondence={mockCorrespondence as unknown as CorrespondenceCard}
       />,
     );
-    const card = screen.getByRole('button');
+    const card = screen.getByRole('link');
+    expect(card.className).toMatch(/rounded-xl/);
+    expect(card.className).toMatch(/hover:scale/);
+  });
 
-    fireEvent.keyDown(card, { key: 'Enter', code: 'Enter', charCode: 13 });
-    expect(pushMock).toHaveBeenCalledWith(
-      '/correspondence?correspondenceId=abc123',
+  it('Links to the correspondence detail page.', () => {
+    render(
+      <Card
+        correspondence={mockCorrespondence as unknown as CorrespondenceCard}
+      />,
     );
-
-    pushMock.mockClear();
-    fireEvent.keyDown(card, { key: ' ', code: 'Space', charCode: 32 });
-    expect(pushMock).toHaveBeenCalledWith(
+    expect(screen.getByRole('link')).toHaveAttribute(
+      'href',
       '/correspondence?correspondenceId=abc123',
     );
   });

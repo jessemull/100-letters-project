@@ -1,9 +1,9 @@
 'use client';
 
+import Link from 'next/link';
 import React from 'react';
 import { CorrespondenceCard } from '@ts-types/correspondence';
 import { Image } from '@components/Image';
-import { useRouter } from 'next/navigation';
 
 interface Props {
   correspondence: CorrespondenceCard;
@@ -12,30 +12,16 @@ interface Props {
 }
 
 const Card: React.FC<Props> = ({ correspondence, loading, priority }) => {
-  const router = useRouter();
   const { correspondenceId, letters, reason, recipient, title } =
     correspondence;
 
   const firstImage = letters[0]?.imageURLs[0];
   const imageCaption = firstImage?.caption;
 
-  const handleClick = () => {
-    router.push(`/correspondence?correspondenceId=${correspondenceId}`);
-  };
-
   return (
-    <div
-      key={correspondenceId}
-      role="button"
-      tabIndex={0}
-      onClick={handleClick}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          handleClick();
-        }
-      }}
-      className="rounded-xl overflow-hidden shadow-lg text-black font-merriweather cursor-pointer transform transition duration-200 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white"
+    <Link
+      href={`/correspondence?correspondenceId=${correspondenceId}`}
+      className="block rounded-xl overflow-hidden shadow-lg text-black font-merriweather cursor-pointer transform transition duration-200 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white"
     >
       <Image
         src={firstImage?.url || '/alt-image.jpg'}
@@ -53,7 +39,7 @@ const Card: React.FC<Props> = ({ correspondence, loading, priority }) => {
         </p>
         <p className="text-sm text-white italic">{reason.description}</p>
       </div>
-    </div>
+    </Link>
   );
 };
 

@@ -1,8 +1,6 @@
-'use client';
-
 import PageLayout from '../page.layout';
 import React, { Suspense } from 'react';
-import { CorrespondenceNavigator } from '@components/Correspondence';
+import CorrespondenceNavigator from '@components/Correspondence/CorrespondenceNavigator';
 import { SuspenseProgress } from '@components/Form';
 
 const CorrespondencePage = () => (

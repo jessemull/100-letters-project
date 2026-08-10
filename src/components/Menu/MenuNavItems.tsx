@@ -127,6 +127,7 @@ const MenuNavItems: React.FC<Props> = ({
         <button
           aria-label="Logout"
           onClick={handleLogout}
+          type="button"
           className={`${baseMenuClass} ${collapsed ? 'justify-center' : 'space-x-3 justify-start'}`}
           title={collapsed ? 'Logout' : undefined}
         >

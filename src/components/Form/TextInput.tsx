@@ -70,7 +70,7 @@ const TextInput = forwardRef<HTMLInputElement, Props>(
               <button
                 aria-label={iconStartLabel ?? 'Input action'}
                 className="absolute left-4 top-1/2 -translate-y-1/2 text-white cursor-pointer"
-                data-testid="password-text-input-icon-start"
+                data-testid={`${id}-icon-start`}
                 onClick={onIconStartClick}
                 type="button"
               >
@@ -80,7 +80,7 @@ const TextInput = forwardRef<HTMLInputElement, Props>(
               <div
                 aria-hidden
                 className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none text-white"
-                data-testid="password-text-input-icon-start"
+                data-testid={`${id}-icon-start`}
               >
                 <IconStart className="w-5 h-5" />
               </div>
@@ -105,7 +105,7 @@ const TextInput = forwardRef<HTMLInputElement, Props>(
               <button
                 aria-label={iconEndLabel ?? 'Input action'}
                 className="absolute right-4 top-1/2 -translate-y-1/2 text-white cursor-pointer"
-                data-testid="password-text-input-icon-end"
+                data-testid={`${id}-icon-end`}
                 onClick={onIconEndClick}
                 type="button"
               >
@@ -115,7 +115,7 @@ const TextInput = forwardRef<HTMLInputElement, Props>(
               <div
                 aria-hidden
                 className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white"
-                data-testid="password-text-input-icon-end"
+                data-testid={`${id}-icon-end`}
               >
                 <IconEnd className="w-5 h-5" />
               </div>

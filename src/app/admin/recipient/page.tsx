@@ -1,9 +1,7 @@
-'use client';
-
 import PageLayout from '@pages/page.layout';
 import React, { Suspense } from 'react';
 import { ProtectedRoute } from '@components/Protected';
-import { RecipientForm } from '@components/Admin';
+import RecipientForm from '@components/Admin/Recipients/RecipientForm';
 import { SuspenseProgress } from '@components/Form';
 
 const RecipientPage = () => (

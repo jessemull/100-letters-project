@@ -108,7 +108,7 @@ describe('AutoSelect Componentn', () => {
       </>,
     );
 
-    const input = screen.getByRole('textbox');
+    const input = screen.getByRole('combobox');
     fireEvent.focus(input);
 
     expect(screen.getByText('Apple')).toBeInTheDocument();
@@ -128,7 +128,7 @@ describe('AutoSelect Componentn', () => {
         options={options}
       />,
     );
-    const input = screen.getByRole('textbox');
+    const input = screen.getByRole('combobox');
     fireEvent.focus(input);
     fireEvent.change(input, { target: { value: 'Ap' } });
 
@@ -145,7 +145,7 @@ describe('AutoSelect Componentn', () => {
         options={options}
       />,
     );
-    const input = screen.getByRole('textbox');
+    const input = screen.getByRole('combobox');
     fireEvent.focus(input);
     fireEvent.click(screen.getByText('Cherry'));
 
@@ -163,7 +163,7 @@ describe('AutoSelect Componentn', () => {
         loading
       />,
     );
-    const input = screen.getByRole('textbox');
+    const input = screen.getByRole('combobox');
     fireEvent.focus(input);
     expect(screen.getByTestId('progress')).toBeInTheDocument();
   });
@@ -172,10 +172,32 @@ describe('AutoSelect Componentn', () => {
     render(
       <AutoSelect id="test" value="" onChange={onChangeMock} options={[]} />,
     );
-    const input = screen.getByRole('textbox');
+    const input = screen.getByRole('combobox');
     fireEvent.focus(input);
     fireEvent.click(input);
     expect(onChangeMock).not.toHaveBeenCalled();
+  });
+
+  it('Supports keyboard navigation and escape.', () => {
+    render(
+      <AutoSelect
+        id="test"
+        value=""
+        onChange={onChangeMock}
+        options={options}
+      />,
+    );
+    const input = screen.getByRole('combobox');
+    fireEvent.focus(input);
+    expect(input).toHaveAttribute('aria-expanded', 'true');
+
+    fireEvent.keyDown(input, { key: 'ArrowDown' });
+    fireEvent.keyDown(input, { key: 'Enter' });
+    expect(onChangeMock).toHaveBeenCalledWith('banana');
+
+    fireEvent.focus(input);
+    fireEvent.keyDown(input, { key: 'Escape' });
+    expect(input).toHaveAttribute('aria-expanded', 'false');
   });
 
   it('Has no accessibility violations.', async () => {

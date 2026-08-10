@@ -29,8 +29,8 @@ describe('TextInput Component', () => {
     expect(inputElement).toBeInTheDocument();
     expect(inputElement).toHaveValue('testuser');
 
-    const iconStart = screen.getByTestId('password-text-input-icon-start');
-    const iconEnd = screen.getByTestId('password-text-input-icon-end');
+    const iconStart = screen.getByTestId('username-icon-start');
+    const iconEnd = screen.getByTestId('username-icon-end');
     expect(iconStart).toBeInTheDocument();
     expect(iconEnd).toBeInTheDocument();
   });
@@ -46,8 +46,8 @@ describe('TextInput Component', () => {
       />,
     );
 
-    expect(screen.queryByTestId('password-text-input-icon-start')).toBeNull();
-    expect(screen.queryByTestId('password-text-input-icon-end')).toBeNull();
+    expect(screen.queryByTestId('username-icon-start')).toBeNull();
+    expect(screen.queryByTestId('username-icon-end')).toBeNull();
   });
 
   it('Triggers onIconStartClick when IconStart is clicked.', () => {

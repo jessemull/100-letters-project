@@ -67,6 +67,7 @@ const Splash = () => {
       </div>
       {showMoreLetters && (
         <button
+          type="button"
           className="bg-white/10 hover:bg-white/20 border rounded-3xl border-white pr-4 pl-4 pt-2 pb-2"
           id="show-more-letters"
           data-testid="show-more-letters"

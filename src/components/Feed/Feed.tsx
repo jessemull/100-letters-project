@@ -37,6 +37,8 @@ const Feed = () => {
           id="search-all"
           IconEnd={term ? X : undefined}
           IconStart={SearchIcon}
+          ariaLabel="Search for letters and people"
+          iconEndLabel="Clear search"
           onChange={({ target: { value } }) => handleTermChange(value)}
           onIconEndClick={() => setTerm('')}
           placeholder="Search for letters and people..."

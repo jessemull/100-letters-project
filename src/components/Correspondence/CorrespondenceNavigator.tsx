@@ -153,15 +153,6 @@ const CorrespondenceNavigator = () => {
               <div className="w-full aspect-[4/3] relative rounded-2xl overflow-hidden shadow-md group">
                 <Image
                   priority
-                  onClick={() => setIsLightboxOpen(true)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      setIsLightboxOpen(true);
-                    }
-                  }}
-                  role="button"
-                  tabIndex={0}
                   src={selectedImage?.url || '/alt-image.jpg'}
                   alt={
                     selectedImage &&
@@ -171,9 +162,10 @@ const CorrespondenceNavigator = () => {
                       : selectedLetter?.title || 'Selected letter'
                   }
                   fill
-                  className="object-cover cursor-pointer outline-none"
+                  className="object-cover"
                 />
                 <button
+                  type="button"
                   onClick={() => setIsLightboxOpen(true)}
                   className="absolute top-2 right-2 z-20 bg-black/40 hover:bg-black/60 p-1.5 rounded-md transition cursor-pointer"
                   aria-label="Expand to fullscreen"

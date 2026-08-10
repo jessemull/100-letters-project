@@ -37,6 +37,7 @@ const LetterSelectorMobile: React.FC<Props> = ({
         </h1>
         {onScrollToText && (
           <button
+            type="button"
             onClick={onScrollToText}
             className="border border-white rounded-md bg-white/10 hover:bg-white/20 px-1.5 py-0.5 md:px-2 md:py-0.5 text-xs md:text-sm font-bold uppercase tracking-wide text-white shadow-sm cursor-pointer transition-colors"
           >
