@@ -319,4 +319,43 @@ describe('useSWRQuery', () => {
 
     expect(pushMock).toHaveBeenCalledWith('/login');
   });
+
+  it('Ignores stale fetchMore results after the path changes.', async () => {
+    const existingData = { data: ['existing'] };
+    let resolveFetch: (value: unknown) => void = () => {};
+
+    global.fetch = jest.fn().mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolveFetch = resolve;
+        }),
+    );
+
+    mockUseSWR.mockImplementation(() => ({
+      data: existingData,
+      isLoading: false,
+    }));
+
+    const { result, rerender } = renderHook(
+      ({ path }) => useSWRQuery({ path, token: 'abc123' }),
+      { initialProps: { path: '/letters?q=a' } },
+    );
+
+    let fetchMorePromise: Promise<void>;
+    await act(async () => {
+      fetchMorePromise = result.current.fetchMore('/letters?q=a&page=2');
+    });
+
+    rerender({ path: '/letters?q=b' });
+
+    await act(async () => {
+      resolveFetch({
+        ok: true,
+        json: async () => ({ data: ['stale page'] }),
+      });
+      await fetchMorePromise!;
+    });
+
+    expect(result.current.data).toEqual(existingData);
+  });
 });

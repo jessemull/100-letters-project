@@ -1,5 +1,3 @@
-'use client';
-
 import PageLayout from '../page.layout';
 import React, { Suspense } from 'react';
 import { CorrespondenceNavigator } from '@components/Correspondence';

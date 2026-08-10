@@ -74,7 +74,7 @@ const Login = () => {
   };
 
   return (
-    <div className="p-4 flex items-center justify-center items-center md:pt-16 md:pb-16">
+    <div className="p-4 flex justify-center items-center md:pt-16 md:pb-16">
       <div className="w-full sm:w-full sm-tablet:w-4/5 md-tablet:w-1/2 md:w-1/2 lg:w-1/3 xl:w-1/5 flex flex-col justify-center items-center space-y-4">
         <h1 className="self-start text-white text-3xl font-semibold">Login</h1>
         <form
@@ -102,6 +102,7 @@ const Login = () => {
             IconStart={Lock}
             autocomplete="current-password"
             errors={inputErrors.password}
+            iconEndLabel={isPasswordVisible ? 'Hide password' : 'Show password'}
             id="password-text-input"
             label="Password"
             onChange={({ target: { value } }) =>
@@ -113,7 +114,14 @@ const Login = () => {
             value={values.password}
           />
           {networkError && (
-            <div className="w-full text-red-400 text-base">{networkError}</div>
+            <div
+              aria-live="assertive"
+              className="w-full text-red-400 text-base"
+              id="login-network-error"
+              role="alert"
+            >
+              {networkError}
+            </div>
           )}
           <div className="w-full pt-2 space-y-5">
             <Button

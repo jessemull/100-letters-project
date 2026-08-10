@@ -38,12 +38,15 @@ const AddImageItem = ({
     <div className="p-4 backdrop-blur-md bg-white/10 border border-white rounded-xl transition-transform transform hover:scale-[1.01] cursor-pointer space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold text-white">Add New Image</h2>
-        <X
+        <button
+          aria-label="Close add image"
+          className="cursor-pointer text-white"
           data-testid="add-image-close-icon"
-          className="cursor-pointer"
-          color="white"
           onClick={resetAddNewImage}
-        />
+          type="button"
+        >
+          <X aria-hidden color="white" />
+        </button>
       </div>
       <div className="flex flex-col">
         <div className="flex flex-col space-y-4 md:flex-row md:space-x-4 md:space-y-0">
@@ -88,6 +91,7 @@ const AddImageItem = ({
       </div>
       <Button
         disabled={disableUploadButton}
+        htmlType="button"
         id="upload-image"
         onClick={uploadImage}
         value="Upload Image +"

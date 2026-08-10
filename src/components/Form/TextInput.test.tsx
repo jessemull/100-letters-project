@@ -54,6 +54,7 @@ describe('TextInput Component', () => {
     render(
       <TextInput
         IconStart={Eye}
+        iconStartLabel="Toggle visibility"
         id="password"
         onChange={handleChangeMock}
         placeholder="Enter your password"
@@ -63,7 +64,7 @@ describe('TextInput Component', () => {
       />,
     );
 
-    const iconStart = screen.getByTestId('password-text-input-icon-start');
+    const iconStart = screen.getByRole('button', { name: 'Toggle visibility' });
 
     fireEvent.click(iconStart);
 
@@ -74,6 +75,7 @@ describe('TextInput Component', () => {
     render(
       <TextInput
         IconEnd={EyeOff}
+        iconEndLabel="Hide password"
         id="password"
         onChange={handleChangeMock}
         placeholder="Enter your password"
@@ -83,7 +85,7 @@ describe('TextInput Component', () => {
       />,
     );
 
-    const iconEnd = screen.getByTestId('password-text-input-icon-end');
+    const iconEnd = screen.getByRole('button', { name: 'Hide password' });
 
     fireEvent.click(iconEnd);
 
@@ -101,6 +103,10 @@ describe('TextInput Component', () => {
         errors={['Invalid username', 'Username too short']}
       />,
     );
+
+    const input = screen.getByPlaceholderText('Enter your username');
+    expect(input).toHaveAttribute('aria-invalid', 'true');
+    expect(input).toHaveAttribute('aria-describedby', 'username-errors');
 
     const errorList = screen.getByRole('list');
     expect(errorList).toBeInTheDocument();

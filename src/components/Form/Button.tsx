@@ -3,6 +3,7 @@ import { ButtonVariant } from '@ts-types/form';
 import { Progress } from '@components/Form';
 
 interface ButtonProps {
+  'data-testid'?: string;
   disabled?: boolean;
   htmlType?: 'button' | 'submit' | 'reset';
   id: string;
@@ -14,6 +15,7 @@ interface ButtonProps {
 }
 
 const Button: React.FC<ButtonProps> = ({
+  'data-testid': dataTestId = 'button',
   disabled,
   htmlType = 'button',
   id,
@@ -54,7 +56,7 @@ const Button: React.FC<ButtonProps> = ({
         aria-busy={loading ? 'true' : 'false'}
         aria-label={loading ? 'Submitting...' : value}
         className={`w-full h-12 text-base leading-[30px] rounded-[25px] border ${buttonClasses}`}
-        data-testid="button"
+        data-testid={dataTestId}
         disabled={disabled || loading}
         id={id}
         onClick={disabled || loading ? undefined : onClick}

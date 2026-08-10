@@ -5,8 +5,11 @@ interface Props {
   label?: string;
   IconEnd?: ElementType;
   IconStart?: ElementType;
+  ariaLabel?: string;
   autocomplete?: string;
   errors?: string | string[];
+  iconEndLabel?: string;
+  iconStartLabel?: string;
   id: string;
   onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
   onClick?: () => void;
@@ -23,8 +26,11 @@ const TextInput = forwardRef<HTMLInputElement, Props>(
       label,
       IconEnd,
       IconStart,
+      ariaLabel,
       autocomplete,
       errors,
+      iconEndLabel,
+      iconStartLabel,
       id,
       onChange,
       onClick,
@@ -48,6 +54,9 @@ const TextInput = forwardRef<HTMLInputElement, Props>(
       return 'px-4';
     }, [IconStart, IconEnd]);
 
+    const errorId = `${id}-errors`;
+    const hasErrors = errorsArray.length > 0;
+
     return (
       <div className="relative w-full">
         {label && (
@@ -56,17 +65,31 @@ const TextInput = forwardRef<HTMLInputElement, Props>(
           </label>
         )}
         <div className="relative">
-          {IconStart && (
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white">
-              <IconStart
-                className="w-5 h-5"
+          {IconStart &&
+            (onIconStartClick ? (
+              <button
+                aria-label={iconStartLabel ?? 'Input action'}
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-white cursor-pointer"
                 data-testid="password-text-input-icon-start"
                 onClick={onIconStartClick}
-              />
-            </div>
-          )}
+                type="button"
+              >
+                <IconStart aria-hidden className="w-5 h-5" />
+              </button>
+            ) : (
+              <div
+                aria-hidden
+                className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none text-white"
+                data-testid="password-text-input-icon-start"
+              >
+                <IconStart className="w-5 h-5" />
+              </div>
+            ))}
           <input
             ref={ref}
+            aria-describedby={hasErrors ? errorId : undefined}
+            aria-invalid={hasErrors}
+            aria-label={label ? undefined : (ariaLabel ?? placeholder)}
             autoComplete={autocomplete}
             className={`w-full h-12 rounded-full bg-white/25 border border-white text-white text-base placeholder-white/70 focus:outline-none ${paddingClasses}`}
             data-testid="text-input"
@@ -77,18 +100,32 @@ const TextInput = forwardRef<HTMLInputElement, Props>(
             type={type}
             value={value}
           />
-          {IconEnd && (
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-white">
-              <IconEnd
-                className="w-5 h-5 cursor-pointer"
+          {IconEnd &&
+            (onIconEndClick ? (
+              <button
+                aria-label={iconEndLabel ?? 'Input action'}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-white cursor-pointer"
                 data-testid="password-text-input-icon-end"
                 onClick={onIconEndClick}
-              />
-            </div>
-          )}
+                type="button"
+              >
+                <IconEnd aria-hidden className="w-5 h-5" />
+              </button>
+            ) : (
+              <div
+                aria-hidden
+                className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white"
+                data-testid="password-text-input-icon-end"
+              >
+                <IconEnd className="w-5 h-5" />
+              </div>
+            ))}
         </div>
-        {errorsArray.length > 0 && (
-          <ul className="pl-4 mt-2 list-none text-red-400 text-base">
+        {hasErrors && (
+          <ul
+            className="pl-4 mt-2 list-none text-red-400 text-base"
+            id={errorId}
+          >
             {errorsArray.map((error) => (
               <li key={error}>{error}</li>
             ))}

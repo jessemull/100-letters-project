@@ -9,6 +9,7 @@ import {
   LogIn,
   LogOut,
   HandHelping,
+  type LucideProps,
 } from 'lucide-react';
 import { baseMenuClass, iconMenuClass } from '@constants/menu';
 import { useMemo } from 'react';
@@ -43,7 +44,7 @@ const MenuNavItems: React.FC<Props> = ({
   };
 
   const renderIconWithTooltip = (
-    IconComponent: React.ComponentType<any>,
+    IconComponent: React.ComponentType<LucideProps>,
     label: string,
   ) =>
     collapsed ? (

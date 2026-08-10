@@ -355,7 +355,13 @@ const LetterForm = () => {
     </div>
   ) : (
     <>
-      <div className="p-6 w-full max-w-3xl mx-auto space-y-6 md:pt-16 md:pb-16">
+      <form
+        className="p-6 w-full max-w-3xl mx-auto space-y-6 md:pt-16 md:pb-16"
+        onSubmit={(event) => {
+          event.preventDefault();
+          handleSubmit();
+        }}
+      >
         <div>
           <h1 className="text-3xl font-semibold text-white">Letter Form</h1>
           {values.correspondenceId && (
@@ -515,6 +521,7 @@ const LetterForm = () => {
                 ) : (
                   <Button
                     data-testid="add-image-button"
+                    htmlType="button"
                     id="add-image"
                     onClick={() => setIsAddingImage(true)}
                     value="Add Image +"
@@ -525,21 +532,26 @@ const LetterForm = () => {
           </div>
         )}
         <div className="flex flex-col-reverse md:flex-row justify-between gap-4 pt-6">
-          <Button id="cancel" onClick={handleCancel} value="Cancel" />
+          <Button
+            htmlType="button"
+            id="cancel"
+            onClick={handleCancel}
+            value="Cancel"
+          />
           <Button
             disabled={!isDirty || Object.keys(errors).length > 0}
+            htmlType="submit"
             id="submit"
             loading={isUpdating}
-            onClick={handleSubmit}
             value={letterId ? 'Update' : 'Create'}
           />
         </div>
-      </div>
+      </form>
       <ConfirmationModal
         isOpen={isConfirmationModalOpen}
         onClose={closeConfirmationModal}
         onConfirm={onConfirmDelete}
-        title="Delete Letter"
+        title="Delete Image"
       />
     </>
   );

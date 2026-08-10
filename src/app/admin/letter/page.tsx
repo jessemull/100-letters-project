@@ -1,5 +1,3 @@
-'use client';
-
 import LetterForm from '@components/Admin/Letters/LetterForm';
 import PageLayout from '@pages/page.layout';
 import React, { Suspense } from 'react';

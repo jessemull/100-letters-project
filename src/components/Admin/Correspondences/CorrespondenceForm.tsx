@@ -209,221 +209,235 @@ const CorrespondenceForm = () => {
       <Progress color="white" size={16} />
     </div>
   ) : (
-    <div className="p-6 w-full max-w-3xl mx-auto space-y-6 md:pt-16 md:pb-16">
-      <div>
-        <h1 className="text-3xl font-semibold text-white">
-          Correspondence Form
-        </h1>
-        <div className="space-y-4 pt-6">
-          <h2 className="text-xl font-semibold text-white">Correspondence</h2>
-          <TextInput
-            errors={errors.title}
-            id="title"
-            label="Title"
-            onChange={({ target: { value } }) => updateField('title', value)}
-            placeholder="Title"
-            value={values.title}
-            type="text"
-          />
-          <Select
-            errors={errors.status}
-            id="status"
-            label="Status"
-            onChange={({ target: { value } }) =>
-              updateField('status', value as Status)
-            }
-            options={correspondenceStatusOptions}
-            value={values.status}
-          />
-        </div>
-        <div className="space-y-4 pt-6">
-          <h2 className="text-xl font-semibold text-white">Reason</h2>
-          <Select
-            errors={errors['reason.category']}
-            id="category"
-            label="Category"
-            onChange={({ target: { value } }) =>
-              updateField('reason.category', value as Category)
-            }
-            options={correspondenceCategoryOptions}
-            value={values.reason?.category}
-          />
-          <TextArea
-            errors={errors['reason.description']}
-            id="reason-description"
-            label="Description"
-            onChange={({ target: { value } }) =>
-              updateField('reason.description', value)
-            }
-            placeholder="Reason for writing"
-            value={values.reason.description}
-          />
-        </div>
-        <div className="space-y-4 pt-6">
-          <h2 className="text-xl font-semibold text-white">Recipient</h2>
-          <TextInput
-            errors={errors['recipient.firstName']}
-            id="firstName"
-            label="First Name"
-            onChange={({ target: { value } }) =>
-              updateField('recipient.firstName', value)
-            }
-            placeholder="First Name"
-            value={values.recipient.firstName}
-            type="text"
-          />
-          <TextInput
-            errors={errors['recipient.lastName']}
-            id="lastName"
-            label="Last Name"
-            onChange={({ target: { value } }) =>
-              updateField('recipient.lastName', value)
-            }
-            placeholder="Last Name"
-            value={values.recipient.lastName}
-            type="text"
-          />
-          <TextInput
-            errors={errors['recipient.organization']}
-            id="organization"
-            label="Organization"
-            onChange={({ target: { value } }) =>
-              updateField('recipient.organization', value)
-            }
-            placeholder="Organization"
-            value={values.recipient.organization || ''}
-            type="text"
-          />
-          <TextInput
-            errors={errors['recipient.occupation']}
-            id="occupation"
-            label="Occupation"
-            onChange={({ target: { value } }) =>
-              updateField('recipient.occupation', value)
-            }
-            placeholder="Occupation"
-            value={values.recipient.occupation || ''}
-            type="text"
-          />
-          <TextArea
-            errors={errors['recipient.description']}
-            id="description"
-            label="Description"
-            onChange={({ target: { value } }) =>
-              updateField('recipient.description', value)
-            }
-            placeholder="Description"
-            value={values.recipient.description || ''}
-          />
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <>
+      <form
+        className="p-6 w-full max-w-3xl mx-auto space-y-6 md:pt-16 md:pb-16"
+        onSubmit={(event) => {
+          event.preventDefault();
+          handleSubmit();
+        }}
+      >
+        <div>
+          <h1 className="text-3xl font-semibold text-white">
+            Correspondence Form
+          </h1>
+          <div className="space-y-4 pt-6">
+            <h2 className="text-xl font-semibold text-white">Correspondence</h2>
             <TextInput
-              errors={errors['recipient.address.street']}
-              id="street"
-              label="Street"
-              onChange={({ target: { value } }) =>
-                updateField('recipient.address.street', value)
-              }
-              placeholder="Street"
-              value={values.recipient.address.street}
+              errors={errors.title}
+              id="title"
+              label="Title"
+              onChange={({ target: { value } }) => updateField('title', value)}
+              placeholder="Title"
+              value={values.title}
               type="text"
             />
-            <TextInput
-              errors={errors['recipient.address.city']}
-              id="city"
-              label="City"
+            <Select
+              errors={errors.status}
+              id="status"
+              label="Status"
               onChange={({ target: { value } }) =>
-                updateField('recipient.address.city', value)
+                updateField('status', value as Status)
               }
-              placeholder="City"
-              value={values.recipient.address.city}
-              type="text"
-            />
-            <TextInput
-              errors={errors['recipient.address.state']}
-              id="state"
-              label="State"
-              onChange={({ target: { value } }) =>
-                updateField('recipient.address.state', value)
-              }
-              placeholder="State"
-              value={values.recipient.address.state}
-              type="text"
-            />
-            <TextInput
-              errors={errors['recipient.address.postalCode']}
-              id="postalCode"
-              label="Postal Code"
-              onChange={({ target: { value } }) =>
-                updateField('recipient.address.postalCode', value)
-              }
-              placeholder="Postal Code"
-              value={values.recipient.address.postalCode}
-              type="text"
-            />
-            <TextInput
-              errors={errors['recipient.address.country']}
-              id="country"
-              label="Country"
-              onChange={({ target: { value } }) =>
-                updateField('recipient.address.country', value)
-              }
-              placeholder="Country"
-              value={values.recipient.address.country}
-              type="text"
+              options={correspondenceStatusOptions}
+              value={values.status}
             />
           </div>
-        </div>
-        {correspondenceId && (
           <div className="space-y-4 pt-6">
-            <h2 className="text-xl font-semibold text-white">Letters</h2>
-            <div className="flex justify-center flex-col space-y-4">
-              {isDeleting ? (
-                <div className="w-full flex justify-center items-center min-h-[200px]">
-                  <Progress color="white" size={16} />
-                </div>
-              ) : (
-                values.letters.map((letter) => (
-                  <LetterItem
-                    key={letter?.letterId}
-                    data={letter}
-                    onEdit={onEdit}
-                    onDelete={onDelete}
-                  />
-                ))
-              )}
-              <div className="lg:self-center pt-1 lg:w-1/2">
-                <Button
-                  id="add-letter"
-                  onClick={onAddLetter}
-                  value="Add Letter +"
-                />
-              </div>
+            <h2 className="text-xl font-semibold text-white">Reason</h2>
+            <Select
+              errors={errors['reason.category']}
+              id="category"
+              label="Category"
+              onChange={({ target: { value } }) =>
+                updateField('reason.category', value as Category)
+              }
+              options={correspondenceCategoryOptions}
+              value={values.reason?.category}
+            />
+            <TextArea
+              errors={errors['reason.description']}
+              id="reason-description"
+              label="Description"
+              onChange={({ target: { value } }) =>
+                updateField('reason.description', value)
+              }
+              placeholder="Reason for writing"
+              value={values.reason.description}
+            />
+          </div>
+          <div className="space-y-4 pt-6">
+            <h2 className="text-xl font-semibold text-white">Recipient</h2>
+            <TextInput
+              errors={errors['recipient.firstName']}
+              id="firstName"
+              label="First Name"
+              onChange={({ target: { value } }) =>
+                updateField('recipient.firstName', value)
+              }
+              placeholder="First Name"
+              value={values.recipient.firstName}
+              type="text"
+            />
+            <TextInput
+              errors={errors['recipient.lastName']}
+              id="lastName"
+              label="Last Name"
+              onChange={({ target: { value } }) =>
+                updateField('recipient.lastName', value)
+              }
+              placeholder="Last Name"
+              value={values.recipient.lastName}
+              type="text"
+            />
+            <TextInput
+              errors={errors['recipient.organization']}
+              id="organization"
+              label="Organization"
+              onChange={({ target: { value } }) =>
+                updateField('recipient.organization', value)
+              }
+              placeholder="Organization"
+              value={values.recipient.organization || ''}
+              type="text"
+            />
+            <TextInput
+              errors={errors['recipient.occupation']}
+              id="occupation"
+              label="Occupation"
+              onChange={({ target: { value } }) =>
+                updateField('recipient.occupation', value)
+              }
+              placeholder="Occupation"
+              value={values.recipient.occupation || ''}
+              type="text"
+            />
+            <TextArea
+              errors={errors['recipient.description']}
+              id="description"
+              label="Description"
+              onChange={({ target: { value } }) =>
+                updateField('recipient.description', value)
+              }
+              placeholder="Description"
+              value={values.recipient.description || ''}
+            />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <TextInput
+                errors={errors['recipient.address.street']}
+                id="street"
+                label="Street"
+                onChange={({ target: { value } }) =>
+                  updateField('recipient.address.street', value)
+                }
+                placeholder="Street"
+                value={values.recipient.address.street}
+                type="text"
+              />
+              <TextInput
+                errors={errors['recipient.address.city']}
+                id="city"
+                label="City"
+                onChange={({ target: { value } }) =>
+                  updateField('recipient.address.city', value)
+                }
+                placeholder="City"
+                value={values.recipient.address.city}
+                type="text"
+              />
+              <TextInput
+                errors={errors['recipient.address.state']}
+                id="state"
+                label="State"
+                onChange={({ target: { value } }) =>
+                  updateField('recipient.address.state', value)
+                }
+                placeholder="State"
+                value={values.recipient.address.state}
+                type="text"
+              />
+              <TextInput
+                errors={errors['recipient.address.postalCode']}
+                id="postalCode"
+                label="Postal Code"
+                onChange={({ target: { value } }) =>
+                  updateField('recipient.address.postalCode', value)
+                }
+                placeholder="Postal Code"
+                value={values.recipient.address.postalCode}
+                type="text"
+              />
+              <TextInput
+                errors={errors['recipient.address.country']}
+                id="country"
+                label="Country"
+                onChange={({ target: { value } }) =>
+                  updateField('recipient.address.country', value)
+                }
+                placeholder="Country"
+                value={values.recipient.address.country}
+                type="text"
+              />
             </div>
           </div>
-        )}
-      </div>
-      <div className="flex flex-col-reverse md:flex-row justify-between gap-4 pt-6">
-        <Button id="cancel" onClick={handleCancel} value="Cancel" />
-        <Button
-          disabled={
-            !isDirty ||
-            Object.keys(errors).length > 0 ||
-            isLoading ||
-            isDeleting
-          }
-          id="submit"
-          loading={isUpdating}
-          onClick={handleSubmit}
-          value={correspondenceId ? 'Update' : 'Create'}
-        />
-      </div>
+          {correspondenceId && (
+            <div className="space-y-4 pt-6">
+              <h2 className="text-xl font-semibold text-white">Letters</h2>
+              <div className="flex justify-center flex-col space-y-4">
+                {isDeleting ? (
+                  <div className="w-full flex justify-center items-center min-h-[200px]">
+                    <Progress color="white" size={16} />
+                  </div>
+                ) : (
+                  values.letters.map((letter) => (
+                    <LetterItem
+                      key={letter?.letterId}
+                      data={letter}
+                      onEdit={onEdit}
+                      onDelete={onDelete}
+                    />
+                  ))
+                )}
+                <div className="lg:self-center pt-1 lg:w-1/2">
+                  <Button
+                    htmlType="button"
+                    id="add-letter"
+                    onClick={onAddLetter}
+                    value="Add Letter +"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+        <div className="flex flex-col-reverse md:flex-row justify-between gap-4 pt-6">
+          <Button
+            htmlType="button"
+            id="cancel"
+            onClick={handleCancel}
+            value="Cancel"
+          />
+          <Button
+            disabled={
+              !isDirty ||
+              Object.keys(errors).length > 0 ||
+              isLoading ||
+              isDeleting
+            }
+            htmlType="submit"
+            id="submit"
+            loading={isUpdating}
+            value={correspondenceId ? 'Update' : 'Create'}
+          />
+        </div>
+      </form>
       <ConfirmationModal
         isOpen={isConfirmationModalOpen}
         onClose={closeConfirmationModal}
         onConfirm={onConfirmDelete}
         title="Delete Letter"
       />
-    </div>
+    </>
   );
 };
 

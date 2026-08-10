@@ -62,7 +62,7 @@ Residual audit findings are mostly transitive via `@lhci/cli` (e.g. nested `uuid
 - Next **16** + Tailwind **4** + React **19** + Jest **30** + Husky **9**.
 - Factories use `crypto.randomUUID()` (no direct `uuid` dependency).
 - `@faker-js/faker` v10 is ESM; Jest transforms it via `transformIgnorePatterns`.
-- Some `eslint-plugin-react-hooks` v7 Compiler rules remain off in `eslint.config.mjs` pending gradual enablement.
+- ESLint uses `eslint-config-next/core-web-vitals` plus Prettier and unused-import rules in `eslint.config.mjs` (no Compiler-rule overrides currently).
 
 ---
 

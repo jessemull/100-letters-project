@@ -147,6 +147,7 @@ const ImageItem = ({ data, deleteImage, letter, onUpdateImage }: Props) => {
                     className="text-white hover:text-gray-400 cursor-pointer"
                     aria-label="Full Screen"
                     onClick={() => setIsLightboxOpen(true)}
+                    type="button"
                   >
                     <Fullscreen
                       data-testid="full-screen-button-icon"
@@ -158,6 +159,7 @@ const ImageItem = ({ data, deleteImage, letter, onUpdateImage }: Props) => {
                     className="text-white hover:text-gray-400 cursor-pointer"
                     aria-label="Edit"
                     onClick={() => (isOpen ? setIsOpen(false) : openEdit())}
+                    type="button"
                   >
                     <PenSquare
                       data-testid="edit-button-icon"
@@ -169,6 +171,7 @@ const ImageItem = ({ data, deleteImage, letter, onUpdateImage }: Props) => {
                     className="text-white hover:text-gray-400 cursor-pointer"
                     aria-label="Delete"
                     onClick={() => deleteImage(data.id)}
+                    type="button"
                   >
                     <Trash2 className="w-6 h-6" />
                   </button>

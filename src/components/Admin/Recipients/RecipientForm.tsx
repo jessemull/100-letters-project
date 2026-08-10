@@ -115,7 +115,13 @@ const RecipientForm = () => {
       <Progress color="white" size={16} />
     </div>
   ) : (
-    <div className="p-6 md:p-12 w-full max-w-3xl mx-auto space-y-6 md:pt-16 md:pb-16">
+    <form
+      className="p-6 md:p-12 w-full max-w-3xl mx-auto space-y-6 md:pt-16 md:pb-16"
+      onSubmit={(event) => {
+        event.preventDefault();
+        handleSubmit();
+      }}
+    >
       <h1 className="text-3xl font-semibold text-white">Recipient Form</h1>
       <h2 className="text-xl font-medium text-white pt-4">
         Personal Information
@@ -224,16 +230,21 @@ const RecipientForm = () => {
         />
       </div>
       <div className="flex flex-col-reverse md:flex-row justify-between gap-4 pt-6">
-        <Button id="cancel" onClick={handleCancel} value="Cancel" />
         <Button
-          id="submit"
-          onClick={handleSubmit}
-          loading={isUpdating}
+          htmlType="button"
+          id="cancel"
+          onClick={handleCancel}
+          value="Cancel"
+        />
+        <Button
           disabled={!isDirty || Object.keys(errors).length > 0}
+          htmlType="submit"
+          id="submit"
+          loading={isUpdating}
           value={recipientId ? 'Update' : 'Create'}
         />
       </div>
-    </div>
+    </form>
   );
 };
 

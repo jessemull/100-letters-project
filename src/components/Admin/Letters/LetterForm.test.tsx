@@ -119,7 +119,7 @@ describe('LetterForm Component', () => {
     const mutateMock = jest.fn().mockResolvedValue({});
     (useSWRMutation as jest.Mock).mockImplementation(({ onSuccess }) => ({
       isLoading: false,
-      mutate: async ({ body }: any) => {
+      mutate: async ({ body }: { body?: unknown }) => {
         onSuccess?.();
         mutateMock({ body });
       },
@@ -470,7 +470,7 @@ describe('LetterForm Component', () => {
     const mutateMock = jest.fn().mockResolvedValue({});
     (useSWRMutation as jest.Mock).mockImplementation(({ onError }) => ({
       isLoading: false,
-      mutate: async ({ body }: any) => {
+      mutate: async ({ body }: { body?: unknown }) => {
         onError?.({});
         mutateMock({ body });
       },
@@ -535,7 +535,7 @@ describe('LetterForm Component', () => {
     const mutateMock = jest.fn().mockResolvedValue({});
     (useSWRMutation as jest.Mock).mockImplementation(({ onError }) => ({
       isLoading: false,
-      mutate: async ({ body }: any) => {
+      mutate: async ({ body }: { body?: unknown }) => {
         onError?.({ error: 'Mock error!', status: 400 });
         mutateMock({ body });
       },
@@ -613,7 +613,7 @@ describe('LetterForm Component', () => {
     (useSearchParams as jest.Mock).mockReturnValue({ get: () => '123' });
     (useSWRMutation as jest.Mock).mockImplementation(({ onSuccess }) => ({
       isLoading: false,
-      mutate: async ({ body }: any) => {
+      mutate: async ({ body }: { body?: unknown }) => {
         onSuccess?.({ response: { data: { imageURLs: [] } } });
         mutateMock({ body });
       },

@@ -125,4 +125,19 @@ describe('Button Component', () => {
     const results = await axe(container);
     expect(results).toHaveNoViolations();
   });
+
+  it('Forwards a custom data-testid to the input.', () => {
+    render(
+      <Button
+        data-testid="confirmation-modal-cancel-button"
+        id="cancel"
+        onClick={jest.fn()}
+        value="Cancel"
+      />,
+    );
+
+    expect(
+      screen.getByTestId('confirmation-modal-cancel-button'),
+    ).toBeInTheDocument();
+  });
 });

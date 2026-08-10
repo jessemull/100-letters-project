@@ -4,7 +4,7 @@ import useSWR, { mutate as globalMutate } from 'swr';
 import { UseSWRQueryOptions } from '@ts-types/hooks';
 import { defaultMerge } from '@util/cache';
 import { useRouter } from 'next/navigation';
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -18,14 +18,23 @@ export const useSWRQuery = <T = unknown>({
   const [loadingMore, setLoadingMore] = useState(false);
   const [mergedOverride, setMergedOverride] = useState<T>();
   const [trackedPath, setTrackedPath] = useState(path);
+  const [fetchMoreGeneration, setFetchMoreGeneration] = useState(0);
   const [unauthorized, setUnauthorized] = useState(false);
   const router = useRouter();
+  const fetchMoreGenerationRef = useRef(0);
+  const pathRef = useRef(path);
 
   // Reset pagination merge when the query path changes.
   if (path !== trackedPath) {
     setTrackedPath(path);
     setMergedOverride(undefined);
+    setFetchMoreGeneration((generation) => generation + 1);
   }
+
+  useEffect(() => {
+    pathRef.current = path;
+    fetchMoreGenerationRef.current = fetchMoreGeneration;
+  }, [path, fetchMoreGeneration]);
 
   const fetcher = useMemo(() => {
     if (!token) return null;
@@ -91,13 +100,25 @@ export const useSWRQuery = <T = unknown>({
 
   const fetchMore = useCallback(
     async (newPath: string) => {
-      if (!token) return;
+      if (!token || !fetcher) return;
+
+      const generation = fetchMoreGenerationRef.current;
+      const requestPath = pathRef.current;
 
       setLoadingMore(true);
 
       try {
         const url = `${API_BASE_URL}${newPath}`;
-        const nextPageData = await fetcher!(url);
+        const nextPageData = await fetcher(url);
+
+        // Drop stale pages when the primary query path changed mid-flight.
+        if (
+          generation !== fetchMoreGenerationRef.current ||
+          requestPath !== pathRef.current
+        ) {
+          return;
+        }
+
         setMergedOverride((prevData) => {
           const nextData = merge(prevData ?? data, nextPageData);
           setTimeout(() => {
@@ -106,6 +127,13 @@ export const useSWRQuery = <T = unknown>({
           return nextData;
         });
       } catch (err: unknown) {
+        if (
+          generation !== fetchMoreGenerationRef.current ||
+          requestPath !== pathRef.current
+        ) {
+          return;
+        }
+
         const status =
           typeof err === 'object' &&
           err !== null &&
@@ -120,7 +148,9 @@ export const useSWRQuery = <T = unknown>({
           console.error('Error fetching more: ', err);
         }
       } finally {
-        setLoadingMore(false);
+        if (generation === fetchMoreGenerationRef.current) {
+          setLoadingMore(false);
+        }
       }
     },
     [token, merge, fullUrl, fetcher, data],

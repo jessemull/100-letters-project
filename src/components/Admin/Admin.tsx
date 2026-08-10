@@ -106,8 +106,8 @@ const Admin = () => {
           <div className="mb-6">
             <div className="relative w-full">
               <TextInput
-                data-testid="admin-search"
                 IconStart={Search}
+                ariaLabel={activeTab.placeholder}
                 id="admin-search-input"
                 onChange={(e) => setSearchInput(e.target.value)}
                 placeholder={activeTab.placeholder}
