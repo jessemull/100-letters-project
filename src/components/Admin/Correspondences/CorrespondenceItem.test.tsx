@@ -5,6 +5,7 @@ import { axe } from 'jest-axe';
 import { render, screen, fireEvent } from '@testing-library/react';
 
 const mockCorrespondence = CorrespondenceFactory.build();
+const editHref = `/admin/correspondence?correspondenceId=${mockCorrespondence.correspondenceId}`;
 
 describe('CorrespondenceItem Component', () => {
   let consoleSpy: jest.SpyInstance;
@@ -21,7 +22,7 @@ describe('CorrespondenceItem Component', () => {
     render(
       <CorrespondenceItem
         data={mockCorrespondence}
-        onEdit={() => {}}
+        editHref={editHref}
         onDelete={() => {}}
       />,
     );
@@ -33,17 +34,15 @@ describe('CorrespondenceItem Component', () => {
     ).toBeInTheDocument();
   });
 
-  it('Calls onEdit when edit button is clicked.', () => {
-    const onEdit = jest.fn();
+  it('Links the edit control to the correspondence edit route.', () => {
     render(
       <CorrespondenceItem
         data={mockCorrespondence}
+        editHref={editHref}
         onDelete={() => {}}
-        onEdit={onEdit}
       />,
     );
-    fireEvent.click(screen.getByTestId('edit-button'));
-    expect(onEdit).toHaveBeenCalled();
+    expect(screen.getByTestId('edit-button')).toHaveAttribute('href', editHref);
   });
 
   it('Calls onDelete when delete button is clicked.', () => {
@@ -51,8 +50,8 @@ describe('CorrespondenceItem Component', () => {
     render(
       <CorrespondenceItem
         data={mockCorrespondence}
+        editHref={editHref}
         onDelete={onDelete}
-        onEdit={() => {}}
       />,
     );
     const deleteButton = screen.getByTestId('delete-button');
@@ -64,7 +63,7 @@ describe('CorrespondenceItem Component', () => {
     const { container } = render(
       <CorrespondenceItem
         data={mockCorrespondence}
-        onEdit={() => {}}
+        editHref={editHref}
         onDelete={() => {}}
       />,
     );

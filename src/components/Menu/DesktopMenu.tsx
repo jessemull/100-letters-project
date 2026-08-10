@@ -8,6 +8,7 @@ import {
   RecipientSearch,
 } from '@components/Menu';
 import { AnimatePresence, motion } from 'framer-motion';
+import { Progress } from '@components/Form';
 import { useAuth } from '@contexts/AuthProvider';
 import { useSearchData } from '@contexts/SearchProvider';
 
@@ -23,7 +24,7 @@ const panelTransition = {
 
 const DesktopMenu: React.FC<Props> = ({ collapsed, setCollapsed }) => {
   const { isLoggedIn, signOut } = useAuth();
-  const { error: searchError } = useSearchData();
+  const { error: searchError, loading: searchLoading } = useSearchData();
 
   return (
     <div
@@ -93,6 +94,13 @@ const DesktopMenu: React.FC<Props> = ({ collapsed, setCollapsed }) => {
                         Search is temporarily unavailable. Please try again
                         later.
                       </p>
+                    </>
+                  ) : searchLoading ? (
+                    <>
+                      <hr className="border-t border-white w-full" />
+                      <div className="flex justify-center px-4 py-4">
+                        <Progress color="white" size={16} />
+                      </div>
                     </>
                   ) : (
                     <>

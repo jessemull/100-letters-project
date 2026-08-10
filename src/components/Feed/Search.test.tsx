@@ -63,6 +63,15 @@ describe('Search Component', () => {
     );
   });
 
+  it('Shows progress while search index is loading.', () => {
+    (useCorrespondence as jest.Mock).mockReturnValue({ correspondences: [] });
+    render(<Search loading results={[]} term="x" />);
+    expect(screen.getByTestId('progress')).toBeInTheDocument();
+    expect(
+      screen.queryByText(/No matching letters or people found/i),
+    ).not.toBeInTheDocument();
+  });
+
   it('Renders cards from results when term is present.', () => {
     render(
       <Search

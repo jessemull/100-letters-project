@@ -5,7 +5,6 @@ import { AuthContextType } from '@ts-types/context';
 import { CorrespondencesTab } from '@components/Admin';
 import { axe } from 'jest-axe';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { useRouter } from 'next/navigation';
 
 jest.mock('react-intersection-observer', () => ({
   useInView: jest.fn(() => ({
@@ -24,10 +23,6 @@ jest.mock('@hooks/useSWRMutation', () => ({
   useSWRMutation: jest.fn(),
 }));
 
-jest.mock('next/navigation', () => ({
-  useRouter: jest.fn(),
-}));
-
 jest.mock('@contexts/AuthProvider', () => ({
   __esModule: true,
   ...jest.requireActual('@contexts/AuthProvider'),
@@ -41,7 +36,6 @@ jest.mock('@components/Form/Toast', () => ({
 
 const useSWRQuery = require('@hooks/useSWRQuery').useSWRQuery;
 const useSWRMutation = require('@hooks/useSWRMutation').useSWRMutation;
-const mockPush = jest.fn();
 const mockMutate = jest.fn();
 const testCorrespondence = {
   correspondenceId: '1',
@@ -54,7 +48,6 @@ describe('CorrespondencesTab Component', () => {
     (AuthProvider.useAuth as jest.Mock).mockReturnValue({
       token: 'token',
     } as AuthContextType);
-    (useRouter as jest.Mock).mockReturnValue({ push: mockPush });
     (showToast as jest.Mock).mockClear();
   });
 
@@ -112,16 +105,29 @@ describe('CorrespondencesTab Component', () => {
     });
   });
 
-  it('Navigates to edit correspondence.', () => {
+  it('Links edit control to the correspondence edit route.', () => {
     useSWRQuery.mockReturnValue({
       data: { data: [testCorrespondence], lastEvaluatedKey: '' },
       isLoading: false,
     });
     useSWRMutation.mockReturnValue({ isLoading: false, mutate: jest.fn() });
     render(<CorrespondencesTab search="" />);
-    fireEvent.click(screen.getByTestId('edit-button'));
-    expect(mockPush).toHaveBeenCalledWith(
+    expect(screen.getByTestId('edit-button')).toHaveAttribute(
+      'href',
       '/admin/correspondence?correspondenceId=1',
+    );
+  });
+
+  it('Shows an alert when the correspondences query fails.', () => {
+    useSWRQuery.mockReturnValue({
+      data: undefined,
+      error: { message: 'Failed to load correspondences.' },
+      isLoading: false,
+    });
+    useSWRMutation.mockReturnValue({ isLoading: false, mutate: jest.fn() });
+    render(<CorrespondencesTab search="" />);
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Failed to load correspondences.',
     );
   });
 

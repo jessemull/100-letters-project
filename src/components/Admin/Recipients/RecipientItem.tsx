@@ -1,16 +1,17 @@
 'use client';
 
+import Link from 'next/link';
 import React from 'react';
 import { Recipient } from '@ts-types/recipients';
 import { PenSquare, Trash2 } from 'lucide-react';
 
 interface Props {
   data: Recipient;
-  onEdit: (recipientId: string) => void;
+  editHref: string;
   onDelete: (recipientId: string) => void;
 }
 
-const RecipientItem = ({ data, onDelete, onEdit }: Props) => {
+const RecipientItem = ({ data, editHref, onDelete }: Props) => {
   return (
     <div
       data-testid="card-edit-button"
@@ -24,15 +25,14 @@ const RecipientItem = ({ data, onDelete, onEdit }: Props) => {
           <p className="text-sm text-gray-300">{data?.organization}</p>
         </div>
         <div className="space-x-2 flex items-center justify-center">
-          <button
+          <Link
+            href={editHref}
             data-testid="edit-button"
-            onClick={() => onEdit(data?.recipientId)}
             className="text-white hover:text-gray-400 cursor-pointer"
             aria-label={`Edit recipient ${data?.lastName}, ${data?.firstName}`}
-            type="button"
           >
             <PenSquare className="w-6 h-6" />
-          </button>
+          </Link>
           <button
             data-testid="delete-button"
             onClick={() => onDelete(data?.recipientId)}

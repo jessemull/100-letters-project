@@ -17,7 +17,7 @@ const Category = () => {
   const [term, setTerm] = useState('');
   const [category, setCategory] = useState<string | null>(initialCategory);
 
-  const { error, results } = useSearch({
+  const { error, loading, results } = useSearch({
     type: 'all',
     term: category && !term ? category : term,
     isExactCategory: !!(category && !term),
@@ -70,6 +70,7 @@ const Category = () => {
         )}
         <Search
           error={error}
+          loading={loading}
           term={category || term}
           results={results as CorrespondenceCard[]}
         />

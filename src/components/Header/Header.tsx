@@ -7,7 +7,6 @@ import { MobileMenu } from '@components/Menu';
 import { useAuth } from '@contexts/AuthProvider';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { SearchProvider } from '@contexts/SearchProvider';
 
 const stripeURL = process.env.NEXT_PUBLIC_STRIPE_URL;
 
@@ -87,14 +86,12 @@ const Header = () => {
           </Link>
         )}
       </div>
-      <SearchProvider>
-        <MobileMenu
-          isOpen={isMenuOpen}
-          onClose={() => setIsMenuOpen(false)}
-          isLoggedIn={isLoggedIn}
-          handleLogout={handleLogout}
-        />
-      </SearchProvider>
+      <MobileMenu
+        isOpen={isMenuOpen}
+        onClose={() => setIsMenuOpen(false)}
+        isLoggedIn={isLoggedIn}
+        handleLogout={handleLogout}
+      />
     </header>
   );
 };

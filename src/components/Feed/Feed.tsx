@@ -11,7 +11,7 @@ const Feed = () => {
   const [term, setTerm] = useState('');
   const [showSearch, setShowSearch] = useState(false);
 
-  const { error, results } = useSearch({ type: 'all', term });
+  const { error, loading, results } = useSearch({ type: 'all', term });
 
   const handleTermChange = (value: string) => {
     setTerm(value);
@@ -48,6 +48,7 @@ const Feed = () => {
         {showSearch ? (
           <Search
             error={error}
+            loading={loading}
             term={term}
             results={results as CorrespondenceCard[]}
           />

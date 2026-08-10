@@ -22,6 +22,16 @@ jest.mock('@contexts/AuthProvider', () => ({
   useAuth: jest.fn(),
 }));
 
+jest.mock('@contexts/SearchProvider', () => ({
+  useSearchData: () => ({
+    correspondences: [],
+    recipients: [],
+    letters: [],
+    error: null,
+    loading: false,
+  }),
+}));
+
 describe('Header Component', () => {
   it('Renders header with logged-in state.', async () => {
     (useAuth as jest.Mock).mockReturnValue({

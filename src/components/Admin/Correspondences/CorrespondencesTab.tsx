@@ -14,7 +14,6 @@ import {
 } from '@util/cache';
 import { useAuth } from '@contexts/AuthProvider';
 import { useInView } from 'react-intersection-observer';
-import { useRouter } from 'next/navigation';
 import { useSWRMutation } from '@hooks/useSWRMutation';
 import { useSWRQuery } from '@hooks/useSWRQuery';
 
@@ -26,7 +25,6 @@ const CorrespondencesTab: React.FC<Props> = ({ search }) => {
   const [correspondenceId, setCorrespondenceId] = useState('');
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
 
-  const router = useRouter();
   const { token } = useAuth();
 
   const { data, error, fetchMore, isLoading, loadingMore } =
@@ -77,10 +75,6 @@ const CorrespondencesTab: React.FC<Props> = ({ search }) => {
     },
   });
 
-  const onEdit = (id: string) => {
-    router.push(`/admin/correspondence?correspondenceId=${id}`);
-  };
-
   const onDelete = (id: string) => {
     setCorrespondenceId(id);
     setIsConfirmationModalOpen(true);
@@ -120,7 +114,7 @@ const CorrespondencesTab: React.FC<Props> = ({ search }) => {
             >
               <CorrespondenceItem
                 data={item}
-                onEdit={onEdit}
+                editHref={`/admin/correspondence?correspondenceId=${item.correspondenceId}`}
                 onDelete={onDelete}
               />
             </li>

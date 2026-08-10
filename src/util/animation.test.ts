@@ -39,6 +39,7 @@ describe('generateHearts', () => {
     const result = generateHearts(1);
     const base = baseHeartConfig[0];
 
+    expect(result[0].id).toBe('heart-0');
     expect(result[0].delay).toBeCloseTo(base.delay + 5);
     expect(result[0].baseOffsetY).toBeCloseTo(base.baseOffsetY);
     expect(result[0].baseOffsetX).toBeCloseTo(base.baseOffsetX);

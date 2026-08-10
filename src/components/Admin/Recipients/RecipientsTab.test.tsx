@@ -7,7 +7,6 @@ import { RecipientFactory } from '@factories/recipient';
 import { RecipientsTab } from '@components/Admin';
 import { axe } from 'jest-axe';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { useRouter } from 'next/navigation';
 
 jest.mock('react-intersection-observer', () => ({
   useInView: jest.fn(() => ({
@@ -26,10 +25,6 @@ jest.mock('@hooks/useSWRMutation', () => ({
   useSWRMutation: jest.fn(),
 }));
 
-jest.mock('next/navigation', () => ({
-  useRouter: jest.fn(),
-}));
-
 jest.mock('@contexts/AuthProvider', () => ({
   __esModule: true,
   ...jest.requireActual('@contexts/AuthProvider'),
@@ -41,7 +36,6 @@ jest.mock('@components/Form/Toast', () => ({
   default: jest.fn(),
 }));
 
-const mockPush = jest.fn();
 const mockMutate = jest.fn();
 const useSWRQuery = require('@hooks/useSWRQuery').useSWRQuery;
 const useSWRMutation = require('@hooks/useSWRMutation').useSWRMutation;
@@ -55,7 +49,6 @@ describe('RecipientsTab Component', () => {
     (AuthProvider.useAuth as jest.Mock).mockReturnValue({
       token: 'test-token',
     } as AuthContextType);
-    (useRouter as jest.Mock).mockReturnValue({ push: mockPush });
     (showToast as jest.Mock).mockClear();
   });
 
@@ -147,7 +140,7 @@ describe('RecipientsTab Component', () => {
     });
   });
 
-  it('Navigates to edit page on edit.', () => {
+  it('Links edit control to the recipient edit route.', () => {
     useSWRQuery.mockImplementation(() => ({
       data: { data: [mockRecipient], lastEvaluatedKey: '' },
       isLoading: false,
@@ -161,9 +154,29 @@ describe('RecipientsTab Component', () => {
     }));
 
     render(<RecipientsTab search="" />);
-    fireEvent.click(screen.getByTestId('edit-button'));
-    expect(mockPush).toHaveBeenCalledWith(
+    expect(screen.getByTestId('edit-button')).toHaveAttribute(
+      'href',
       `/admin/recipient?recipientId=${mockRecipient.recipientId}`,
+    );
+  });
+
+  it('Shows an alert when the recipients query fails.', () => {
+    useSWRQuery.mockImplementation(() => ({
+      data: undefined,
+      error: { message: 'Failed to load recipients.' },
+      isLoading: false,
+    }));
+
+    useSWRMutation.mockImplementation(() => ({
+      error: null,
+      isLoading: false,
+      mutate: jest.fn(),
+      response: {},
+    }));
+
+    render(<RecipientsTab search="" />);
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Failed to load recipients.',
     );
   });
 

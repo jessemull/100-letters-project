@@ -1,6 +1,7 @@
 import DesktopMenu from '@components/Menu/DesktopMenu';
 import { axe } from 'jest-axe';
 import { render, fireEvent, screen } from '@testing-library/react';
+import { useSearchData } from '@contexts/SearchProvider';
 
 jest.mock('@hooks/useSearch', () => ({
   useSearch: jest.fn(() => []),
@@ -20,10 +21,10 @@ jest.mock('@contexts/AuthProvider', () => ({
 }));
 
 jest.mock('@contexts/SearchProvider', () => ({
-  useSearchData: () => ({
+  useSearchData: jest.fn(() => ({
     error: null,
     loading: false,
-  }),
+  })),
 }));
 
 jest.mock('@components/Menu/RecipientSearch', () => ({
@@ -63,6 +64,13 @@ jest.mock('@components/Menu/MenuNavItems', () => ({
 }));
 
 describe('DesktopMenu Component', () => {
+  beforeEach(() => {
+    (useSearchData as jest.Mock).mockReturnValue({
+      error: null,
+      loading: false,
+    });
+  });
+
   it('Calls setCollapsed when toggle button is clicked.', () => {
     const setCollapsed = jest.fn();
     render(<DesktopMenu collapsed={false} setCollapsed={setCollapsed} />);
@@ -113,6 +121,18 @@ describe('DesktopMenu Component', () => {
     fireEvent.click(menuNavItems);
 
     expect(setCollapsed).toHaveBeenCalledWith(true);
+  });
+
+  it('Shows progress while the search index is loading.', () => {
+    (useSearchData as jest.Mock).mockReturnValue({
+      error: null,
+      loading: true,
+    });
+    render(<DesktopMenu collapsed={false} setCollapsed={jest.fn()} />);
+    expect(screen.getByTestId('progress')).toBeInTheDocument();
+    expect(
+      screen.queryByTestId('mock-recipient-search'),
+    ).not.toBeInTheDocument();
   });
 
   it('Has no accessibility violations.', async () => {

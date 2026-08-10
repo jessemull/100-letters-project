@@ -86,9 +86,9 @@ const Envelope = () => {
             <div className="relative w-full h-full">
               <AnimatePresence>
                 {heartsConfig.map(
-                  ({ delay, baseOffsetY, baseOffsetX, baseSize }, index) => (
+                  ({ id, delay, baseOffsetY, baseOffsetX, baseSize }) => (
                     <Heart
-                      key={`heart-${index}`}
+                      key={id}
                       delay={delay}
                       offsetY={baseOffsetY * letterHeight}
                       offsetX={baseOffsetX * letterWidth}

@@ -1,16 +1,17 @@
 import { MobileMenu } from '@components/Menu';
 import { axe } from 'jest-axe';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { useSearchData } from '@contexts/SearchProvider';
 
 jest.mock('@hooks/useSearch', () => ({
   useSearch: jest.fn(() => []),
 }));
 
 jest.mock('@contexts/SearchProvider', () => ({
-  useSearchData: () => ({
+  useSearchData: jest.fn(() => ({
     error: null,
     loading: false,
-  }),
+  })),
 }));
 
 jest.mock('next/navigation', () => ({
@@ -92,6 +93,10 @@ describe('MobileMenu Component', () => {
   beforeEach(() => {
     handleLogout.mockClear();
     onClose.mockClear();
+    (useSearchData as jest.Mock).mockReturnValue({
+      error: null,
+      loading: false,
+    });
   });
 
   it('Does not render when isOpen is false.', () => {
@@ -184,6 +189,25 @@ describe('MobileMenu Component', () => {
     await waitFor(() => {
       expect(onClose).toHaveBeenCalled();
     });
+  });
+
+  it('Shows progress while the search index is loading.', () => {
+    (useSearchData as jest.Mock).mockReturnValue({
+      error: null,
+      loading: true,
+    });
+    render(
+      <MobileMenu
+        isOpen={true}
+        onClose={onClose}
+        isLoggedIn={false}
+        handleLogout={handleLogout}
+      />,
+    );
+    expect(screen.getByTestId('progress')).toBeInTheDocument();
+    expect(
+      screen.queryByTestId('mock-recipient-search'),
+    ).not.toBeInTheDocument();
   });
 
   it('Has no accessibility violations.', async () => {

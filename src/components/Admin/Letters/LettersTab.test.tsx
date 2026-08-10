@@ -5,7 +5,6 @@ import { AuthContextType } from '@ts-types/context';
 import { LettersTab } from '@components/Admin';
 import { axe } from 'jest-axe';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { useRouter } from 'next/navigation';
 
 jest.mock('react-intersection-observer', () => ({
   useInView: jest.fn(() => ({
@@ -24,10 +23,6 @@ jest.mock('@hooks/useSWRMutation', () => ({
   useSWRMutation: jest.fn(),
 }));
 
-jest.mock('next/navigation', () => ({
-  useRouter: jest.fn(),
-}));
-
 jest.mock('@contexts/AuthProvider', () => ({
   __esModule: true,
   ...jest.requireActual('@contexts/AuthProvider'),
@@ -41,7 +36,6 @@ jest.mock('@components/Form/Toast', () => ({
 
 const useSWRQuery = require('@hooks/useSWRQuery').useSWRQuery;
 const useSWRMutation = require('@hooks/useSWRMutation').useSWRMutation;
-const mockPush = jest.fn();
 const mockMutate = jest.fn();
 const testLetter = { letterId: '1', title: 'Test Letter' };
 
@@ -51,7 +45,6 @@ describe('LettersTab Component', () => {
     (AuthProvider.useAuth as jest.Mock).mockReturnValue({
       token: 'token',
     } as AuthContextType);
-    (useRouter as jest.Mock).mockReturnValue({ push: mockPush });
     (showToast as jest.Mock).mockClear();
   });
 
@@ -99,15 +92,30 @@ describe('LettersTab Component', () => {
     });
   });
 
-  it('Navigates to edit letter.', () => {
+  it('Links edit control to the letter edit route.', () => {
     useSWRQuery.mockReturnValue({
       data: { data: [testLetter], lastEvaluatedKey: '' },
       isLoading: false,
     });
     useSWRMutation.mockReturnValue({ isLoading: false, mutate: jest.fn() });
     render(<LettersTab search="" />);
-    fireEvent.click(screen.getByTestId('edit-button'));
-    expect(mockPush).toHaveBeenCalledWith('/admin/letter?letterId=1');
+    expect(screen.getByTestId('edit-button')).toHaveAttribute(
+      'href',
+      '/admin/letter?letterId=1',
+    );
+  });
+
+  it('Shows an alert when the letters query fails.', () => {
+    useSWRQuery.mockReturnValue({
+      data: undefined,
+      error: { message: 'Failed to load letters.' },
+      isLoading: false,
+    });
+    useSWRMutation.mockReturnValue({ isLoading: false, mutate: jest.fn() });
+    render(<LettersTab search="" />);
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Failed to load letters.',
+    );
   });
 
   it('Calls onSuccess and shows success toast.', async () => {

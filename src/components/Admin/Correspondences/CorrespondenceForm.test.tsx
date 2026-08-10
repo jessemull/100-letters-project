@@ -470,13 +470,11 @@ describe('CorrespondenceForm Component', () => {
     });
   });
 
-  it('Should navigate to letter form on edit.', async () => {
+  it('Should link to letter form on edit.', () => {
     (useSearchParams as jest.Mock).mockReturnValue({
       get: jest.fn().mockReturnValue('correspondenceId'),
     });
     const letters = [{ letterId: '1', title: 'Letter 1' }];
-    const push = jest.fn();
-    (useRouter as jest.Mock).mockReturnValue({ push });
     (useSWRQuery as jest.Mock).mockReturnValue({
       data: {
         data: {
@@ -499,11 +497,10 @@ describe('CorrespondenceForm Component', () => {
 
     render(<CorrespondenceForm />);
 
-    fireEvent.click(screen.getByTestId('edit-button'));
-
-    await waitFor(() => {
-      expect(push).toHaveBeenCalled();
-    });
+    expect(screen.getByTestId('edit-button')).toHaveAttribute(
+      'href',
+      '/admin/letter?letterId=1',
+    );
   });
 
   it('Shows toast if fetch error occurs.', () => {

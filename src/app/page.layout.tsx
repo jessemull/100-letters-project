@@ -30,23 +30,25 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => {
             "linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), url('/background.webp')",
         }}
       />
-      <Header />
-      <div className="flex min-h-0 flex-1 overflow-hidden">
-        <aside
-          className={`hidden min-h-0 shrink-0 overflow-hidden lg:flex lg:flex-col ${sidebarWidth} text-white transition-[width] duration-300 ease-in-out`}
-          data-testid="menu-width"
-        >
-          <SearchProvider>
+      <SearchProvider>
+        <Header />
+        <div className="flex min-h-0 flex-1 overflow-hidden">
+          <aside
+            className={`hidden min-h-0 shrink-0 overflow-hidden lg:flex lg:flex-col ${sidebarWidth} text-white transition-[width] duration-300 ease-in-out`}
+            data-testid="menu-width"
+          >
             <DesktopMenu collapsed={collapsed} setCollapsed={setCollapsed} />
-          </SearchProvider>
-        </aside>
-        <main className="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden">
-          <div className="flex min-h-full flex-col justify-between">
-            <div className="pr-2 pl-2 pt-3 pb-3 md:p-0 md:px-8">{children}</div>
-            <Footer />
-          </div>
-        </main>
-      </div>
+          </aside>
+          <main className="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden">
+            <div className="flex min-h-full flex-col justify-between">
+              <div className="pr-2 pl-2 pt-3 pb-3 md:p-0 md:px-8">
+                {children}
+              </div>
+              <Footer />
+            </div>
+          </main>
+        </div>
+      </SearchProvider>
       <Toaster position="top-center" />
     </div>
   );

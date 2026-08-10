@@ -133,10 +133,6 @@ const CorrespondenceForm = () => {
     router.push(`/admin/letter?correspondenceId=${correspondenceId}`);
   };
 
-  const onEdit = (id: string) => {
-    router.push(`/admin/letter?letterId=${id}`);
-  };
-
   const onDelete = (id: string) => {
     setLetterId(id);
     setIsConfirmationModalOpen(true);
@@ -393,7 +389,7 @@ const CorrespondenceForm = () => {
                     <LetterItem
                       key={letter?.letterId}
                       data={letter}
-                      onEdit={onEdit}
+                      editHref={`/admin/letter?letterId=${letter.letterId}`}
                       onDelete={onDelete}
                     />
                   ))

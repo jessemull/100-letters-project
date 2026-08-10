@@ -11,7 +11,6 @@ import { RecipientItem } from '@components/Admin';
 import { deleteRecipientUpdate } from '@util/cache';
 import { useAuth } from '@contexts/AuthProvider';
 import { useInView } from 'react-intersection-observer';
-import { useRouter } from 'next/navigation';
 import { useSWRMutation } from '@hooks/useSWRMutation';
 import { useSWRQuery } from '@hooks/useSWRQuery';
 
@@ -23,7 +22,6 @@ const RecipientsTab: React.FC<Props> = ({ search }) => {
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [recipientId, setRecipientId] = useState('');
 
-  const router = useRouter();
   const { token } = useAuth();
 
   const { data, error, fetchMore, isLoading, loadingMore } =
@@ -59,10 +57,6 @@ const RecipientsTab: React.FC<Props> = ({ search }) => {
       });
     },
   });
-
-  const onEdit = (id: string) => {
-    router.push(`/admin/recipient?recipientId=${id}`);
-  };
 
   const onDelete = (id: string) => {
     setRecipientId(id);
@@ -108,7 +102,11 @@ const RecipientsTab: React.FC<Props> = ({ search }) => {
               key={item.recipientId}
               ref={idx === data?.data.length - 1 ? ref : undefined}
             >
-              <RecipientItem data={item} onDelete={onDelete} onEdit={onEdit} />
+              <RecipientItem
+                data={item}
+                editHref={`/admin/recipient?recipientId=${item.recipientId}`}
+                onDelete={onDelete}
+              />
             </li>
           ))}
           {loadingMore && (

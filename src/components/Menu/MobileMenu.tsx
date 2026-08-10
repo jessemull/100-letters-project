@@ -8,6 +8,7 @@ import {
   RecipientSearch,
 } from '@components/Menu';
 import { FC, useEffect, useRef } from 'react';
+import { Progress } from '@components/Form';
 import { X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useSearchData } from '@contexts/SearchProvider';
@@ -26,7 +27,7 @@ const MobileMenu: FC<Props> = ({
   handleLogout,
 }) => {
   const menuRef = useRef<HTMLDivElement>(null);
-  const { error: searchError } = useSearchData();
+  const { error: searchError, loading: searchLoading } = useSearchData();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -87,6 +88,13 @@ const MobileMenu: FC<Props> = ({
             <p role="alert" className="px-4 py-4 text-sm text-white/80">
               Search is temporarily unavailable. Please try again later.
             </p>
+          </>
+        ) : searchLoading ? (
+          <>
+            <hr className="border-t border-white w-full" />
+            <div className="flex justify-center px-4 py-4">
+              <Progress color="white" size={16} />
+            </div>
           </>
         ) : (
           <>

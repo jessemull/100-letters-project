@@ -10,11 +10,12 @@ import { useInView } from 'react-intersection-observer';
 
 interface Props {
   error?: string | null;
+  loading?: boolean;
   results: CorrespondenceCard[];
   term: string;
 }
 
-const Search: React.FC<Props> = ({ error, results, term }) => {
+const Search: React.FC<Props> = ({ error, loading = false, results, term }) => {
   const [page, setPage] = useState(1);
   const { correspondences } = useCorrespondence();
 
@@ -55,6 +56,17 @@ const Search: React.FC<Props> = ({ error, results, term }) => {
         <p role="alert" className="text-white text-center mt-8 text-lg">
           Search is temporarily unavailable. Please try again later.
         </p>
+        <Categories />
+      </>
+    );
+  }
+
+  if (loading) {
+    return (
+      <>
+        <div className="flex justify-center mt-8">
+          <Progress color="white" size={16} />
+        </div>
         <Categories />
       </>
     );

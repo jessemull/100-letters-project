@@ -9,7 +9,6 @@ import {
 } from '@ts-types/letter';
 import { LetterItem } from '@components/Admin';
 import { useAuth } from '@contexts/AuthProvider';
-import { useRouter } from 'next/navigation';
 import { useSWRMutation } from '@hooks/useSWRMutation';
 import { useSWRQuery } from '@hooks/useSWRQuery';
 import { useInView } from 'react-intersection-observer';
@@ -29,7 +28,6 @@ const LettersTab: React.FC<Props> = ({ search }) => {
   const [letterId, setLetterId] = useState('');
   const [correspondenceId, setCorrespondenceId] = useState('');
 
-  const router = useRouter();
   const { token } = useAuth();
 
   const { data, error, fetchMore, isLoading, loadingMore } =
@@ -85,10 +83,6 @@ const LettersTab: React.FC<Props> = ({ search }) => {
     }
   }, [inView, lastEvaluatedKey, fetchMore, loadingMore, search]);
 
-  const onEdit = (id: string) => {
-    router.push(`/admin/letter?letterId=${id}`);
-  };
-
   const onDelete = (letterId: string, correspondenceId: string) => {
     setCorrespondenceId(correspondenceId);
     setLetterId(letterId);
@@ -124,7 +118,11 @@ const LettersTab: React.FC<Props> = ({ search }) => {
               key={item.letterId}
               ref={idx === data?.data.length - 1 ? ref : undefined}
             >
-              <LetterItem data={item} onDelete={onDelete} onEdit={onEdit} />
+              <LetterItem
+                data={item}
+                editHref={`/admin/letter?letterId=${item.letterId}`}
+                onDelete={onDelete}
+              />
             </li>
           ))}
           {loadingMore && (

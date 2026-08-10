@@ -6,8 +6,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 
 describe('RecipientItem Commponent', () => {
   const mockRecipient = RecipientFactory.build();
-
-  const onEditMock = jest.fn();
+  const editHref = `/admin/recipient?recipientId=${mockRecipient.recipientId}`;
   const onDeleteMock = jest.fn();
 
   beforeEach(() => {
@@ -18,7 +17,7 @@ describe('RecipientItem Commponent', () => {
     render(
       <RecipientItem
         data={mockRecipient}
-        onEdit={onEditMock}
+        editHref={editHref}
         onDelete={onDeleteMock}
       />,
     );
@@ -28,25 +27,23 @@ describe('RecipientItem Commponent', () => {
     ).toBeInTheDocument();
   });
 
-  it('Calls onEdit with correct recipientId when edit button is clicked.', () => {
+  it('Links the edit control to the recipient edit route.', () => {
     render(
       <RecipientItem
         data={mockRecipient}
-        onEdit={onEditMock}
+        editHref={editHref}
         onDelete={onDeleteMock}
       />,
     );
 
-    fireEvent.click(screen.getByTestId('edit-button'));
-    expect(onEditMock).toHaveBeenCalledWith(mockRecipient.recipientId);
-    expect(onEditMock).toHaveBeenCalledTimes(1);
+    expect(screen.getByTestId('edit-button')).toHaveAttribute('href', editHref);
   });
 
   it('Calls onDelete with correct recipientId when delete button is clicked.', () => {
     render(
       <RecipientItem
         data={mockRecipient}
-        onEdit={onEditMock}
+        editHref={editHref}
         onDelete={onDeleteMock}
       />,
     );
@@ -61,7 +58,7 @@ describe('RecipientItem Commponent', () => {
     render(
       <RecipientItem
         data={mockRecipient}
-        onEdit={onEditMock}
+        editHref={editHref}
         onDelete={onDeleteMock}
       />,
     );
@@ -75,7 +72,7 @@ describe('RecipientItem Commponent', () => {
     const { container } = render(
       <RecipientItem
         data={mockRecipient}
-        onEdit={onEditMock}
+        editHref={editHref}
         onDelete={onDeleteMock}
       />,
     );

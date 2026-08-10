@@ -493,7 +493,7 @@ const LetterForm = () => {
               values.imageURLs.map((image) => (
                 <ImageItem
                   data={image}
-                  key={image?.id}
+                  key={image.id || image.fileKey}
                   deleteImage={onDeleteImage}
                   letter={values}
                   onUpdateImage={onUpdateImage}

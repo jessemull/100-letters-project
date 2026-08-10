@@ -5,11 +5,12 @@ import { axe } from 'jest-axe';
 import { render, screen, fireEvent } from '@testing-library/react';
 
 const mockLetter = LetterFactory.build();
+const editHref = `/admin/letter?letterId=${mockLetter.letterId}`;
 
 describe('LetterItem Component', () => {
   it('Renders the title and a truncated version of the letter text.', () => {
     render(
-      <LetterItem data={mockLetter} onEdit={jest.fn()} onDelete={jest.fn()} />,
+      <LetterItem data={mockLetter} editHref={editHref} onDelete={jest.fn()} />,
     );
 
     expect(screen.getByText(mockLetter.title)).toBeInTheDocument();
@@ -18,14 +19,12 @@ describe('LetterItem Component', () => {
     ).toBeInTheDocument();
   });
 
-  it('Calls onEdit with the letterId when the edit button is clicked.', () => {
-    const onEditMock = jest.fn();
+  it('Links the edit control to the letter edit route.', () => {
     render(
-      <LetterItem data={mockLetter} onEdit={onEditMock} onDelete={jest.fn()} />,
+      <LetterItem data={mockLetter} editHref={editHref} onDelete={jest.fn()} />,
     );
 
-    fireEvent.click(screen.getByTestId('edit-button'));
-    expect(onEditMock).toHaveBeenCalledWith(mockLetter.letterId);
+    expect(screen.getByTestId('edit-button')).toHaveAttribute('href', editHref);
   });
 
   it('Calls onDelete with the letterId when the delete button is clicked.', () => {
@@ -33,7 +32,7 @@ describe('LetterItem Component', () => {
     render(
       <LetterItem
         data={mockLetter}
-        onEdit={jest.fn()}
+        editHref={editHref}
         onDelete={onDeleteMock}
       />,
     );
@@ -47,7 +46,7 @@ describe('LetterItem Component', () => {
 
   it('Has no accessibility violations.', async () => {
     const { container } = render(
-      <LetterItem data={mockLetter} onEdit={jest.fn()} onDelete={jest.fn()} />,
+      <LetterItem data={mockLetter} editHref={editHref} onDelete={jest.fn()} />,
     );
     const results = await axe(container);
     expect(results).toHaveNoViolations();
