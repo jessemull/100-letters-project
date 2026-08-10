@@ -67,8 +67,8 @@ jobs:
           name: public-json
           path: |
             public/data/bootstrap.json
-            public/data/data.json
-            public/data/search.json
+            public/data/data.*.json
+            public/data/search.*.json
           retention-days: 1
 
         # Sentry does not support source maps for static NextJS builds.

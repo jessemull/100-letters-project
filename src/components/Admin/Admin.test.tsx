@@ -184,23 +184,18 @@ describe('Admin Component', () => {
 
     render(<Admin />);
 
-    const createButton = screen.getByRole('button', { name: 'Create New' });
-    fireEvent.click(createButton);
-
-    await waitFor(() => {
-      expect(mockPush).toHaveBeenCalledWith('/admin/correspondence');
-    });
+    const createLink = screen.getByRole('link', { name: 'Create New' });
+    expect(createLink).toHaveAttribute('href', '/admin/correspondence');
 
     fireEvent.click(screen.getByRole('tab', { name: 'Recipients' }));
     await waitFor(() => {
       expect(mockReplace).toHaveBeenCalledWith('/admin?tab=recipients');
     });
 
-    fireEvent.click(screen.getByRole('button', { name: 'Create New' }));
-
-    await waitFor(() => {
-      expect(mockPush).toHaveBeenCalledWith('/admin/recipient');
-    });
+    expect(screen.getByRole('link', { name: 'Create New' })).toHaveAttribute(
+      'href',
+      '/admin/recipient',
+    );
   });
   it('Calls setSearch via debounce when user types in search input.', async () => {
     renderWithAuth();

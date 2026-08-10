@@ -20,7 +20,13 @@ jest.mock('@components/Feed', () => {
   };
 });
 
-jest.mock('@hooks/useSearch');
+jest.mock('@hooks/useSearch', () => ({
+  useSearch: jest.fn(() => ({
+    results: [],
+    error: null,
+    loading: false,
+  })),
+}));
 
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(),

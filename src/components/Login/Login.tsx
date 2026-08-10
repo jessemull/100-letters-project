@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import React, { useState } from 'react';
 import { Button, TextInput } from '@components/Form';
 import { Eye, EyeOff, User, Lock } from 'lucide-react';
@@ -12,6 +13,9 @@ import {
 import { useAuth } from '@contexts/AuthProvider';
 import { useForm } from '@hooks/useForm';
 import { useRouter } from 'next/navigation';
+
+const loginNavLinkClassName =
+  'flex w-full h-12 items-center justify-center text-base leading-[30px] rounded-[25px] border bg-[#111827] text-white border-white hover:bg-[#293E6A] cursor-pointer';
 
 const Login = () => {
   const [networkError, setNetworkError] = useState('');
@@ -37,10 +41,6 @@ const Login = () => {
   const handleFieldChange = (field: keyof LoginForm, value: string) => {
     setNetworkError('');
     updateField(field, value);
-  };
-
-  const handleCancel = () => {
-    router.push('/');
   };
 
   const handleSignIn = () => {
@@ -133,12 +133,23 @@ const Login = () => {
               loading={loading}
               value="Sign In"
             />
-            <Button
-              htmlType="button"
-              id="cancel-button"
-              onClick={handleCancel}
-              value="Cancel"
-            />
+            {loading ? (
+              <span
+                aria-disabled="true"
+                className={`${loginNavLinkClassName} bg-gray-500 cursor-not-allowed hover:bg-gray-500 pointer-events-none`}
+                id="cancel-button"
+              >
+                Cancel
+              </span>
+            ) : (
+              <Link
+                href="/"
+                id="cancel-button"
+                className={loginNavLinkClassName}
+              >
+                Cancel
+              </Link>
+            )}
           </div>
         </form>
 

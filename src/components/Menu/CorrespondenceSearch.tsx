@@ -1,8 +1,7 @@
 import { CorrespondenceSearchItem } from '@ts-types/search';
 import { SearchSection } from '@components/Menu';
-import { useSearch } from '@hooks/useSearch';
+import { useMemo, useState } from 'react';
 import { useSearchData } from '@contexts/SearchProvider';
-import { useState } from 'react';
 
 interface Props {
   onClick?: () => void;
@@ -12,10 +11,13 @@ const CorrespondenceSearch: React.FC<Props> = ({ onClick }) => {
   const [term, setTerm] = useState('');
   const { correspondences } = useSearchData();
 
-  const results = useSearch({
-    term,
-    type: 'correspondences',
-  }) as CorrespondenceSearchItem[];
+  const results = useMemo(() => {
+    const query = term.trim().toLowerCase();
+    if (!query) return [] as CorrespondenceSearchItem[];
+    return correspondences.filter((item) =>
+      item.title.toLowerCase().includes(query),
+    );
+  }, [correspondences, term]);
 
   return (
     <SearchSection<CorrespondenceSearchItem>

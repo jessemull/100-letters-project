@@ -17,11 +17,11 @@ const Category = () => {
   const [term, setTerm] = useState('');
   const [category, setCategory] = useState<string | null>(initialCategory);
 
-  const results = useSearch({
+  const { error, results } = useSearch({
     type: 'all',
     term: category && !term ? category : term,
     isExactCategory: !!(category && !term),
-  }) as CorrespondenceCard[];
+  });
 
   const showCategoryHeader = category && !term;
 
@@ -68,7 +68,11 @@ const Category = () => {
             Explore {titleCase(category)} Letters
           </h2>
         )}
-        <Search term={category || term} results={results} />
+        <Search
+          error={error}
+          term={category || term}
+          results={results as CorrespondenceCard[]}
+        />
       </div>
     </div>
   );

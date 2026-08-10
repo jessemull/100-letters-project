@@ -99,10 +99,9 @@ describe('ImageItem Component', () => {
   });
 
   it('Renders image and displays default caption.', () => {
-    const { caption, ...rest } = data; // eslint-disable-line unused-imports/no-unused-vars
     render(
       <ImageItem
-        data={rest as LetterImage}
+        data={{ ...data, caption: undefined } as LetterImage}
         deleteImage={mockDeleteImage}
         letter={letter as any}
         onUpdateImage={mockOnUpdateImage}
@@ -119,13 +118,12 @@ describe('ImageItem Component', () => {
   });
 
   it('Renders image and handles long captions.', () => {
-    const { caption, ...rest } = data; // eslint-disable-line unused-imports/no-unused-vars
     render(
       <ImageItem
         data={
           {
+            ...data,
             caption: 'This is a really long caption that will be truncated',
-            ...rest,
           } as LetterImage
         }
         deleteImage={mockDeleteImage}

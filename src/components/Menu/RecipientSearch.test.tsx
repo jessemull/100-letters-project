@@ -3,16 +3,6 @@ import { RecipientSearch } from '@components/Menu';
 import { axe } from 'jest-axe';
 import { render, screen, fireEvent } from '@testing-library/react';
 
-jest.mock('@hooks/useSearch', () => ({
-  useSearch: () => [
-    {
-      correspondenceId: 'abc123',
-      firstName: 'Ada',
-      lastName: 'Lovelace',
-    },
-  ],
-}));
-
 jest.mock('@contexts/SearchProvider', () => ({
   useSearchData: () => ({
     recipients: [
@@ -20,6 +10,7 @@ jest.mock('@contexts/SearchProvider', () => ({
         correspondenceId: 'abc123',
         firstName: 'Ada',
         lastName: 'Lovelace',
+        fullName: 'Ada Lovelace',
       },
     ],
   }),

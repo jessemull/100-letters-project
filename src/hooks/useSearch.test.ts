@@ -1,9 +1,8 @@
 import { SearchResult } from '@ts-types/search';
+import { UseSearchState, useSearch } from '@hooks/useSearch';
 import { act, waitFor } from '@testing-library/react';
 import { renderHook } from '@testing-library/react';
-import { useSearch } from '@hooks/useSearch';
 
-// Mock bootstrap.json with dataVersion
 jest.mock('@public/data/bootstrap.json', () => ({
   default: {
     dataVersion: 1234567890,
@@ -85,18 +84,19 @@ global.fetch = jest.fn().mockImplementation((url: string) => {
 });
 
 describe('useSearch', () => {
-  it('Returns empty array if search term is blank.', async () => {
+  it('Returns empty results if search term is blank.', async () => {
     const { result } = renderHook(() =>
       useSearch({ type: 'correspondences', term: '  ' }),
     );
 
     await waitFor(() => {
-      expect(result.current).toEqual([]);
+      expect(result.current.results).toEqual([]);
+      expect(result.current.error).toBeNull();
     });
   });
 
-  it('Returns empty array when fuse is undefined for given type.', async () => {
-    let result: { current: SearchResult[] };
+  it('Returns empty results when fuse is undefined for given type.', async () => {
+    let result: { current: UseSearchState };
 
     await act(async () => {
       const hook = renderHook(() =>
@@ -106,12 +106,12 @@ describe('useSearch', () => {
     });
 
     await waitFor(() => {
-      expect(result.current).toEqual([]);
+      expect(result.current.results).toEqual([]);
     });
   });
 
   it('Returns correspondence search results.', async () => {
-    let result: { current: SearchResult[] };
+    let result: { current: UseSearchState };
 
     await act(async () => {
       const hook = renderHook(() =>
@@ -121,14 +121,14 @@ describe('useSearch', () => {
     });
 
     await waitFor(() =>
-      expect(result.current).toEqual([
+      expect(result.current.results).toEqual([
         expect.objectContaining({ title: 'First Correspondence' }),
       ]),
     );
   });
 
   it('Returns recipient search results (matches fullName).', async () => {
-    let result: { current: SearchResult[] };
+    let result: { current: UseSearchState };
 
     await act(async () => {
       const hook = renderHook(() =>
@@ -138,14 +138,14 @@ describe('useSearch', () => {
     });
 
     await waitFor(() =>
-      expect(result.current).toEqual([
+      expect(result.current.results).toEqual([
         expect.objectContaining({ fullName: 'Alice Smith' }),
       ]),
     );
   });
 
   it('Returns letter search results.', async () => {
-    let result: { current: SearchResult[] };
+    let result: { current: UseSearchState };
 
     await act(async () => {
       const hook = renderHook(() =>
@@ -155,14 +155,14 @@ describe('useSearch', () => {
     });
 
     await waitFor(() =>
-      expect(result.current).toEqual([
+      expect(result.current.results).toEqual([
         expect.objectContaining({ title: 'Thank You Note' }),
       ]),
     );
   });
 
   it('Respects the limit parameter.', async () => {
-    let result: { current: SearchResult[] };
+    let result: { current: UseSearchState };
 
     await act(async () => {
       const hook = renderHook(() =>
@@ -175,10 +175,10 @@ describe('useSearch', () => {
       result = hook.result;
     });
 
-    await waitFor(() => expect(result.current.length).toBe(1));
+    await waitFor(() => expect(result.current.results.length).toBe(1));
   });
 
-  it('Logs error when fetch fails.', async () => {
+  it('Surfaces an error when fetch fails.', async () => {
     const error = new Error('Fetch failed');
 
     (global.fetch as jest.Mock).mockImplementationOnce(() =>
@@ -189,13 +189,17 @@ describe('useSearch', () => {
       .spyOn(console, 'error')
       .mockImplementation(() => {});
 
-    renderHook(() => useSearch({ type: 'correspondences', term: 'test' }));
+    const { result } = renderHook(() =>
+      useSearch({ type: 'correspondences', term: 'test' }),
+    );
 
     await waitFor(() => {
       expect(consoleErrorSpy).toHaveBeenCalledWith(
         'Failed to load search data:',
         error,
       );
+      expect(result.current.error).toBe('Failed to load search data.');
+      expect(result.current.results).toEqual([]);
     });
 
     consoleErrorSpy.mockRestore();
@@ -265,5 +269,30 @@ describe('useSearch', () => {
       }
       return Promise.reject(new Error('Unknown fetch URL'));
     });
+  });
+
+  it('Surfaces an error when a response is not ok.', async () => {
+    (global.fetch as jest.Mock).mockImplementationOnce(() =>
+      Promise.resolve({
+        ok: false,
+        status: 500,
+        json: () => Promise.resolve({}),
+      }),
+    );
+
+    const consoleErrorSpy = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
+
+    const { result } = renderHook(() =>
+      useSearch({ type: 'correspondences', term: 'test' }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.error).toBe('Failed to load search data.');
+      expect(result.current.results).toEqual([] as SearchResult[]);
+    });
+
+    consoleErrorSpy.mockRestore();
   });
 });

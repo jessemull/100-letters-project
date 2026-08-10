@@ -141,13 +141,8 @@ describe('Login Component', () => {
   it('Calls handleCancel and redirects to home when Cancel button is clicked.', async () => {
     render(<Login />);
 
-    const cancelButton = screen.getByText('Cancel');
-
-    await act(async () => {
-      fireEvent.click(cancelButton);
-    });
-
-    expect(mockPush).toHaveBeenCalledWith('/');
+    const cancelLink = screen.getByRole('link', { name: 'Cancel' });
+    expect(cancelLink).toHaveAttribute('href', '/');
   });
 
   it('Renders sign-out option when the user is logged in.', () => {

@@ -1,7 +1,8 @@
 'use client';
 
+import Link from 'next/link';
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, TextInput } from '@components/Form';
+import { TextInput } from '@components/Form';
 import {
   CorrespondencesTab,
   LettersTab,
@@ -12,6 +13,9 @@ import { Tab, TabList, TabPanel, TabPanels, TabGroup } from '@headlessui/react';
 import { adminTabs } from '@constants/admin';
 import { debounce } from '@util/debounce';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+
+const createLinkClassName =
+  'flex w-full h-12 items-center justify-center text-base leading-[30px] rounded-[25px] border bg-[#111827] text-white border-white hover:bg-[#293E6A] cursor-pointer';
 
 const Admin = () => {
   const searchParams = useSearchParams();
@@ -37,10 +41,6 @@ const Admin = () => {
     const newTab = adminTabs[index].key;
     const newUrl = `${pathname}?tab=${newTab}`;
     router.replace(newUrl);
-  };
-
-  const handleCreateClick = () => {
-    router.push(activeTab.createRoute);
   };
 
   const debouncedSetSearchRef = useRef(
@@ -96,11 +96,13 @@ const Admin = () => {
               ))}
             </TabList>
             <div className="w-full sm:w-1/4 md:w-1/6 lg:w-1/8 xl:w-1/12 lg:min-w-[128px]">
-              <Button
-                value="Create New"
+              <Link
+                href={activeTab.createRoute}
                 id="admin-create-new-button"
-                onClick={handleCreateClick}
-              />
+                className={createLinkClassName}
+              >
+                Create New
+              </Link>
             </div>
           </div>
           <div className="mb-6">

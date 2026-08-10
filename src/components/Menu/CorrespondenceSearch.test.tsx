@@ -3,15 +3,6 @@ import { CorrespondenceSearch } from '@components/Menu';
 import { axe } from 'jest-axe';
 import { render, screen, fireEvent } from '@testing-library/react';
 
-jest.mock('@hooks/useSearch', () => ({
-  useSearch: () => [
-    {
-      correspondenceId: 'abc123',
-      title: 'Letter to Ada Lovelace',
-    },
-  ],
-}));
-
 jest.mock('@contexts/SearchProvider', () => ({
   useSearchData: () => ({
     correspondences: [

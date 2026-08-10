@@ -59,6 +59,8 @@ describe('Splash Component', () => {
       { correspondenceId: '4', title: 'Letter 4' },
     ],
     earliestSentAtDate: new Date().toISOString(),
+    error: null,
+    loading: false,
   };
 
   it('Renders header and correct stats.', async () => {
@@ -102,6 +104,22 @@ describe('Splash Component', () => {
     });
 
     expect(screen.getByText(/Recent Letters Coming Soon!/)).toBeInTheDocument();
+  });
+
+  it('Surfaces a load-error alert when correspondence data fails.', async () => {
+    (useCorrespondence as jest.Mock).mockReturnValue({
+      ...mockData,
+      error: 'Failed to load correspondence data.',
+    });
+
+    await act(async () => {
+      render(<Splash />);
+    });
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      /some correspondence data could not be loaded/i,
+    );
+    expect(screen.getAllByTestId('card')).toHaveLength(3);
   });
 
   it('Has no accessibility violations.', async () => {

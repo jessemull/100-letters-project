@@ -14,16 +14,24 @@ import { CorrespondenceCard } from '@ts-types/correspondence';
 import { getCategoryEnum } from '@util/search';
 import type { BootstrapData } from '@ts-types/bootstrap';
 
+export type UseSearchState = {
+  error: string | null;
+  loading: boolean;
+  results: SearchResult[];
+};
+
 export const useSearch = ({
   type,
   term,
   limit = 100,
   isExactCategory = false,
-}: SearchOptions): SearchResult[] => {
+}: SearchOptions): UseSearchState => {
   const [fuseMap, setFuseMap] = useState<FuseMap | null>(null);
   const [correspondenceData, setCorrespondenceData] = useState<
     CorrespondenceCard[]
   >([]);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadSearchData = async () => {
@@ -39,6 +47,15 @@ export const useSearch = ({
           fetch(dataUrl),
           fetch(searchUrl),
         ]);
+
+        if (!dataRes.ok) {
+          throw new Error(
+            `Failed to load correspondence data (${dataRes.status})`,
+          );
+        }
+        if (!searchRes.ok) {
+          throw new Error(`Failed to load search index (${searchRes.status})`);
+        }
 
         const dataModule = await dataRes.json();
         const searchIndexModule = await searchRes.json();
@@ -84,8 +101,13 @@ export const useSearch = ({
         );
 
         setFuseMap({ all, correspondences, recipients, letters });
+        setError(null);
       } catch (err) {
         console.error('Failed to load search data:', err);
+        setError('Failed to load search data.');
+        setFuseMap(null);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -114,5 +136,5 @@ export const useSearch = ({
       : [];
   }, [type, term, limit, fuseMap, correspondenceData, isExactCategory]);
 
-  return results;
+  return { results, error, loading };
 };

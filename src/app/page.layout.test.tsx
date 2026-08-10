@@ -1,4 +1,4 @@
-import PageLayout from './page.layout';
+import PageLayout from '@pages/page.layout';
 import { DesktopMenuContext } from '@contexts/DesktopMenuProvider';
 import { render, screen } from '@testing-library/react';
 
@@ -19,7 +19,11 @@ jest.mock('next/navigation', () => ({
 }));
 
 jest.mock('@hooks/useSearch', () => ({
-  useSearch: jest.fn(() => []),
+  useSearch: jest.fn(() => ({
+    results: [],
+    error: null,
+    loading: false,
+  })),
 }));
 
 jest.mock('@components/Menu/RecipientSearch', () => ({

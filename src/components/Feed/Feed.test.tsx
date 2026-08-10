@@ -36,7 +36,11 @@ describe('Feed component', () => {
   let pushStateSpy: jest.SpyInstance;
 
   beforeEach(() => {
-    (useSearch as jest.Mock).mockReturnValue(mockResults);
+    (useSearch as jest.Mock).mockReturnValue({
+      results: mockResults,
+      error: null,
+      loading: false,
+    });
     pushStateSpy = jest.spyOn(window.history, 'pushState');
   });
 

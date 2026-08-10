@@ -9,11 +9,12 @@ import { useCorrespondence } from '@contexts/CorrespondenceProvider';
 import { useInView } from 'react-intersection-observer';
 
 interface Props {
+  error?: string | null;
   results: CorrespondenceCard[];
   term: string;
 }
 
-const Search: React.FC<Props> = ({ results, term }) => {
+const Search: React.FC<Props> = ({ error, results, term }) => {
   const [page, setPage] = useState(1);
   const { correspondences } = useCorrespondence();
 
@@ -47,6 +48,17 @@ const Search: React.FC<Props> = ({ results, term }) => {
 
     return () => window.clearTimeout(timeoutId);
   }, [inView, page, items.length]);
+
+  if (error) {
+    return (
+      <>
+        <p role="alert" className="text-white text-center mt-8 text-lg">
+          Search is temporarily unavailable. Please try again later.
+        </p>
+        <Categories />
+      </>
+    );
+  }
 
   if (items.length === 0) {
     return (

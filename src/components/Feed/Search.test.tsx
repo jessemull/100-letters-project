@@ -53,6 +53,16 @@ describe('Search Component', () => {
     ).toBeInTheDocument();
   });
 
+  it('Renders an error alert when search data failed to load.', () => {
+    (useCorrespondence as jest.Mock).mockReturnValue({ correspondences: [] });
+    render(
+      <Search error="Failed to load search data." results={[]} term="x" />,
+    );
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      /search is temporarily unavailable/i,
+    );
+  });
+
   it('Renders cards from results when term is present.', () => {
     render(
       <Search

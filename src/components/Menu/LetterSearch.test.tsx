@@ -3,16 +3,6 @@ import { LetterSearch } from '@components/Menu';
 import { axe } from 'jest-axe';
 import { render, screen, fireEvent } from '@testing-library/react';
 
-jest.mock('@hooks/useSearch', () => ({
-  useSearch: () => [
-    {
-      correspondenceId: 'xyz789',
-      letterId: 'lmn456',
-      title: 'Letter from Alan Turing',
-    },
-  ],
-}));
-
 jest.mock('@contexts/SearchProvider', () => ({
   useSearchData: () => ({
     letters: [

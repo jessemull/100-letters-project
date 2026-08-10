@@ -32,7 +32,7 @@ const LettersTab: React.FC<Props> = ({ search }) => {
   const router = useRouter();
   const { token } = useAuth();
 
-  const { data, fetchMore, isLoading, loadingMore } =
+  const { data, error, fetchMore, isLoading, loadingMore } =
     useSWRQuery<GetLettersResponse>({
       config: { shouldRetryOnError: false },
       path: search ? `/letter?search=${search}` : '/letter',
@@ -110,6 +110,13 @@ const LettersTab: React.FC<Props> = ({ search }) => {
         <div className="w-full flex-grow flex items-center justify-center py-24 min-h-[calc(100vh-475px)]">
           <Progress color="white" size={16} />
         </div>
+      ) : error ? (
+        <p
+          role="alert"
+          className="w-full text-center text-red-400 py-24 min-h-[calc(100vh-475px)]"
+        >
+          {error.message || 'Failed to load letters.'}
+        </p>
       ) : (
         <ul className="grid gap-4">
           {data?.data.map((item, idx) => (

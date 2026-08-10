@@ -12,7 +12,7 @@ const Clock = dynamic(() => import('@components/Feed/Clock'), {
 });
 
 const Splash = () => {
-  const { correspondences } = useCorrespondence();
+  const { correspondences, error } = useCorrespondence();
   const [numLetterRows, setNumLetterPages] = useState(1);
 
   const showMoreLetters = useMemo(() => {
@@ -33,6 +33,15 @@ const Splash = () => {
           <Clock />
         </div>
       </div>
+      {error ? (
+        <p
+          role="alert"
+          className="text-center text-amber-100/90 text-base max-w-2xl mx-auto"
+        >
+          Some correspondence data could not be loaded. Showing recent letters
+          from the latest available snapshot.
+        </p>
+      ) : null}
       <div className="w-full space-y-4">
         <h2 className="text-2xl font-bold text-center">{`Recent Letters${correspondences.length === 0 ? ' Coming Soon!' : ''}`}</h2>
         {correspondences.length === 0 ? (

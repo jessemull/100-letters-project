@@ -15,10 +15,14 @@ jest.mock('next/navigation', () => ({
 }));
 
 jest.mock('@hooks/useSearch', () => ({
-  useSearch: jest.fn(() => [
-    { id: 1, title: 'Result 1' },
-    { id: 2, title: 'Result 2' },
-  ]),
+  useSearch: jest.fn(() => ({
+    results: [
+      { id: 1, title: 'Result 1' },
+      { id: 2, title: 'Result 2' },
+    ],
+    error: null,
+    loading: false,
+  })),
 }));
 
 jest.mock('@components/Feed', () => ({
