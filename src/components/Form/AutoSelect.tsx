@@ -53,6 +53,10 @@ const AutoSelect: React.FC<Props> = ({
     filteredOptions.length === 0
       ? 0
       : Math.min(highlightedIndex, filteredOptions.length - 1);
+  const activeOptionId =
+    isFocused && filteredOptions[activeIndex]
+      ? `${id}-option-${filteredOptions[activeIndex].value}`
+      : undefined;
 
   const handleSelect = (val: string) => {
     const selected = options.find((option) => option.value === val);
@@ -151,6 +155,7 @@ const AutoSelect: React.FC<Props> = ({
         </label>
       )}
       <input
+        aria-activedescendant={activeOptionId}
         aria-autocomplete="list"
         aria-controls={listboxId}
         aria-expanded={isFocused}
@@ -185,6 +190,7 @@ const AutoSelect: React.FC<Props> = ({
           ) : filteredOptions.length === 0 ? (
             <li
               className="px-4 py-2 text-black/70"
+              id={`${id}-option-empty`}
               role="option"
               aria-selected={false}
             >
@@ -194,23 +200,21 @@ const AutoSelect: React.FC<Props> = ({
             filteredOptions.map((option, idx) => (
               <li
                 key={option.value}
+                id={`${id}-option-${option.value}`}
                 role="option"
                 aria-selected={idx === activeIndex}
+                tabIndex={-1}
+                onClick={() => handleSelect(option.value)}
+                onMouseEnter={() => setHighlightedIndex(idx)}
+                className={`w-full text-left px-4 py-2 hover:bg-black/10 cursor-pointer ${
+                  idx === activeIndex
+                    ? 'bg-black/10'
+                    : idx % 2 === 0
+                      ? 'bg-white'
+                      : 'bg-white/60'
+                }`}
               >
-                <button
-                  type="button"
-                  onClick={() => handleSelect(option.value)}
-                  onMouseEnter={() => setHighlightedIndex(idx)}
-                  className={`w-full text-left px-4 py-2 hover:bg-black/10 cursor-pointer ${
-                    idx === activeIndex
-                      ? 'bg-black/10'
-                      : idx % 2 === 0
-                        ? 'bg-white'
-                        : 'bg-white/60'
-                  }`}
-                >
-                  {option.label}
-                </button>
+                {option.label}
               </li>
             ))
           )}

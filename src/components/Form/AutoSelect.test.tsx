@@ -190,14 +190,67 @@ describe('AutoSelect Componentn', () => {
     const input = screen.getByRole('combobox');
     fireEvent.focus(input);
     expect(input).toHaveAttribute('aria-expanded', 'true');
+    expect(input).toHaveAttribute('aria-activedescendant', 'test-option-apple');
 
     fireEvent.keyDown(input, { key: 'ArrowDown' });
+    expect(input).toHaveAttribute(
+      'aria-activedescendant',
+      'test-option-banana',
+    );
     fireEvent.keyDown(input, { key: 'Enter' });
     expect(onChangeMock).toHaveBeenCalledWith('banana');
 
     fireEvent.focus(input);
     fireEvent.keyDown(input, { key: 'Escape' });
     expect(input).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('Opens the list with ArrowDown when closed and wraps with ArrowUp.', () => {
+    render(
+      <AutoSelect
+        id="test"
+        value=""
+        onChange={onChangeMock}
+        options={options}
+      />,
+    );
+    const input = screen.getByRole('combobox');
+
+    fireEvent.keyDown(input, { key: 'ArrowDown' });
+    expect(input).toHaveAttribute('aria-expanded', 'true');
+    expect(input).toHaveAttribute('aria-activedescendant', 'test-option-apple');
+
+    fireEvent.keyDown(input, { key: 'Escape' });
+    fireEvent.keyDown(input, { key: 'ArrowUp' });
+    expect(input).toHaveAttribute('aria-expanded', 'true');
+
+    fireEvent.keyDown(input, { key: 'ArrowUp' });
+    expect(input).toHaveAttribute(
+      'aria-activedescendant',
+      'test-option-cherry',
+    );
+  });
+
+  it('Shows an empty filter message and ignores Enter with no matches.', () => {
+    render(
+      <AutoSelect
+        id="test"
+        value=""
+        onChange={onChangeMock}
+        options={options}
+      />,
+    );
+    const input = screen.getByRole('combobox');
+    fireEvent.focus(input);
+    fireEvent.change(input, { target: { value: 'zzz' } });
+
+    expect(
+      screen.getByRole('option', { name: 'No matches' }),
+    ).toBeInTheDocument();
+    fireEvent.keyDown(input, { key: 'Enter' });
+    fireEvent.keyDown(input, { key: 'ArrowDown' });
+    fireEvent.keyDown(input, { key: 'ArrowUp' });
+    expect(onChangeMock).not.toHaveBeenCalled();
   });
 
   it('Has no accessibility violations.', async () => {

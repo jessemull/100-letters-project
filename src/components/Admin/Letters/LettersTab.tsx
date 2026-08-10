@@ -89,8 +89,8 @@ const LettersTab: React.FC<Props> = ({ search }) => {
     router.push(`/admin/letter?letterId=${id}`);
   };
 
-  const onDelete = (letterId: string, corresondenceId: string) => {
-    setCorrespondenceId(corresondenceId);
+  const onDelete = (letterId: string, correspondenceId: string) => {
+    setCorrespondenceId(correspondenceId);
     setLetterId(letterId);
     setIsConfirmationModalOpen(true);
   };

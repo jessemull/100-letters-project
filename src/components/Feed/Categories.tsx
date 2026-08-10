@@ -1,17 +1,16 @@
 'use client';
 
+import Link from 'next/link';
 import React from 'react';
 import clsx from 'clsx';
 import { Image } from '@components/Image';
 import { categories } from '@constants/feed';
-import { useRouter } from 'next/navigation';
 
 interface Props {
   desktopCols?: 6 | 4 | 3;
 }
 
 const Categories: React.FC<Props> = ({ desktopCols = 6 }) => {
-  const router = useRouter();
   const gridColsClass = clsx(
     'grid',
     'grid-cols-2',
@@ -24,29 +23,16 @@ const Categories: React.FC<Props> = ({ desktopCols = 6 }) => {
     'gap-4',
   );
 
-  const onClick = (category: string) => {
-    const newUrl = `/category?category=${encodeURIComponent(category)}`;
-    router.push(newUrl);
-  };
-
   return (
     <div className="w-full space-y-4">
       <h2 className="text-2xl font-bold">Browse by Category</h2>
       <div className={gridColsClass}>
         {categories.map((cat, index) => (
-          <div
-            key={index}
-            role="button"
-            tabIndex={0}
+          <Link
+            key={cat.name}
+            href={`/category?category=${encodeURIComponent(cat.name)}`}
             aria-label={`View letters in category ${cat.name}`}
-            className="relative rounded-xl overflow-hidden group cursor-pointer h-32"
-            onClick={() => onClick(cat.name)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                onClick(cat.name);
-              }
-            }}
+            className="relative rounded-xl overflow-hidden group cursor-pointer h-32 block"
           >
             <Image
               src={cat.imageUrl}
@@ -61,7 +47,7 @@ const Categories: React.FC<Props> = ({ desktopCols = 6 }) => {
                 {cat.name}
               </span>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>

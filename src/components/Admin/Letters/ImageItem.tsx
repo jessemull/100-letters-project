@@ -108,6 +108,9 @@ const ImageItem = ({ data, deleteImage, letter, onUpdateImage }: Props) => {
     });
   };
 
+  const imageLabel =
+    data.caption?.trim() || letterViewToLabel[data?.view] || 'image';
+
   return (
     <>
       <div
@@ -145,7 +148,7 @@ const ImageItem = ({ data, deleteImage, letter, onUpdateImage }: Props) => {
                   <button
                     data-testid="full-screen-button"
                     className="text-white hover:text-gray-400 cursor-pointer"
-                    aria-label="Full Screen"
+                    aria-label={`Full screen ${imageLabel}`}
                     onClick={() => setIsLightboxOpen(true)}
                     type="button"
                   >
@@ -157,7 +160,7 @@ const ImageItem = ({ data, deleteImage, letter, onUpdateImage }: Props) => {
                   <button
                     data-testid="edit-button"
                     className="text-white hover:text-gray-400 cursor-pointer"
-                    aria-label="Edit"
+                    aria-label={`Edit ${imageLabel}`}
                     onClick={() => (isOpen ? setIsOpen(false) : openEdit())}
                     type="button"
                   >
@@ -169,7 +172,7 @@ const ImageItem = ({ data, deleteImage, letter, onUpdateImage }: Props) => {
                   <button
                     data-testid="delete-button"
                     className="text-white hover:text-gray-400 cursor-pointer"
-                    aria-label="Delete"
+                    aria-label={`Delete ${imageLabel}`}
                     onClick={() => deleteImage(data.id)}
                     type="button"
                   >

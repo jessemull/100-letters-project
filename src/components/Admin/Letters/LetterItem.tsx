@@ -7,7 +7,7 @@ import { PenSquare, Trash2 } from 'lucide-react';
 interface Props {
   data: Letter;
   onEdit: (letterId: string) => void;
-  onDelete: (letterId: string, corresondenceId: string) => void;
+  onDelete: (letterId: string, correspondenceId: string) => void;
 }
 
 const LetterItem = ({ data, onEdit, onDelete }: Props) => {

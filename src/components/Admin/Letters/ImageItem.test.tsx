@@ -91,6 +91,11 @@ describe('ImageItem Component', () => {
 
     expect(screen.getByText('Letter Front')).toBeInTheDocument();
     expect(screen.getByText('test caption')).toBeInTheDocument();
+    expect(
+      screen.getByLabelText('Full screen test caption'),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText('Edit test caption')).toBeInTheDocument();
+    expect(screen.getByLabelText('Delete test caption')).toBeInTheDocument();
   });
 
   it('Renders image and displays default caption.', () => {
@@ -106,6 +111,11 @@ describe('ImageItem Component', () => {
 
     expect(screen.getByText('Letter Front')).toBeInTheDocument();
     expect(screen.getByText('No Caption')).toBeInTheDocument();
+    expect(
+      screen.getByLabelText('Full screen Letter Front'),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText('Edit Letter Front')).toBeInTheDocument();
+    expect(screen.getByLabelText('Delete Letter Front')).toBeInTheDocument();
   });
 
   it('Renders image and handles long captions.', () => {

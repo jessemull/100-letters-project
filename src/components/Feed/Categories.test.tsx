@@ -1,52 +1,25 @@
 import React from 'react';
 import { Categories } from '@components/Feed';
 import { axe } from 'jest-axe';
-import { fireEvent, render, screen } from '@testing-library/react';
-
-const mockPush = jest.fn();
+import { render, screen } from '@testing-library/react';
 
 jest.mock('next/image', () => ({
   __esModule: true,
   default: () => <div data-testid="image">Image</div>,
 }));
 
-jest.mock('next/navigation', () => ({
-  useRouter: () => ({
-    push: mockPush,
-  }),
-}));
-
-describe('Categories Commponent', () => {
-  beforeEach(() => {
-    mockPush.mockClear();
-  });
-
+describe('Categories Component', () => {
   it('Renders the categories.', () => {
     render(<Categories />);
     expect(screen.getByText('Technology')).toBeInTheDocument();
   });
 
-  it('Navigates when a category is clicked.', () => {
+  it('Links to the category page for each tile.', () => {
     render(<Categories />);
-    const button = screen.getByRole('button', {
+    const link = screen.getByRole('link', {
       name: /view letters in category technology/i,
     });
-    fireEvent.click(button);
-    expect(mockPush).toHaveBeenCalledWith('/category?category=Technology');
-  });
-
-  it('Navigates when Enter or Space is pressed.', () => {
-    render(<Categories />);
-    const button = screen.getByRole('button', {
-      name: /view letters in category technology/i,
-    });
-
-    button.focus();
-    fireEvent.keyDown(button, { key: 'Enter' });
-    expect(mockPush).toHaveBeenCalledWith('/category?category=Technology');
-
-    fireEvent.keyDown(button, { key: ' ' });
-    expect(mockPush).toHaveBeenCalledWith('/category?category=Technology');
+    expect(link).toHaveAttribute('href', '/category?category=Technology');
   });
 
   it('Has no accessibility violations.', async () => {

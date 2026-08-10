@@ -10,6 +10,13 @@ const PORT = 8080;
 const CLOUDFRONT_DOMAIN = process.env.CLOUDFRONT_DOMAIN;
 const COOKIE_TTL = 60 * 60 * 1000;
 
+if (!CLOUDFRONT_DOMAIN) {
+  console.error(
+    'CLOUDFRONT_DOMAIN is required. Set it in .env.local before starting the proxy.',
+  );
+  process.exit(1);
+}
+
 app.get('/healthcheck', (req, res) => {
   res.status(200).send('OK');
 });

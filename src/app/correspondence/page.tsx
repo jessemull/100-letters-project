@@ -1,4 +1,4 @@
-import PageLayout from '../page.layout';
+import PageLayout from '@pages/page.layout';
 import React, { Suspense } from 'react';
 import CorrespondenceNavigator from '@components/Correspondence/CorrespondenceNavigator';
 import { SuspenseProgress } from '@components/Form';

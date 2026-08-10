@@ -1,6 +1,6 @@
 'use client';
 
-import PageLayout from '../page.layout';
+import PageLayout from '@pages/page.layout';
 import React from 'react';
 import { About } from '@components/About';
 

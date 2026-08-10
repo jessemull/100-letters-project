@@ -1,4 +1,4 @@
-import PageLayout from '../page.layout';
+import PageLayout from '@pages/page.layout';
 import { Category } from '@components/Category';
 import { SearchProvider } from '@contexts/SearchProvider';
 import { Suspense } from 'react';
