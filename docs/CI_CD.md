@@ -6,35 +6,35 @@
 
 ## Workflows
 
-| Workflow                             | Trigger                               | Role                                                                                    |
-| ------------------------------------ | ------------------------------------- | --------------------------------------------------------------------------------------- |
-| `.github/workflows/pull-request.yml` | PR → `main`                           | Build, lint, typecheck, unit tests (≥80% via Jest), Cypress + Lighthouse on local `dev` |
-| `.github/workflows/merge.yml`        | Push → `main`                         | Build → lint → typecheck → tests → S3 backup → deploy → E2E → soft Lighthouse           |
-| `.github/workflows/deploy.yml`       | `workflow_dispatch` (test/production) | Manual deploy with same post-deploy e2e/LH rollback pattern                             |
-| `.github/workflows/rollback.yml`     | `workflow_dispatch`                   | Restore named S3 backup + CloudFront invalidate                                         |
+| Workflow                             | Trigger                               | Role                                                                                               |
+| ------------------------------------ | ------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `.github/workflows/pull-request.yml` | PR → `main`                           | Build, lint, typecheck, unit tests (≥80% via Jest), Cypress + Lighthouse on local `dev`            |
+| `.github/workflows/merge.yml`        | Push → `main`                         | Build → lint → typecheck → tests → S3 backup → deploy → E2E → Lighthouse → rollback on E2E/LH fail |
+| `.github/workflows/deploy.yml`       | `workflow_dispatch` (test/production) | Manual deploy with same post-deploy e2e/LH rollback pattern                                        |
+| `.github/workflows/rollback.yml`     | `workflow_dispatch`                   | Restore named S3 backup + CloudFront invalidate                                                    |
 
 Do **not** rewrite these lightly. Document changes in the PR and treat as human-review required (`docs/GOVERNANCE.md`).
 
 ### Quality jobs (PR)
 
-| Job              | Blocking? | Notes                                                        |
-| ---------------- | --------- | ------------------------------------------------------------ |
-| Build            | Yes       | Static export + optional Sentry source maps                  |
-| Lint             | Yes       | `npm run lint`                                               |
-| Typecheck        | Yes       | `npm run typecheck`                                          |
-| Unit tests       | Yes       | Jest + ≥80% coverage (`jest.config` thresholds)              |
-| E2E & Lighthouse | Soft LH   | Cypress blocking; LH `continue-on-error` (perf is warn-only) |
+| Job              | Blocking? | Notes                                               |
+| ---------------- | --------- | --------------------------------------------------- |
+| Build            | Yes       | Static export + optional Sentry source maps         |
+| Lint             | Yes       | `npm run lint`                                      |
+| Typecheck        | Yes       | `npm run typecheck`                                 |
+| Unit tests       | Yes       | Jest + ≥80% coverage (`jest.config` thresholds)     |
+| E2E & Lighthouse | Soft LH   | Cypress blocking; LH `continue-on-error` on PR only |
 
 ### Merge / deploy
 
-| Job                             | Notes                                                       |
-| ------------------------------- | ----------------------------------------------------------- |
-| Build + lint + typecheck + unit | Required before deploy                                      |
-| S3 backup                       | Pre-deploy backup for rollback                              |
-| Deploy                          | `aws s3 sync` of `out/` + CloudFront invalidation           |
-| E2E                             | Via proxy against deployed/test URL as configured           |
-| Lighthouse                      | Soft gate (`continue-on-error`); **does not** auto-rollback |
-| Manual rollback                 | Use `rollback.yml` with an explicit backup key              |
+| Job                             | Notes                                                                |
+| ------------------------------- | -------------------------------------------------------------------- |
+| Build + lint + typecheck + unit | Required before deploy                                               |
+| S3 backup                       | Pre-deploy backup for rollback                                       |
+| Deploy                          | `aws s3 sync` of `out/` + CloudFront invalidation                    |
+| E2E                             | Via proxy against deployed/test URL; failure triggers rollback       |
+| Lighthouse                      | Hard gate (perf ≥ 0.5; a11y/seo/bp ≥ 0.9); failure triggers rollback |
+| Manual rollback                 | Use `rollback.yml` with an explicit backup key                       |
 
 Node **26** (`actions/setup-node`, `.nvmrc`, `engines.node`).
 

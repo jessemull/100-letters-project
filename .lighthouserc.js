@@ -14,8 +14,9 @@ module.exports = {
   ci: {
     assert: {
       assertions: {
-        // Performance is noisy on CI runners; warn so merges are not blocked/rolled back.
-        'categories:performance': ['warn', { minScore: 0.75 }],
+        // Floor is intentionally low: CI runners are noisy, but catastrophic
+        // regressions (and a11y/seo/bp) still fail merge/deploy and trigger rollback.
+        'categories:performance': ['error', { minScore: 0.5 }],
         'categories:accessibility': ['error', { minScore: 0.9 }],
         'categories:seo': ['error', { minScore: 0.9 }],
         'categories:best-practices': ['error', { minScore: 0.9 }],
